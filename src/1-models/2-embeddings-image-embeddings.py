@@ -31,7 +31,6 @@ Run from the project root:
 
 import argparse
 import base64
-import json
 import math
 import os
 import time
@@ -60,10 +59,34 @@ def require_env(name):
     return value
 
 
-def post_embeddings(url, api_version, token, body, shown_body):
-    """POST one embeddings request; return (seconds, response JSON). Prints the request with the image shortened."""
-    print(f"POST {url}?api-version={api_version}")
-    print(f"Body: {json.dumps(shown_body)}")
+def parse_args():
+    parser = argparse.ArgumentParser(description="Embed an image and captions with Cohere embed-v-4-0, rank captions")
+    parser.add_argument("--model", default=os.getenv("IMAGE_EMBEDDING_MODEL_DEPLOYMENT_NAME") or "embed-v-4-0")
+    parser.add_argument("--image", type=Path, default=DEFAULT_IMAGE, help="PNG image (default: hand-xray.png)")
+    return parser.parse_args()
+
+
+def load_settings():
+    endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
+    api_version = os.getenv("IMAGE_EMBEDDING_API_VERSION") or "2024-05-01-preview"
+    return endpoint, api_version
+
+
+def read_image(path):
+    image_bytes = path.read_bytes()
+    print(f"Image: {path.name} ({len(image_bytes):,} bytes)")
+    return image_bytes
+
+
+def sign_in():
+    """Get an Entra ID token for Azure AI services from the Azure CLI login (no API key)."""
+    get_token = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
+    token = get_token()
+    return token
+
+
+def post_embeddings(url, api_version, token, body):
+    """POST one embeddings request and return the response JSON. The HTTP log shows the request and response."""
     start = time.perf_counter()
     response = requests.post(
         url, params={"api-version": api_version}, json=body, headers={"Authorization": f"Bearer {token}"}, timeout=60
@@ -72,7 +95,7 @@ def post_embeddings(url, api_version, token, body, shown_body):
     print(f"HTTP {response.status_code} in {seconds:.2f} s")
     if not response.ok:
         raise RuntimeError(f"Embeddings call failed: HTTP {response.status_code}: {response.text[:500]}")
-    return seconds, response.json()
+    return response.json()
 
 
 def show_vector(label, vector):
@@ -85,40 +108,32 @@ def cosine_similarity(a, b):
     return dot / (math.sqrt(sum(x * x for x in a)) * math.sqrt(sum(y * y for y in b)))
 
 
-def main():
-    load_env()
-    parser = argparse.ArgumentParser(description="Embed an image and captions with Cohere embed-v-4-0, rank captions")
-    parser.add_argument("--model", default=os.getenv("IMAGE_EMBEDDING_MODEL_DEPLOYMENT_NAME") or "embed-v-4-0")
-    parser.add_argument("--image", type=Path, default=DEFAULT_IMAGE, help="PNG image (default: hand-xray.png)")
-    args = parser.parse_args()
-
-    endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
-    api_version = os.getenv("IMAGE_EMBEDDING_API_VERSION") or "2024-05-01-preview"
-    print(f"Endpoint: {endpoint}/models")
-    print(f"Model deployment: {args.model}")
-    image_bytes = args.image.read_bytes()
-    print(f"Image: {args.image.name} ({len(image_bytes):,} bytes)")
-
-    token = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)()
-
-    print("\n1. Image embedding")
+def embed_image(endpoint, api_version, token, model, image_bytes):
+    """Step 1: embed the image, sent as a base64 data URL with input_type document; return its vector."""
     data_url = f"data:image/png;base64,{base64.b64encode(image_bytes).decode()}"
-    image_body = {"model": args.model, "input": [{"image": data_url}], "input_type": "document"}
-    shown = {**image_body, "input": [{"image": f"data:image/png;base64,<{len(data_url):,} characters>"}]}
-    _, image_result = post_embeddings(f"{endpoint}/models/images/embeddings", api_version, token, image_body, shown)
-    image_vector = image_result["data"][0]["embedding"]
+    body = {"model": model, "input": [{"image": data_url}], "input_type": "document"}
+    result = post_embeddings(f"{endpoint}/models/images/embeddings", api_version, token, body)
+    image_vector = result["data"][0]["embedding"]
     show_vector("image", image_vector)
-    print(f"  usage: {image_result.get('usage')}")
+    print(f"  usage: {result.get('usage')}")
+    return image_vector
 
-    print("\n2. Caption embeddings")
-    text_body = {"model": args.model, "input": CAPTIONS, "input_type": "query"}
-    _, text_result = post_embeddings(f"{endpoint}/models/embeddings", api_version, token, text_body, text_body)
-    caption_vectors = [item["embedding"] for item in sorted(text_result["data"], key=lambda item: item["index"])]
+
+def embed_captions(endpoint, api_version, token, model):
+    """Step 2: embed the captions with input_type query; return their vectors in the order of CAPTIONS."""
+    body = {"model": model, "input": CAPTIONS, "input_type": "query"}
+    result = post_embeddings(f"{endpoint}/models/embeddings", api_version, token, body)
+    # Each item carries the index of its input; sorting by it lines the vectors up with CAPTIONS.
+    items = sorted(result["data"], key=lambda item: item["index"])
+    caption_vectors = [item["embedding"] for item in items]
     for caption, vector in zip(CAPTIONS, caption_vectors, strict=True):
         show_vector(repr(caption), vector)
-    print(f"  usage: {text_result.get('usage')}")
+    print(f"  usage: {result.get('usage')}")
+    return caption_vectors
 
-    print("\n3. Captions ranked by cosine similarity to the image")
+
+def rank_captions(image_vector, caption_vectors):
+    """Step 3: rank the captions by cosine similarity to the image, closest first, and print the ranking."""
     scores = [
         (cosine_similarity(image_vector, vector), caption)
         for caption, vector in zip(CAPTIONS, caption_vectors, strict=True)
@@ -126,9 +141,35 @@ def main():
     ranked = sorted(scores, reverse=True)
     for rank, (score, caption) in enumerate(ranked, start=1):
         print(f"  {rank}. {score:.4f}  {caption}")
+    return ranked
 
+
+def check_ranking(ranked):
+    """The caption that describes the image (CAPTIONS[0]) must rank first."""
     passed = ranked[0][1] == CAPTIONS[0]
     print(f"\nCheck: {'PASS' if passed else 'FAIL'}  the X-ray caption is the closest to the image")
+    return passed
+
+
+def main():
+    load_env()
+    args = parse_args()
+    endpoint, api_version = load_settings()
+    print(f"Endpoint: {endpoint}/models")
+    print(f"Model deployment: {args.model}")
+    image_bytes = read_image(args.image)
+    token = sign_in()
+
+    print("\n1. Image embedding")
+    image_vector = embed_image(endpoint, api_version, token, args.model, image_bytes)
+
+    print("\n2. Caption embeddings")
+    caption_vectors = embed_captions(endpoint, api_version, token, args.model)
+
+    print("\n3. Captions ranked by cosine similarity to the image")
+    ranked = rank_captions(image_vector, caption_vectors)
+
+    passed = check_ranking(ranked)
     raise SystemExit(0 if passed else 1)
 
 
