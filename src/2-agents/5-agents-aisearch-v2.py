@@ -370,21 +370,85 @@ def print_summary(all_results):
     print("Prices: list prices per 1M tokens (see PRICES), Global deployment in East US 2, checked 2026-10-23.")
 
 
-def main():
-    load_env()
+def model_list(value):
+    """--models value: comma-separated names, blanks dropped."""
+    return [model.strip() for model in value.split(",") if model.strip()]
+
+
+def parse_args():
     parser = argparse.ArgumentParser(description="Foundry agent (new agents API) with Azure AI Search and a price tool")
     parser.add_argument(
         "--models",
+        type=model_list,
         default=os.getenv("MODEL_DEPLOYMENT_NAME") or "gpt-4o-mini",
         help="comma-separated model deployment names; each gets its own agent version and the same questions",
     )
-    args = parser.parse_args()
-    models = [model.strip() for model in args.models.split(",") if model.strip()]
+    return parser.parse_args()
 
+
+def load_settings(models):
     project_endpoint = get_project_endpoint()
     print(f"Project endpoint: {project_endpoint}")
     print(f"Models: {', '.join(models)}")
     print("Disclaimer: This program is a technical demonstration and does not provide professional medical advice.")
+    return project_endpoint
+
+
+def make_search_tool(connection):
+    """The Azure AI Search tool on the index, reached through the project's Azure AI Search connection."""
+    return AzureAISearchTool(
+        azure_ai_search=AzureAISearchToolResource(
+            indexes=[
+                AISearchIndexResource(
+                    project_connection_id=connection.id,
+                    index_name=INDEX_NAME,
+                    query_type=AzureAISearchQueryType.SIMPLE,
+                    top_k=5,
+                )
+            ]
+        )
+    )
+
+
+def run_models(project, models, search_tool, find_items_under):
+    """Step 2: run the questions on an agent version per model; return {model: stats per question}."""
+    openai_client = project.get_openai_client()
+    all_results = {}
+    for model in models:
+        print_section(f"STEP 2: AGENT ON {model}")
+        # One model failing (for example a deployment that doesn't exist) shouldn't hide the others' results.
+        try:
+            all_results[model] = run_model(project, openai_client, model, search_tool, find_items_under)
+        except Exception as exc:
+            print(f"Model {model} failed: {exc!r}")
+            all_results[model] = []
+    return all_results
+
+
+def cleanup(index_client):
+    try:
+        if INDEX_NAME in {index.name for index in index_client.list_indexes()}:
+            index_client.delete_index(INDEX_NAME)
+            print(f"Deleted index: {INDEX_NAME}")
+    except Exception as exc:
+        print(f"Could not delete index {INDEX_NAME}: {exc}")
+
+
+def check_results(all_results, models):
+    """Every model must have run and passed model_checks()."""
+    print("Checks:")
+    passed_all = len(all_results) == len(models)
+    for model, results in all_results.items():
+        for name, passed in model_checks(results):
+            print(f"  {'PASS' if passed else 'FAIL'}  {model}: {name}")
+            passed_all = passed_all and passed
+    return passed_all
+
+
+def main():
+    load_env()
+    args = parse_args()
+    project_endpoint = load_settings(args.models)
 
     print_section("STEP 1: CREATE AND FILL THE AZURE AI SEARCH INDEX")
     index_client, search_client = create_search_clients()
@@ -395,44 +459,15 @@ def main():
 
         with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project:
             connection = find_search_connection(project)
-            search_tool = AzureAISearchTool(
-                azure_ai_search=AzureAISearchToolResource(
-                    indexes=[
-                        AISearchIndexResource(
-                            project_connection_id=connection.id,
-                            index_name=INDEX_NAME,
-                            query_type=AzureAISearchQueryType.SIMPLE,
-                            top_k=5,
-                        )
-                    ]
-                )
-            )
-            openai_client = project.get_openai_client()
-            for model in models:
-                print_section(f"STEP 2: AGENT ON {model}")
-                # One model failing (for example a deployment that doesn't exist) shouldn't hide the others' results.
-                try:
-                    all_results[model] = run_model(project, openai_client, model, search_tool, find_items_under)
-                except Exception as exc:
-                    print(f"Model {model} failed: {exc!r}")
-                    all_results[model] = []
+            search_tool = make_search_tool(connection)
+            all_results = run_models(project, args.models, search_tool, find_items_under)
     finally:
         print_section("CLEANUP")
-        try:
-            if INDEX_NAME in {index.name for index in index_client.list_indexes()}:
-                index_client.delete_index(INDEX_NAME)
-                print(f"Deleted index: {INDEX_NAME}")
-        except Exception as exc:
-            print(f"Could not delete index {INDEX_NAME}: {exc}")
+        cleanup(index_client)
 
     print_summary(all_results)
-    print("Checks:")
-    passed_all = len(all_results) == len(models)
-    for model, results in all_results.items():
-        for name, passed in model_checks(results):
-            print(f"  {'PASS' if passed else 'FAIL'}  {model}: {name}")
-            passed_all = passed_all and passed
-    raise SystemExit(0 if passed_all else 1)
+    passed = check_results(all_results, args.models)
+    raise SystemExit(0 if passed else 1)
 
 
 if __name__ == "__main__":
