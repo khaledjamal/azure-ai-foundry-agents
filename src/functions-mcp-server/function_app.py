@@ -113,7 +113,8 @@ def suggest_workout(goal: str, minutes: int) -> str:
 
 
 if __name__ == "__main__":
-    print(json.dumps(list_goals(), indent=2))
-    print(json.dumps(build_workout("cardio", 30), indent=2))
-    print(json.dumps(build_workout("yoga", 30), indent=2))
-    print(json.dumps(build_workout("strength", 5), indent=2))
+    goals = list_goals()
+    print(json.dumps(goals, indent=2))
+    for goal, minutes in [("cardio", 30), ("yoga", 30), ("strength", 5)]:
+        workout = build_workout(goal, minutes)
+        print(json.dumps(workout, indent=2))

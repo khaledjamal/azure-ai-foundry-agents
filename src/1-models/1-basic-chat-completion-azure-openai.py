@@ -106,7 +106,8 @@ def main():
     print_section("1. Chat with a system prompt")
     question = "How can I start a beginner workout routine at home?"
     print(f"User: {question}")
-    print(f"Assistant: {chat(client, model, FITNESS_SYSTEM_PROMPT, question)}")
+    answer = chat(client, model, FITNESS_SYSTEM_PROMPT, question)
+    print(f"Assistant: {answer}")
 
     print_section("2. Prompt template with fill-ins")
     system_prompt = TRAINER_SYSTEM_TEMPLATE.format(
@@ -115,7 +116,8 @@ def main():
     )
     question = "What kind of home exercise do you recommend for a busy schedule?"
     print(f"User: {question}")
-    print(f"Assistant: {chat(client, model, system_prompt, question)}")
+    answer = chat(client, model, system_prompt, question)
+    print(f"Assistant: {answer}")
 
     print_section("DONE")
 

@@ -520,7 +520,8 @@ def section_rag(ctx):
             if search_client.get_document_count() == len(SAFETY_DOCS):
                 break
             time.sleep(1)
-        print(f"Index ready: {search_client.get_document_count()} documents searchable")
+        document_count = search_client.get_document_count()
+        print(f"Index ready: {document_count} documents searchable")
         empty_retrievals = 0
 
         evaluators = {
