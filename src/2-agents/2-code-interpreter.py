@@ -76,6 +76,9 @@ NUTRITION_REQUEST = (
     "3. Discuss any insights or disclaimers.\n"
 )
 
+# (section title, request); each request gets its own thread.
+REQUESTS = [("BMI calculation", BMI_REQUEST), ("Nutrition analysis", NUTRITION_REQUEST)]
+
 
 def print_section(title):
     print()
@@ -173,20 +176,68 @@ def show_results(project_client, thread_id, run_id, output_dir, generated_file_i
         print("\nNo chart image was returned for this request.")
 
 
-def main():
+def parse_args():
     parser = argparse.ArgumentParser(description="Code interpreter lab")
-    parser.add_argument("--output-dir", default=".", help="folder for charts the agent draws (default: current folder)")
-    args = parser.parse_args()
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    parser.add_argument(
+        "--output-dir", type=Path, default=Path("."), help="folder for charts the agent draws (default: current folder)"
+    )
+    return parser.parse_args()
 
-    print_section("CODE INTERPRETER AGENT - AIProjectClient")
-    load_environment()
+
+def load_settings():
     model = require_env("MODEL_DEPLOYMENT_NAME")
     project_endpoint = get_project_endpoint()
     print("Connection method: AIProjectClient (project_client.agents)")
     print(f"Project endpoint:  {project_endpoint}")
     print(f"Model deployment:  {model}")
+    return model, project_endpoint
+
+
+def upload_sample_data(project_client):
+    """Step 1: write the nutrition table to a temporary CSV file and upload it to the project; return the file."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        csv_path = write_sample_csv(temp_dir)
+        uploaded_file = project_client.agents.files.upload_and_poll(
+            file_path=str(csv_path),
+            purpose=FilePurpose.AGENTS,
+        )
+    print(f"Uploaded CSV file: {uploaded_file.id}")
+    return uploaded_file
+
+
+def create_agent(project_client, model, uploaded_file):
+    """Step 2: create the agent with the Code Interpreter tool, which can read the uploaded file."""
+    code_tool = CodeInterpreterTool(file_ids=[uploaded_file.id])
+    agent = project_client.agents.create_agent(
+        model=model,
+        name=AGENT_NAME,
+        instructions=AGENT_INSTRUCTIONS,
+        tools=code_tool.definitions,
+        tool_resources=code_tool.resources,
+    )
+    print(f"Created agent: {agent.name} ({agent.id})")
+    return agent
+
+
+def cleanup(project_client, threads, agent, uploaded_file, generated_file_ids):
+    """Step 5: delete what the run created: threads, the agent, and the uploaded and generated files."""
+    for thread in threads:
+        project_client.agents.threads.delete(thread.id)
+        print(f"Deleted thread: {thread.id}")
+    if agent:
+        project_client.agents.delete_agent(agent.id)
+        print(f"Deleted agent: {agent.id}")
+    for file_id in ([uploaded_file.id] if uploaded_file else []) + generated_file_ids:
+        project_client.agents.files.delete(file_id)
+        print(f"Deleted file from the project: {file_id}")
+
+
+def main():
+    args = parse_args()
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    print_section("CODE INTERPRETER AGENT - AIProjectClient")
+    load_environment()
+    model, project_endpoint = load_settings()
 
     with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project_client:
         uploaded_file = agent = None
@@ -194,42 +245,18 @@ def main():
         generated_file_ids = []
         try:
             print_section("1. Upload sample data and create the agent")
-            with tempfile.TemporaryDirectory() as temp_dir:
-                csv_path = write_sample_csv(temp_dir)
-                uploaded_file = project_client.agents.files.upload_and_poll(
-                    file_path=str(csv_path),
-                    purpose=FilePurpose.AGENTS,
-                )
-            print(f"Uploaded CSV file: {uploaded_file.id}")
+            uploaded_file = upload_sample_data(project_client)
+            agent = create_agent(project_client, model, uploaded_file)
 
-            code_tool = CodeInterpreterTool(file_ids=[uploaded_file.id])
-            agent = project_client.agents.create_agent(
-                model=model,
-                name=AGENT_NAME,
-                instructions=AGENT_INSTRUCTIONS,
-                tools=code_tool.definitions,
-                tool_resources=code_tool.resources,
-            )
-            print(f"Created agent: {agent.name} ({agent.id})")
-
-            for number, (title, request) in enumerate(
-                [("BMI calculation", BMI_REQUEST), ("Nutrition analysis", NUTRITION_REQUEST)], start=2
-            ):
+            # Steps 3 and 4: each request on its own thread; charts are saved to the output folder.
+            for number, (title, request) in enumerate(REQUESTS, start=2):
                 print_section(f"{number}. {title}")
                 thread, run = ask(project_client, agent.id, request)
                 threads.append(thread)
-                show_results(project_client, thread.id, run.id, output_dir, generated_file_ids)
+                show_results(project_client, thread.id, run.id, args.output_dir, generated_file_ids)
         finally:
             print_section("Cleanup")
-            for thread in threads:
-                project_client.agents.threads.delete(thread.id)
-                print(f"Deleted thread: {thread.id}")
-            if agent:
-                project_client.agents.delete_agent(agent.id)
-                print(f"Deleted agent: {agent.id}")
-            for file_id in ([uploaded_file.id] if uploaded_file else []) + generated_file_ids:
-                project_client.agents.files.delete(file_id)
-                print(f"Deleted file from the project: {file_id}")
+            cleanup(project_client, threads, agent, uploaded_file, generated_file_ids)
 
     print_section("DONE")
 

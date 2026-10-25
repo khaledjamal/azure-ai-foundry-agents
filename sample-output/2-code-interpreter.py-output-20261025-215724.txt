@@ -1,0 +1,1658 @@
+Sample output of src/2-agents/2-code-interpreter.py
+Run on 2026-10-25 21:57 with: uv run python src/2-agents/2-code-interpreter.py --output-dir runs/20261025-215724-2-code-interpreter
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+
+================================================================================
+CODE INTERPRETER AGENT - AIProjectClient
+================================================================================
+Loaded .env from: .env
+Connection method: AIProjectClient (project_client.agents)
+Project endpoint:  https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
+Model deployment:  gpt-4o-mini
+
+================================================================================
+1. Upload sample data and create the agent
+================================================================================
+Created sample data file: nutrition_data.csv (7 rows)
+
+--- OUTBOUND REQUEST #1 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/files?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 509
+> Content-Type: multipart/form-data; boundary=58875dacf9af7ba02cc8162f18773e9a
+>
+<multipart body, 509 B>
+
+--- OUTBOUND RESPONSE #1 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:25 GMT
+< Server: istio-envoy
+< Access-Control-Allow-Origin: *
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< x-request-id: <id>
+< openai-processing-ms: 2398
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: hyena-eastus2-01
+<
+{
+  "object": "file",
+  "id": "assistant-TmFGk5gqgpuSvP9kSZzv58",
+  "purpose": "assistants",
+  "filename": "nutrition_data.csv",
+  "bytes": 257,
+  "created_at": 1792951046,
+  "expires_at": null,
+  "status": "processed",
+  "status_details": null
+}
+Uploaded CSV file: assistant-TmFGk5gqgpuSvP9kSZzv58
+
+--- OUTBOUND REQUEST #2 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/assistants?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 572
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "instructions": "You are a health calculator agent that can:\n1. Calculate and interpret BMI\n2. Analyze provided nutrition data\n3. Generate charts/plots\n4. Include disclaimers that you are not a medical professional\n\nWhen you draw a chart, save it as a PNG file in /mnt/data/ with plt.savefig() and give the user the file;\nplt.show() does not return anything to the user.",
+  "model": "gpt-4o-mini",
+  "name": "health-calculator-agent",
+  "tool_resources": {
+    "code_interpreter": {
+      "file_ids": [
+        "assistant-TmFGk5gqgpuSvP9kSZzv58"
+      ]
+    }
+  },
+  "tools": [
+    {
+      "type": "code_interpreter"
+    }
+  ]
+}
+
+--- OUTBOUND RESPONSE #2 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:29 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: a17a186c98cbfd20c26c64ed6b70a848
+< openai-processing-ms: 290
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.541
+<
+{
+  "id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+  "object": "assistant",
+  "created_at": 1792951048,
+  "name": "health-calculator-agent",
+  "description": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health calculator agent that can:\n1. Calculate and interpret BMI\n2. Analyze provided nutrition data\n3. Generate charts/plots\n4. Include disclaimers that you are not a medical professional\n\nWhen you draw a chart, save it as a PNG file in /mnt/data/ with plt.savefig() and give the user the file;\nplt.show() does not return anything to the user.",
+  "tools": [
+    {
+      "type": "code_interpreter"
+    }
+  ],
+  "top_p": 1.0,
+  "temperature": 1.0,
+  "tool_resources": {
+    "code_interpreter": {
+      "file_ids": [
+        "assistant-TmFGk5gqgpuSvP9kSZzv58"
+      ]
+    }
+  },
+  "metadata": {},
+  "response_format": "auto"
+}
+Created agent: health-calculator-agent (asst_xVRGcoxSN2wNYNVb6UUDPt2x)
+
+================================================================================
+2. BMI calculation
+================================================================================
+
+--- OUTBOUND REQUEST #3 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 2
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{}
+
+--- OUTBOUND RESPONSE #3 ---
+< 200 OK
+< Content-Length: 137
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:29 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 10a7e73c6dad85a9194d81077b1b7aee
+< openai-processing-ms: 88
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 15
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.237
+<
+{
+  "id": "thread_hVBuliwTRlkUc6u7cGL4QRAt",
+  "object": "thread",
+  "created_at": 1792951049,
+  "metadata": {},
+  "tool_resources": {}
+}
+Created thread: thread_hVBuliwTRlkUc6u7cGL4QRAt
+User: Calculate BMI for 
+Height: 70 inches
+Weight: 180 pounds
+Please: 
+1. Show calculation 
+2. Interpret the result 
+3. Include disclaimers
+
+--- OUTBOUND REQUEST #4 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt/messages?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 173
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "content": "Calculate BMI for \nHeight: 70 inches\nWeight: 180 pounds\nPlease: \n1. Show calculation \n2. Interpret the result \n3. Include disclaimers \n",
+  "role": "user"
+}
+
+--- OUTBOUND RESPONSE #4 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:30 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 5a7893cc0b5561655bf6f77277e96211
+< openai-processing-ms: 103
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 9
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.231
+<
+{
+  "id": "msg_0aMedZhR4SB9vntEwq1hqpfl",
+  "object": "thread.message",
+  "created_at": 1792951050,
+  "assistant_id": null,
+  "thread_id": "thread_hVBuliwTRlkUc6u7cGL4QRAt",
+  "run_id": null,
+  "role": "user",
+  "content": [
+    {
+      "type": "text",
+      "text": {
+        "value": "Calculate BMI for \nHeight: 70 inches\nWeight: 180 pounds\nPlease: \n1. Show calculation \n2. Interpret the result \n3. Include disclaimers \n",
+        "annotations": []
+      }
+    }
+  ],
+  "attachments": [],
+  "metadata": {}
+}
+
+--- OUTBOUND REQUEST #5 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt/runs?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 66
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+  "stream": false
+}
+
+--- OUTBOUND RESPONSE #5 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:31 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 09ba68bf0d15208ee6a0f796d9c8df49
+< openai-processing-ms: 573
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.839
+<
+{
+  "id": "run_0RZE9w04Z1DrQDSPlW6MyZmD",
+  "object": "thread.run",
+  "created_at": 1792951050,
+  "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+  "thread_id": "thread_hVBuliwTRlkUc6u7cGL4QRAt",
+  "status": "queued",
+  "started_at": null,
+  "expires_at": 1792952850,
+  "cancelled_at": null,
+  "failed_at": null,
+  "completed_at": null,
+  "required_action": null,
+  "last_error": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health calculator agent that can:\n1. Calculate and interpret BMI\n2. Analyze provided nutrition data\n3. Generate charts/plots\n4. Include disclaimers that you are not a medical professional\n\nWhen you draw a chart, save it as a PNG file in /mnt/data/ with plt.savefig() and give the user the file;\nplt.show() does not return anything to the user.",
+  "tools": [
+    {
+      "type": "code_interpreter"
+    }
+  ],
+  "tool_resources": {},
+  "metadata": {},
+  "temperature": 1.0,
+  "top_p": 1.0,
+  "max_completion_tokens": null,
+  "max_prompt_tokens": null,
+  "truncation_strategy": {
+    "type": "auto",
+    "last_messages": null
+  },
+  "incomplete_details": null,
+  "usage": null,
+  "response_format": "auto",
+  "tool_choice": "auto",
+  "parallel_tool_calls": true
+}
+
+--- OUTBOUND REQUEST #6 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt/runs/run_0RZE9w04Z1DrQDSPlW6MyZmD?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #6 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:32 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 1cf8aaa924994610ff7f88ba0202486d
+< openai-processing-ms: 149
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 51
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.289
+<
+{
+  "id": "run_0RZE9w04Z1DrQDSPlW6MyZmD",
+  "object": "thread.run",
+  "created_at": 1792951050,
+  "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+  "thread_id": "thread_hVBuliwTRlkUc6u7cGL4QRAt",
+  "status": "in_progress",
+  "started_at": 1792951051,
+  "expires_at": 1792952850,
+  "cancelled_at": null,
+  "failed_at": null,
+  "completed_at": null,
+  "required_action": null,
+  "last_error": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health calculator agent that can:\n1. Calculate and interpret BMI\n2. Analyze provided nutrition data\n3. Generate charts/plots\n4. Include disclaimers that you are not a medical professional\n\nWhen you draw a chart, save it as a PNG file in /mnt/data/ with plt.savefig() and give the user the file;\nplt.show() does not return anything to the user.",
+  "tools": [
+    {
+      "type": "code_interpreter"
+    }
+  ],
+  "tool_resources": {},
+  "metadata": {},
+  "temperature": 1.0,
+  "top_p": 1.0,
+  "max_completion_tokens": null,
+  "max_prompt_tokens": null,
+  "truncation_strategy": {
+    "type": "auto",
+    "last_messages": null
+  },
+  "incomplete_details": null,
+  "usage": null,
+  "response_format": "auto",
+  "tool_choice": "auto",
+  "parallel_tool_calls": true
+}
+
+HTTP #7 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt/runs/run_0RZE9w04Z1DrQDSPlW6MyZmD?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #8 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt/runs/run_0RZE9w04Z1DrQDSPlW6MyZmD?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #9 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt/runs/run_0RZE9w04Z1DrQDSPlW6MyZmD?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #10 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt/runs/run_0RZE9w04Z1DrQDSPlW6MyZmD?api-version=v1 -> 200 OK, status: completed
+Run status: RunStatus.COMPLETED
+(tokens: prompt 747, completion 342)
+
+--- OUTBOUND REQUEST #11 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt/runs/run_0RZE9w04Z1DrQDSPlW6MyZmD/steps?api-version=v1&order=asc
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #11 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:38 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 03529b8b50a28f9ba9928531e3fd9460
+< openai-processing-ms: 107
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 25
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.236
+<
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "step_ZpDJeXyZ71B1quSSwnhlUFQ5",
+      "object": "thread.run.step",
+      "created_at": 1792951052,
+      "run_id": "run_0RZE9w04Z1DrQDSPlW6MyZmD",
+      "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+      "thread_id": "thread_hVBuliwTRlkUc6u7cGL4QRAt",
+      "type": "tool_calls",
+      "status": "completed",
+      "cancelled_at": null,
+      "completed_at": 1792951055,
+      "expires_at": null,
+      "failed_at": null,
+      "last_error": null,
+      "step_details": {
+        "type": "tool_calls",
+        "tool_calls": [
+          {
+            "id": "call_pItmMzC7nfCPdfqIQhrW2BAt",
+            "type": "code_interpreter",
+            "code_interpreter": {
+              "input": "# Constants for BMI calculation\r\nweight_pounds = 180\r\nheight_inches = 70\r\n\r\n# BMI calculation formula\r\n# BMI = (weight in pounds / (height in inches * height in inches)) * 703\r\nbmi = (weight_pounds / (height_inches ** 2)) * 703\r\nbmi",
+              "outputs": []
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 330,
+        "completion_tokens": 72,
+        "total_tokens": 402,
+        "prompt_token_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "id": "step_AV8MZIR1GjN2btC3DlpKBHmK",
+      "object": "thread.run.step",
+      "created_at": 1792951055,
+      "run_id": "run_0RZE9w04Z1DrQDSPlW6MyZmD",
+      "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+      "thread_id": "thread_hVBuliwTRlkUc6u7cGL4QRAt",
+      "type": "message_creation",
+      "status": "completed",
+      "cancelled_at": null,
+      "completed_at": 1792951057,
+      "expires_at": null,
+      "failed_at": null,
+      "last_error": null,
+      "step_details": {
+        "type": "message_creation",
+        "message_creation": {
+          "message_id": "msg_dt0UVBqgxK0y3GKaK5X6C9cY"
+        }
+      },
+      "usage": {
+        "prompt_tokens": 417,
+        "completion_tokens": 270,
+        "total_tokens": 687,
+        "prompt_token_details": {
+          "cached_tokens": 0
+        }
+      }
+    }
+  ],
+  "first_id": "step_ZpDJeXyZ71B1quSSwnhlUFQ5",
+  "last_id": "step_AV8MZIR1GjN2btC3DlpKBHmK",
+  "has_more": false
+}
+Code interpreter call: 8 lines of code, outputs []
+  # Constants for BMI calculation
+  weight_pounds = 180
+  height_inches = 70
+  
+  # BMI calculation formula
+  # BMI = (weight in pounds / (height in inches * height in inches)) * 703
+  bmi = (weight_pounds / (height_inches ** 2)) * 703
+  bmi
+
+--- OUTBOUND REQUEST #12 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt/runs/run_0RZE9w04Z1DrQDSPlW6MyZmD/steps?api-version=v1&order=asc&after=step_AV8MZIR1GjN2btC3DlpKBHmK
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #12 ---
+< 200 OK
+< Content-Length: 96
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:39 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: a9a5cff2cb2a9ce28a2db9169a5eb481
+< openai-processing-ms: 76
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 55
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.200
+<
+{
+  "object": "list",
+  "data": [],
+  "first_id": null,
+  "last_id": null,
+  "has_more": false
+}
+
+--- OUTBOUND REQUEST #13 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt/messages?api-version=v1&order=asc
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #13 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:39 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 357f6d0c68e645cb3802c496324b20d2
+< openai-processing-ms: 92
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 17
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.228
+<
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "msg_0aMedZhR4SB9vntEwq1hqpfl",
+      "object": "thread.message",
+      "created_at": 1792951050,
+      "assistant_id": null,
+      "thread_id": "thread_hVBuliwTRlkUc6u7cGL4QRAt",
+      "run_id": null,
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": {
+            "value": "Calculate BMI for \nHeight: 70 inches\nWeight: 180 pounds\nPlease: \n1. Show calculation \n2. Interpret the result \n3. Include disclaimers \n",
+            "annotations": []
+          }
+        }
+      ],
+      "attachments": [],
+      "metadata": {}
+    },
+    {
+      "id": "msg_dt0UVBqgxK0y3GKaK5X6C9cY",
+      "object": "thread.message",
+      "created_at": 1792951055,
+      "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+      "thread_id": "thread_hVBuliwTRlkUc6u7cGL4QRAt",
+      "run_id": "run_0RZE9w04Z1DrQDSPlW6MyZmD",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": {
+            "value": "### BMI Calculation\n1. **Calculation**:\n   \\[\n   \\text{BMI} = \\left( \\frac{\\text{Weight in pounds}}{(\\text{Height in inches} \\times \\text{Height in inches})} \\right) \\times 703\n   \\]\n   \\[\n   \\text{BMI} = \\left( \\frac{180}{(70 \\times 70)} \\right) \\times 703 \\approx 25.82\n   \\]\n\n### Interpretation\nAccording to the BMI classification:\n- **Underweight**: BMI less than 18.5\n- **Normal weight**: BMI 18.5 - 24.9\n- **Overweight**: BMI 25 - 29.9\n- **Obesity**: BMI 30 or greater\n\nWith a BMI of approximately **25.82**, you fall into the **overweight** category. This suggests that you may be at an increased risk for health issues, but it's essential to consider other factors such as muscle mass, bone density, and overall health.\n\n### Disclaimer\nPlease note that I am not a medical professional. This BMI calculation is a general guideline and should not be used as a sole indicator of health. It's advisable to consult with a healthcare provider for personalized health assessments.",
+            "annotations": []
+          }
+        }
+      ],
+      "attachments": [],
+      "metadata": {}
+    }
+  ],
+  "first_id": "msg_0aMedZhR4SB9vntEwq1hqpfl",
+  "last_id": "msg_dt0UVBqgxK0y3GKaK5X6C9cY",
+  "has_more": false
+}
+
+[message content types: ['text']]
+ASSISTANT: ### BMI Calculation
+1. **Calculation**:
+   \[
+   \text{BMI} = \left( \frac{\text{Weight in pounds}}{(\text{Height in inches} \times \text{Height in inches})} \right) \times 703
+   \]
+   \[
+   \text{BMI} = \left( \frac{180}{(70 \times 70)} \right) \times 703 \approx 25.82
+   \]
+
+### Interpretation
+According to the BMI classification:
+- **Underweight**: BMI less than 18.5
+- **Normal weight**: BMI 18.5 - 24.9
+- **Overweight**: BMI 25 - 29.9
+- **Obesity**: BMI 30 or greater
+
+With a BMI of approximately **25.82**, you fall into the **overweight** category. This suggests that you may be at an increased risk for health issues, but it's essential to consider other factors such as muscle mass, bone density, and overall health.
+
+### Disclaimer
+Please note that I am not a medical professional. This BMI calculation is a general guideline and should not be used as a sole indicator of health. It's advisable to consult with a healthcare provider for personalized health assessments.
+
+--- OUTBOUND REQUEST #14 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt/messages?api-version=v1&order=asc&after=msg_dt0UVBqgxK0y3GKaK5X6C9cY
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #14 ---
+< 200 OK
+< Content-Length: 96
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:39 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: ca726452bd4b742b6fdcb08e9b580d9c
+< openai-processing-ms: 102
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 21
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.230
+<
+{
+  "object": "list",
+  "data": [],
+  "first_id": null,
+  "last_id": null,
+  "has_more": false
+}
+
+No chart image was returned for this request.
+
+================================================================================
+3. Nutrition analysis
+================================================================================
+
+--- OUTBOUND REQUEST #15 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 2
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{}
+
+--- OUTBOUND RESPONSE #15 ---
+< 200 OK
+< Content-Length: 137
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:40 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 387f0d8f12e07fc0ab88b4d182b87b90
+< openai-processing-ms: 73
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 53
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.253
+<
+{
+  "id": "thread_5Ahx4H3XjD2Zc0SHjicdHMOf",
+  "object": "thread",
+  "created_at": 1792951060,
+  "metadata": {},
+  "tool_resources": {}
+}
+Created thread: thread_5Ahx4H3XjD2Zc0SHjicdHMOf
+User: Analyze the CSV file with daily nutrition data.
+1. Compute average daily macros (calories, protein, carbs, fat, fiber).
+2. Create a chart to show trends and save it as /mnt/data/nutrition_trends.png. Use two panels, one above the
+   other: daily calories in the top panel, and protein, carbs, fat and fiber in grams in the bottom panel, so
+   the gram values are not flattened by the calorie scale.
+3. Discuss any insights or disclaimers.
+
+--- OUTBOUND REQUEST #16 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/messages?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 476
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "content": "Analyze the CSV file with daily nutrition data.\n1. Compute average daily macros (calories, protein, carbs, fat, fiber).\n2. Create a chart to show trends and save it as /mnt/data/nutrition_trends.png. Use two panels, one above the\n   other: daily calories in the top panel, and protein, carbs, fat and fiber in grams in the bottom panel, so\n   the gram values are not flattened by the calorie scale.\n3. Discuss any insights or disclaimers.\n",
+  "role": "user"
+}
+
+--- OUTBOUND RESPONSE #16 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:40 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 01c43fcfba20d8a832288c7c1b15e714
+< openai-processing-ms: 124
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 9
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.259
+<
+{
+  "id": "msg_ywZTJzjdkt3lwmJzgTOfs17J",
+  "object": "thread.message",
+  "created_at": 1792951060,
+  "assistant_id": null,
+  "thread_id": "thread_5Ahx4H3XjD2Zc0SHjicdHMOf",
+  "run_id": null,
+  "role": "user",
+  "content": [
+    {
+      "type": "text",
+      "text": {
+        "value": "Analyze the CSV file with daily nutrition data.\n1. Compute average daily macros (calories, protein, carbs, fat, fiber).\n2. Create a chart to show trends and save it as /mnt/data/nutrition_trends.png. Use two panels, one above the\n   other: daily calories in the top panel, and protein, carbs, fat and fiber in grams in the bottom panel, so\n   the gram values are not flattened by the calorie scale.\n3. Discuss any insights or disclaimers.\n",
+        "annotations": []
+      }
+    }
+  ],
+  "attachments": [],
+  "metadata": {}
+}
+
+--- OUTBOUND REQUEST #17 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 66
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+  "stream": false
+}
+
+--- OUTBOUND RESPONSE #17 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:41 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 325ddffb88bda750a714863c16ce2f4a
+< openai-processing-ms: 314
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 9
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.552
+<
+{
+  "id": "run_tiCFKJTToFeQy3UCWaCZ6fAP",
+  "object": "thread.run",
+  "created_at": 1792951061,
+  "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+  "thread_id": "thread_5Ahx4H3XjD2Zc0SHjicdHMOf",
+  "status": "queued",
+  "started_at": null,
+  "expires_at": 1792952861,
+  "cancelled_at": null,
+  "failed_at": null,
+  "completed_at": null,
+  "required_action": null,
+  "last_error": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health calculator agent that can:\n1. Calculate and interpret BMI\n2. Analyze provided nutrition data\n3. Generate charts/plots\n4. Include disclaimers that you are not a medical professional\n\nWhen you draw a chart, save it as a PNG file in /mnt/data/ with plt.savefig() and give the user the file;\nplt.show() does not return anything to the user.",
+  "tools": [
+    {
+      "type": "code_interpreter"
+    }
+  ],
+  "tool_resources": {},
+  "metadata": {},
+  "temperature": 1.0,
+  "top_p": 1.0,
+  "max_completion_tokens": null,
+  "max_prompt_tokens": null,
+  "truncation_strategy": {
+    "type": "auto",
+    "last_messages": null
+  },
+  "incomplete_details": null,
+  "usage": null,
+  "response_format": "auto",
+  "tool_choice": "auto",
+  "parallel_tool_calls": true
+}
+
+--- OUTBOUND REQUEST #18 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #18 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:43 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 3ed9212f476b254960c2ca8f5d4d54ca
+< openai-processing-ms: 171
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 15
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.299
+<
+{
+  "id": "run_tiCFKJTToFeQy3UCWaCZ6fAP",
+  "object": "thread.run",
+  "created_at": 1792951061,
+  "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+  "thread_id": "thread_5Ahx4H3XjD2Zc0SHjicdHMOf",
+  "status": "in_progress",
+  "started_at": 1792951061,
+  "expires_at": 1792952861,
+  "cancelled_at": null,
+  "failed_at": null,
+  "completed_at": null,
+  "required_action": null,
+  "last_error": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health calculator agent that can:\n1. Calculate and interpret BMI\n2. Analyze provided nutrition data\n3. Generate charts/plots\n4. Include disclaimers that you are not a medical professional\n\nWhen you draw a chart, save it as a PNG file in /mnt/data/ with plt.savefig() and give the user the file;\nplt.show() does not return anything to the user.",
+  "tools": [
+    {
+      "type": "code_interpreter"
+    }
+  ],
+  "tool_resources": {},
+  "metadata": {},
+  "temperature": 1.0,
+  "top_p": 1.0,
+  "max_completion_tokens": null,
+  "max_prompt_tokens": null,
+  "truncation_strategy": {
+    "type": "auto",
+    "last_messages": null
+  },
+  "incomplete_details": null,
+  "usage": null,
+  "response_format": "auto",
+  "tool_choice": "auto",
+  "parallel_tool_calls": true
+}
+
+HTTP #19 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #20 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #21 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #22 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #23 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #24 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #25 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #26 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #27 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #28 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #29 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #30 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP?api-version=v1 -> 200 OK, status: completed
+Run status: RunStatus.COMPLETED
+(tokens: prompt 2930, completion 730)
+
+--- OUTBOUND REQUEST #31 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP/steps?api-version=v1&order=asc
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #31 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:01 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 577d86c67fe8aac622ae3b31f1567e36
+< openai-processing-ms: 139
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.278
+<
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "step_wF4ROZpD0KieYi2tEqFrP3ww",
+      "object": "thread.run.step",
+      "created_at": 1792951062,
+      "run_id": "run_tiCFKJTToFeQy3UCWaCZ6fAP",
+      "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+      "thread_id": "thread_5Ahx4H3XjD2Zc0SHjicdHMOf",
+      "type": "tool_calls",
+      "status": "completed",
+      "cancelled_at": null,
+      "completed_at": 1792951066,
+      "expires_at": null,
+      "failed_at": null,
+      "last_error": null,
+      "step_details": {
+        "type": "tool_calls",
+        "tool_calls": [
+          {
+            "id": "call_tg0lqMPoSfxmArnKMUCDapzj",
+            "type": "code_interpreter",
+            "code_interpreter": {
+              "input": "import pandas as pd\r\n\r\n# Load the nutrition data from the CSV file\r\nfile_path = '/mnt/data/assistant-TmFGk5gqgpuSvP9kSZzv58'\r\nnutrition_data = pd.read_csv(file_path)\r\n\r\n# Display the first few rows and the columns of the dataframe to understand its structure\r\nnutrition_data.head(), nutrition_data.columns",
+              "outputs": []
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 399,
+        "completion_tokens": 79,
+        "total_tokens": 478,
+        "prompt_token_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "id": "step_4qJcxn9crp2JUJEL5Gs3Ai9K",
+      "object": "thread.run.step",
+      "created_at": 1792951066,
+      "run_id": "run_tiCFKJTToFeQy3UCWaCZ6fAP",
+      "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+      "thread_id": "thread_5Ahx4H3XjD2Zc0SHjicdHMOf",
+      "type": "tool_calls",
+      "status": "completed",
+      "cancelled_at": null,
+      "completed_at": 1792951071,
+      "expires_at": null,
+      "failed_at": null,
+      "last_error": null,
+      "step_details": {
+        "type": "tool_calls",
+        "tool_calls": [
+          {
+            "id": "call_80Jmt73YIJJ1bLn13HDn8foU",
+            "type": "code_interpreter",
+            "code_interpreter": {
+              "input": "# Compute average daily macros\r\naverage_macros = nutrition_data[['Calories', 'Protein_g', 'Carbs_g', 'Fat_g', 'Fiber_g']].mean()\r\naverage_macros",
+              "outputs": []
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 668,
+        "completion_tokens": 44,
+        "total_tokens": 712,
+        "prompt_token_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "id": "step_jcDpeiAEEJ6ljpBfOLhBdIie",
+      "object": "thread.run.step",
+      "created_at": 1792951071,
+      "run_id": "run_tiCFKJTToFeQy3UCWaCZ6fAP",
+      "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+      "thread_id": "thread_5Ahx4H3XjD2Zc0SHjicdHMOf",
+      "type": "tool_calls",
+      "status": "completed",
+      "cancelled_at": null,
+      "completed_at": 1792951076,
+      "expires_at": null,
+      "failed_at": null,
+      "last_error": null,
+      "step_details": {
+        "type": "tool_calls",
+        "tool_calls": [
+          {
+            "id": "call_N3zYM5bAJ4tYdE4WZNVmpSH6",
+            "type": "code_interpreter",
+            "code_interpreter": {
+              "input": "import matplotlib.pyplot as plt\r\n\r\n# Set the date as the index for better plotti...(1142 characters)",
+              "outputs": []
+            }
+          }
+        ]
+      },
+      "usage": {
+        "prompt_tokens": 770,
+        "completion_tokens": 305,
+        "total_tokens": 1075,
+        "prompt_token_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "id": "step_AyLyrbqXnC39z11ucaZ9lW4H",
+      "object": "thread.run.step",
+      "created_at": 1792951076,
+      "run_id": "run_tiCFKJTToFeQy3UCWaCZ6fAP",
+      "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+      "thread_id": "thread_5Ahx4H3XjD2Zc0SHjicdHMOf",
+      "type": "message_creation",
+      "status": "completed",
+      "cancelled_at": null,
+      "completed_at": 1792951081,
+      "expires_at": null,
+      "failed_at": null,
+      "last_error": null,
+      "step_details": {
+        "type": "message_creation",
+        "message_creation": {
+          "message_id": "msg_yIL3hM31xas5l5J5Ca8Ve3TP"
+        }
+      },
+      "usage": {
+        "prompt_tokens": 1093,
+        "completion_tokens": 302,
+        "total_tokens": 1395,
+        "prompt_token_details": {
+          "cached_tokens": 0
+        }
+      }
+    }
+  ],
+  "first_id": "step_wF4ROZpD0KieYi2tEqFrP3ww",
+  "last_id": "step_AyLyrbqXnC39z11ucaZ9lW4H",
+  "has_more": false
+}
+Code interpreter call: 8 lines of code, outputs []
+  import pandas as pd
+  
+  # Load the nutrition data from the CSV file
+  file_path = '/mnt/data/assistant-TmFGk5gqgpuSvP9kSZzv58'
+  nutrition_data = pd.read_csv(file_path)
+  
+  # Display the first few rows and the columns of the dataframe to understand its structure
+  nutrition_data.head(), nutrition_data.columns
+Code interpreter call: 3 lines of code, outputs []
+  # Compute average daily macros
+  average_macros = nutrition_data[['Calories', 'Protein_g', 'Carbs_g', 'Fat_g', 'Fiber_g']].mean()
+  average_macros
+Code interpreter call: 32 lines of code, outputs []
+  import matplotlib.pyplot as plt
+  
+  # Set the date as the index for better plotting
+  nutrition_data['Date'] = pd.to_datetime(nutrition_data['Date'])
+  nutrition_data.set_index('Date', inplace=True)
+  
+  # Create a figure with two subplots
+  fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10), sharex=True)
+  
+  # Plot daily calories
+  ax1.plot(nutrition_data.index, nutrition_data['Calories'], color='orange', label='Calories')
+  ax1.set_title('Daily Caloric Intake')
+  ax1.set_ylabel('Calories')
+  ax1.legend()
+  ax1.grid()
+  
+  # Plot macros in the second panel
+  ax2.plot(nutrition_data.index, nutrition_data['Protein_g'], label='Protein (g)', color='blue')
+  ax2.plot(nutrition_data.index, nutrition_data['Carbs_g'], label='Carbs (g)', color='green')
+  ax2.plot(nutrition_data.index, nutrition_data['Fat_g'], label='Fat (g)', color='red')
+  ax2.plot(nutrition_data.index, nutrition_data['Fiber_g'], label='Fiber (g)', color='purple')
+  ax2.set_title('Daily Macronutrient Intake')
+  ax2.set_ylabel('Grams')
+  ax2.legend()
+  ax2.grid()
+  
+  # Save the figure
+  plt.tight_layout()
+  file_name = '/mnt/data/nutrition_trends.png'
+  plt.savefig(file_name)
+  
+  file_name
+
+--- OUTBOUND REQUEST #32 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/runs/run_tiCFKJTToFeQy3UCWaCZ6fAP/steps?api-version=v1&order=asc&after=step_AyLyrbqXnC39z11ucaZ9lW4H
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #32 ---
+< 200 OK
+< Content-Length: 96
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:02 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 318bb8a77d8bc745877d1edaa671d52f
+< openai-processing-ms: 104
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 29
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.265
+<
+{
+  "object": "list",
+  "data": [],
+  "first_id": null,
+  "last_id": null,
+  "has_more": false
+}
+
+--- OUTBOUND REQUEST #33 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/messages?api-version=v1&order=asc
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #33 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:02 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 32c6232ce14781a1ade2e755ee5bb873
+< openai-processing-ms: 88
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 27
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.567
+<
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "msg_ywZTJzjdkt3lwmJzgTOfs17J",
+      "object": "thread.message",
+      "created_at": 1792951060,
+      "assistant_id": null,
+      "thread_id": "thread_5Ahx4H3XjD2Zc0SHjicdHMOf",
+      "run_id": null,
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": {
+            "value": "Analyze the CSV file with daily nutrition data.\n1. Compute average daily macros (calories, protein, carbs, fat, fiber).\n2. Create a chart to show trends and save it as /mnt/data/nutrition_trends.png. Use two panels, one above the\n   other: daily calories in the top panel, and protein, carbs, fat and fiber in grams in the bottom panel, so\n   the gram values are not flattened by the calorie scale.\n3. Discuss any insights or disclaimers.\n",
+            "annotations": []
+          }
+        }
+      ],
+      "attachments": [],
+      "metadata": {}
+    },
+    {
+      "id": "msg_yIL3hM31xas5l5J5Ca8Ve3TP",
+      "object": "thread.message",
+      "created_at": 1792951076,
+      "assistant_id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+      "thread_id": "thread_5Ahx4H3XjD2Zc0SHjicdHMOf",
+      "run_id": "run_tiCFKJTToFeQy3UCWaCZ6fAP",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": {
+            "value": "### Analysis of Daily Nutrition Data\n\n1. **Average Daily Macros**:\n   - **Calori...(1297 characters)",
+            "annotations": [
+              {
+                "type": "file_path",
+                "text": "sandbox:/mnt/data/nutrition_trends.png",
+                "start_index": 432,
+                "end_index": 470,
+                "file_path": {
+                  "file_id": "assistant-QS5ppUBdm4Y33NQ5RrK92C"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "attachments": [
+        {
+          "file_id": "assistant-QS5ppUBdm4Y33NQ5RrK92C",
+          "tools": [
+            {
+              "type": "code_interpreter"
+            }
+          ]
+        }
+      ],
+      "metadata": {}
+    }
+  ],
+  "first_id": "msg_ywZTJzjdkt3lwmJzgTOfs17J",
+  "last_id": "msg_yIL3hM31xas5l5J5Ca8Ve3TP",
+  "has_more": false
+}
+
+[message content types: ['text']]
+ASSISTANT: ### Analysis of Daily Nutrition Data
+
+1. **Average Daily Macros**:
+   - **Calories**: 2092.86 kcal
+   - **Protein**: 78.71 g
+   - **Carbohydrates**: 247.86 g
+   - **Fat**: 69.29 g
+   - **Fiber**: 24.14 g
+
+2. **Trends Chart**:
+   A chart has been created to visualize your daily caloric intake along with protein, carbohydrates, fat, and fiber levels. You can download it using the link below:
+   - [Download Nutrition Trends Chart](sandbox:/mnt/data/nutrition_trends.png)
+
+### Insights and Disclaimers:
+- The average caloric intake is around 2093 kcal, which may be suitable depending on your age, gender, activity level, and health goals.
+- Protein intake is below the typical recommended daily allowance for many adults, which is around 46-56g depending on individual factors.
+- The carbohydrate intake seems to be high, which is typical for many diets but should be adjusted according to personal dietary needs and goals.
+- Daily fat and fiber intakes also should be evaluated in the context of overall dietary quality and individual health requirements.
+  
+**Disclaimer**: Please note that I am not a medical professional, and this analysis is based solely on the provided data. It is advisable to consult with a healthcare provider or a registered dietitian for personalized nutrition advice.
+[file link: sandbox:/mnt/data/nutrition_trends.png -> assistant-QS5ppUBdm4Y33NQ5RrK92C]
+
+--- OUTBOUND REQUEST #34 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf/messages?api-version=v1&order=asc&after=msg_yIL3hM31xas5l5J5Ca8Ve3TP
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #34 ---
+< 200 OK
+< Content-Length: 96
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:03 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 2fa499ee875055fa53b65ac188b5c7f1
+< openai-processing-ms: 90
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 27
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.207
+<
+{
+  "object": "list",
+  "data": [],
+  "first_id": null,
+  "last_id": null,
+  "has_more": false
+}
+
+--- OUTBOUND REQUEST #35 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/files/assistant-QS5ppUBdm4Y33NQ5RrK92C/content?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/octet-stream
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #35 ---
+< 200 OK
+< Content-Type: application/octet-stream
+< Date: Sun, 25 Oct 2026 17:58:04 GMT
+< Server: istio-envoy
+< Access-Control-Allow-Origin: *
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Transfer-Encoding: chunked
+< request-context: appId=
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< x-request-id: <id>
+< openai-processing-ms: 331
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< Content-Disposition: attachment; filename="nutrition_trends.png"
+< azureml-served-by-cluster: hyena-eastus2-03
+<
+<binary body, 174.8 KB, application/octet-stream>
+
+Saved chart: runs/20261025-215724-2-code-interpreter/chart_assistant-QS5ppUBdm4Y33NQ5RrK92C.png
+
+================================================================================
+Cleanup
+================================================================================
+
+--- OUTBOUND REQUEST #36 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_hVBuliwTRlkUc6u7cGL4QRAt?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #36 ---
+< 200 OK
+< Content-Length: 94
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:04 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 7ba40570f29f6078da899ec2aab75ef2
+< openai-processing-ms: 81
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.403
+<
+{
+  "id": "thread_hVBuliwTRlkUc6u7cGL4QRAt",
+  "object": "thread.deleted",
+  "deleted": true
+}
+Deleted thread: thread_hVBuliwTRlkUc6u7cGL4QRAt
+
+--- OUTBOUND REQUEST #37 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_5Ahx4H3XjD2Zc0SHjicdHMOf?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #37 ---
+< 200 OK
+< Content-Length: 94
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:05 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 881815d222fff0be2fafb058868495aa
+< openai-processing-ms: 84
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 5
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.302
+<
+{
+  "id": "thread_5Ahx4H3XjD2Zc0SHjicdHMOf",
+  "object": "thread.deleted",
+  "deleted": true
+}
+Deleted thread: thread_5Ahx4H3XjD2Zc0SHjicdHMOf
+
+--- OUTBOUND REQUEST #38 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/assistants/asst_xVRGcoxSN2wNYNVb6UUDPt2x?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #38 ---
+< 200 OK
+< Content-Length: 95
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:05 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 1952d18be2ecce93bd04d291d0b3f0b0
+< openai-processing-ms: 96
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 59
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.312
+<
+{
+  "id": "asst_xVRGcoxSN2wNYNVb6UUDPt2x",
+  "object": "assistant.deleted",
+  "deleted": true
+}
+Deleted agent: asst_xVRGcoxSN2wNYNVb6UUDPt2x
+
+--- OUTBOUND REQUEST #39 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/files/assistant-TmFGk5gqgpuSvP9kSZzv58?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #39 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:09 GMT
+< Server: istio-envoy
+< Access-Control-Allow-Origin: *
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< x-request-id: <id>
+< openai-processing-ms: 3645
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 15
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: hyena-eastus2-03
+<
+{
+  "object": "file",
+  "deleted": true,
+  "id": "assistant-TmFGk5gqgpuSvP9kSZzv58"
+}
+Deleted file from the project: assistant-TmFGk5gqgpuSvP9kSZzv58
+
+--- OUTBOUND REQUEST #40 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/files/assistant-QS5ppUBdm4Y33NQ5RrK92C?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #40 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:11 GMT
+< Server: istio-envoy
+< Access-Control-Allow-Origin: *
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< x-request-id: <id>
+< openai-processing-ms: 1404
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 7
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: hyena-eastus2-01
+<
+{
+  "object": "file",
+  "deleted": true,
+  "id": "assistant-QS5ppUBdm4Y33NQ5RrK92C"
+}
+Deleted file from the project: assistant-QS5ppUBdm4Y33NQ5RrK92C
+
+================================================================================
+DONE
+================================================================================
