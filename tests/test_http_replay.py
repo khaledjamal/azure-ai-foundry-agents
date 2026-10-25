@@ -218,6 +218,31 @@ class HttpxReplayTest(ReplayTestCase):
                 self.assertEqual(len(recorded[0]), 3)
                 self.assertEqual(self.replay(calls), (recorded[0], _redacted(recorded[1])))
 
+    def test_replayed_body_is_logged_when_read(self):
+        # The log must see a replayed body as the caller reads it, as with a real one, not only at exit.
+        for module in self.clients():
+            with self.subTest(module=module.__name__):
+                self.folder = self.new_folder()
+
+                def calls(module=module):
+                    with module.Client() as client:
+                        sync_reply = client.get(f"{self.base}/reply").json()
+
+                    async def post():
+                        async with module.AsyncClient() as client:
+                            return (await client.post(f"{self.base}/chat", json={"input": "Hi"})).json()
+
+                    return sync_reply, asyncio.run(post())
+
+                self.record(calls)
+                with self.assertLogs("http_log") as captured:
+                    self.replay(calls, level="full")
+                log = "\n".join(captured.output)
+                self.assertEqual(log.count("--- OUTBOUND RESPONSE #"), 2)
+                self.assertIn('"output_text": "Hello"', log)
+                self.assertIn('"echo": "Hi"', log)
+                self.assertNotIn("body not read", log)
+
 
 @unittest.skipIf(aiohttp is None, "aiohttp is not installed")
 class AiohttpReplayTest(ReplayTestCase):

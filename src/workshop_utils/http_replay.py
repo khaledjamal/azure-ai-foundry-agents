@@ -377,10 +377,24 @@ def _patch_httpx(module_name):
     except ImportError:
         return
 
+    class ReplayStream(module.SyncByteStream, module.AsyncByteStream):
+        # A stream, not content=: httpx reads content= at once, before http_log wraps the stream, so the log would
+        # never see the body being read. A stream is read when the caller reads it, as a real one is.
+        def __init__(self, data):
+            self.data = data
+
+        def __iter__(self):
+            yield self.data
+
+        async def __aiter__(self):
+            yield self.data
+
     def respond(module, request, answer):
         status, reason, headers, data = answer
         extensions = {"reason_phrase": reason.encode()} if reason else {}
-        return module.Response(status, headers=headers, content=data, request=request, extensions=extensions)
+        return module.Response(
+            status, headers=headers, stream=ReplayStream(data), request=request, extensions=extensions
+        )
 
     def handle_request(self, request):
         return respond(module, request, _answer(request.method, request.url, request.read()))
