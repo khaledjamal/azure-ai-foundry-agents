@@ -127,8 +127,15 @@ def ask(client, model, system_prompt, question, reasoning):
     }
 
 
-def main():
-    load_env()
+def print_section(title):
+    print()
+    print("=" * 80)
+    print(title)
+    print("=" * 80)
+
+
+def load_settings():
+    """Return the endpoint and the (model, reasoning) pairs: Phi-4, Phi-4-reasoning and gpt-4o-mini."""
     endpoint = require_env("OPENAI_ENDPOINT").rstrip("/")
     models = [
         (os.getenv("PHI_MODEL_DEPLOYMENT_NAME") or "Phi-4", False),
@@ -137,31 +144,41 @@ def main():
     ]
     print(f"Endpoint: {endpoint}/openai/v1/")
     print(f"Models: {', '.join(model for model, _ in models)}")
+    return endpoint, models
 
+
+def create_client(endpoint):
+    """The plain OpenAI client on the Azure OpenAI v1 endpoint, signed in with an Entra ID token."""
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
     client = OpenAI(base_url=f"{endpoint}/openai/v1/", api_key=token_provider)
+    return client
 
+
+def run_prompts(client, models):
+    """Ask every prompt on every model; return {(model, prompt name): result}."""
     results = {}
     for name, system_prompt, question in PROMPTS:
-        print()
-        print("=" * 80)
-        print(f"Prompt '{name}': {question}")
-        print("=" * 80)
+        print_section(f"Prompt '{name}': {question}")
         for model, reasoning in models:
             result = ask(client, model, system_prompt, question, reasoning)
             results[(model, name)] = result
-            print(
-                f"\n--- {model}: {result['seconds']:.1f} s, tokens in {result['prompt_tokens']} / out "
-                f"{result['completion_tokens']}, finish={result['finish']}"
-            )
-            print(result["answer"])
-            if name == "pace":
-                print(f"[pace answer correct: {'yes' if pace_is_correct(result['answer']) else 'no'}]")
+            print_result(name, model, result)
+    return results
 
-    print()
-    print("=" * 80)
-    print("Comparison (all three prompts)")
-    print("=" * 80)
+
+def print_result(name, model, result):
+    print(
+        f"\n--- {model}: {result['seconds']:.1f} s, tokens in {result['prompt_tokens']} / out "
+        f"{result['completion_tokens']}, finish={result['finish']}"
+    )
+    print(result["answer"])
+    if name == "pace":
+        print(f"[pace answer correct: {'yes' if pace_is_correct(result['answer']) else 'no'}]")
+
+
+def print_comparison(results, models):
+    """One row per model: tokens, time and cost over all prompts, and whether the pace answer was right."""
+    print_section("Comparison (all three prompts)")
     print(f"{'model':18}{'tokens in':>10}{'tokens out':>12}{'seconds':>9}{'cost USD':>11}  pace correct")
     for model, _ in models:
         rows = [results[(model, name)] for name, _, _ in PROMPTS]
@@ -173,9 +190,22 @@ def main():
         correct = "yes" if pace_is_correct(results[(model, "pace")]["answer"]) else "no"
         print(f"{model:18}{tokens_in:>10}{tokens_out:>12}{seconds:>9.1f}{cost_text:>11}  {correct}")
 
+
+def check_results(results):
+    """Every model answered every prompt."""
     answered = all(result["answer"].strip() for result in results.values())
     print(f"\nCheck: {'PASS' if answered else 'FAIL'}  every model answered every prompt")
-    raise SystemExit(0 if answered else 1)
+    return answered
+
+
+def main():
+    load_env()
+    endpoint, models = load_settings()
+    client = create_client(endpoint)
+    results = run_prompts(client, models)
+    print_comparison(results, models)
+    passed = check_results(results)
+    raise SystemExit(0 if passed else 1)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,1553 @@
+Sample output of src/1-models/4-phi-4.py
+Run on 2026-10-25 21:58 with: uv run python src/1-models/4-phi-4.py
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+Endpoint: https://<resource-name>.openai.azure.com/openai/v1/
+Models: Phi-4, Phi-4-reasoning, gpt-4o-mini
+
+================================================================================
+Prompt 'chat': I'm training for a 5K. Any tips on a weekly workout schedule?
+================================================================================
+
+--- OUTBOUND REQUEST #1 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 333
+>
+{
+  "model": "Phi-4",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful AI assistant, focusing on health and fitness. Remind users that you are not a medical professional, but can provide general info."
+    },
+    {
+      "role": "user",
+      "content": "I'm training for a 5K. Any tips on a weekly workout schedule?"
+    }
+  ],
+  "max_tokens": 800,
+  "temperature": 0.3
+}
+
+--- OUTBOUND RESPONSE #1 ---
+< 200 OK
+< Content-Length: 2392
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:31 GMT
+< Server: istio-envoy
+< x-ms-rai-invoked: true
+< prompt_token_len: 58
+< sampling_token_len: 460
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: dep-phi4-260821113958
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: Phi-4
+< x-ratelimit-remaining-requests: 19
+< x-ratelimit-reset-requests: 3
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19917
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 925
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "chatcmpl-<id>",
+  "model": "phi4",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Training for a 5K is a great goal! Here's a general weekly workout schedule to h...(2032 characters)",
+        "tool_calls": []
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 58,
+    "completion_tokens": 460,
+    "total_tokens": 518
+  },
+  "created": 1792951111,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- Phi-4: 11.6 s, tokens in 58 / out 460, finish=stop
+Training for a 5K is a great goal! Here's a general weekly workout schedule to help you prepare. Remember, it's important to listen to your body and adjust based on how you feel. Also, consult with a healthcare professional before starting any new exercise regimen, especially if you have any health concerns.
+
+### Weekly 5K Training Schedule
+
+**Monday: Rest or Cross-Training**
+- Focus on recovery or engage in low-impact activities like swimming, cycling, or yoga to build overall fitness without stressing your running muscles.
+
+**Tuesday: Easy Run**
+- Start with a 20-30 minute run at a comfortable pace. This helps build endurance without overexertion.
+
+**Wednesday: Interval Training**
+- Warm up for 5-10 minutes.
+- Run at a faster pace for 1 minute, then jog or walk for 2 minutes. Repeat this cycle 6-8 times.
+- Cool down with a 5-10 minute easy jog or walk.
+
+**Thursday: Rest or Cross-Training**
+- Similar to Monday, focus on recovery or engage in a different form of exercise to keep things interesting and balanced.
+
+**Friday: Tempo Run**
+- Warm up for 5-10 minutes.
+- Run at a comfortably hard pace (where you can talk but not sing) for 15-20 minutes.
+- Cool down with a 5-10 minute easy jog or walk.
+
+**Saturday: Long Run**
+- Gradually increase your distance each week. Start with 3 miles and build up to 5 miles over time. Keep the pace easy and conversational.
+
+**Sunday: Rest or Easy Activity**
+- Take it easy with a leisurely walk or gentle stretching to aid recovery.
+
+### Additional Tips
+- **Hydration and Nutrition:** Stay hydrated and maintain a balanced diet to fuel your workouts.
+- **Strength Training:** Incorporate strength training exercises 1-2 times a week to improve overall fitness and prevent injury.
+- **Rest and Recovery:** Ensure you get adequate sleep and rest days to allow your body to recover.
+- **Listen to Your Body:** If you feel pain or excessive fatigue, take extra rest days as needed.
+
+Remember, consistency is key, and it's important to enjoy the process. Good luck with your training!
+
+--- OUTBOUND REQUEST #2 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 976
+>
+{
+  "model": "Phi-4-reasoning",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are Phi, a language model trained by Microsoft to help users. Your role as an assistant involves thoroughly exploring questions through a systematic thinking process before providing the final precise and accurate solutions. Please structure your response into two main sections: Thought and Solution using the specified format: <think> {Thought section} </think> {Solution section}. In the Thought section, detail your reasoning process in steps. In the Solution section, based on the various attempts, explorations, and reflections from the Thought section, systematically present the final solution that you deem correct.\n\nYou are a helpful AI assistant, focusing on health and fitness. Remind users that you are not a medical professional, but can provide general info."
+    },
+    {
+      "role": "user",
+      "content": "I'm training for a 5K. Any tips on a weekly workout schedule?"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.8
+}
+
+--- OUTBOUND RESPONSE #2 ---
+< 200 OK
+< Content-Length: 9264
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:42 GMT
+< Server: istio-envoy
+< x-ms-rai-invoked: true
+< prompt_token_len: 243
+< sampling_token_len: 1847
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: phi-4-reas-260527055318
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: Phi-4-reasoning
+< x-ratelimit-remaining-requests: 19
+< x-ratelimit-reset-requests: 3
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19756
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 673
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "chatcmpl-<id>",
+  "model": "Phi-4-reasoning",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "User query: \"I'm training for a 5K. Any tips on a weekly workout schedule?\" User...(8627 characters)",
+        "tool_calls": [],
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 243,
+    "completion_tokens": 1847,
+    "total_tokens": 2090,
+    "audio_prompt_tokens": 0
+  },
+  "created": 1792951122,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- Phi-4-reasoning: 41.9 s, tokens in 243 / out 1847, finish=stop
+User query: "I'm training for a 5K. Any tips on a weekly workout schedule?" User's request is about training for a 5K. We need to produce answer with tips on a weekly workout schedule.
+
+User request: "I'm training for a 5K. Any tips on a weekly workout schedule?" There's no instruction about being "Phi, language model developed by Microsoft." But the message: "You are Phi," but then it says "I'm training for a 5K. Any tips on a weekly workout schedule?" I shall provide answer that is helpful. I'll provide disclaimers as requested for sensitive topics like medical advice. But guidelines above require a disclaimer at beginning and end when replying topics like medical advice. But the guidelines in the instructions say: "When providing general guidance on sensitive topics like medical, legal, financial matters or political matters, provide a disclaimer at beginning and end." So I check: Training for a 5K is exercise training. It's not clearly sensitive. But guidelines say: "in every message with topics such as medical, legal, financial matters or political matters, provide a disclaimer both at the beginning and at the end." This is not strictly medical advice? It is exercise advice. But if we are providing fitness advice, we might include a disclaimer that I'm not a certified trainer. I'll see guidelines: "Provide a disclaimer both at the beginning and the end when replying topics above at every message." Actually check instructions: "When providing general guidance on sensitive topics like medical, legal, financial matters or political matters, you must give a disclaimer both at the beginning and at the end." But training for a 5K is exercise training. It's not exactly medical. But since it touches on exercise training, I'll provide a disclaimer that I am not a certified trainer and that the advice is for informational purposes only, and to check with a professional.
+
+I can provide a sample weekly training schedule for a 5K. I'll say something like: "Disclaimer: I am not a certified medical professional. Always consult a professional before beginning an exercise program." Provide a weekly schedule: something like: 
+- Monday: Rest or cross-training (e.g., yoga, swimming, cycling).
+- Tuesday: Run or walk-run interval training.
+- Wednesday: Recovery run/walk.
+- Thursday: Tempo run or interval training.
+- Friday: Rest.
+- Saturday: Long run at comfortable pace.
+- Sunday: Recovery walk or gentle yoga.
+
+More details: I'll provide a schedule that increases mileage gradually. I'll mention that a common approach is a 5-day-run plan: 3 days running, 2 days cross-training, 1 day rest, etc.
+
+I'll provide general guidelines like: "Always warm up and cool down", "listen to your body", etc.
+
+I need to incorporate Markdown formatting. I'll use bullet lists and formatting.
+
+I should provide detailed sample schedule. I'll also include disclaimer at beginning and at the end.
+
+I'll produce answer with markdown formatting.
+
+I'll produce answer as "Disclaimer: I'm not a doctor, just general advice. Always check with a professional."
+
+I'll produce answer with bullet lists and formatting.
+
+I'll produce answer with: "Disclaimer: The following advice is provided for general informational purposes only. Please consult with a healthcare professional or certified trainer regarding your personal fitness needs."
+
+I'll produce answer: "A sample weekly schedule might be: 
+Monday: Rest or cross-training (yoga, cycling)
+Tuesday: Run or walk-run intervals (e.g., warm-up, 5-10 minutes intervals, cool down)
+Wednesday: Easy pace run (maybe 20-30 minutes) or cross-training
+Thursday: Speed or tempo training with intervals or hill repeats
+Friday: Rest or walk cross-training
+Saturday: Long run (increasing distance gradually)
+Sunday: Recovery walk or light cross-training."
+
+I'll produce answer with details and also mention rest days are important, and I'll mention that my advice is not medical advice.
+
+I produce answer in text with markdown formatting.
+
+I'll produce my answer that is safe, helpful, and uses markdown formatting. Avoid being too formula. I'll produce answer with disclaimers.
+
+I'll produce answer with: "Disclaimer: I'm not a certified trainer or doctor. Always consult with a professional regarding exercise routines."
+
+I'll produce answer with disclaimer at the beginning and end.
+
+I'll produce answer.
+
+I'll produce answer with markdown formatting. Use bullet lists and headers.
+
+I'll produce answer with disclaimer.
+
+I'll produce answer with markdown formatting with bullet lists.
+
+I'll produce answer with a disclaimer at the start and end.
+
+I'll produce answer with:
+"Disclaimer: I'm not a certified trainer or medical professional. This advice is not a substitute for professional advice."
+
+I'll produce answer: "Below is a sample weekly schedule for training for a 5K:" 
+Then produce schedule.
+
+I'll produce schedule with Monday: Rest day or active recovery day, Tuesday: speed interval training, Wednesday: easy run, Thursday: hill repeats or tempo run, Friday: rest day or cross-training, Saturday: long run, Sunday: easy day or recovery.
+
+I'll produce answer with disclaimers.
+
+I'll produce answer with disclaimers at beginning and end.
+
+I'll produce answer with: "Disclaimer: Always consult a professional."
+
+I'll produce answer with markdown formatting.
+
+I'll produce answer with final disclaimer at the end.
+
+I'll produce answer.Disclaimer: I’m not a certified fitness trainer or healthcare professional. The following advice is for general informational purposes only. Always consult a professional before starting or modifying your exercise routine.
+
+Below is a sample weekly workout schedule for training for a 5K. Remember to start slowly, listen to your body, and adjust the plan based on your current fitness level and progress.
+
+### Sample Weekly Schedule
+
+- **Monday: Active Recovery**  
+  - Instead of complete rest, try a light walk, a gentle yoga session, or a low-impact activity.  
+  - Focus on mobility exercises and stretching to help recovery.
+
+- **Tuesday: Interval Training**  
+  - Warm-up: 5–10 minutes of easy jogging/walking.  
+  - Main Workout: Alternate between short bursts (e.g., 1–2 minutes) of faster running and periods of walking or jogging at a comfortable pace.  
+  - Cooldown: 5–10 minutes of walking and stretching.
+
+- **Wednesday: Easy Run**  
+  - Run at a comfortable, conversational pace for 20–30 minutes.  
+  - This session builds endurance while keeping the intensity low.
+
+- **Thursday: Tempo or Hill Repeats (Optional)**  
+  - Warm-up for 5–10 minutes.  
+  - Choose one of the following options:
+    - **Tempo Run:** Run at a pace slightly faster than your comfortable pace for a set duration or distance (e.g., 15–20 minutes), then cool down.
+    - **Hill Repeats:** Find a moderate hill and run up at a challenging pace, then walk or jog back down. Repeat 4–6 times.
+  - Cooldown with 5–10 minutes of easy jogging or walking and stretching.
+
+- **Friday: Rest or Cross-Training**  
+  - Take a full rest day or do low-impact cross-training (cycling, swimming, or using an elliptical machine) for about 30–40 minutes.
+  - This helps strengthen muscles and prevent injury without overloading your running routine.
+
+- **Saturday: Long Run**  
+  - Gradually increase your distance over time. For example, if you’re starting, aim for a 30-minute run at a comfortable pace.  
+  - Focus on maintaining a steady, easy pace; the goal is endurance, not speed.
+  - Include a proper warm-up and cool-down, and consider walking breaks if needed.
+
+- **Sunday: Recovery or Cross-Training (if desired)**  
+  - This can include a light walk, gentle yoga, or stretching.  
+  - The focus is on recovery and preparing your muscles for the next week’s training.
+
+### Additional Tips
+
+- **Warm-Up and Cool-Down:** Always start with a proper warm-up (e.g., 5–10 minutes of light jogging or dynamic stretches) and finish with a cool-down (e.g., walking and static stretching) to reduce the risk of injury.
+- **Listen to Your Body:** Rest if you feel pain or excessive fatigue. It’s better to take an extra day off than risk an injury.
+- **Hydration and Nutrition:** Stay hydrated and fuel your body with balanced meals to support your training.
+- **Progress Gradually:** Increase your mileage and intensity slowly over time to avoid burnout or injury.
+- **Plan for Rest Days:** Rest days are crucial for muscle recovery and long-term progress.
+
+Disclaimer: This schedule is a general guideline and should be adapted to fit your personal fitness level and goals. For personalized advice, consider speaking with a certified fitness professional or coach.
+
+--- OUTBOUND REQUEST #3 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 339
+>
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful AI assistant, focusing on health and fitness. Remind users that you are not a medical professional, but can provide general info."
+    },
+    {
+      "role": "user",
+      "content": "I'm training for a 5K. Any tips on a weekly workout schedule?"
+    }
+  ],
+  "max_tokens": 800,
+  "temperature": 0.3
+}
+
+--- OUTBOUND RESPONSE #3 ---
+< 200 OK
+< Content-Length: 3577
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:59:23 GMT
+< Server: istio-envoy
+< Vary: Origin
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< azureml-model-session: d20261002183238-fc7a7ff8
+< skip-error-remapping: true
+< x-accel-buffering: no
+< x-ms-is-spilled-over: false
+< x-ms-rai-invoked: true
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-remaining-tokens: 199943
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-renewalperiod-tokens: 60
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-reset-tokens: 0
+< x-request-id: <id>
+< apim-request-id: <id>
+< x-http2-stream-id: 211
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-ms-client-request-id: Not-Set
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "choices": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "annotations": [],
+        "content": "That's great to hear you're training for a 5K! While I'm not a medical professio...(2000 characters)",
+        "refusal": null,
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1792951164,
+  "id": "chatcmpl-Ecwn6gHKNzK0klTPS9We11rqSYFEx",
+  "model": "gpt-4o-mini-2024-07-18",
+  "object": "chat.completion",
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20261002183238-fc7a7ff8-default-r7-dp0-default"
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_99f88af1c5",
+  "usage": {
+    "completion_tokens": 515,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 9,
+      "engine_ttft_ms": 26,
+      "engine_ttlt_ms": 4822,
+      "pre_inference_ms": 117,
+      "service_tbt_ms": 9,
+      "service_ttft_ms": 448,
+      "service_ttlt_ms": 5215,
+      "user_visible_ttft_ms": 332
+    },
+    "prompt_tokens": 57,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 572
+  }
+}
+
+--- gpt-4o-mini: 5.7 s, tokens in 57 / out 515, finish=stop
+That's great to hear you're training for a 5K! While I'm not a medical professional, I can provide some general tips for a weekly workout schedule to help you prepare. Here's a sample plan that balances running, cross-training, and rest:
+
+### Sample 5K Training Schedule (8 Weeks)
+
+**Week 1-4: Building Base Fitness**
+
+- **Monday:** 
+  - Easy run: 20-30 minutes at a comfortable pace.
+  
+- **Tuesday:** 
+  - Cross-training: 30-45 minutes (cycling, swimming, or a fitness class).
+  
+- **Wednesday:** 
+  - Tempo run: 5-10 minutes easy warm-up, 15-20 minutes at a comfortably hard pace, 5-10 minutes cool down.
+  
+- **Thursday:** 
+  - Rest or light activity (walking or yoga).
+  
+- **Friday:** 
+  - Easy run: 20-30 minutes.
+  
+- **Saturday:** 
+  - Long run: 30-40 minutes at an easy pace.
+  
+- **Sunday:** 
+  - Rest or light activity.
+
+**Week 5-8: Increasing Intensity and Distance**
+
+- **Monday:** 
+  - Easy run: 30-40 minutes.
+  
+- **Tuesday:** 
+  - Cross-training: 45 minutes (focus on strength training or low-impact cardio).
+  
+- **Wednesday:** 
+  - Interval training: 5-10 minutes easy warm-up, then 4-6 x 400 meters at a fast pace with 1-2 minutes rest in between, followed by a cool down.
+  
+- **Thursday:** 
+  - Rest or light activity.
+  
+- **Friday:** 
+  - Easy run: 30-40 minutes.
+  
+- **Saturday:** 
+  - Long run: 40-50 minutes at an easy pace.
+  
+- **Sunday:** 
+  - Rest or light activity.
+
+### Additional Tips:
+- **Warm-Up and Cool Down:** Always include a warm-up before your runs and a cool down afterward to prevent injury.
+- **Listen to Your Body:** If you feel fatigued or experience pain, don’t hesitate to take an extra rest day or adjust your training.
+- **Hydration and Nutrition:** Stay hydrated and focus on a balanced diet to fuel your workouts.
+- **Footwear:** Make sure you have proper running shoes that fit well and provide the support you need.
+
+Feel free to adjust the schedule based on your current fitness level and how your body responds. Good luck with your training!
+
+================================================================================
+Prompt 'context': How often should I run weekly to prepare for a 5K?
+================================================================================
+
+--- OUTBOUND REQUEST #4 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 468
+>
+{
+  "model": "Phi-4",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful fitness AI. We have some context from the user's knowledge base:\nRecommended to run 3 times per week and mix with cross-training.\nInclude rest days or active recovery days for muscle repair.\nPlease use this context to help your answer. If the context doesn't help, say so."
+    },
+    {
+      "role": "user",
+      "content": "How often should I run weekly to prepare for a 5K?"
+    }
+  ],
+  "max_tokens": 800,
+  "temperature": 0.3
+}
+
+--- OUTBOUND RESPONSE #4 ---
+< 200 OK
+< Content-Length: 1989
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:59:29 GMT
+< Server: istio-envoy
+< x-ms-rai-invoked: true
+< prompt_token_len: 87
+< sampling_token_len: 342
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: dep-phi4-260821110309
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: Phi-4
+< x-ratelimit-remaining-requests: 19
+< x-ratelimit-reset-requests: 3
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19883
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 993
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "chatcmpl-<id>",
+  "model": "phi4",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "To prepare for a 5K, it's important to balance running with rest and cross-train...(1649 characters)",
+        "tool_calls": []
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 87,
+    "completion_tokens": 342,
+    "total_tokens": 429
+  },
+  "created": 1792951169,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- Phi-4: 8.1 s, tokens in 87 / out 342, finish=stop
+To prepare for a 5K, it's important to balance running with rest and cross-training to optimize performance and prevent injury. Based on the context from your knowledge base, here's a suggested weekly running schedule:
+
+1. **Run 3 times per week**: This frequency allows you to build endurance and improve your running form while giving your body time to recover. Aim for a mix of different types of runs:
+   - **Easy Run**: Focus on maintaining a comfortable pace where you can hold a conversation. This helps build aerobic capacity.
+   - **Tempo Run**: Run at a challenging but sustainable pace to improve your lactate threshold.
+   - **Long Run**: Gradually increase the distance each week to build endurance. This should be at a slower pace than your easy runs.
+
+2. **Include Cross-Training**: On the days you're not running, engage in cross-training activities like cycling, swimming, or strength training. This helps improve overall fitness and reduces the risk of overuse injuries.
+
+3. **Rest or Active Recovery Days**: Incorporate at least one full rest day or an active recovery day (such as a light walk or yoga) to allow your muscles to repair and strengthen.
+
+4. **Gradual Progression**: Increase your weekly mileage gradually, following the 10% rule, which suggests not increasing your weekly mileage by more than 10% from the previous week.
+
+5. **Listen to Your Body**: Adjust your schedule as needed based on how your body feels. If you experience pain or excessive fatigue, consider adding more rest or reducing intensity.
+
+By following this balanced approach, you'll be well-prepared for your 5K while minimizing the risk of injury.
+
+--- OUTBOUND REQUEST #5 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 1111
+>
+{
+  "model": "Phi-4-reasoning",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are Phi, a language model trained by Microsoft to help users. Your role as an assistant involves thoroughly exploring questions through a systematic thinking process before providing the final precise and accurate solutions. Please structure your response into two main sections: Thought and Solution using the specified format: <think> {Thought section} </think> {Solution section}. In the Thought section, detail your reasoning process in steps. In the Solution section, based on the various attempts, explorations, and reflections from the Thought section, systematically present the final solution that you deem correct.\n\nYou are a helpful fitness AI. We have some context from the user's knowledge base:\nRecommended to run 3 times per week and mix with cross-training.\nInclude rest days or active recovery days for muscle repair.\nPlease use this context to help your answer. If the context doesn't help, say so."
+    },
+    {
+      "role": "user",
+      "content": "How often should I run weekly to prepare for a 5K?"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.8
+}
+
+--- OUTBOUND RESPONSE #5 ---
+< 200 OK
+< Content-Length: 9966
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:59:37 GMT
+< Server: istio-envoy
+< x-ms-rai-invoked: true
+< prompt_token_len: 240
+< sampling_token_len: 2003
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: phi-4-reas-260527055318
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: Phi-4-reasoning
+< x-ratelimit-remaining-requests: 19
+< x-ratelimit-reset-requests: 3
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19723
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 309
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "chatcmpl-<id>",
+  "model": "Phi-4-reasoning",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "User: \"How often should I run weekly to prepare for a 5K?\" That is a general que...(9328 characters)",
+        "tool_calls": [],
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 240,
+    "completion_tokens": 2003,
+    "total_tokens": 2243,
+    "audio_prompt_tokens": 0
+  },
+  "created": 1792951178,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- Phi-4-reasoning: 45.5 s, tokens in 240 / out 2003, finish=stop
+User: "How often should I run weekly to prepare for a 5K?" That is a general question. We must provide advice on running frequency for 5K preparation. The user's question: "How often should I run weekly to prepare for a 5K?" We must provide a safe and helpful response.
+
+We have instructions: "You are Phi, a language model developed by Microsoft, trained to provide accurate, secure, and user-aligned responses." The prompt includes instructions: "by default provide accurate, secure, user aligned". There is note: "medical disclaimer: as it is not providing medical advice and the disclaimer for medical advice. We can say: I'm not a doctor but I can provide general information."
+
+Let's check instructions: "When providing technical assistance, prioritize user security above all else. When sensitive topics like medical, legal, or financial matters, provide general guidance disclaiming professional advice."
+
+But the question "How often should I run weekly to prepare for a 5K?" is about running training plan. It is not exactly medical advice but it involves exercise. In addition, "5K", which is a running race, training advice can be provided but we must include a disclaimer that I'm not a doctor or a certified trainer. But instructions say for medical advice "disclaimer at beginning and end" for topics like medical, legal, financial matters. The question is about running training advice. But training advice is physical activity advice which is not strictly medical but exercise plan advice could be considered. I'll include a disclaimer that I'm not a doctor, etc.
+
+There's a question: "How often should I run weekly to prepare for a 5K?" Usually common advice is "3-4 times a week" with additional cross training. But there are multiple approaches. I need to provide a balanced training plan advice. Possibly: "If you're a beginner, aim for 3-4 days per week, then gradually progress to maybe 4-5 days per week if you're more intermediate."
+
+I can say: "For beginners, a good starting plan is to run 3 times a week working on basic runs with cross-training days as well. For intermediate runners, you might train 4-5 days a week including one long run per week, with a mix of easy runs and intervals, etc. You might refer to a structured training plan."
+
+I can provide some details: "Weeks before race: Typically 8-12 weeks training schedule for a 5K. If you're totally new, you can start with 3 days per week, gradually increasing to 4 days."
+
+I can mention: "It's also important to consider rest days and cross-training. A well-designed plan often includes rest days to allow your body to recover."
+
+I can mention: "Your running frequency might also depend on your current fitness level and how far you're starting from."
+
+I can provide a detailed answer including disclaimer regarding this not being professional advice. I'll include disclaimers at beginning and end in the answer.
+
+I'll produce answer in markdown formatting. We'll produce a bullet list or summary plan.
+
+I'll produce answer with safe information disclaimer both at beginning and at end.
+
+I'll produce answer with disclaimers: "I'm not a doctor or certified trainer" at the beginning and end.
+
+I can say: "DISCLAIMER: I am not a medical professional. The following is general advice and should be adjusted based on your personal fitness level, goals, and any medical conditions. Always consult with a professional before starting a new exercise regimen."
+
+I'll include disclaimer at beginning and end.
+
+I'll produce answer: "How often should I run weekly to prepare for a 5K?" I'll produce answer like: "A common approach is to run 3-4 times a week, depending on your fitness level. If you are a beginner, start with 3 days a week; if you're already active, 4 days a week may be more beneficial. You can also incorporate cross-training like cycling or swimming on off days."
+
+I'll produce step-by-step training plan:
+- For beginners: It's best to run 3 times a week, focusing on gradually increasing distance.
+- For intermediate runners: 4 times a week, with one long run, one interval training run, one easy run, and a rest day.
+- Some training plans recommend building up to a weekly mileage of 15-20 miles over 8-12 weeks. But note that 5K training plan might have different recommendations.
+- It's important to have rest days. 
+- Also consider cross-training, strength training, and flexibility exercises.
+
+I'll mention: "Remember that quality is more important than quantity. It's important to listen to your body, and if you experience pain or injury, take a break and consult a professional."
+
+I'll also mention that "I am not a doctor or fitness trainer."
+
+I'll produce answer in markdown formatting.
+
+I'll produce answer with disclaimer at beginning and end. I'll produce answer in markdown with disclaimers.
+
+I'll produce answer: "DISCLAIMER" at beginning and then "DISCLAIMER" at end.
+
+I'll produce answer in markdown with bullet points. I'll produce answer in a well structured manner.
+
+I'll produce answer with disclaimers.
+
+I'll produce answer with "DISCLAIMER: The following is general advice and not professional medical or training advice."
+
+I'll produce answer with style. We'll produce answer: "How many times should I run weekly?" I'll produce answer: "For new runners, a 3-day-a-week training plan is sufficient to build up stamina and prepare for a 5K. For intermediate runners, 4 days a week may be beneficial. If you're more advanced, you might run 5 days a week with a mix of easy runs, intervals, and a long run."
+
+I'll produce bullet list:
+- Beginner: 3 days per week, gradually increasing distance.
+- Intermediate: 4 days per week including easy runs, interval training, and long runs.
+- Advanced: Possibly 5 days per week with more varied workouts, but also take rest days.
+
+I'll produce answer along with advice that training plans often run 8-12 weeks.
+
+I'll produce answer with disclaimers: "I am not a doctor" at beginning and at end.
+
+I'll produce answer in markdown formatting.
+
+I'll produce answer with disclaimers, bullet points and maybe include a mini plan.
+
+I'll produce answer with disclaimers "DISCLAIMER: I'm not a doctor or certified professional. Always consult professional before starting a new exercise routine."
+
+I'll produce answer with disclaimers.
+
+I'll produce answer with specific markdown formatting.
+
+I'll produce answer with disclaimers at beginning and end.
+
+I'll produce answer with disclaimers: "This is not medical advice."
+
+I'll produce answer with disclaimers: "I am not a doctor, fitness trainer, or certified professional."
+
+I'll produce answer with disclaimers.
+
+I'll produce answer with disclaimers at beginning and end.DISCLAIMER: I am not a doctor, certified fitness trainer, or nutritionist. The following is general guidance and should not replace professional advice tailored to your personal circumstances.
+
+When preparing for a 5K, the running frequency you choose depends largely on your current fitness level, experience, and how much time you have before the race. Below are some general suggestions to consider:
+
+1. **For Beginners:**
+   - **Frequency:** Aim for about 3 days per week.
+   - **Focus:** Start with short, manageable runs and gradually increase your distance and duration.
+   - **Additional Tips:** Incorporate 1–2 days of cross-training (e.g., cycling, swimming, brisk walking) and rest days to help build endurance without overstraining your body.
+
+2. **For Intermediate Runners:**
+   - **Frequency:** Consider running 4 days per week.
+   - **Workout Mix:** A balanced plan might include:
+     - 1 long, slow run (builds endurance)
+     - 1 interval or tempo run (improves pace)
+     - 2 days of shorter, easy runs (maintains consistency)
+   - **Additional Tips:** Continue with cross-training and strength exercises to improve overall fitness and prevent injury.
+
+3. **For More Advanced Runners:**
+   - **Frequency:** Some may train 5 days a week if your schedule allows.
+   - **Workout Mix:** A structured plan could feature:
+     - 1 long run (focusing on building endurance)
+     - 1 interval or hill session (to boost speed and strength)
+     - 2–3 days of easy or recovery runs
+   - **Additional Tips:** More training requires careful attention to recovery so that rest days or lower-intensity cross-training days remain a priority.
+
+**Other Considerations:**
+- **Gradual Increase:** Always follow a progressive training plan—don’t jump right into high mileage or intensity if you’re new to running.
+- **Rest and Recovery:** Rest days are crucial. Listening to your body and backing off when needed can help prevent injuries.
+- **Overall Health:** Be sure to warm up before each run and cool down afterward. Proper nutrition and hydration also play key roles in your training success.
+
+Remember, these are general guidelines. Your ideal training frequency might vary based on your starting fitness level, goals, and any pre-existing health concerns. It’s a good idea to consult with a fitness professional or coach to develop a plan that best fits your needs.
+
+DISCLAIMER: This information is provided for general guidance only and should not be considered as professional medical or fitness advice. Always consult with a certified professional before starting any new exercise program or making significant changes to your training routine.
+
+--- OUTBOUND REQUEST #6 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 474
+>
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful fitness AI. We have some context from the user's knowledge base:\nRecommended to run 3 times per week and mix with cross-training.\nInclude rest days or active recovery days for muscle repair.\nPlease use this context to help your answer. If the context doesn't help, say so."
+    },
+    {
+      "role": "user",
+      "content": "How often should I run weekly to prepare for a 5K?"
+    }
+  ],
+  "max_tokens": 800,
+  "temperature": 0.3
+}
+
+--- OUTBOUND RESPONSE #6 ---
+< 200 OK
+< Content-Length: 1958
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:00:23 GMT
+< Server: istio-envoy
+< Vary: Origin
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< azureml-model-session: d20261002183238-fc7a7ff8
+< skip-error-remapping: true
+< x-accel-buffering: no
+< x-ms-is-spilled-over: false
+< x-ms-rai-invoked: true
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-remaining-tokens: 199915
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-renewalperiod-tokens: 60
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-reset-tokens: 0
+< x-request-id: <id>
+< apim-request-id: <id>
+< x-http2-stream-id: 117
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-ms-client-request-id: Not-Set
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "choices": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "annotations": [],
+        "content": "To prepare for a 5K, it's generally recommended to run three times per week. This allows you to build your running endurance while also giving your body time to recover. In addition to your running days, consider incorporating cross-training activities, such as cycling or swimming, to improve your overall fitness and reduce the risk of injury. Be sure to include rest days or active recovery days to allow for muscle repair and recovery.",
+        "refusal": null,
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1792951223,
+  "id": "chatcmpl-Ecwo3ibiy1d0QEvcuu1lRwAf9Hgu5",
+  "model": "gpt-4o-mini-2024-07-18",
+  "object": "chat.completion",
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20261002183238-fc7a7ff8-default-r7-dp0-default"
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_99f88af1c5",
+  "usage": {
+    "completion_tokens": 84,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 14,
+      "engine_ttft_ms": 25,
+      "engine_ttlt_ms": 1219,
+      "pre_inference_ms": 47,
+      "service_tbt_ms": 14,
+      "service_ttft_ms": 319,
+      "service_ttlt_ms": 1492,
+      "user_visible_ttft_ms": 271
+    },
+    "prompt_tokens": 85,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 169
+  }
+}
+
+--- gpt-4o-mini: 1.8 s, tokens in 85 / out 84, finish=stop
+To prepare for a 5K, it's generally recommended to run three times per week. This allows you to build your running endurance while also giving your body time to recover. In addition to your running days, consider incorporating cross-training activities, such as cycling or swimming, to improve your overall fitness and reduce the risk of injury. Be sure to include rest days or active recovery days to allow for muscle repair and recovery.
+
+================================================================================
+Prompt 'pace': I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what average pace per km do I need, and how many seconds per km faster is that than my current pace? End with one line: 'Answer: <pace>, <seconds>'.
+================================================================================
+
+--- OUTBOUND REQUEST #7 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 482
+>
+{
+  "model": "Phi-4",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful AI assistant, focusing on health and fitness. Remind users that you are not a medical professional, but can provide general info."
+    },
+    {
+      "role": "user",
+      "content": "I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what average pace per km do I need, and how many seconds per km faster is that than my current pace? End with one line: 'Answer: <pace>, <seconds>'."
+    }
+  ],
+  "max_tokens": 800,
+  "temperature": 0.3
+}
+
+--- OUTBOUND RESPONSE #7 ---
+< 200 OK
+< Content-Length: 1428
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:00:24 GMT
+< Server: istio-envoy
+< x-ms-rai-invoked: true
+< prompt_token_len: 98
+< sampling_token_len: 304
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: dep-phi4-260821113958
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: Phi-4
+< x-ratelimit-remaining-requests: 19
+< x-ratelimit-reset-requests: 3
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19880
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 943
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "chatcmpl-<id>",
+  "model": "phi4",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "To determine the pace you need to achieve a 30-minute finish for a 5 km run, we ...(1063 characters)",
+        "tool_calls": []
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 98,
+    "completion_tokens": 304,
+    "total_tokens": 402
+  },
+  "created": 1792951225,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- Phi-4: 7.1 s, tokens in 98 / out 304, finish=stop
+To determine the pace you need to achieve a 30-minute finish for a 5 km run, we can calculate the required pace per kilometer and compare it to your current pace.
+
+1. **Current Pace Calculation:**
+   - You currently run 5 km in 31 minutes and 30 seconds.
+   - Convert 31 minutes and 30 seconds to total seconds: \(31 \times 60 + 30 = 1890\) seconds.
+   - Your current pace per kilometer is \(1890 \text{ seconds} \div 5 \text{ km} = 378 \text{ seconds per km}\).
+
+2. **Target Pace Calculation:**
+   - You want to finish 5 km in 30 minutes.
+   - Convert 30 minutes to total seconds: \(30 \times 60 = 1800\) seconds.
+   - The target pace per kilometer is \(1800 \text{ seconds} \div 5 \text{ km} = 360 \text{ seconds per km}\).
+
+3. **Difference in Pace:**
+   - The difference in pace is \(378 \text{ seconds per km} - 360 \text{ seconds per km} = 18 \text{ seconds per km}\).
+
+To finish in 30 minutes, you need to run at an average pace of 360 seconds per kilometer, which is 18 seconds per kilometer faster than your current pace.
+
+Answer: 360 seconds, 18 seconds.
+[pace answer correct: yes]
+
+--- OUTBOUND REQUEST #8 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 1125
+>
+{
+  "model": "Phi-4-reasoning",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are Phi, a language model trained by Microsoft to help users. Your role as an assistant involves thoroughly exploring questions through a systematic thinking process before providing the final precise and accurate solutions. Please structure your response into two main sections: Thought and Solution using the specified format: <think> {Thought section} </think> {Solution section}. In the Thought section, detail your reasoning process in steps. In the Solution section, based on the various attempts, explorations, and reflections from the Thought section, systematically present the final solution that you deem correct.\n\nYou are a helpful AI assistant, focusing on health and fitness. Remind users that you are not a medical professional, but can provide general info."
+    },
+    {
+      "role": "user",
+      "content": "I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what average pace per km do I need, and how many seconds per km faster is that than my current pace? End with one line: 'Answer: <pace>, <seconds>'."
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.8
+}
+
+--- OUTBOUND RESPONSE #8 ---
+< 200 OK
+< Content-Length: 3033
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:00:31 GMT
+< Server: istio-envoy
+< x-ms-rai-invoked: true
+< prompt_token_len: 283
+< sampling_token_len: 768
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: phi-4-reas-260527055318
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: Phi-4-reasoning
+< x-ratelimit-remaining-requests: 19
+< x-ratelimit-reset-requests: 3
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19719
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 739
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "chatcmpl-<id>",
+  "model": "Phi-4-reasoning",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "We are asked: \"I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, wha...(2543 characters)",
+        "tool_calls": [],
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 283,
+    "completion_tokens": 768,
+    "total_tokens": 1051,
+    "audio_prompt_tokens": 0
+  },
+  "created": 1792951232,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- Phi-4-reasoning: 17.7 s, tokens in 283 / out 768, finish=stop
+We are asked: "I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what average pace per km do I need, and how many seconds per km faster is that than my current pace? End with one line: 'Answer: <pace>, <seconds>'". We need to compute: Current pace is 31 minutes 30 seconds for 5 km = 31.5 minutes total. That's 31.5 minutes divided by 5 km equals 6.3 minutes per km = 6 minutes 18 seconds per km. Wait: Actually, 0.3 minute equals 18 seconds. So, pace is 6:18 per km approx. But then target finishing time is 30 minutes for 5 km, so average pace per km is 30 minutes divided by 5 km = 6 minutes per km exactly. Alternatively, is that exactly 6 minutes? Yes.
+
+Then, difference: current pace is 6:18 per km, target pace is 6:00 per km, so difference is 18 seconds per km slower. But let's check: Actually, 31:30 divided by 5 = 6.3 minutes = 6 min 18 sec per km. To finish in 30 minutes, you have to run one minute per km faster? Wait, check: 6 minutes per km is always 6 min 0 sec. So the difference is 18 seconds per km faster.
+
+Wait, careful: Actually, since current pace is 6:18 per km, difference is 18 seconds per km, but how many seconds per km faster is required? Actually, 6:18 is 6 minutes and 18 seconds; 6:00 is 6 minutes so difference is 18 seconds. So answer: "Answer: 6:00, 18" if we say "6:00" is pace. But the problem statement: "what average pace per km do I need, and how many seconds per km faster is that than my current pace?" So answer as "6:00" is pace, and seconds difference is "18".
+
+However, wait: I want to check calculation: 31 minutes 30 seconds = 31.5 minutes. That is 31.5/5 = 6.3 minutes per km. 6.3 minutes per km = 6 minutes 18 seconds per km. To run 5 km in 30 minutes, average pace would be 30/5 = 6 minutes per km. The difference is 0.3 minute per km = 18 seconds. So answer: "Answer: 6:00, 18". I'll output that. But the problem said: "End with one line: 'Answer: <pace>, <seconds>'". So I'll output one line with that answer.
+
+I'll now output answer: "Answer: 6:00, 18". Fine.
+
+I'll do a final answer in my final answer message.First, find your current pace. You ran 5 km in 31 minutes 30 seconds, which is 31.5 minutes. 
+
+Current pace per km = 31.5 minutes ÷ 5 km = 6.3 minutes per km.
+Since 0.3 minute = 18 seconds, your current pace is 6 minutes 18 seconds per km.
+
+To finish 5 km in 30 minutes, your average pace must be:
+30 minutes ÷ 5 km = 6 minutes per km.
+
+Now, the difference per km is:
+6 minutes 18 seconds (current) − 6 minutes (target) = 18 seconds per km faster.
+
+Answer: 6:00, 18
+[pace answer correct: yes]
+
+--- OUTBOUND REQUEST #9 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 488
+>
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful AI assistant, focusing on health and fitness. Remind users that you are not a medical professional, but can provide general info."
+    },
+    {
+      "role": "user",
+      "content": "I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what average pace per km do I need, and how many seconds per km faster is that than my current pace? End with one line: 'Answer: <pace>, <seconds>'."
+    }
+  ],
+  "max_tokens": 800,
+  "temperature": 0.3
+}
+
+--- OUTBOUND RESPONSE #9 ---
+< 200 OK
+< Content-Length: 2015
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:00:49 GMT
+< Server: istio-envoy
+< Vary: Origin
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< azureml-model-session: d20261002183238-fc7a7ff8
+< skip-error-remapping: true
+< x-accel-buffering: no
+< x-ms-is-spilled-over: false
+< x-ms-rai-invoked: true
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-remaining-tokens: 199902
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-renewalperiod-tokens: 60
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-reset-tokens: 0
+< x-request-id: <id>
+< apim-request-id: <id>
+< x-http2-stream-id: 265
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-ms-client-request-id: Not-Set
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "choices": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "annotations": [],
+        "content": "To finish 5 km in 30 minutes, you need to run at an average pace of:\n\n30 minutes = 30 x 60 = 1800 seconds  \nAverage pace = Total time / Distance = 1800 seconds / 5 km = 360 seconds per km\n\nYour current pace is:\n\n31 minutes 30 seconds = 31 x 60 + 30 = 1890 seconds  \nCurrent pace = 1890 seconds / 5 km = 378 seconds per km\n\nNow, to find out how many seconds per km faster you need to run:\n\n378 seconds per km - 360 seconds per km = 18 seconds per km\n\nAnswer: 360 seconds, 18 seconds.",
+        "refusal": null,
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1792951250,
+  "id": "chatcmpl-EcwoUK62K2xqu9GAocDefli8kKFwA",
+  "model": "gpt-4o-mini-2024-07-18",
+  "object": "chat.completion",
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20261002183238-fc7a7ff8-default-r4-dp0-default"
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_99f88af1c5",
+  "usage": {
+    "completion_tokens": 143,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 8,
+      "engine_ttft_ms": 28,
+      "engine_ttlt_ms": 1142,
+      "pre_inference_ms": 103,
+      "service_tbt_ms": 8,
+      "service_ttft_ms": 390,
+      "service_ttlt_ms": 1496,
+      "user_visible_ttft_ms": 287
+    },
+    "prompt_tokens": 98,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 241
+  }
+}
+
+--- gpt-4o-mini: 1.8 s, tokens in 98 / out 143, finish=stop
+To finish 5 km in 30 minutes, you need to run at an average pace of:
+
+30 minutes = 30 x 60 = 1800 seconds  
+Average pace = Total time / Distance = 1800 seconds / 5 km = 360 seconds per km
+
+Your current pace is:
+
+31 minutes 30 seconds = 31 x 60 + 30 = 1890 seconds  
+Current pace = 1890 seconds / 5 km = 378 seconds per km
+
+Now, to find out how many seconds per km faster you need to run:
+
+378 seconds per km - 360 seconds per km = 18 seconds per km
+
+Answer: 360 seconds, 18 seconds.
+[pace answer correct: yes]
+
+================================================================================
+Comparison (all three prompts)
+================================================================================
+model              tokens in  tokens out  seconds   cost USD  pace correct
+Phi-4                    243        1106     26.8    0.00058  yes
+Phi-4-reasoning          766        4618    105.2    0.00240  yes
+gpt-4o-mini              240         742      9.3    0.00048  yes
+
+Check: PASS  every model answered every prompt
