@@ -1,15 +1,19 @@
 """Remote MCP server on Azure Functions with two workout tools (fixed logic, no model).
 
 This file is the server side of the MCP lab: a small app on Azure Functions that offers two workout tools to any AI
-agent that speaks MCP (Model Context Protocol), the open standard for giving agents tools. One tool lists the workout
-goals it knows, the other builds a workout plan for a goal and a number of minutes. The plans come from fixed rules, not
-a model, so the answers are predictable, with no model charges. The app scales to zero when idle, so it costs almost
-nothing, and it needs a key, so only callers that have it can use the tools.
+agent that speaks MCP (Model Context Protocol), the open standard for giving agents tools.
 
-The Functions MCP extension serves every `@app.mcp_tool()` function as a tool at /runtime/webhooks/mcp
-(Streamable HTTP): the tool name comes from the function name, the description from its docstring and the input
-schema from its typed parameters. In Azure the endpoint needs the `mcp_extension` system key in the
-`x-functions-key` header.
+Tools (the plans come from fixed rules, not a model, so the answers are predictable, with no model charges):
+- One lists the workout goals it knows.
+- The other builds a workout plan for a goal and a number of minutes.
+
+How it is served:
+- The Functions MCP extension serves every `@app.mcp_tool()` function as a tool at /runtime/webhooks/mcp
+  (Streamable HTTP): the tool name comes from the function name, the description from its docstring and the input
+  schema from its typed parameters.
+- In Azure the endpoint needs the `mcp_extension` system key in the `x-functions-key` header, so only callers that
+  have it can use the tools.
+- The app scales to zero when idle, so it costs almost nothing.
 
 The plan logic lives in plain functions (`list_goals`, `build_workout`), so it can be tested without the Functions
 host:

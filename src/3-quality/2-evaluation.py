@@ -3,26 +3,22 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/3-quality_attributes/2-evaluation.ipynb
 
-This script measures answer quality automatically, the way a team checks a model or prompt change before release. It
-scores three sample health answers in four ways: word overlap with a reference answer, a second model acting as judge of
-relevance and groundedness, Azure AI Foundry's safety check for violent content, and a custom check of answer length.
-The sample answers are poor on purpose ("London" as the capital of France), so low scores show that the evaluators work.
-The results also appear on the Foundry project's Evaluations page.
+This script measures answer quality automatically, the way a team checks a model or prompt change before release. Its
+three sample health & fitness answers are poor on purpose (e.g. "London" as the capital of France), so low quality
+scores are the expected result and show that the evaluators work.
 
-Scores three sample health & fitness answers with azure-ai-evaluation:
+It scores each answer in four ways, with azure-ai-evaluation:
 - F1 score: word overlap between the answer and the reference answer (no model call)
-- Relevance and Groundedness: gpt-4o acts as the judge (AI-assisted)
-- Violence: Azure AI Foundry's safety evaluation service
+- Relevance and Groundedness: a second model, gpt-4o, acts as the judge (AI-assisted)
+- Violence: Azure AI Foundry's safety evaluation service checks for violent content
 - Response length: a custom code-based evaluator
 
-The sample answers are deliberately poor (e.g. "London" as the capital of France), so low quality
-scores are the expected result. The results are also logged to the Foundry project, where they show
-up on the Evaluations page. This replaces the notebook's cloud evaluation section, which used
-project_client.evaluations from the beta SDK; that API is not in azure-ai-projects 1.0.0.
-
-Connection: the judge model uses the Azure OpenAI endpoint (OPENAI_ENDPOINT) and the Violence
-evaluator and result logging use the Foundry project endpoint, all with an Entra ID token from
-the Azure CLI login.
+Results and connection:
+- The results are also logged to the Foundry project, where they show up on the Evaluations page. This replaces the
+  notebook's cloud evaluation section, which used project_client.evaluations from the beta SDK; that API is not in
+  azure-ai-projects 1.0.0.
+- The judge model uses the Azure OpenAI endpoint (OPENAI_ENDPOINT); the Violence evaluator and result logging use the
+  Foundry project endpoint; all with an Entra ID token from the Azure CLI login.
 
 Run from the project root:
     uv run python src/3-quality/2-evaluation.py [--output-dir DIR]

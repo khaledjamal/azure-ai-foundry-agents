@@ -3,17 +3,20 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/2-embeddings.ipynb
 
-This script generates an image from a text prompt with gpt-image-2 in Azure AI Foundry and saves it as a PNG file.
-Microsoft's notebook used DALL-E 3, which Azure has retired, so the script moves to its successor and signs in with the
-Azure CLI login (Entra ID) instead of an API key. It checks that a valid image of the requested size was saved, and lets
-you choose the quality, which sets the price: from under a cent at low quality to about 20 cents at high.
+This script generates an image from a text prompt with gpt-image-2 in Azure AI Foundry and saves it as a PNG file. You
+choose the quality, which sets the price: from under a cent at low quality to about 20 cents at high.
 
-The notebook used DALL-E 3 with an API key; DALL-E 3 was retired on Azure on 2026-03-04, so this version uses
-gpt-image-2 and an Entra ID token from the Azure CLI login (no API key). It replaces an earlier script,
-old-dalle3_image_generation.py. It sends the notebook's prompt through the openai SDK's `images.generate` on the
-Azure OpenAI v1 endpoint ({OPENAI_ENDPOINT}/openai/v1/), gets the image back as base64 (gpt-image models don't
-return a URL) and saves it as a PNG named with a timestamp. Exits with 1 unless a valid PNG of the requested size
-was saved.
+What it does:
+1. Sends the notebook's prompt through the openai SDK's `images.generate` on the Azure OpenAI v1 endpoint
+   ({OPENAI_ENDPOINT}/openai/v1/).
+2. Gets the image back as base64 (gpt-image models don't return a URL) and saves it as a PNG named with a timestamp.
+3. Checks the file: exits with 1 unless a valid PNG of the requested size was saved.
+
+Changes from the notebook:
+- Model: the notebook used DALL-E 3, which was retired on Azure on 2026-03-04; this version moves to its successor,
+  gpt-image-2.
+- Sign-in: an Entra ID token from the Azure CLI login instead of the notebook's API key.
+- It replaces an earlier script, old-dalle3_image_generation.py.
 
 Settings from .env: OPENAI_ENDPOINT, IMAGE_MODEL_DEPLOYMENT_NAME (default gpt-image-2). Paid: one image
 per run; at OpenAI's published gpt-image rates about $0.006 at low quality (the default), $0.05 medium, $0.21 high

@@ -4,24 +4,22 @@ Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_service/4-bing_grounding.ipynb
 
 This script builds an agent that searches the web with Grounding with Bing before it answers, for questions the model's
-training data can't cover, such as recent health news. Each of the three questions must trigger at least one search, and
-each answer is printed with numbered citations, the source websites and a link to the Bing search, as Bing's terms
-require. A finding: the model writes the search query itself and searched for "2023 news"; adding today's date to its
-instructions and asking for official sources first fixed it. The Bing key stays in a Foundry project connection, not in
-the agent. It uses the new agents API.
+training data can't cover, such as recent health news. It is the script version of 4-bing_grounding.ipynb, written fresh
+for the new agents API (it replaces an earlier classic-API version, old-4-bing_grounding.py).
 
-The script version of 4-bing_grounding.ipynb, written fresh for the new agents API (it replaces an earlier
-classic-API version, old-4-bing_grounding.py). The agent's Bing tool uses the project connection named in
-GROUNDING_WITH_BING_CONNECTION_NAME, so the agent definition holds no key. It asks the notebook's three health
-questions, each in its own response with tool_choice="required", so every question runs at least one Bing search.
+What it does:
+1. Creates the agent. Its Bing tool uses the project connection named in GROUNDING_WITH_BING_CONNECTION_NAME, so the
+   Bing key stays in a Foundry project connection and the agent definition holds no key.
+2. Asks the notebook's three health questions, each in its own response with tool_choice="required", so every
+   question runs at least one Bing search.
+3. For each answer, prints the text with numbered citations, the source websites and the Bing search URL of each
+   search (built from the query the agent sent), because Grounding with Bing's use and display requirements ask for
+   both.
+4. Deletes the agent version at the end.
+Exits with 1 unless every question got an answer with at least one source and a Bing search URL.
 
-The instructions carry today's date, because the model writes the Bing query itself and otherwise dates "news" by
-its training data (one run searched "... news 2023"), and they ask for official health sources first.
-
-For each answer it prints the text with numbered citations, the source websites and the Bing search URL of each
-search (built from the query the agent sent), because Grounding with Bing's use and display requirements ask for
-both. Exits with 1 unless every question got an answer with at least one source and a Bing search URL. The agent
-version is deleted at the end.
+Finding: the model writes the Bing query itself and otherwise dates "news" by its training data (one run searched
+"... news 2023"). The fix: the instructions carry today's date and ask for official health sources first.
 
 Settings from .env: GROUNDING_WITH_BING_CONNECTION_NAME, AZURE_AI_SERVICES_ENDPOINT (or
 AZURE_AI_PROJECT_ENDPOINT), AZURE_AI_PROJECT_NAME, MODEL_DEPLOYMENT_NAME. Paid: Grounding with Bing costs $14 per

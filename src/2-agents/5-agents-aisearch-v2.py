@@ -4,23 +4,29 @@ Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_service/5-agents-aisearch.ipynb
 
 This script moves the shopping assistant of 5-agents-aisearch.py from the classic agents API, which Microsoft retires
-on 2027-03-31, to the new one, and compares models on it. The agent gets the same two tools: Azure AI Search, to find
-products in a small fitness catalog, and a price filter that runs in this script, to answer budget questions exactly.
-On the new API the script runs the price filter itself and sends the result back to the model. Each model answers the
-same two questions; a table at the end shows the tool calls, tokens (including the model's thinking), time and cost
-per model. Newer models such as gpt-5.4-mini fail with the search tool on the classic API, so this is where they can
-be compared with gpt-4o-mini.
+on 2027-03-31, to the new one, and compares models on it. Newer models such as gpt-5.4-mini fail with the search tool
+on the classic API, so this is where they can be compared with gpt-4o-mini.
 
-Same catalog, questions, instructions and price logic as 5-agents-aisearch.py (the price is also in each product's
-text, because the search tool passes only text fields to the model). Differences on the new API:
+Same as 5-agents-aisearch.py:
+- The small fitness catalog, the two questions (each model answers both), the instructions and the price logic.
+- The same two tools: Azure AI Search, to find products, and a price filter (find_items_under) that runs in this
+  script, to answer budget questions exactly.
+- The price is also in each product's text, because the search tool passes only text fields to the model.
+
+Differences on the new API:
 - One versioned prompt agent per model (agents.create_version), called through the Responses API with an agent
   reference; no threads or runs.
-- The function tool is declared as a JSON schema. When a response contains function_call items, the script runs
-  find_items_under and sends function_call_output items back with previous_response_id, until the model answers.
+- The function tool is declared as a JSON schema. The script runs the price filter itself: when a response contains
+  function_call items, it runs find_items_under and sends function_call_output items back with previous_response_id,
+  until the model answers.
 - The search tool reaches the index through the project's Azure AI Search connection (project_connection_id).
-Checks per model: both questions answered, question 1 used the search tool, question 2 called
-find_items_under(max_price=300). Exits with 1 if any check fails. Each agent version is deleted after its questions,
-the index at the end.
+
+Checks per model (exits with 1 if any fails):
+- both questions answered,
+- question 1 used the search tool,
+- question 2 called find_items_under(max_price=300).
+A table at the end shows the tool calls, tokens (including the model's thinking), time and cost per model. Each agent
+version is deleted after its questions, the index at the end.
 
 Settings from .env: AZURE_AI_SERVICES_ENDPOINT (or AZURE_AI_PROJECT_ENDPOINT), AZURE_AI_PROJECT_NAME,
 MODEL_DEPLOYMENT_NAME (default model), AZURE_AI_SEARCH_ENDPOINT, AZURE_AI_SEARCH_API_KEY, optional

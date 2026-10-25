@@ -4,31 +4,31 @@ Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/4-frameworks/1-rag-sk-agents-aisearch.ipynb
 
 This script builds the same kind of shopping assistant as the Azure AI Search agent lab, but through Semantic Kernel,
-Microsoft's open-source framework for AI apps. The agent searches a small fitness catalog with Azure AI Search, and a
-Semantic Kernel plugin, code running in this script, filters products by price, so a budget question gets an exact
-answer. After each answer it prints the tools the agent used and what they returned. It had the same problem as the
-agent lab: the search tool never passed prices to the model, fixed the same way. On gpt-4o it made the same tool calls
-and gave the same answers as on gpt-4o-mini, at about 17 times the cost (about $0.011 against $0.0007 per run).
-Microsoft's notebook used Semantic Kernel calls that no longer exist.
+Microsoft's open-source framework for AI apps. On gpt-4o it made the same tool calls and gave the same answers as on
+gpt-4o-mini, at about 17 times the cost (about $0.011 against $0.0007 per run).
 
-Builds a small fitness product index in Azure AI Search, creates a Foundry agent with the Azure AI Search
-tool, wraps it in Semantic Kernel's AzureAIAgent and asks two shopping questions on one thread. Afterwards it
-deletes everything it created (thread, agent, index).
+What it does:
+1. Builds a small fitness product index in Azure AI Search.
+2. Creates a Foundry agent with the Azure AI Search tool and wraps it in Semantic Kernel's AzureAIAgent.
+3. Asks two shopping questions on one thread.
+4. Deletes everything it created (thread, agent, index).
 
-Changes from the notebook:
+Changes from the notebook (it used Semantic Kernel calls that no longer exist):
 - Current Semantic Kernel API: AzureAIAgent.create_client() with the Foundry project endpoint (the notebook's
   connection string and AzureAIAgentSettings.create() no longer exist), AzureAIAgentThread and get_response().
 - Price as text: each product's Description also states its price ("Price: $499.00."). The numeric Price field
-  is not searchable, so on its own it never reaches the model through the search tool.
-- Price filter plugin: a Semantic Kernel plugin (find_items_under) runs here in this script and queries the
+  is not searchable, so on its own it never reaches the model through the search tool. This is the same problem as
+  in the agent lab, fixed the same way.
+- Price filter plugin: a Semantic Kernel plugin (find_items_under), code running here in this script, queries the
   index with a real filter (Price le <max>), so a budget question gets an exact answer instead of the model
   comparing prices itself.
 - Tool output: after each answer the script prints the tools offered to the model in that run and every tool
   call with what it returned, so the output shows which product fields the search tool actually passed on.
 
-Connection method: AIProjectClient (async) from azure-ai-projects, created by Semantic Kernel with the Foundry
-project endpoint and an Entra ID token from the Azure CLI login. The search endpoint and key come from the
-project's default Azure AI Search connection.
+Connection method:
+- Client: AIProjectClient (async) from azure-ai-projects, created by Semantic Kernel with the Foundry project
+  endpoint and an Entra ID token from the Azure CLI login.
+- Azure AI Search: the endpoint and key come from the project's default Azure AI Search connection.
 
 Uses its own environment (see requirements.txt in this folder). Run from the project root:
     .venv-semantic-kernel/bin/python src/4-frameworks/1-rag-sk-agents-aisearch.py

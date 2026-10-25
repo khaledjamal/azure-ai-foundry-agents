@@ -3,19 +3,18 @@
 Workshop notebooks:
 https://github.com/Azure/ai-foundry-workshop/tree/273c24c/1-introduction
 
-This script checks that everything the labs need is in place before any of them runs, and costs nothing because it calls
-no model. It checks which settings are filled in (names only, never values), that the Azure sign-in works, that the
-Foundry project answers and has the model deployments and connections the labs expect, and that Azure AI Search accepts
-its key. It prints a result for each check, so a setup problem shows up here with a clear message instead of as an error
-in the middle of a lab.
+This script checks that everything the labs need is in place before any of them runs. It prints a result for each
+check, so a setup problem shows up here with a clear message instead of as an error in the middle of a lab. It costs
+nothing because it calls no model.
 
 The notebooks troubleshoot DefaultAzureCredential, create the project client and list models and connections. This
-script does the same checks in one go, without calling any model, so it costs nothing:
+script does the same checks in one go:
   1. which lab settings are set in .env (names only, values are never printed),
-  2. Entra ID sign-in: a token for Azure AI services from DefaultAzureCredential (`az login` locally),
-  3. the Foundry project: its model deployments and connections, through AIProjectClient,
-  4. that every *_DEPLOYMENT_NAME setting names an existing deployment and the Bing connection exists,
-  5. Azure AI Search: the key works and the index names can be listed.
+  2. Entra ID sign-in works: a token for Azure AI services from DefaultAzureCredential (`az login` locally),
+  3. the Foundry project answers: its model deployments and connections, through AIProjectClient,
+  4. the project has what the labs expect: every *_DEPLOYMENT_NAME setting names an existing deployment and the Bing
+     connection exists,
+  5. Azure AI Search accepts its key: the index names can be listed.
 Exits with 1 if sign-in, the project or a required setting fails; optional labs only get a warning.
 
 Run from the project root:

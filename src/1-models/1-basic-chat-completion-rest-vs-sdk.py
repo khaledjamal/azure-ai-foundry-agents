@@ -2,22 +2,24 @@
 
 New: not in Microsoft's workshop.
 
-This script sends the same chat question to the same model twice: once as an HTTP request built by hand and once through
-the OpenAI Python library, then prints both requests and responses in full. It shows that the library adds convenience,
-not magic: the request body is the same, and the library only adds its own headers. A table at the end compares status,
-time, tokens and answer length. Both calls sign in with the same Entra ID token, so no API key is involved.
+This script sends the same chat question to the same model twice, once as an HTTP request built by hand and once
+through the OpenAI Python library. It is a learning companion to the chat completion lab (1-basic-chat-completion.ipynb)
+that shows what the SDK does under the hood: the library adds convenience, not magic. The request body is the same, and
+the library only adds its own headers (its user agent, for example).
 
-A learning companion to the chat completion lab (1-basic-chat-completion.ipynb): it shows what the SDK does under
-the hood. Both calls go to the same Azure OpenAI deployment with the same messages and settings, signed in with
-the same Entra ID token (no API key):
+What it does:
   1. REST: `requests.post` to {OPENAI_ENDPOINT}/openai/deployments/{deployment}/chat/completions?api-version=...
      with an `Authorization: Bearer <token>` header and a JSON body.
   2. SDK:  `AzureOpenAI(...).chat.completions.with_raw_response.create(...)`, which builds that same request and
      also exposes the HTTP response's status.
-The HTTP log (workshop_utils.http_log) prints both requests and responses in full, headers and JSON bodies, with
-the token redacted, so the two can be compared line by line: the same body, plus the SDK's own headers (its user
-agent, for example). Then a side-by-side table: status, latency, tokens, answer length. Exits with 1 unless both
-calls return an answer.
+  3. A side-by-side table at the end compares status, latency, tokens and answer length.
+
+Details:
+- Both calls go to the same Azure OpenAI deployment with the same messages and settings, signed in with the same
+  Entra ID token, so no API key is involved.
+- The HTTP log (workshop_utils.http_log) prints both requests and responses in full, headers and JSON bodies, with the
+  token redacted, so the two can be compared line by line.
+- Exits with 1 unless both calls return an answer.
 
 Settings from .env: OPENAI_ENDPOINT, OPENAI_API_VERSION, MODEL_DEPLOYMENT_NAME. Two small paid calls on
 gpt-4o-mini, well under $0.01 per run.

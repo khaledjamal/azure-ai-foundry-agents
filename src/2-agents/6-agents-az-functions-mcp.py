@@ -6,22 +6,23 @@ https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_se
 
 This script connects a Foundry agent to tools hosted outside Azure AI Foundry through MCP (Model Context Protocol), the
 open standard for giving agents tools. The tools run on a small Azure Functions app (src/functions-mcp-server): one
-lists workout goals, the other plans a workout. The agent asks to use them and the script approves only those two tools,
-so the agent can't call anything else on its own. The server's key sits in a Foundry project connection, not in the
-agent or the code. The script checks the Function app first: if it is stopped, it prints the start command instead of
-failing midway. It uses the new agents API.
+lists workout goals, the other plans a workout.
 
-The agent's MCP tool points to the Function app's endpoint and authenticates through the project connection
-`workout-mcp-key` (Custom keys, key name x-functions-key), so the agent definition holds no key. Every tool call
-needs approval: the script approves only list_workout_goals and suggest_workout on this server and denies anything
-else. Two turns in one conversation:
-  1. "Which workout goals can you plan for?"          -> expects a list_workout_goals call
-  2. "Plan a 30-minute strength workout for me."      -> expects suggest_workout(goal=strength, minutes=30)
-Exits with 1 unless both calls happened and both turns got an answer. The agent version is deleted at the end.
-
-Before creating the agent, one request without a key checks the Function app: HTTP 403 means it is stopped (the
-script prints the start command and exits); HTTP 401 means it is running and wants the key, as expected. That
-request also wakes the app, so the agent's first MCP call doesn't wait for a cold start.
+What it does:
+1. Checks the Function app with one request without a key, before creating the agent: HTTP 403 means it is stopped
+   (the script prints the start command and exits, instead of failing midway); HTTP 401 means it is running and
+   wants the key, as expected. That request also wakes the app, so the agent's first MCP call doesn't wait for a
+   cold start.
+2. Creates the agent. Its MCP tool points to the Function app's endpoint and authenticates through the project
+   connection `workout-mcp-key` (Custom keys, key name x-functions-key), so the server's key sits in a Foundry
+   project connection, not in the agent definition or the code.
+3. Runs two turns in one conversation:
+   - "Which workout goals can you plan for?"          -> expects a list_workout_goals call
+   - "Plan a 30-minute strength workout for me."      -> expects suggest_workout(goal=strength, minutes=30)
+   Every tool call needs approval: the script approves only list_workout_goals and suggest_workout on this server
+   and denies anything else, so the agent can't call anything else on its own.
+4. Deletes the agent version at the end.
+Exits with 1 unless both calls happened and both turns got an answer.
 
 Settings from .env: AZURE_FUNCTIONS_MCP_URL, AZURE_AI_SERVICES_ENDPOINT (or AZURE_AI_PROJECT_ENDPOINT),
 AZURE_AI_PROJECT_NAME, MODEL_DEPLOYMENT_NAME, AZURE_RESOURCE_GROUP (only for the start hint). A few small paid

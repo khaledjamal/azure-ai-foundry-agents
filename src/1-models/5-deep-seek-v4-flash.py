@@ -4,19 +4,8 @@ Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/5-deep-seek-r1.ipynb
 
 This script runs DeepSeek-V4-Flash on the same three prompts twice, with thinking off and on, to show what step-by-step
-reasoning adds and what it costs. The prompts are a travel plan, a database design question and a pace calculation with
-one right answer; the script prints each answer, the model's thinking when it is on, and a table of tokens, time and
-cost for both modes. In the recorded run both modes got the calculation right; with thinking, that answer took 4.8 s
-instead of 1.4 s, and the three prompts cost $0.003 instead of $0.002. Microsoft's notebook used DeepSeek-R1, now
-retired on Azure, and cut the thinking out of the text with a pattern; V4-Flash returns it in a field of its own.
-
-The notebook called a serverless DeepSeek-R1 through the azure-ai-inference SDK (retired 2026-08-26) and cut the
-reasoning out of the reply with a <think> regex. DeepSeek-R1 is retired on Azure (Microsoft lists DeepSeek-V4-Pro as
-its replacement), so this script uses the cheaper DeepSeek-V4-Flash (GA), deployed on the Foundry resource and called
-through the Azure OpenAI v1 endpoint ({OPENAI_ENDPOINT}/openai/v1/) with an Entra ID token. V4-Flash answers without
-thinking by default; with reasoning_effort="high" it thinks first and returns the thinking in the message's separate
-`reasoning_content` field, so no regex is needed. (The DeepSeek API's own `thinking` request field is rejected by the
-Azure endpoint.)
+reasoning adds and what it costs. In the recorded run both modes got the calculation right; with thinking, that answer
+took 4.8 s instead of 1.4 s, and the three prompts cost $0.003 instead of $0.002.
 
 Each prompt runs twice, thinking off and on:
   1. the notebook's travel planning question (5 cultural days in Kyoto),
@@ -24,6 +13,16 @@ Each prompt runs twice, thinking off and on:
   3. the pace calculation from the Phi-4 lab, with one right answer (6:00 per km, 18 seconds per km faster).
 It prints each answer, the thinking for the "on" calls, and a table comparing tokens, time and cost of the two modes.
 Exits with 1 unless every call answered and every "on" call returned its thinking.
+
+Changes from the notebook:
+- Model: the notebook called a serverless DeepSeek-R1, now retired on Azure (Microsoft lists DeepSeek-V4-Pro as its
+  replacement); this script uses the cheaper DeepSeek-V4-Flash (GA), deployed on the Foundry resource.
+- SDK: the notebook used the azure-ai-inference SDK (retired 2026-08-26); here the calls go through the Azure OpenAI
+  v1 endpoint ({OPENAI_ENDPOINT}/openai/v1/) with an Entra ID token.
+- Thinking: the notebook cut the reasoning out of the reply with a <think> regex. V4-Flash answers without thinking
+  by default; with reasoning_effort="high" it thinks first and returns the thinking in the message's separate
+  `reasoning_content` field, so no regex is needed. (The DeepSeek API's own `thinking` request field is rejected by
+  the Azure endpoint.)
 
 Settings from .env: OPENAI_ENDPOINT, DEEPSEEK_MODEL_DEPLOYMENT_NAME (default DeepSeek-V4-Flash). Paid:
 six calls, about $0.01 per run (prices below).

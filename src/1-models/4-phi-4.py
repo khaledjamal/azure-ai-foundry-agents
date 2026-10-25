@@ -4,24 +4,24 @@ Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/4-phi-4.ipynb
 
 This script compares three models on the same three prompts: Microsoft's small Phi-4, Phi-4-reasoning (which thinks step
-by step before answering) and gpt-4o-mini. The prompts are a training plan, an answer from a short text and a pace
-calculation with one right answer; a table at the end shows tokens, time and cost per model. It answers a practical
-question: does a smaller model or a reasoning model pay off? In the recorded run all three got the calculation right,
-gpt-4o-mini was the fastest at about the same cost, and Phi-4-reasoning took about 9 times as long for the same answers.
-Microsoft's notebook used a retired SDK; here all three models are called the same way, through the Azure OpenAI
-endpoint.
+by step before answering) and gpt-4o-mini. It answers a practical question: does a smaller model or a reasoning model
+pay off? In the recorded run all three got the calculation right, gpt-4o-mini was the fastest at about the same cost,
+and Phi-4-reasoning took about 9 times as long for the same answers.
 
-The notebook called a serverless Phi-4 through the azure-ai-inference SDK (retired 2026-08-26). Here Phi-4 (version 7)
-and Phi-4-reasoning are deployed on the Foundry resource and called like the OpenAI models: the openai SDK on the
-Azure OpenAI v1 endpoint ({OPENAI_ENDPOINT}/openai/v1/) with an Entra ID token. Each model gets three prompts:
+Each model gets three prompts:
   1. the notebook's chat question (a weekly 5K training schedule),
   2. the notebook's "RAG-like" question, answered from a short context snippet,
   3. a pace calculation with one right answer (6:00 per km, 18 seconds per km faster), to show what reasoning adds.
-Phi-4-reasoning gets the system prompt from its model card, which asks for the thinking between <think> tags before
-the answer. On this Azure deployment the tags are removed from the reply and the message's `reasoning` field stays
-empty, so the thinking and the answer arrive as one text, printed as is. A table at the end compares tokens, time and
-cost per model.
-Exits with 1 unless every model answered every prompt.
+A table at the end compares tokens, time and cost per model. Exits with 1 unless every model answered every prompt.
+
+Changes from the notebook:
+- The notebook called a serverless Phi-4 through the azure-ai-inference SDK (retired 2026-08-26). Here Phi-4
+  (version 7) and Phi-4-reasoning are deployed on the Foundry resource, and all three models are called the same way,
+  like the OpenAI models: the openai SDK on the Azure OpenAI v1 endpoint ({OPENAI_ENDPOINT}/openai/v1/) with an
+  Entra ID token.
+- Phi-4-reasoning gets the system prompt from its model card, which asks for the thinking between <think> tags before
+  the answer. On this Azure deployment the tags are removed from the reply and the message's `reasoning` field stays
+  empty, so the thinking and the answer arrive as one text, printed as is.
 
 Settings from .env: OPENAI_ENDPOINT, PHI_MODEL_DEPLOYMENT_NAME (default Phi-4),
 PHI_REASONING_MODEL_DEPLOYMENT_NAME (default Phi-4-reasoning), MODEL_DEPLOYMENT_NAME (default gpt-4o-mini). Paid:

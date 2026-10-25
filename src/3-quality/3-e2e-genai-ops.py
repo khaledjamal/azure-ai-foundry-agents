@@ -4,12 +4,8 @@ quality, observability, RAG evaluation and an indirect attack simulation, traced
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/3-quality_attributes/3-e2e-GenAI-Ops.ipynb
 
-This script puts the checks a team runs on a generative AI app before and after release into one place:
-- Safety: tests outputs for harmful content and copyrighted text.
-- Security: attacks a test agent with Microsoft-generated jailbreak prompts to see whether it refuses.
-- Quality: a second model acting as judge scores answers for relevance and groundedness, including answers built from a
-  small search index.
-- Observability: traces every step to Application Insights, so problems can be found later.
+This script puts the checks a team runs on a generative AI app before and after release into one place: safety,
+security, quality and observability.
 
 The first run reported success while two things had failed: the attack tool silently dropped an agent error, and the
 judge gave a perfect score to an answer that had no sources. The script now detects both and fails the section, so
@@ -17,24 +13,28 @@ neither failure can hide behind a success message any more.
 
 Sections (same numbers as the notebook; run all, or pick some with --sections):
 1. Model selection: list the project's deployments and Azure OpenAI connections, make one chat call.
-2. Safety evaluation: ContentSafetyEvaluator (violence, sexual, self-harm, hate) on the notebook's self-harm
-   story sample and ProtectedMaterialEvaluator on its copyrighted-text sample (Foundry safety service).
-3. Security: DirectAttackSimulator (ADVERSARIAL_REWRITE, 2 results) against a test agent on the Agent Service.
-   The simulator runs every attack twice, as written and with a jailbreak (UPIA) added.
-4. Quality evaluation of evaluate_test_data.jsonl: relevance, coherence, fluency, groundedness (gpt-4o judge),
-   BLEU, F1, ROUGE-L, violence, hate/unfairness. Runs locally with evaluate(..., azure_ai_project=...) so the
-   results appear on the project's Evaluations page; the notebook's project.evaluations.create cloud run is
-   not in azure-ai-projects 1.0.0.
-5. Observability: show the tracing setup (provider, content recording, Application Insights connection).
-6. RAG: a small "AI safety guidelines" Azure AI Search index (its own name, ai-safety-index), three questions
-   answered from it, each scored by relevance, coherence, groundedness and fluency (gpt-4o judge).
+2. Safety evaluation, testing outputs for harmful content and copyrighted text: ContentSafetyEvaluator (violence,
+   sexual, self-harm, hate) on the notebook's self-harm story sample and ProtectedMaterialEvaluator on its
+   copyrighted-text sample (Foundry safety service).
+3. Security, attacking a test agent on the Agent Service with Microsoft-generated jailbreak prompts to see whether it
+   refuses: DirectAttackSimulator (ADVERSARIAL_REWRITE, 2 results). The simulator runs every attack twice, as
+   written and with a jailbreak (UPIA) added.
+4. Quality evaluation of evaluate_test_data.jsonl: relevance, coherence, fluency, groundedness (gpt-4o as a second
+   model acting as judge), BLEU, F1, ROUGE-L, violence, hate/unfairness. Runs locally with
+   evaluate(..., azure_ai_project=...) so the results appear on the project's Evaluations page; the notebook's
+   project.evaluations.create cloud run is not in azure-ai-projects 1.0.0.
+5. Observability: every step is traced to Application Insights, so problems can be found later; this section shows
+   the tracing setup (provider, content recording, Application Insights connection).
+6. RAG: answers built from a small "AI safety guidelines" Azure AI Search index (its own name, ai-safety-index):
+   three questions answered from it, each scored by relevance, coherence, groundedness and fluency (gpt-4o judge).
 7. IndirectAttackSimulator (XPIA, 2 results). As in the notebook, the target only echoes, so no model
    receives the attack text.
 
-Attack and evaluation outputs are written as JSON to --output-dir (default runs/genai-ops, git-ignored, since
-they contain the attack prompts); the console shows short excerpts.
-Prompt and answer content is not recorded in the traces. Agents, threads and the search index are deleted
-at the end (--keep-index keeps the index).
+Outputs and cleanup:
+- Attack and evaluation outputs are written as JSON to --output-dir (default runs/genai-ops, git-ignored, since they
+  contain the attack prompts); the console shows short excerpts.
+- Prompt and answer content is not recorded in the traces.
+- Agents, threads and the search index are deleted at the end (--keep-index keeps the index).
 
 Run from the project root:
     uv run python src/3-quality/3-e2e-genai-ops.py [--output-dir DIR] [--sections 1,2,...]

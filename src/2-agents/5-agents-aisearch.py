@@ -3,17 +3,21 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_service/5-agents-aisearch.ipynb
 
-This script builds a shopping assistant for a small fitness product catalog. The agent gets two tools: Azure AI Search,
-to find products by description, and a price filter that runs in this script, to answer budget questions exactly. It
-asks two questions and prints every tool call, so you can see which tool the agent chose and what came back. A finding:
-the search tool passes only text fields to the model, so prices never reached it and the agent said they weren't given;
-putting the price into the product text and adding the price filter fixed it. It uses the classic agents API, as
+This script builds a shopping assistant for a small fitness product catalog. It uses the classic agents API, as
 Microsoft's notebook does; 5-agents-aisearch-v2.py is the same agent on the new agents API, compared on newer models.
 
-Builds a small fitness product index in Azure AI Search, gives a classic-API agent the search tool (through the
-project's Azure AI Search connection) plus find_items_under(max_price, category) as a function tool, asks the
-notebook's questions and prints each run's status and tool calls. Each question's thread is deleted after its answer,
-the agent and the index at the end.
+What it does:
+1. Builds a small fitness product index in Azure AI Search.
+2. Gives a classic-API agent two tools:
+   - Azure AI Search (through the project's Azure AI Search connection), to find products by description;
+   - find_items_under(max_price, category), a price filter that runs in this script as a function tool, to answer
+     budget questions exactly.
+3. Asks the notebook's two questions and prints each run's status and every tool call, so you can see which tool the
+   agent chose and what came back.
+4. Deletes each question's thread after its answer, the agent and the index at the end.
+
+Finding: the search tool passes only text fields to the model, so prices never reached it and the agent said they
+weren't given; putting the price into the product text and adding the price filter fixed it.
 
 Settings from .env: AZURE_AI_SERVICES_ENDPOINT (or AZURE_AI_PROJECT_ENDPOINT), AZURE_AI_PROJECT_NAME,
 MODEL_DEPLOYMENT_NAME, AZURE_AI_SEARCH_ENDPOINT, AZURE_AI_SEARCH_API_KEY, optional AZURE_AI_SEARCH_CONNECTION_NAME.

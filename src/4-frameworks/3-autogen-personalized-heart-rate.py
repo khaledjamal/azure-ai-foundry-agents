@@ -3,26 +3,27 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/4-frameworks/3-autogen-personalized-heart-rate.ipynb
 
-This script turns a day of sample smartwatch data (a heart-rate reading every few seconds) into an hourly summary and a
-chart, then has two AutoGen agents plan the user's day from it: one fetches the summary and matching wellness tips, the
-other writes a schedule of workouts and breaks, told to plan only from them. It shows agents working with real
-data, with the number crunching done in plain code (pandas) and the planning done by the model. It is a wellness demo,
-not medical advice: the notebook's heart-strain scoring is left out on purpose, and unlike in the notebook, the agents
-actually run.
+This script turns a day of sample smartwatch data into an hourly summary and a chart, then has two AutoGen agents plan
+the user's day from it. It shows agents working with real data, with the number crunching done in plain code (pandas)
+and the planning done by the model. It is a wellness scheduling demo, not medical advice: no health scoring or medical
+interpretation.
 
 What it does:
-1. Loads the sample wearable data (example-data/20250417_health_data.csv, one reading every ~3 seconds),
+1. Loads the sample wearable data (example-data/20250417_health_data.csv, a heart-rate reading every ~3 seconds),
    summarizes the heart rate per hour and saves a chart of the hourly averages.
 2. Runs two agents in a RoundRobinGroupChat: PersonalizedRetrieverAgent calls a local tool that returns the
-   hourly summary plus matching wellness tips; PersonalizedResponderAgent plans the user's day from them.
+   hourly summary plus matching wellness tips; PersonalizedResponderAgent writes a schedule of workouts and breaks
+   for the user's day, told to plan only from them.
 
-Reduced on purpose: the notebook's "heart strain likelihood" score (Low/Moderate/High), strain index, phase
-analysis and mood-based food suggestions are left out. This is a wellness scheduling demo with no health
-scoring or medical interpretation. The notebook also only defined its agents; here they actually run.
-
-Same connection and fixes as 2-autogen-multi-agent-rag.py: Azure OpenAI deployments of the Foundry project with an
-Entra ID token (not GitHub Models), tips found by meaning (embeddings, top 3) and passed on word for word, the
-responder limited to those tips, stop after the responder's answer, exit 1 if it never answers.
+Changes from the notebook:
+- Reduced on purpose: the notebook's "heart strain likelihood" score (Low/Moderate/High), strain index, phase
+  analysis and mood-based food suggestions are left out.
+- The notebook only defined its agents; here they actually run.
+- Same connection and fixes as 2-autogen-multi-agent-rag.py:
+  - Azure OpenAI deployments of the Foundry project with an Entra ID token (not GitHub Models),
+  - tips found by meaning (embeddings, top 3) and passed on word for word,
+  - the responder limited to those tips,
+  - stop after the responder's answer, exit 1 if it never answers.
 
 Run from the project root:
     uv run python src/4-frameworks/3-autogen-personalized-heart-rate.py [--output-dir DIR]

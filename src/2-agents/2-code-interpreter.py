@@ -3,14 +3,15 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_service/2-code_interpreter.ipynb
 
-This script gives an agent the Code Interpreter tool: a sandbox where the agent writes and runs its own Python code. It
-uploads a small nutrition table (CSV), asks the agent to calculate and explain a BMI and to analyze the nutrition data
-with a chart, and saves the charts it draws. This is how an agent computes numbers instead of guessing them. At the
-end it deletes everything it created in the project: threads, the agent, and the uploaded and generated files.
+This script gives an agent the Code Interpreter tool: a sandbox where the agent writes and runs its own Python code.
+This is how an agent computes numbers instead of guessing them.
 
-Uploads a small nutrition CSV, creates a health calculator agent with the Code Interpreter tool,
-asks it for a BMI calculation and a nutrition analysis with a chart, saves any charts it draws,
-then deletes everything it created in the project (threads, agent, uploaded and generated files).
+What it does:
+1. Uploads a small nutrition table (CSV).
+2. Creates a health calculator agent with the Code Interpreter tool.
+3. Asks it to calculate and explain a BMI, and to analyze the nutrition data with a chart.
+4. Saves any charts it draws.
+5. Deletes everything it created in the project: threads, the agent, and the uploaded and generated files.
 
 Connection method: AIProjectClient from azure-ai-projects, created with the Foundry project
 endpoint and an Entra ID token from the Azure CLI login.

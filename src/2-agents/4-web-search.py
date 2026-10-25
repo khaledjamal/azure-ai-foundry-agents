@@ -2,22 +2,23 @@
 
 New: not in Microsoft's workshop.
 
-This script asks the same three questions as the Bing lab, with the same checks, but uses the newer built-in Web Search
-tool, which Microsoft now recommends as the starting point. It needs no separate Bing resource or connection, though
-Bing still runs underneath, so the same terms apply. In the recorded run it cited more sources (11 against 7) and read
-about twice the input tokens, still under a cent: no quality gap, and less to set up, which makes it the simpler default
-for a new agent. Each answer is printed with numbered citations and the search queries the agent sent. It uses the new
-agents API.
+This script is a companion to the Bing lab (4-bing-grounding.py): the same three health questions, instructions and
+checks, but the agent uses the newer built-in Web Search tool (`WebSearchTool` instead of `BingGroundingTool`).
 
-A companion to 4-bing-grounding.py: the same three health questions, instructions and checks, but the agent uses
-`WebSearchTool` instead of `BingGroundingTool`. Microsoft's docs now say to start with this tool: it needs no
-Grounding with Bing resource and no project connection, so the agent definition holds only the tool. Underneath it
-still uses Grounding with Bing, so Bing's terms apply and the queries leave the Azure compliance boundary, as in the
-Bing lab. Each question runs in its own response with tool_choice="required".
+Why this tool:
+- Microsoft's docs now say to start with it: it needs no Grounding with Bing resource and no project connection, so
+  the agent definition holds only the tool.
+- Underneath it still uses Grounding with Bing, so Bing's terms apply and the queries leave the Azure compliance
+  boundary, as in the Bing lab.
+- In the recorded run it cited more sources (11 against 7) and read about twice the input tokens, still under a cent:
+  no quality gap, and less to set up, which makes it the simpler default for a new agent.
 
-For each answer it prints the text with numbered citations, the source websites and the query of each search
-(from the `web_search_call` items), with a Bing search URL built from it. Exits with 1 unless every question got an
-answer with at least one source. The agent version is deleted at the end.
+What it does:
+1. Asks each question in its own response with tool_choice="required".
+2. For each answer, prints the text with numbered citations, the source websites and the query of each search (from
+   the `web_search_call` items), with a Bing search URL built from it.
+3. Deletes the agent version at the end.
+Exits with 1 unless every question got an answer with at least one source.
 
 Settings from .env: AZURE_AI_SERVICES_ENDPOINT (or AZURE_AI_PROJECT_ENDPOINT), AZURE_AI_PROJECT_NAME,
 MODEL_DEPLOYMENT_NAME. Paid: the Agent Service lists Web Search per 1,000 transactions without a published rate;

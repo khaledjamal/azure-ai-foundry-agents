@@ -5,18 +5,17 @@ https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_com
 
 This script runs the same retrieval-augmented generation (RAG) as its twin, 3-basic-rag-azure-openai.py, but gets the
 OpenAI client through the Azure AI Foundry project SDK instead of the Azure OpenAI endpoint. RAG is the usual way to
-make a model answer from your own documents instead of its general knowledge: six health tips become embeddings in an
-Azure AI Search index, and for each question the three closest tips are the only context the model gets, with an
-instruction to say "I'm not sure" when they don't cover the question. Models sign in with Entra ID; Azure AI Search uses
-its own key from .env.
+steer a model to answer from your own documents instead of its general knowledge.
 
-Embeds six health tips, stores them in an Azure AI Search vector index, then answers questions
-with the top matching tips as context.
+What it does:
+1. Turns six health tips into embeddings and stores them in an Azure AI Search vector index.
+2. For each question, finds the three closest tips and gives only those to the model as context, with an instruction
+   to say "I'm not sure" when they don't cover the question.
 
-Connection method: AIProjectClient from azure-ai-projects, created with the Foundry project
-endpoint. The project client hands back an AzureOpenAI client through get_openai_client(),
-using an Entra ID token from the Azure CLI login. Azure AI Search is reached with its own
-endpoint and API key from .env.
+Connection method:
+- Models: AIProjectClient from azure-ai-projects, created with the Foundry project endpoint, hands back an
+  AzureOpenAI client through get_openai_client(), using an Entra ID token from the Azure CLI login.
+- Azure AI Search: its own endpoint and API key from .env.
 
 Run from the project root:
     uv run python src/1-models/3-basic-rag-project-client.py

@@ -3,14 +3,12 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/4-frameworks/2-autogen-multi-agent-rag.ipynb
 
-This script has two AI agents share a task with AutoGen, Microsoft's open-source framework for multi-agent apps: a
-retriever finds the most relevant health tips, then a responder writes the answer, instructed to use only those tips.
-Splitting the work this way keeps the answer close to the retrieved tips. The notebook's keyword search matched almost
-every tip (even "a" counted as a match), so the script searches by meaning with embeddings instead. It runs on the
-Foundry project's Azure OpenAI models with Entra ID sign-in, instead of the notebook's GitHub Models.
+This script has two AI agents share a task with AutoGen, Microsoft's open-source framework for multi-agent apps.
+Splitting the work this way keeps the answer close to the retrieved tips.
 
-Two agents take turns in a RoundRobinGroupChat: RetrieverAgent calls a local retrieve_tips tool
-to find the most relevant health tips, then ResponderAgent writes the answer from them.
+What it does (the two agents take turns in a RoundRobinGroupChat):
+1. RetrieverAgent calls a local retrieve_tips tool to find the most relevant health tips.
+2. ResponderAgent writes the answer, instructed to use only those tips.
 
 Changes from the notebook:
 - Uses the Azure OpenAI deployments of the Foundry project (OPENAI_ENDPOINT, MODEL_DEPLOYMENT_NAME,

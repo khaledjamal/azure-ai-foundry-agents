@@ -5,16 +5,20 @@ https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_se
 
 This script shows the building blocks of an AI agent in Azure AI Foundry's Agent Service: the agent (a model with
 instructions, here a health advisor), a conversation thread, the user's messages, and a run, in which the agent reads
-the thread and replies. It asks two questions on the same thread, so the service keeps the conversation history instead
-of the script resending it, and prints the conversation. It checks that each run really completed and exits with an
-error if one didn't, then deletes the thread and the agent. Like Microsoft's notebook, it uses the classic agents API.
+the thread and replies. Like Microsoft's notebook, it uses the classic agents API.
 
-Creates a health advisor agent, asks two questions on one conversation thread, prints the
-conversation, then deletes the thread and the agent.
+What it does:
+1. Creates a health advisor agent.
+2. Asks two questions on the same conversation thread, so the service keeps the conversation history instead of the
+   script resending it. It checks that each run really completed and exits with an error if one didn't.
+3. Prints the conversation.
+4. Deletes the thread and the agent.
 
-Connection method: AIProjectClient from azure-ai-projects, created with the Foundry project
-endpoint and an Entra ID token from the Azure CLI login. Agents are only reachable through the
-project client (project_client.agents); a plain AzureOpenAI client cannot use them.
+Connection method:
+- Client: AIProjectClient from azure-ai-projects, created with the Foundry project endpoint and an Entra ID token from
+  the Azure CLI login.
+- Agents are only reachable through the project client (project_client.agents); a plain AzureOpenAI client cannot use
+  them.
 
 Run from the project root:
     uv run python src/2-agents/1-basics.py

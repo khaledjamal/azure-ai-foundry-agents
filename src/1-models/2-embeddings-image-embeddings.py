@@ -3,22 +3,23 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/2-embeddings.ipynb
 
-This script shows that one model can place an image and text in the same space of meaning. It sends a hand X-ray image
-and three short captions to Cohere's embed-v-4-0 model in Azure AI Foundry, then ranks the captions by how close each
-one is to the image; the X-ray caption must come first. That is the basis of searching images with words, for example
-finding scans by a description. Microsoft's notebook used an SDK that has since been retired, and the OpenAI library has
-no image embeddings, so this script calls the Foundry REST API directly, signed in with Entra ID instead of an API key.
+This script shows that one model can place an image and text in the same space of meaning: Cohere's embed-v-4-0 in
+Azure AI Foundry puts images and text in one vector space. That is the basis of searching images with words, for
+example finding scans by a description. It goes one step further than the notebook's "print a vector".
 
-The notebook embedded hand-xray.png with Cohere-embed-v3-english through the azure-ai-inference SDK. That SDK was a
-beta that Microsoft retired on 2026-08-26, and the openai SDK has no image embeddings, so this version calls the
-Foundry models REST API directly with requests and an Entra ID token (no API key). It replaces an earlier script,
-old-image_embeddings_cohere.py.
-
-It goes one step further than the notebook's "print a vector": embed-v-4-0 puts images and text in one vector space,
-so it embeds the X-ray image and three short captions and ranks the captions by cosine similarity to the image:
-  1. POST {AZURE_AI_SERVICES_ENDPOINT}/models/images/embeddings  the image as a base64 data URL, input_type document
-  2. POST {AZURE_AI_SERVICES_ENDPOINT}/models/embeddings         the captions, input_type query
+What it does:
+  1. POST {AZURE_AI_SERVICES_ENDPOINT}/models/images/embeddings  a hand X-ray image as a base64 data URL, input_type
+     document
+  2. POST {AZURE_AI_SERVICES_ENDPOINT}/models/embeddings         three short captions, input_type query
+  3. Ranks the captions by cosine similarity to the image; the X-ray caption must come first.
 Exits with 1 unless both calls succeed and the X-ray caption ranks first.
+
+Changes from the notebook:
+- Model: the notebook embedded hand-xray.png with Cohere-embed-v3-english; this version uses embed-v-4-0.
+- No SDK: the notebook used the azure-ai-inference SDK, a beta that Microsoft retired on 2026-08-26, and the openai
+  SDK has no image embeddings, so this version calls the Foundry models REST API directly with requests.
+- Sign-in: an Entra ID token instead of an API key.
+- It replaces an earlier script, old-image_embeddings_cohere.py.
 
 Settings from .env: AZURE_AI_SERVICES_ENDPOINT, IMAGE_EMBEDDING_MODEL_DEPLOYMENT_NAME (default
 embed-v-4-0), IMAGE_EMBEDDING_API_VERSION (default 2024-05-01-preview). Paid: two small calls, well under $0.01 per
