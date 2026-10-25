@@ -1,0 +1,1172 @@
+Sample output of src/2-agents/6-agents-az-functions-mcp.py
+Run on 2026-10-25 22:01 with: ../../.venv-agents-v2/bin/python src/2-agents/6-agents-az-functions-mcp.py
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+Project endpoint: https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
+Model deployment: gpt-4o-mini
+MCP server: workout_tools at https://<function-app>.azurewebsites.net/runtime/webhooks/mcp, allowed tools ['list_workout_goals', 'suggest_workout']
+
+--- OUTBOUND REQUEST #1 ---
+> POST https://<function-app>.azurewebsites.net/runtime/webhooks/mcp
+> User-Agent: python-requests/2.34.2
+> Accept-Encoding: gzip, deflate
+> Accept: */*
+> Connection: keep-alive
+> Content-Length: 2
+> Content-Type: application/json
+>
+{}
+
+--- OUTBOUND RESPONSE #1 ---
+< 401 Unauthorized
+< Content-Length: 0
+< Date: Sun, 25 Oct 2026 18:01:46 GMT
+< Server: Kestrel
+< WWW-Authenticate: Bearer
+Function app is running (HTTP 401 without a key, as expected)
+
+--- OUTBOUND REQUEST #2 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/connections/workout-mcp-key?api-version=v1
+> User-Agent: azsdk-python-ai-projects/2.8.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #2 ---
+< 200 OK
+< Content-Type: application/json; charset=utf-8
+< Date: Sun, 25 Oct 2026 18:01:47 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< azureml-served-by-cluster: vienna-eastus2-01
+< x-request-time: 0.037
+< apim-request-id: <id>
+< x-ms-region: East US 2
+<
+{
+  "name": "workout-mcp-key",
+  "id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/workout-mcp-key",
+  "type": "CustomKeys",
+  "target": "https://<function-app>.azurewebsites.net/runtime/webhooks/mcp",
+  "isDefault": true,
+  "credentials": "<redacted>",
+  "metadata": {}
+}
+Key from project connection: workout-mcp-key (ConnectionType.CUSTOM)
+
+--- OUTBOUND REQUEST #3 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/agents/workout-mcp-agent/versions?api-version=v1
+> User-Agent: azsdk-python-ai-projects/2.8.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 1027
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "definition": {
+    "model": "gpt-4o-mini",
+    "instructions": "You help people plan simple home workouts. Use the workout tools for every answer: list_workout_goals to see which goals exist, suggest_workout to build a plan. Never invent a plan or a goal the tools didn't return. Show times, counts and exercises only as the tool gives them: don't split a block's minutes across its items or add numbers of your own. Present the plan clearly and end with one line saying it is general fitness information, not medical advice.",
+    "tools": [
+      {
+        "server_label": "workout_tools",
+        "server_url": "https://<function-app>.azurewebsites.net/runtime/webhooks/mcp",
+        "allowed_tools": [
+          "list_workout_goals",
+          "suggest_workout"
+        ],
+        "require_approval": "always",
+        "project_connection_id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/workout-mcp-key",
+        "type": "mcp"
+      }
+    ],
+    "kind": "prompt"
+  }
+}
+
+--- OUTBOUND RESPONSE #3 ---
+< 200 OK
+< Content-Type: application/json; charset=utf-8
+< Date: Sun, 25 Oct 2026 18:01:54 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-request-id: 28b146e61439b6c3134ef74f91354221
+< api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
+< azureml-served-by-cluster: hyena-eastus2-02
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "metadata": {},
+  "object": "agent.version",
+  "id": "workout-mcp-agent:1",
+  "name": "workout-mcp-agent",
+  "version": "1",
+  "description": "",
+  "created_at": 1792951314,
+  "definition": {
+    "kind": "prompt",
+    "model": "gpt-4o-mini",
+    "instructions": "You help people plan simple home workouts. Use the workout tools for every answer: list_workout_goals to see which goals exist, suggest_workout to build a plan. Never invent a plan or a goal the tools didn't return. Show times, counts and exercises only as the tool gives them: don't split a block's minutes across its items or add numbers of your own. Present the plan clearly and end with one line saying it is general fitness information, not medical advice.",
+    "tools": [
+      {
+        "type": "mcp",
+        "server_label": "workout_tools",
+        "server_url": "https://<function-app>.azurewebsites.net/runtime/webhooks/mcp",
+        "allowed_tools": {
+          "tool_names": [
+            "list_workout_goals",
+            "suggest_workout"
+          ]
+        },
+        "require_approval": "always",
+        "project_connection_id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/workout-mcp-key"
+      }
+    ]
+  },
+  "draft": false,
+  "status": "active",
+  "instance_identity": {
+    "principal_id": "<id>",
+    "client_id": "<id>"
+  },
+  "blueprint": {
+    "principal_id": "<id>",
+    "client_id": "<id>"
+  },
+  "blueprint_reference": {
+    "type": "ManagedAgentIdentityBlueprint",
+    "blueprint_id": "workout-mcp-agent-91a94"
+  },
+  "agent_guid": "<id>"
+}
+
+Agent created: name=workout-mcp-agent version=1
+
+User: Which workout goals can you plan for?
+
+--- OUTBOUND REQUEST #4 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: AIProjectClient OpenAI/Python 3.33.0
+> x-stainless-lang: python
+> x-stainless-package-version: 3.33.0
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 121
+>
+{
+  "input": "Which workout goals can you plan for?",
+  "agent_reference": {
+    "name": "workout-mcp-agent",
+    "type": "agent_reference"
+  }
+}
+
+--- OUTBOUND RESPONSE #4 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:01:57 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Origin,Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-request-id: <id>
+< x-ms-aoai-configured-data-retention-days: 30
+< skip-error-remapping: true
+< openai-client-partition-id: a64606f4de40420bae29a4242f28697764c8eb97-a0e5-451c-a734-ae083aea6948
+< azureml-internal-forward-count: 1
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 199876
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-project: <id>
+< openai-processing-ms: 3478
+< azureml-served-by-cluster: hyena-eastus2-03,hyena-eastus2-01
+< api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "metadata": {},
+  "top_logprobs": 0,
+  "temperature": 1,
+  "top_p": 1,
+  "service_tier": "default",
+  "prompt_cache_retention": "in_memory",
+  "model": "gpt-4o-mini",
+  "reasoning": {
+    "context": null
+  },
+  "background": false,
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "tools": [
+    {
+      "type": "mcp",
+      "server_label": "workout_tools",
+      "server_url": "https://<function-app>.azurewebsites.net/runtime/webhooks/mcp",
+      "allowed_tools": {
+        "read_only": null,
+        "tool_names": [
+          "list_workout_goals",
+          "suggest_workout"
+        ]
+      },
+      "require_approval": "always",
+      "project_connection_id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/workout-mcp-key"
+    }
+  ],
+  "tool_choice": "auto",
+  "truncation": "disabled",
+  "id": "resp_0d8aa2f0b126fe80006ade441597788194bc47ec3c75b33f72",
+  "object": "response",
+  "status": "completed",
+  "created_at": 1792951317,
+  "completed_at": 1792951320,
+  "error": null,
+  "incomplete_details": null,
+  "output": [
+    {
+      "type": "mcp_list_tools",
+      "id": "mcpl_0d8aa2f0b126fe80006ade4415a9ac8194b615c360a7c83d21",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "workout-mcp-agent",
+        "version": "1"
+      },
+      "response_id": "resp_0d8aa2f0b126fe80006ade441597788194bc47ec3c75b33f72",
+      "server_label": "workout_tools",
+      "tools": [
+        {
+          "name": "list_workout_goals",
+          "description": "List the workout goals that suggest_workout knows, with a short description of each.",
+          "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "annotations": {}
+        },
+        {
+          "name": "suggest_workout",
+          "description": "Suggest a simple home workout plan (warm-up, main block, cool-down) for a goal and a length in minutes.\n\nCall list_workout_goals first if you don't know the goals.",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "goal": {
+                "type": "string",
+                "description": "Workout goal, one of: cardio, strength, mobility.",
+                "properties": {},
+                "required": []
+              },
+              "minutes": {
+                "type": "integer",
+                "description": "Total workout length in minutes, 10 to 90.",
+                "properties": {},
+                "required": []
+              }
+            },
+            "required": [
+              "goal",
+              "minutes"
+            ]
+          },
+          "annotations": {}
+        }
+      ]
+    },
+    {
+      "type": "mcp_approval_request",
+      "id": "mcpr_0d8aa2f0b126fe80006ade4418d69c8194a3fec6bbd138e6b4",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "workout-mcp-agent",
+        "version": "1"
+      },
+      "response_id": "resp_0d8aa2f0b126fe80006ade441597788194bc47ec3c75b33f72",
+      "server_label": "workout_tools",
+      "name": "list_workout_goals",
+      "arguments": "{}"
+    }
+  ],
+  "instructions": "You help people plan simple home workouts. Use the workout tools for every answer: list_workout_goals to see which goals exist, suggest_workout to build a plan. Never invent a plan or a goal the tools didn't return. Show times, counts and exercises only as the tool gives them: don't split a block's minutes across its items or add numbers of your own. Present the plan clearly and end with one line saying it is general fitness information, not medical advice.",
+  "usage": {
+    "input_tokens": 251,
+    "input_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0
+    },
+    "output_tokens": 17,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 268
+  },
+  "parallel_tool_calls": true,
+  "agent_reference": {
+    "type": "agent_reference",
+    "name": "workout-mcp-agent",
+    "version": "1"
+  },
+  "content_filters": [
+    {
+      "blocked": false,
+      "source_type": "prompt",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 1250,
+        "check_offset": 0
+      }
+    }
+  ]
+}
+Response (status completed):
+  mcp_list_tools  server=workout_tools  tools=['list_workout_goals', 'suggest_workout']  error=None
+  mcp_approval_request  server=workout_tools  tool=list_workout_goals  arguments={}
+  (tokens: input 251, output 17)
+  -> approve list_workout_goals
+
+--- OUTBOUND REQUEST #5 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: AIProjectClient OpenAI/Python 3.33.0
+> x-stainless-lang: python
+> x-stainless-package-version: 3.33.0
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 292
+>
+{
+  "input": [
+    {
+      "type": "mcp_approval_response",
+      "approve": true,
+      "approval_request_id": "mcpr_0d8aa2f0b126fe80006ade4418d69c8194a3fec6bbd138e6b4"
+    }
+  ],
+  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441597788194bc47ec3c75b33f72",
+  "agent_reference": {
+    "name": "workout-mcp-agent",
+    "type": "agent_reference"
+  }
+}
+
+--- OUTBOUND RESPONSE #5 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:02:00 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Origin,Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-request-id: <id>
+< x-ms-aoai-configured-data-retention-days: 30
+< skip-error-remapping: true
+< openai-client-partition-id: a64606f4de40420bae29a4242f2869776f34bc8e-dd8e-411d-a4ab-7bff701c2f58
+< azureml-internal-forward-count: 1
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 199875
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-project: <id>
+< openai-processing-ms: 3149
+< azureml-served-by-cluster: hyena-eastus2-01,hyena-eastus2-01
+< api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "metadata": {},
+  "top_logprobs": 0,
+  "temperature": 1,
+  "top_p": 1,
+  "service_tier": "default",
+  "prompt_cache_retention": "in_memory",
+  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441597788194bc47ec3c75b33f72",
+  "model": "gpt-4o-mini",
+  "reasoning": {
+    "context": null
+  },
+  "background": false,
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "tools": [
+    {
+      "type": "mcp",
+      "server_label": "workout_tools",
+      "server_url": "https://<function-app>.azurewebsites.net/runtime/webhooks/mcp",
+      "allowed_tools": {
+        "read_only": null,
+        "tool_names": [
+          "list_workout_goals",
+          "suggest_workout"
+        ]
+      },
+      "require_approval": "always",
+      "project_connection_id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/workout-mcp-key"
+    }
+  ],
+  "tool_choice": "auto",
+  "truncation": "disabled",
+  "id": "resp_0d8aa2f0b126fe80006ade441981d48194be0fd5e2bad995f5",
+  "object": "response",
+  "status": "completed",
+  "created_at": 1792951321,
+  "completed_at": 1792951324,
+  "error": null,
+  "incomplete_details": null,
+  "output": [
+    {
+      "type": "mcp_call",
+      "id": "mcp_0d8aa2f0b126fe80006ade441accc4819482e13b890efd88e5",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "workout-mcp-agent",
+        "version": "1"
+      },
+      "response_id": "resp_0d8aa2f0b126fe80006ade441981d48194be0fd5e2bad995f5",
+      "server_label": "workout_tools",
+      "name": "list_workout_goals",
+      "arguments": "{}",
+      "output": "{\"goals\": [{\"goal\": \"cardio\", \"description\": \"Raise the heart rate for endurance.\"}, {\"goal\": \"strength\", \"description\": \"Build muscle with bodyweight moves.\"}, {\"goal\": \"mobility\", \"description\": \"Move joints through their range and stretch.\"}]}\n",
+      "status": "completed",
+      "approval_request_id": "mcpr_0d8aa2f0b126fe80006ade4418d69c8194a3fec6bbd138e6b4"
+    },
+    {
+      "type": "message",
+      "id": "msg_0d8aa2f0b126fe80006ade441ba8848194a7a66f071e07ebe6",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "workout-mcp-agent",
+        "version": "1"
+      },
+      "response_id": "resp_0d8aa2f0b126fe80006ade441981d48194be0fd5e2bad995f5",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "I can help plan workouts for the following goals:\n\n1. **Cardio**: Raise the heart rate for endurance.\n2. **Strength**: Build muscle with bodyweight moves.\n3. **Mobility**: Move joints through their range and stretch.\n\nLet me know which goal you're interested in and the length of the workout! This is general fitness information, not medical advice.",
+          "annotations": [],
+          "logprobs": []
+        }
+      ],
+      "status": "completed"
+    }
+  ],
+  "instructions": "You help people plan simple home workouts. Use the workout tools for every answer: list_workout_goals to see which goals exist, suggest_workout to build a plan. Never invent a plan or a goal the tools didn't return. Show times, counts and exercises only as the tool gives them: don't split a block's minutes across its items or add numbers of your own. Present the plan clearly and end with one line saying it is general fitness information, not medical advice.",
+  "usage": {
+    "input_tokens": 345,
+    "input_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0
+    },
+    "output_tokens": 79,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 424
+  },
+  "parallel_tool_calls": true,
+  "agent_reference": {
+    "type": "agent_reference",
+    "name": "workout-mcp-agent",
+    "version": "1"
+  },
+  "content_filters": [
+    {
+      "blocked": false,
+      "source_type": "prompt",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 566,
+        "check_offset": 0
+      }
+    },
+    {
+      "blocked": false,
+      "source_type": "completion",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_text": {
+          "filtered": false,
+          "detected": false
+        },
+        "protected_material_code": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 349,
+        "check_offset": 0
+      }
+    }
+  ]
+}
+Response (status completed):
+  mcp_call  server=workout_tools  tool=list_workout_goals  arguments={}
+            output: {"goals": [{"goal": "cardio", "description": "Raise the heart rate for endurance."}, {"goal": "strength", "description": "Build muscle with bodyweight moves."}, {"goal": "mobility", "description": "Move joints through their range and stretch."}]}
+  error=None
+  message (answer, printed below)
+  (tokens: input 345, output 79)
+
+Agent: I can help plan workouts for the following goals:
+
+1. **Cardio**: Raise the heart rate for endurance.
+2. **Strength**: Build muscle with bodyweight moves.
+3. **Mobility**: Move joints through their range and stretch.
+
+Let me know which goal you're interested in and the length of the workout! This is general fitness information, not medical advice.
+
+User: Plan a 30-minute strength workout for me.
+
+--- OUTBOUND REQUEST #6 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: AIProjectClient OpenAI/Python 3.33.0
+> x-stainless-lang: python
+> x-stainless-package-version: 3.33.0
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 206
+>
+{
+  "input": "Plan a 30-minute strength workout for me.",
+  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441981d48194be0fd5e2bad995f5",
+  "agent_reference": {
+    "name": "workout-mcp-agent",
+    "type": "agent_reference"
+  }
+}
+
+--- OUTBOUND RESPONSE #6 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:02:04 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Origin,Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-request-id: <id>
+< x-ms-aoai-configured-data-retention-days: 30
+< skip-error-remapping: true
+< openai-client-partition-id: a64606f4de40420bae29a4242f28697702631061-7b0e-435d-8b73-4d5036a9b35a
+< azureml-internal-forward-count: 1
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 199716
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-project: <id>
+< openai-processing-ms: 939
+< azureml-served-by-cluster: hyena-eastus2-02,hyena-eastus2-03
+< api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "metadata": {},
+  "top_logprobs": 0,
+  "temperature": 1,
+  "top_p": 1,
+  "service_tier": "default",
+  "prompt_cache_retention": "in_memory",
+  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441981d48194be0fd5e2bad995f5",
+  "model": "gpt-4o-mini",
+  "reasoning": {
+    "context": null
+  },
+  "background": false,
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "tools": [
+    {
+      "type": "mcp",
+      "server_label": "workout_tools",
+      "server_url": "https://<function-app>.azurewebsites.net/runtime/webhooks/mcp",
+      "allowed_tools": {
+        "read_only": null,
+        "tool_names": [
+          "list_workout_goals",
+          "suggest_workout"
+        ]
+      },
+      "require_approval": "always",
+      "project_connection_id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/workout-mcp-key"
+    }
+  ],
+  "tool_choice": "auto",
+  "truncation": "disabled",
+  "id": "resp_0d8aa2f0b126fe80006ade441cfaf8819495a2508868a204a8",
+  "object": "response",
+  "status": "completed",
+  "created_at": 1792951325,
+  "completed_at": 1792951325,
+  "error": null,
+  "incomplete_details": null,
+  "output": [
+    {
+      "type": "mcp_approval_request",
+      "id": "mcpr_0d8aa2f0b126fe80006ade441dc0d08194a1c0da1f845464b8",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "workout-mcp-agent",
+        "version": "1"
+      },
+      "response_id": "resp_0d8aa2f0b126fe80006ade441cfaf8819495a2508868a204a8",
+      "server_label": "workout_tools",
+      "name": "suggest_workout",
+      "arguments": "{\"goal\":\"strength\",\"minutes\":30}"
+    }
+  ],
+  "instructions": "You help people plan simple home workouts. Use the workout tools for every answer: list_workout_goals to see which goals exist, suggest_workout to build a plan. Never invent a plan or a goal the tools didn't return. Show times, counts and exercises only as the tool gives them: don't split a block's minutes across its items or add numbers of your own. Present the plan clearly and end with one line saying it is general fitness information, not medical advice.",
+  "usage": {
+    "input_tokens": 431,
+    "input_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0
+    },
+    "output_tokens": 24,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 455
+  },
+  "parallel_tool_calls": true,
+  "agent_reference": {
+    "type": "agent_reference",
+    "name": "workout-mcp-agent",
+    "version": "1"
+  },
+  "content_filters": [
+    {
+      "blocked": false,
+      "source_type": "prompt",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 2024,
+        "check_offset": 0
+      }
+    }
+  ]
+}
+Response (status completed):
+  mcp_approval_request  server=workout_tools  tool=suggest_workout  arguments={"goal":"strength","minutes":30}
+  (tokens: input 431, output 24)
+  -> approve suggest_workout
+
+--- OUTBOUND REQUEST #7 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: AIProjectClient OpenAI/Python 3.33.0
+> x-stainless-lang: python
+> x-stainless-package-version: 3.33.0
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 292
+>
+{
+  "input": [
+    {
+      "type": "mcp_approval_response",
+      "approve": true,
+      "approval_request_id": "mcpr_0d8aa2f0b126fe80006ade441dc0d08194a1c0da1f845464b8"
+    }
+  ],
+  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441cfaf8819495a2508868a204a8",
+  "agent_reference": {
+    "name": "workout-mcp-agent",
+    "type": "agent_reference"
+  }
+}
+
+--- OUTBOUND RESPONSE #7 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:02:06 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Origin,Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-request-id: <id>
+< x-ms-aoai-configured-data-retention-days: 30
+< skip-error-remapping: true
+< openai-client-partition-id: a64606f4de40420bae29a4242f28697707d03641-b260-4671-8693-8cda79172757
+< azureml-internal-forward-count: 1
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 199708
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-project: <id>
+< openai-processing-ms: 3605
+< azureml-served-by-cluster: hyena-eastus2-03,hyena-eastus2-03
+< api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "metadata": {},
+  "top_logprobs": 0,
+  "temperature": 1,
+  "top_p": 1,
+  "service_tier": "default",
+  "prompt_cache_retention": "in_memory",
+  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441cfaf8819495a2508868a204a8",
+  "model": "gpt-4o-mini",
+  "reasoning": {
+    "context": null
+  },
+  "background": false,
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "tools": [
+    {
+      "type": "mcp",
+      "server_label": "workout_tools",
+      "server_url": "https://<function-app>.azurewebsites.net/runtime/webhooks/mcp",
+      "allowed_tools": {
+        "read_only": null,
+        "tool_names": [
+          "list_workout_goals",
+          "suggest_workout"
+        ]
+      },
+      "require_approval": "always",
+      "project_connection_id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/workout-mcp-key"
+    }
+  ],
+  "tool_choice": "auto",
+  "truncation": "disabled",
+  "id": "resp_0d8aa2f0b126fe80006ade441e6c2481948bc922966a423a98",
+  "object": "response",
+  "status": "completed",
+  "created_at": 1792951326,
+  "completed_at": 1792951329,
+  "error": null,
+  "incomplete_details": null,
+  "output": [
+    {
+      "type": "mcp_call",
+      "id": "mcp_0d8aa2f0b126fe80006ade441fe1808194856ef933ed9905b9",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "workout-mcp-agent",
+        "version": "1"
+      },
+      "response_id": "resp_0d8aa2f0b126fe80006ade441e6c2481948bc922966a423a98",
+      "server_label": "workout_tools",
+      "name": "suggest_workout",
+      "arguments": "{\"goal\":\"strength\",\"minutes\":30}",
+      "output": "{\"goal\": \"strength\", \"total_minutes\": 30, \"warm_up\": {\"minutes\": 4, \"do\": \"arm swings, hip circles, 10 easy squats\"}, \"main\": {\"minutes\": 23, \"rounds\": 2, \"seconds_per_exercise\": 172, \"exercises\": [\"squats\", \"push-ups (knees or wall if needed)\", \"glute bridges\", \"plank\"]}, \"cool_down\": {\"minutes\": 3, \"do\": \"chest, hip and hamstring stretches\"}, \"note\": \"General fitness ideas, not medical advice. Stop if anything hurts.\"}\n",
+      "status": "completed",
+      "approval_request_id": "mcpr_0d8aa2f0b126fe80006ade441dc0d08194a1c0da1f845464b8"
+    },
+    {
+      "type": "message",
+      "id": "msg_0d8aa2f0b126fe80006ade44207cf081949313ab19786bc1c7",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "workout-mcp-agent",
+        "version": "1"
+      },
+      "response_id": "resp_0d8aa2f0b126fe80006ade441e6c2481948bc922966a423a98",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "Here's a 30-minute strength workout plan:\n\n### Warm-Up (4 minutes)\n- Arm swings\n- Hip circles\n- 10 easy squats\n\n### Main Workout (23 minutes)\n- **Rounds**: 2\n- **Exercises** (perform each for 172 seconds):\n  1. Squats\n  2. Push-ups (use knees or wall if needed)\n  3. Glute bridges\n  4. Plank\n\n### Cool Down (3 minutes)\n- Chest stretch\n- Hip stretch\n- Hamstring stretch\n\nFeel free to adjust as needed! This is general fitness information, not medical advice.",
+          "annotations": [],
+          "logprobs": []
+        }
+      ],
+      "status": "completed"
+    }
+  ],
+  "instructions": "You help people plan simple home workouts. Use the workout tools for every answer: list_workout_goals to see which goals exist, suggest_workout to build a plan. Never invent a plan or a goal the tools didn't return. Show times, counts and exercises only as the tool gives them: don't split a block's minutes across its items or add numbers of your own. Present the plan clearly and end with one line saying it is general fitness information, not medical advice.",
+  "usage": {
+    "input_tokens": 604,
+    "input_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0
+    },
+    "output_tokens": 133,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 737
+  },
+  "parallel_tool_calls": true,
+  "agent_reference": {
+    "type": "agent_reference",
+    "name": "workout-mcp-agent",
+    "version": "1"
+  },
+  "content_filters": [
+    {
+      "blocked": false,
+      "source_type": "prompt",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 1340,
+        "check_offset": 0
+      }
+    },
+    {
+      "blocked": false,
+      "source_type": "completion",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_text": {
+          "filtered": false,
+          "detected": false
+        },
+        "protected_material_code": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 457,
+        "check_offset": 0
+      }
+    }
+  ]
+}
+Response (status completed):
+  mcp_call  server=workout_tools  tool=suggest_workout  arguments={"goal":"strength","minutes":30}
+            output: {"goal": "strength", "total_minutes": 30, "warm_up": {"minutes": 4, "do": "arm swings, hip circles, 10 easy squats"}, "main": {"minutes": 23, "rounds": 2, "seconds_per_exercise": 172, "exercises": ["squats", "push-ups (knees or wall if needed)", "glute bridges", "plank"]}, "cool_down": {"minutes": 3, "do": "chest, hip and hamstring stretches"}, "note": "General fitness ideas, not medical advice. Stop if anything hurts."}
+  error=None
+  message (answer, printed below)
+  (tokens: input 604, output 133)
+
+Agent: Here's a 30-minute strength workout plan:
+
+### Warm-Up (4 minutes)
+- Arm swings
+- Hip circles
+- 10 easy squats
+
+### Main Workout (23 minutes)
+- **Rounds**: 2
+- **Exercises** (perform each for 172 seconds):
+  1. Squats
+  2. Push-ups (use knees or wall if needed)
+  3. Glute bridges
+  4. Plank
+
+### Cool Down (3 minutes)
+- Chest stretch
+- Hip stretch
+- Hamstring stretch
+
+Feel free to adjust as needed! This is general fitness information, not medical advice.
+
+--- OUTBOUND REQUEST #8 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/agents/workout-mcp-agent/versions/1?api-version=v1
+> User-Agent: azsdk-python-ai-projects/2.8.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #8 ---
+< 200 OK
+< Content-Type: application/json; charset=utf-8
+< Date: Sun, 25 Oct 2026 18:02:11 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-request-id: f5a054162775f98ee1edfed48d4698c9
+< api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
+< azureml-served-by-cluster: hyena-eastus2-02
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "object": "agent.version.deleted",
+  "name": "workout-mcp-agent",
+  "version": "1",
+  "deleted": true
+}
+
+Agent version deleted: workout-mcp-agent v1
+Total tokens: input 1631, output 253
+Checks:
+  PASS  turn 1 called list_workout_goals
+  PASS  turn 2 called suggest_workout(strength, 30)
+  PASS  both turns answered

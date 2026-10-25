@@ -150,51 +150,60 @@ def called(calls, name, **expected):
     return False
 
 
-def main():
-    load_env()
+def parse_args():
     parser = argparse.ArgumentParser(description="Foundry agent using the Azure Functions MCP workout tools")
     parser.add_argument("--model", default=os.getenv("MODEL_DEPLOYMENT_NAME") or "gpt-4o-mini")
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def load_settings(model):
     server_url = os.environ["AZURE_FUNCTIONS_MCP_URL"]
     project_endpoint = get_project_endpoint()
     print(f"Project endpoint: {project_endpoint}")
-    print(f"Model deployment: {args.model}")
+    print(f"Model deployment: {model}")
     print(f"MCP server: {SERVER_LABEL} at {server_url}, allowed tools {ALLOWED_TOOLS}")
-    if not check_function_app(server_url):
-        raise SystemExit(1)
+    return server_url, project_endpoint
 
-    with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project:
-        connection = project.connections.get(CONNECTION_NAME)
-        print(f"Key from project connection: {connection.name} ({connection.type})")
-        openai_client = project.get_openai_client()
-        tool = MCPTool(
-            server_label=SERVER_LABEL,
-            server_url=server_url,
-            allowed_tools=ALLOWED_TOOLS,
-            require_approval="always",
-            project_connection_id=connection.id,
-        )
-        agent = project.agents.create_version(
-            agent_name=AGENT_NAME,
-            definition=PromptAgentDefinition(model=args.model, instructions=INSTRUCTIONS, tools=[tool]),
-        )
-        print(f"\nAgent created: name={agent.name} version={agent.version}")
-        agent_reference = {"agent_reference": {"name": agent.name, "type": "agent_reference"}}
 
-        totals = {"input": 0, "output": 0}
-        turns = []
-        try:
-            previous_response_id = None
-            for question in QUESTIONS:
-                response, calls = ask(openai_client, agent_reference, question, previous_response_id, totals)
-                turns.append((response.output_text or "", calls))
-                previous_response_id = response.id
-        finally:
-            project.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
-            print(f"\nAgent version deleted: {agent.name} v{agent.version}")
+def create_agent(project, model, server_url):
+    """Create an agent version with the MCP tool; the function key comes from the project connection."""
+    connection = project.connections.get(CONNECTION_NAME)
+    print(f"Key from project connection: {connection.name} ({connection.type})")
+    tool = MCPTool(
+        server_label=SERVER_LABEL,
+        server_url=server_url,
+        allowed_tools=ALLOWED_TOOLS,
+        require_approval="always",
+        project_connection_id=connection.id,
+    )
+    agent = project.agents.create_version(
+        agent_name=AGENT_NAME,
+        definition=PromptAgentDefinition(model=model, instructions=INSTRUCTIONS, tools=[tool]),
+    )
+    print(f"\nAgent created: name={agent.name} version={agent.version}")
+    return agent
 
-    print(f"Total tokens: input {totals['input']}, output {totals['output']}")
+
+def run_conversation(openai_client, agent):
+    """Ask the questions as one conversation; return the (answer, successful calls) of each turn and the tokens."""
+    agent_reference = {"agent_reference": {"name": agent.name, "type": "agent_reference"}}
+    totals = {"input": 0, "output": 0}
+    turns = []
+    previous_response_id = None
+    for question in QUESTIONS:
+        response, calls = ask(openai_client, agent_reference, question, previous_response_id, totals)
+        turns.append((response.output_text or "", calls))
+        previous_response_id = response.id
+    return turns, totals
+
+
+def cleanup(project, agent):
+    project.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
+    print(f"\nAgent version deleted: {agent.name} v{agent.version}")
+
+
+def check_results(turns):
+    """Turn 1 listed the goals, turn 2 planned a 30-minute strength workout, and both turns answered."""
     checks = []
     if len(turns) == len(QUESTIONS):
         (answer_1, calls_1), (answer_2, calls_2) = turns
@@ -209,7 +218,27 @@ def main():
     print("Checks:")
     for name, passed in checks:
         print(f"  {'PASS' if passed else 'FAIL'}  {name}")
-    raise SystemExit(0 if checks and all(passed for _, passed in checks) else 1)
+    return bool(checks) and all(passed for _, passed in checks)
+
+
+def main():
+    load_env()
+    args = parse_args()
+    server_url, project_endpoint = load_settings(args.model)
+    if not check_function_app(server_url):
+        raise SystemExit(1)
+
+    with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project:
+        agent = create_agent(project, args.model, server_url)
+        openai_client = project.get_openai_client()
+        try:
+            turns, totals = run_conversation(openai_client, agent)
+        finally:
+            cleanup(project, agent)
+
+    print(f"Total tokens: input {totals['input']}, output {totals['output']}")
+    passed = check_results(turns)
+    raise SystemExit(0 if passed else 1)
 
 
 if __name__ == "__main__":
