@@ -34,6 +34,8 @@ CHAT_REPLY = {
     "usage": {"prompt_tokens": 12, "completion_tokens": 3},
     "access_token": "secret-token-value",
 }
+# Like a gpt-image reply: about 2 MB of base64 in one field, more than MAX_CAPTURE, with fields after it.
+BIG_JSON_REPLY = {"data": [{"b64_json": "A" * 2_000_000}], "usage": {"input_tokens": 19, "output_tokens": 196}}
 SSE_EVENTS = [
     {"choices": [{"delta": {"content": "Hel"}}]},
     {"choices": [{"delta": {"content": "lo"}}]},
@@ -62,6 +64,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send_body(b"\x89PNG\r\n\x1a\n" + bytes(range(256)) * 4, "image/png")
         elif self.path.startswith("/long"):
             self.send_body(b"x" * 5000, "text/plain")
+        elif self.path.startswith("/big-json"):
+            self.send_body(json.dumps(BIG_JSON_REPLY).encode(), "application/json")
         elif self.path.startswith("/sse"):
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream")
@@ -201,6 +205,19 @@ class HttpxLogTest(LogTestCase):
 
     def clients(self):
         return [module for module in (httpx2, httpx) if module is not None]
+
+    def test_json_body_over_the_capture_limit_is_shortened_by_field(self):
+        # A JSON body is kept whole (up to MAX_JSON_CAPTURE), so its long strings are shortened one by one and the
+        # fields after them still show, instead of the raw text being cut in the middle of the base64.
+        for module in self.clients():
+            with self.subTest(module=module.__name__), module.Client() as client:
+                url = f"{self.base}/big-json?client={module.__name__}"
+                text, response = self.logged(lambda url=url: client.get(url))
+                self.assertEqual(len(response.json()["data"][0]["b64_json"]), 2_000_000)
+                self.assertIn("...(2000000 characters)", text)
+                self.assertIn('"output_tokens": 196', text)
+                self.assertNotIn("bytes received, first", text)
+                self.assertLess(len(text), 5000)
 
     def test_sync_gzip_json(self):
         for module in self.clients():

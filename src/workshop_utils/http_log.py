@@ -111,6 +111,9 @@ SECRET_FIELDS = {
 LONG_STRING = 1000
 BINARY_TYPES = ("image/", "audio/", "video/", "application/octet-stream", "application/pdf", "application/zip")
 MAX_CAPTURE = 1024 * 1024  # bytes of a body kept for the log; the rest is counted, not stored
+# A JSON body is kept whole up to this size: only a complete body parses, so only then can its long strings (a
+# base64 image, for example) be shortened one by one and the fields after them still be shown.
+MAX_JSON_CAPTURE = 32 * 1024 * 1024
 
 _settings = {"level": "full", "metrics": False, "max_body": DEFAULT_MAX_BODY, "polls": "short"}
 _originals = {}  # (class, method name) -> original function, to restore in disable()
@@ -203,6 +206,7 @@ class _Call:
         self.chunks = []
         self.captured = 0
         self.received = 0
+        self.capture_limit = MAX_CAPTURE
         with _lock:
             _pending.add(self)
             self.poll = method == "GET" and _settings["polls"] == "short" and self.url in _seen_gets
@@ -220,10 +224,12 @@ class _Call:
         """Status and headers arrived; `encoding` is the Content-Encoding the body bytes still have, if any."""
         self.status, self.reason, self.headers = status, reason or "", list(headers)
         self.encoding = encoding
+        if "json" in (_header(self.headers, "content-type") or "").lower():
+            self.capture_limit = MAX_JSON_CAPTURE
 
     def record(self, chunk):
         self.received += len(chunk)
-        if self.captured < MAX_CAPTURE or _observers:  # a recording keeps the whole body
+        if self.captured < self.capture_limit or _observers:  # a recording keeps the whole body
             self.chunks.append(chunk)
             self.captured += len(chunk)
 
@@ -578,7 +584,7 @@ def _decode(data, encoding):
     if not data or not encoding:
         return data
     encoding = encoding.lower()
-    # decompressobj also handles a body cut at MAX_CAPTURE; deflate is zlib-wrapped or raw, depending on the server.
+    # decompressobj also handles a body cut at its capture limit; deflate is zlib-wrapped or raw, depending on the server.
     window_bits = {"gzip": [16 + zlib.MAX_WBITS], "deflate": [zlib.MAX_WBITS, -zlib.MAX_WBITS]}.get(encoding, [])
     for bits in window_bits:
         try:
