@@ -239,21 +239,87 @@ async def print_tool_calls(client, thread_id):
                 print(f"  - {call.type}")
 
 
-async def main():
-    print("Disclaimer: this is a technical demonstration and does not provide medical advice.")
-    load_environment()
+def load_settings():
     project_endpoint = get_project_endpoint()
     model = os.getenv("MODEL_DEPLOYMENT_NAME") or "gpt-4o-mini"
     print(f"Foundry project endpoint: {project_endpoint}")
     print(f"Model: {model}")
+    return project_endpoint, model
+
+
+def create_search_clients(connection, search_key):
+    index_client = SearchIndexClient(endpoint=connection.target, credential=search_key)
+    search_client = SearchClient(endpoint=connection.target, index_name=INDEX_NAME, credential=search_key)
+    return index_client, search_client
+
+
+async def create_agent(client, model, connection):
+    """Step 2: create the Foundry agent with the Azure AI Search tool on the index; return its definition."""
+    search_tool = AzureAISearchTool(
+        index_connection_id=connection.id,
+        index_name=INDEX_NAME,
+        query_type=AzureAISearchQueryType.SIMPLE,
+        top_k=5,
+    )
+    definition = await client.agents.create_agent(
+        model=model,
+        name=AGENT_NAME,
+        instructions=AGENT_INSTRUCTIONS,
+        tools=search_tool.definitions,
+        tool_resources=search_tool.resources,
+    )
+    print(f"Created agent: {definition.id}")
+    return definition
+
+
+async def ask(client, agent, thread, question):
+    """Step 3: ask one question on the thread, print the answer and the tool calls; return the thread."""
+    print(f"\n# User: {question}")
+    response = await agent.get_response(messages=question, thread=thread)
+    thread = response.thread
+    print(f"# Agent: {response.message.content}")
+    try:
+        await print_tool_calls(client, thread.id)
+    except Exception as exc:
+        print(f"  Could not list tool calls: {exc!r}")
+    return thread
+
+
+async def cleanup(client, index_client, search_client, thread, definition, index_created):
+    """Step 4: delete what the run created (thread, agent, index) and close the search clients."""
+    if thread is not None and thread.id is not None:
+        try:
+            await thread.delete()
+            print("Deleted thread")
+        except Exception as exc:
+            print(f"Could not delete thread: {exc}")
+    if definition is not None:
+        try:
+            await client.agents.delete_agent(definition.id)
+            print(f"Deleted agent: {definition.id}")
+        except Exception as exc:
+            print(f"Could not delete agent: {exc}")
+    if index_created:
+        try:
+            await index_client.delete_index(INDEX_NAME)
+            print(f"Deleted index: {INDEX_NAME}")
+        except Exception as exc:
+            print(f"Could not delete index: {exc}")
+    await search_client.close()
+    await index_client.close()
+
+
+async def main():
+    print("Disclaimer: this is a technical demonstration and does not provide medical advice.")
+    load_environment()
+    project_endpoint, model = load_settings()
 
     async with (
         DefaultAzureCredential() as credential,
         AzureAIAgent.create_client(credential=credential, endpoint=project_endpoint) as client,
     ):
         connection, search_key = await get_search_connection(client)
-        index_client = SearchIndexClient(endpoint=connection.target, credential=search_key)
-        search_client = SearchClient(endpoint=connection.target, index_name=INDEX_NAME, credential=search_key)
+        index_client, search_client = create_search_clients(connection, search_key)
         index_created = False
         definition = None
         thread = None
@@ -266,55 +332,17 @@ async def main():
             await print_direct_search(search_client, "Strength")
 
             print("\n=== Step 2: create the agent (Azure AI Search tool + local price plugin) ===")
-            search_tool = AzureAISearchTool(
-                index_connection_id=connection.id,
-                index_name=INDEX_NAME,
-                query_type=AzureAISearchQueryType.SIMPLE,
-                top_k=5,
-            )
-            definition = await client.agents.create_agent(
-                model=model,
-                name=AGENT_NAME,
-                instructions=AGENT_INSTRUCTIONS,
-                tools=search_tool.definitions,
-                tool_resources=search_tool.resources,
-            )
-            print(f"Created agent: {definition.id}")
+            definition = await create_agent(client, model, connection)
+            # Semantic Kernel wraps the Foundry agent and adds the local price plugin.
             agent = AzureAIAgent(client=client, definition=definition, plugins=[FitnessCatalogPlugin(search_client)])
 
             print("\n=== Step 3: ask the agent ===")
             thread = AzureAIAgentThread(client=client)
             for question in QUESTIONS:
-                print(f"\n# User: {question}")
-                response = await agent.get_response(messages=question, thread=thread)
-                thread = response.thread
-                print(f"# Agent: {response.message.content}")
-                try:
-                    await print_tool_calls(client, thread.id)
-                except Exception as exc:
-                    print(f"  Could not list tool calls: {exc!r}")
+                thread = await ask(client, agent, thread, question)
         finally:
             print("\n=== Cleanup ===")
-            if thread is not None and thread.id is not None:
-                try:
-                    await thread.delete()
-                    print("Deleted thread")
-                except Exception as exc:
-                    print(f"Could not delete thread: {exc}")
-            if definition is not None:
-                try:
-                    await client.agents.delete_agent(definition.id)
-                    print(f"Deleted agent: {definition.id}")
-                except Exception as exc:
-                    print(f"Could not delete agent: {exc}")
-            if index_created:
-                try:
-                    await index_client.delete_index(INDEX_NAME)
-                    print(f"Deleted index: {INDEX_NAME}")
-                except Exception as exc:
-                    print(f"Could not delete index: {exc}")
-            await search_client.close()
-            await index_client.close()
+            await cleanup(client, index_client, search_client, thread, definition, index_created)
 
 
 if __name__ == "__main__":
