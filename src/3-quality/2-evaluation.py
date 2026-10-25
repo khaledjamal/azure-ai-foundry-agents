@@ -61,6 +61,14 @@ SAMPLE_DATA = [
         "ground_truth": "Paris.",
     },
 ]
+# Which data columns each evaluator gets as its inputs.
+EVALUATOR_CONFIG = {
+    "f1_score": {"column_mapping": {"response": "${data.response}", "ground_truth": "${data.ground_truth}"}},
+    "relevance": {"column_mapping": {"query": "${data.query}", "response": "${data.response}"}},
+    "groundedness": {"column_mapping": {"context": "${data.context}", "response": "${data.response}"}},
+    "violence": {"column_mapping": {"query": "${data.query}", "response": "${data.response}"}},
+    "resp_len": {"column_mapping": {"response": "${data.response}"}},
+}
 
 
 def print_section(title):
@@ -116,15 +124,16 @@ def print_rows(rows):
                 print(f"  {key[len('outputs.') :]}: {value}")
 
 
-def main():
+def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation lab")
-    parser.add_argument("--output-dir", default=".", help="folder for the sample data and results JSON")
-    args = parser.parse_args()
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    parser.add_argument(
+        "--output-dir", type=Path, default=Path("."), help="folder for the sample data and results JSON"
+    )
+    return parser.parse_args()
 
-    print_section("EVALUATION - azure-ai-evaluation")
-    load_environment()
+
+def load_settings():
+    """Return the project endpoint and the judge model's config (the Azure OpenAI deployment that scores answers)."""
     project_endpoint = get_project_endpoint()
     model_config = {
         "azure_endpoint": require_env("OPENAI_ENDPOINT"),
@@ -133,45 +142,67 @@ def main():
     }
     print(f"Judge model:       {model_config['azure_deployment']} at {model_config['azure_endpoint']}")
     print(f"Project endpoint:  {project_endpoint}")
-    data_path = write_sample_data(output_dir)
+    return project_endpoint, model_config
 
+
+def build_evaluators(model_config, project_endpoint):
+    """The four kinds of scoring: F1 (no model), judge model, safety service and a custom code evaluator."""
     credential = DefaultAzureCredential()
-    evaluators = {
+    return {
         "f1_score": F1ScoreEvaluator(),
         "relevance": RelevanceEvaluator(model_config=model_config, credential=credential),
         "groundedness": GroundednessEvaluator(model_config=model_config, credential=credential),
         "violence": ViolenceEvaluator(credential=credential, azure_ai_project=project_endpoint),
         "resp_len": response_length_eval,
     }
-    evaluator_config = {
-        "f1_score": {"column_mapping": {"response": "${data.response}", "ground_truth": "${data.ground_truth}"}},
-        "relevance": {"column_mapping": {"query": "${data.query}", "response": "${data.response}"}},
-        "groundedness": {"column_mapping": {"context": "${data.context}", "response": "${data.response}"}},
-        "violence": {"column_mapping": {"query": "${data.query}", "response": "${data.response}"}},
-        "resp_len": {"column_mapping": {"response": "${data.response}"}},
-    }
 
-    print_section("Running evaluate() and logging results to the Foundry project")
+
+def run_evaluation(data_path, evaluators, project_endpoint, output_dir):
+    """Score every row with every evaluator, log the results to the Foundry project and save them as JSON."""
     results_path = output_dir / "evaluation_results.json"
     result = evaluate(
         data=str(data_path),
         evaluators=evaluators,
-        evaluator_config=evaluator_config,
+        evaluator_config=EVALUATOR_CONFIG,
         evaluation_name="health-fitness-evaluation",
         azure_ai_project=project_endpoint,
         output_path=str(results_path),
     )
     print(f"Full results saved to: {results_path}")
+    return result
 
-    print_rows(result.get("rows", []))
 
-    print_section("Aggregate metrics")
+def print_metrics(result):
     for name, value in sorted(result.get("metrics", {}).items()):
         print(f"  {name}: {value}")
 
-    print_section("Foundry project")
+
+def print_portal_link(result):
     studio_url = result.get("studio_url")
-    print(f"Evaluation in the portal: {studio_url}" if studio_url else "No portal link returned (results not logged).")
+    if studio_url:
+        print(f"Evaluation in the portal: {studio_url}")
+    else:
+        print("No portal link returned (results not logged).")
+
+
+def main():
+    args = parse_args()
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    print_section("EVALUATION - azure-ai-evaluation")
+    load_environment()
+    project_endpoint, model_config = load_settings()
+    data_path = write_sample_data(args.output_dir)
+    evaluators = build_evaluators(model_config, project_endpoint)
+
+    print_section("Running evaluate() and logging results to the Foundry project")
+    result = run_evaluation(data_path, evaluators, project_endpoint, args.output_dir)
+    print_rows(result.get("rows", []))
+
+    print_section("Aggregate metrics")
+    print_metrics(result)
+
+    print_section("Foundry project")
+    print_portal_link(result)
 
     print_section("DONE")
 
