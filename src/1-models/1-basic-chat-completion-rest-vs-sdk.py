@@ -43,6 +43,7 @@ COGNITIVE_SERVICES_SCOPE = "https://cognitiveservices.azure.com/.default"
 SYSTEM_PROMPT = "You are FitChat GPT, a friendly fitness assistant. Remind users you're not a medical professional."
 QUESTION = "Give me three quick tips to stay active during a busy workday."
 SETTINGS = {"max_tokens": 200, "temperature": 0.7}
+MESSAGES = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": QUESTION}]
 
 
 def print_section(title):
@@ -75,8 +76,7 @@ def call_rest(endpoint, api_version, deployment, token, messages):
 
 
 def call_sdk(client, deployment, messages):
-    """Same request through the SDK; return (status, seconds, ChatCompletion)."""
-    print(f"client.chat.completions.with_raw_response.create(model={deployment!r}, messages=..., **{SETTINGS})")
+    """Same request through the SDK; return (status, seconds, ChatCompletion). The HTTP log shows the request."""
     start = time.perf_counter()
     raw = client.chat.completions.with_raw_response.create(model=deployment, messages=messages, **SETTINGS)
     seconds = time.perf_counter() - start
@@ -84,54 +84,95 @@ def call_sdk(client, deployment, messages):
     return raw.status_code, seconds, raw.parse()
 
 
-def main():
-    load_env()
+def parse_args():
     parser = argparse.ArgumentParser(description="One chat completion through REST and through the openai SDK")
     parser.add_argument("--model", default=os.getenv("MODEL_DEPLOYMENT_NAME") or "gpt-4o-mini")
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def load_settings(model):
     endpoint = require_env("OPENAI_ENDPOINT")
     api_version = require_env("OPENAI_API_VERSION")
     print(f"Endpoint: {endpoint}")
     print(f"API version: {api_version}")
-    print(f"Model deployment: {args.model}")
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": QUESTION}]
-    print(f"User: {QUESTION}")
+    print(f"Model deployment: {model}")
+    return endpoint, api_version
 
-    # One Entra ID token provider for both sides: REST puts the token in the header itself, the SDK calls it.
-    token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
 
-    print_section("1. REST: requests.post")
-    rest_status, rest_seconds, rest_body = call_rest(endpoint, api_version, args.model, token_provider(), messages)
-    rest_answer, rest_usage = "", {}
-    if rest_body:
-        rest_answer = rest_body["choices"][0]["message"]["content"] or ""
-        rest_usage = rest_body.get("usage", {})
-        print(f"Response JSON keys: {list(rest_body)}")
-        print(f"\nAssistant: {rest_answer}")
+def rest_step(endpoint, api_version, model, token_provider):
+    """Step 1: the request by hand with requests.post; return status, latency, answer and token counts."""
+    token = token_provider()
+    status, seconds, body = call_rest(endpoint, api_version, model, token, MESSAGES)
+    answer, usage = "", {}
+    if body:
+        answer = body["choices"][0]["message"]["content"] or ""
+        usage = body.get("usage", {})
+        print(f"Response JSON keys: {list(body)}")
+        print(f"\nAssistant: {answer}")
+    return {
+        "status": status,
+        "seconds": seconds,
+        "answer": answer,
+        "prompt_tokens": usage.get("prompt_tokens"),
+        "completion_tokens": usage.get("completion_tokens"),
+    }
 
-    print_section("2. SDK: openai AzureOpenAI client")
+
+def sdk_step(endpoint, api_version, model, token_provider):
+    """Step 2: the same request through the AzureOpenAI client; return the same fields as rest_step()."""
     client = AzureOpenAI(azure_endpoint=endpoint, azure_ad_token_provider=token_provider, api_version=api_version)
-    sdk_status, sdk_seconds, completion = call_sdk(client, args.model, messages)
-    sdk_answer = completion.choices[0].message.content or ""
+    status, seconds, completion = call_sdk(client, model, MESSAGES)
+    answer = completion.choices[0].message.content or ""
     print(f"Parsed into: {type(completion).__module__}.{type(completion).__name__}")
-    print(f"\nAssistant: {sdk_answer}")
+    print(f"\nAssistant: {answer}")
+    return {
+        "status": status,
+        "seconds": seconds,
+        "answer": answer,
+        "prompt_tokens": completion.usage.prompt_tokens,
+        "completion_tokens": completion.usage.completion_tokens,
+    }
 
-    print_section("Side by side")
+
+def print_side_by_side(rest, sdk):
     rows = [
-        ("HTTP status", rest_status, sdk_status),
-        ("latency (s)", f"{rest_seconds:.2f}", f"{sdk_seconds:.2f}"),
-        ("prompt tokens", rest_usage.get("prompt_tokens"), completion.usage.prompt_tokens),
-        ("completion tokens", rest_usage.get("completion_tokens"), completion.usage.completion_tokens),
-        ("answer length (chars)", len(rest_answer), len(sdk_answer)),
+        ("HTTP status", rest["status"], sdk["status"]),
+        ("latency (s)", f"{rest['seconds']:.2f}", f"{sdk['seconds']:.2f}"),
+        ("prompt tokens", rest["prompt_tokens"], sdk["prompt_tokens"]),
+        ("completion tokens", rest["completion_tokens"], sdk["completion_tokens"]),
+        ("answer length (chars)", len(rest["answer"]), len(sdk["answer"])),
     ]
     print(f"{'':24}{'REST':>12}{'SDK':>12}")
     for name, rest_value, sdk_value in rows:
         print(f"{name:24}{rest_value!s:>12}{sdk_value!s:>12}")
     print("Same prompt tokens show both sides sent the same request; the answers differ because temperature > 0.")
 
-    passed = bool(rest_answer.strip()) and bool(sdk_answer.strip())
+
+def check_results(rest, sdk):
+    """Both calls must have returned an answer."""
+    passed = bool(rest["answer"].strip()) and bool(sdk["answer"].strip())
     print(f"\nCheck: {'PASS' if passed else 'FAIL'}  both calls returned an answer")
+    return passed
+
+
+def main():
+    load_env()
+    args = parse_args()
+    endpoint, api_version = load_settings(args.model)
+    print(f"User: {QUESTION}")
+    # One Entra ID token provider for both sides: REST puts the token in the header itself, the SDK calls it.
+    token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
+
+    print_section("1. REST: requests.post")
+    rest = rest_step(endpoint, api_version, args.model, token_provider)
+
+    print_section("2. SDK: openai AzureOpenAI client")
+    sdk = sdk_step(endpoint, api_version, args.model, token_provider)
+
+    print_section("Side by side")
+    print_side_by_side(rest, sdk)
+
+    passed = check_results(rest, sdk)
     raise SystemExit(0 if passed else 1)
 
 

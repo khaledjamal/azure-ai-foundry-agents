@@ -1,0 +1,389 @@
+Sample output of src/1-models/1-basic-chat-completion-rest-vs-sdk.py
+Run on 2026-10-25 21:58 with: uv run python src/1-models/1-basic-chat-completion-rest-vs-sdk.py
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+Endpoint: https://<resource-name>.openai.azure.com/
+API version: 2024-08-01-preview
+Model deployment: gpt-4o-mini
+User: Give me three quick tips to stay active during a busy workday.
+
+================================================================================
+1. REST: requests.post
+================================================================================
+
+--- OUTBOUND REQUEST #1 ---
+> POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-08-01-preview
+> User-Agent: python-requests/2.34.2
+> Accept-Encoding: gzip, deflate
+> Accept: */*
+> Connection: keep-alive
+> Authorization: Bearer <redacted>
+> Content-Length: 281
+> Content-Type: application/json
+>
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are FitChat GPT, a friendly fitness assistant. Remind users you're not a medical professional."
+    },
+    {
+      "role": "user",
+      "content": "Give me three quick tips to stay active during a busy workday."
+    }
+  ],
+  "max_tokens": 200,
+  "temperature": 0.7
+}
+
+--- OUTBOUND RESPONSE #1 ---
+< 200 OK
+< Content-Length: 2447
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:23 GMT
+< Server: istio-envoy
+< Vary: Origin
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< azureml-model-session: d20261002183238-fc7a7ff8
+< skip-error-remapping: true
+< x-accel-buffering: no
+< x-ms-is-spilled-over: false
+< x-ms-rai-invoked: true
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-remaining-tokens: 199955
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-renewalperiod-tokens: 60
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-reset-tokens: 0
+< x-request-id: <id>
+< apim-request-id: <id>
+< x-http2-stream-id: 253
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-ms-client-request-id: Not-Set
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "choices": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "annotations": [],
+        "content": "Absolutely! Here are three quick tips to help you stay active during a busy workday:\n\n1. **Take Short Breaks**: Set a timer to remind yourself to take a 5-minute break every hour. Use this time to stretch, walk around your office, or do a few quick exercises like squats or lunges to get your blood flowing.\n\n2. **Incorporate Movement into Your Tasks**: If possible, stand or walk while on phone calls, or opt for a walking meeting instead of sitting in a conference room. You can also use stairs instead of elevators whenever you can.\n\n3. **Desk Exercises**: Try some simple desk exercises, like seated leg raises, shoulder shrugs, or wrist stretches. These can help keep your muscles engaged without needing to leave your workspace.\n\nRemember, it's important to listen to your body and find what works best for you. And just a reminder, I'm not a medical professional—consult with one if you have any health concerns!",
+        "refusal": null,
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1792951104,
+  "id": "chatcmpl-Ecwm8lXGeMK9pu46RlBQgExXbBIHE",
+  "model": "gpt-4o-mini-2024-07-18",
+  "object": "chat.completion",
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20261002183238-fc7a7ff8-default-r0-dp0-default"
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_99f88af1c5",
+  "usage": {
+    "completion_tokens": 199,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 8,
+      "engine_ttft_ms": 25,
+      "engine_ttlt_ms": 1578,
+      "pre_inference_ms": 90,
+      "service_tbt_ms": 8,
+      "service_ttft_ms": 356,
+      "service_ttlt_ms": 1892,
+      "user_visible_ttft_ms": 266
+    },
+    "prompt_tokens": 45,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 244
+  }
+}
+
+HTTP 200 in 2.88 s
+Response JSON keys: ['choices', 'created', 'id', 'model', 'object', 'prompt_filter_results', 'routing', 'service_tier', 'system_fingerprint', 'usage']
+
+Assistant: Absolutely! Here are three quick tips to help you stay active during a busy workday:
+
+1. **Take Short Breaks**: Set a timer to remind yourself to take a 5-minute break every hour. Use this time to stretch, walk around your office, or do a few quick exercises like squats or lunges to get your blood flowing.
+
+2. **Incorporate Movement into Your Tasks**: If possible, stand or walk while on phone calls, or opt for a walking meeting instead of sitting in a conference room. You can also use stairs instead of elevators whenever you can.
+
+3. **Desk Exercises**: Try some simple desk exercises, like seated leg raises, shoulder shrugs, or wrist stretches. These can help keep your muscles engaged without needing to leave your workspace.
+
+Remember, it's important to listen to your body and find what works best for you. And just a reminder, I'm not a medical professional—consult with one if you have any health concerns!
+
+================================================================================
+2. SDK: openai AzureOpenAI client
+================================================================================
+
+--- OUTBOUND REQUEST #2 ---
+> POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: AzureOpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-raw-response: true
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 291
+>
+{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are FitChat GPT, a friendly fitness assistant. Remind users you're not a medical professional."
+    },
+    {
+      "role": "user",
+      "content": "Give me three quick tips to stay active during a busy workday."
+    }
+  ],
+  "max_tokens": 200,
+  "temperature": 0.7
+}
+
+--- OUTBOUND RESPONSE #2 ---
+< 200 OK
+< Content-Length: 2435
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:58:26 GMT
+< Server: istio-envoy
+< Vary: Origin
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< azureml-model-session: d20261002183238-fc7a7ff8
+< skip-error-remapping: true
+< x-accel-buffering: no
+< x-ms-is-spilled-over: false
+< x-ms-rai-invoked: true
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-remaining-tokens: 199955
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-renewalperiod-tokens: 60
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-reset-tokens: 0
+< x-request-id: <id>
+< apim-request-id: <id>
+< x-http2-stream-id: 303
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-ms-client-request-id: Not-Set
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "choices": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "annotations": [],
+        "content": "Absolutely! Here are three quick tips to help you stay active during a busy workday:\n\n1. **Take Short Breaks**: Set a timer to remind yourself to take a 5-minute break every hour. Use this time to stand up, stretch, or take a quick walk around your workspace. It can boost your energy and focus!\n\n2. **Desk Exercises**: Incorporate simple exercises at your desk, like seated leg lifts, desk push-ups, or shoulder shrugs. These can be done in just a few minutes and help keep your muscles engaged throughout the day.\n\n3. **Walk and Talk**: If you have phone calls or virtual meetings, try walking around while you talk. This not only keeps you moving but also can enhance your creativity and focus.\n\nRemember, these tips are just suggestions, and it's always good to listen to your body. I'm not a medical professional, so if you have any health concerns, consult with a qualified expert. Enjoy staying active!",
+        "refusal": null,
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1792951106,
+  "id": "chatcmpl-EcwmAyQxaB2xvHfVzW9s9Cym49Cu5",
+  "model": "gpt-4o-mini-2024-07-18",
+  "object": "chat.completion",
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20261002183238-fc7a7ff8-default-r6-dp0-default"
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_99f88af1c5",
+  "usage": {
+    "completion_tokens": 198,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 8,
+      "engine_ttft_ms": 28,
+      "engine_ttlt_ms": 1680,
+      "pre_inference_ms": 79,
+      "service_tbt_ms": 8,
+      "service_ttft_ms": 374,
+      "service_ttlt_ms": 1984,
+      "user_visible_ttft_ms": 295
+    },
+    "prompt_tokens": 45,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 243
+  }
+}
+
+HTTP 200 in 2.98 s
+Parsed into: openai.types.chat.chat_completion.ChatCompletion
+
+Assistant: Absolutely! Here are three quick tips to help you stay active during a busy workday:
+
+1. **Take Short Breaks**: Set a timer to remind yourself to take a 5-minute break every hour. Use this time to stand up, stretch, or take a quick walk around your workspace. It can boost your energy and focus!
+
+2. **Desk Exercises**: Incorporate simple exercises at your desk, like seated leg lifts, desk push-ups, or shoulder shrugs. These can be done in just a few minutes and help keep your muscles engaged throughout the day.
+
+3. **Walk and Talk**: If you have phone calls or virtual meetings, try walking around while you talk. This not only keeps you moving but also can enhance your creativity and focus.
+
+Remember, these tips are just suggestions, and it's always good to listen to your body. I'm not a medical professional, so if you have any health concerns, consult with a qualified expert. Enjoy staying active!
+
+================================================================================
+Side by side
+================================================================================
+                                REST         SDK
+HTTP status                      200         200
+latency (s)                     2.88        2.98
+prompt tokens                     45          45
+completion tokens                199         198
+answer length (chars)            919         909
+Same prompt tokens show both sides sent the same request; the answers differ because temperature > 0.
+
+Check: PASS  both calls returned an answer
