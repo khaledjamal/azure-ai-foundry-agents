@@ -66,9 +66,8 @@ def get_project_endpoint():
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
-def main():
-    checks = []  # (status, message) with status PASS, WARN or FAIL
-
+def check_settings(checks):
+    """Step 1: which lab settings are set (names only). Stops with the summary if the Foundry project isn't set."""
     print_section("1. Settings in .env")
     if not ENV_FILE.exists():
         print(f"Missing: {ENV_FILE} (copy .env.example)")
@@ -87,8 +86,10 @@ def main():
     checks.append(("PASS" if project_set else "FAIL", "Foundry project setting"))
     if not project_set:
         report(checks)
-    model = os.getenv("MODEL_DEPLOYMENT_NAME") or "gpt-4o-mini"
 
+
+def check_sign_in(checks):
+    """Step 2: get a token for Azure AI services; return the credential. Stops with the summary if sign-in fails."""
     print_section("2. Sign-in (DefaultAzureCredential)")
     credential = DefaultAzureCredential()
     try:
@@ -100,7 +101,11 @@ def main():
         print(f"  Sign-in failed: {exc}\n  Run `az login` and try again.")
         checks.append(("FAIL", "sign-in"))
         report(checks)
+    return credential
 
+
+def check_project(checks, credential):
+    """Step 3: list the project's deployments and connections; return both. Stops with the summary on an error."""
     print_section("3. Foundry project")
     endpoint = get_project_endpoint()
     print(f"  Project endpoint: {endpoint}")
@@ -123,8 +128,13 @@ def main():
     print(f"  Connections ({len(connections)}):")
     for connection in connections:
         print(f"    {connection.name:40} {connection.type}")
+    return deployments, connections
 
+
+def check_named_deployments(checks, deployments, connections):
+    """Step 4: every *_DEPLOYMENT_NAME setting names an existing deployment, and the Bing connection exists."""
     print_section("4. Settings that name deployments and connections")
+    model = os.getenv("MODEL_DEPLOYMENT_NAME") or "gpt-4o-mini"
     deployment_names = {deployment.name for deployment in deployments}
     lab_names = [name for _, _, names in SETTINGS for name in names if name.endswith("_DEPLOYMENT_NAME")]
     named = {"MODEL_DEPLOYMENT_NAME": model}
@@ -140,6 +150,9 @@ def main():
         print(f"  {'PASS' if found else 'WARN'}  GROUNDING_WITH_BING_CONNECTION_NAME names a project connection")
         checks.append(("PASS" if found else "WARN", "Bing connection"))
 
+
+def check_search(checks):
+    """Step 5: Azure AI Search accepts its key, shown by listing the index names. Skipped if not set."""
     print_section("5. Azure AI Search")
     search_endpoint, search_key = os.getenv("AZURE_AI_SEARCH_ENDPOINT"), os.getenv("AZURE_AI_SEARCH_API_KEY")
     if search_endpoint and search_key:
@@ -152,6 +165,15 @@ def main():
             checks.append(("WARN", "Azure AI Search"))
     else:
         print("  Skipped (AZURE_AI_SEARCH_ENDPOINT or AZURE_AI_SEARCH_API_KEY not set)")
+
+
+def main():
+    checks = []  # (status, message) with status PASS, WARN or FAIL
+    check_settings(checks)
+    credential = check_sign_in(checks)
+    deployments, connections = check_project(checks, credential)
+    check_named_deployments(checks, deployments, connections)
+    check_search(checks)
     report(checks)
 
 
