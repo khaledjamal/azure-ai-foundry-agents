@@ -1,0 +1,87 @@
+Sample output of src/1-models/2-embeddings-image-generation.py
+Run on 2026-10-25 22:12 with: uv run python src/1-models/2-embeddings-image-generation.py
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+Endpoint: https://<resource-name>.openai.azure.com/openai/v1/
+Model deployment: gpt-image-2
+Prompt: A watercolor painting of fresh fruits and vegetables arranged in a heart shape
+Size: 1024x1024, quality: low
+
+--- OUTBOUND REQUEST #1 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/images/generations
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 176
+>
+{
+  "model": "gpt-image-2",
+  "prompt": "A watercolor painting of fresh fruits and vegetables arranged in a heart shape",
+  "n": 1,
+  "output_format": "png",
+  "quality": "low",
+  "size": "1024x1024"
+}
+
+--- OUTBOUND RESPONSE #1 ---
+< 200 OK
+< Content-Length: 1976386
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:12:39 GMT
+< Server: istio-envoy
+< Vary: Origin
+< apim-request-id: <id>
+< x-ratelimit-remaining-requests: 0
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< x-http2-stream-id: 537
+< x-ms-client-request-id: Not-Set
+< x-ms-deployment-name: gpt-image-2
+< x-ratelimit-limit-requests: 1
+<
+{
+  "created": 1792951974,
+  "background": "opaque",
+  "data": [
+    {
+      "b64_json": "iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAIAAADwf7zUAABJ7WNhQlgAAEntanVtYgAAAB5qdW1kYzJw...(1975948 characters)"
+    }
+  ],
+  "output_format": "png",
+  "quality": "low",
+  "size": "1024x1024",
+  "usage": {
+    "input_tokens": 19,
+    "input_tokens_details": {
+      "image_tokens": 0,
+      "text_tokens": 19
+    },
+    "output_tokens": 196,
+    "output_tokens_details": {
+      "image_tokens": 196,
+      "text_tokens": 0
+    },
+    "total_tokens": 215
+  }
+}
+Done in 17.7 s
+Usage: input 19 tokens, output 196 tokens, total 215
+
+Saved: generated-images/health-image-20261025-221256.png (1,481,959 bytes, 1024x1024 px)
+
+Check: PASS  a 1024x1024 PNG was returned and saved
