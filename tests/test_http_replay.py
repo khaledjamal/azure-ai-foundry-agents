@@ -74,7 +74,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send_body(json.dumps(REPLY).encode(), "application/json")
 
     def do_POST(self):
-        request = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
+        body = self.rfile.read(int(self.headers.get("Content-Length", 0)))
+        request = json.loads(body or b"{}") if "json" in self.headers.get("Content-Type", "") else {}
         self.send_body(json.dumps({"echo": request.get("input"), **REPLY}).encode(), "application/json")
 
 
@@ -180,6 +181,17 @@ class RequestsReplayTest(ReplayTestCase):
         with self.assertRaises(http_replay.HttpReplayMiss) as error:
             self.replay(poll_once_more)
         self.assertIn("call 4; 3 recorded", str(error.exception))
+
+    def test_multipart_bodies_match_without_their_random_boundary(self):
+        # requests picks a new random boundary for each upload, as azure-core does for file uploads.
+        def upload():
+            files = {"file": ("notes.md", b"# Notes\n"), "purpose": (None, "assistants")}
+            return requests.post(f"{self.base}/files", files=files, timeout=10).status_code
+
+        self.record(upload)
+        self.assertEqual(self.replay(upload), 200)
+        with self.assertRaises(http_replay.HttpReplayMiss):
+            self.replay(lambda: requests.post(f"{self.base}/files", files={"file": ("other.md", b"x")}, timeout=10))
 
     def test_json_bodies_match_by_value_and_ignored_fields(self):
         self.record(lambda: requests.post(f"{self.base}/chat", json={"input": "Hi", "ts": 1}, timeout=10))

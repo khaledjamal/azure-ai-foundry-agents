@@ -13,9 +13,10 @@ key and credential fields in JSON bodies); the shape of a redacted object is kep
 `credentials.key` still works on replay. Real hosts and IDs stay as they are: recordings are private files.
 
 replay: nothing leaves the machine. Each request is matched to a recorded one by method, URL (host, path and sorted
-query) and body (JSON compared by value, HTTP_REPLAY_IGNORE_FIELDS left out); headers are not compared (auth, request
-IDs, dates, user agent). When the same request was made several times, the 1st replay gets the 1st recorded answer,
-the 2nd the 2nd, and so on (an agent run polled until it ends, for example). A request with no recorded answer raises
+query) and body (JSON compared by value, HTTP_REPLAY_IGNORE_FIELDS left out; a multipart upload without its random
+boundary); headers are not compared (auth, request IDs, dates, user agent). When the same request was made several
+times, the 1st replay gets the 1st recorded answer, the 2nd the 2nd, and so on (an agent run polled until it ends, for
+example). A request with no recorded answer raises
 HttpReplayMiss naming it; there is no fall-back to the real service, so a replay can't cost money. Also in replay:
 connections to anything but this machine (loopback) are refused (HttpReplayNetworkBlocked), and the azure-identity
 credentials (DefaultAzureCredential, AzureCliCredential, sync and async) return a placeholder token, so no sign-in or
@@ -149,6 +150,9 @@ def _canonical_body(body):
         return "sha256:" + hashlib.sha256(body).hexdigest()
     if re.fullmatch(r"[\w.~%+\-]+=[^&]*(&[\w.~%+\-]+=[^&]*)*", text):  # form-encoded
         return http_log._redact_params("&".join(sorted(text.split("&"))))
+    multipart = re.match(r"--([0-9A-Za-z'()+_,./:=?-]{1,70})\r\n", text)
+    if multipart:  # file uploads: the boundary is random for each request, so it is left out of the match
+        return text.replace(multipart.group(1), "<boundary>")
     return text
 
 
