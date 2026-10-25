@@ -116,7 +116,7 @@ Microsoft's original notebook, what each script cleans up and the generated imag
 | [DeepSeek thinking off vs on](src/1-models/5-deep-seek-v4-flash.py) | DeepSeek-V4-Flash with and without thinking (`reasoning_effort`) | [output](sample-output/5-deep-seek-v4-flash.py-output-20261018-170548.txt) |
 | [Agent basics](src/2-agents/1-basics.py) | Foundry Agent Service: agent, thread, messages, run | [output](sample-output/1-basics.py-output-20261014-094247.txt) |
 | [Code Interpreter](src/2-agents/2-code-interpreter.py) | agent analyzes a CSV and returns a chart file | [output](sample-output/2-code-interpreter.py-output-20261018-142926.txt) |
-| [File Search](src/2-agents/3-file-search.py) | vector store over Markdown files, answers with file citations | [output](sample-output/3-file-search.py-output-20261014-101408.txt) |
+| [File Search](src/2-agents/3-file-search.py) | vector store over Markdown files, answers with file citations | [output](sample-output/3-file-search.py-output-20261025-215612.txt) |
 | [Grounding with Bing](src/2-agents/4-bing-grounding.py) | new agents API agent with Bing grounding and numbered web citations | [output](sample-output/4-bing-grounding.py-output-20261018-114459.txt) |
 | [Web Search](src/2-agents/4-web-search.py) (new) | the same questions with the built-in `WebSearchTool`, no extra resource | [output](sample-output/4-web-search.py-output-20261018-144147.txt) |
 | [Agent + Azure AI Search](src/2-agents/5-agents-aisearch.py) | product search tool plus a local price function tool | [output](sample-output/5-agents-aisearch.py-output-20261018-204747.txt) |

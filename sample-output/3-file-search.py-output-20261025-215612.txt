@@ -1,0 +1,1530 @@
+Sample output of src/2-agents/3-file-search.py
+Run on 2026-10-25 21:56 with: uv run python src/2-agents/3-file-search.py
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+
+================================================================================
+FILE SEARCH AGENT - AIProjectClient
+================================================================================
+Loaded .env from: .env
+Connection method: AIProjectClient (project_client.agents)
+Project endpoint:  https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
+Model deployment:  gpt-4o-mini
+
+================================================================================
+1. Upload files and build the vector store
+================================================================================
+
+--- OUTBOUND REQUEST #1 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/files?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 1024
+> Content-Type: multipart/form-data; boundary=979ec8928ac90ed0426133e0f3b76e4e
+>
+<multipart body, 1.0 KB>
+
+--- OUTBOUND RESPONSE #1 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:56:14 GMT
+< Server: istio-envoy
+< Access-Control-Allow-Origin: *
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< x-request-id: <id>
+< openai-processing-ms: 3505
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: hyena-eastus2-02
+<
+{
+  "object": "file",
+  "id": "assistant-D52kjz8Wu8iHcB8Ku2aWuA",
+  "purpose": "assistants",
+  "filename": "recipes.md",
+  "bytes": 780,
+  "created_at": 1792950975,
+  "expires_at": null,
+  "status": "processed",
+  "status_details": null
+}
+Uploaded: recipes.md -> assistant-D52kjz8Wu8iHcB8Ku2aWuA
+
+--- OUTBOUND REQUEST #2 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/files?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 623
+> Content-Type: multipart/form-data; boundary=6687c443128611cd08bfb31a0e72e9e4
+>
+<multipart body, 623 B>
+
+--- OUTBOUND RESPONSE #2 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:56:19 GMT
+< Server: istio-envoy
+< Access-Control-Allow-Origin: *
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< x-request-id: <id>
+< openai-processing-ms: 5398
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: hyena-eastus2-02
+<
+{
+  "object": "file",
+  "id": "assistant-RXF1TLZLAb8Lm3bRA44MDq",
+  "purpose": "assistants",
+  "filename": "guidelines.md",
+  "bytes": 376,
+  "created_at": 1792950979,
+  "expires_at": null,
+  "status": "processed",
+  "status_details": null
+}
+Uploaded: guidelines.md -> assistant-RXF1TLZLAb8Lm3bRA44MDq
+
+--- OUTBOUND REQUEST #3 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/vector_stores?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 122
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "file_ids": [
+    "assistant-D52kjz8Wu8iHcB8Ku2aWuA",
+    "assistant-RXF1TLZLAb8Lm3bRA44MDq"
+  ],
+  "name": "health_resources_example"
+}
+
+--- OUTBOUND RESPONSE #3 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:56:24 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< x-request-id: <id>
+< openai-processing-ms: 4312
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 53
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: hyena-eastus2-02
+<
+{
+  "id": "vs_hTsevlCoBvUBZyn1du2KR9Dw",
+  "object": "vector_store",
+  "name": "health_resources_example",
+  "status": "in_progress",
+  "usage_bytes": 0,
+  "created_at": 1792950985,
+  "file_counts": {
+    "in_progress": 2,
+    "completed": 0,
+    "failed": 0,
+    "cancelled": 0,
+    "total": 2
+  },
+  "metadata": {},
+  "expires_after": null,
+  "expires_at": null,
+  "last_active_at": 1792950985
+}
+
+--- OUTBOUND REQUEST #4 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/vector_stores/vs_hTsevlCoBvUBZyn1du2KR9Dw?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #4 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:56:30 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< x-request-id: <id>
+< openai-processing-ms: 1391
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 11
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: hyena-eastus2-02
+<
+{
+  "id": "vs_hTsevlCoBvUBZyn1du2KR9Dw",
+  "object": "vector_store",
+  "name": "health_resources_example",
+  "status": "in_progress",
+  "usage_bytes": 0,
+  "created_at": 1792950985,
+  "file_counts": {
+    "in_progress": 2,
+    "completed": 0,
+    "failed": 0,
+    "cancelled": 0,
+    "total": 2
+  },
+  "metadata": {},
+  "expires_after": null,
+  "expires_at": null,
+  "last_active_at": 1792950985
+}
+
+HTTP #5 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/vector_stores/vs_hTsevlCoBvUBZyn1du2KR9Dw?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #6 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/vector_stores/vs_hTsevlCoBvUBZyn1du2KR9Dw?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #7 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/vector_stores/vs_hTsevlCoBvUBZyn1du2KR9Dw?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #8 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/vector_stores/vs_hTsevlCoBvUBZyn1du2KR9Dw?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #9 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/vector_stores/vs_hTsevlCoBvUBZyn1du2KR9Dw?api-version=v1 -> 200 OK, status: completed
+Created vector store 'health_resources_example': vs_hTsevlCoBvUBZyn1du2KR9Dw (files completed 2, failed 0)
+
+================================================================================
+2. Create the agent
+================================================================================
+
+--- OUTBOUND REQUEST #10 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/assistants?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 498
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "instructions": "You are a health resource advisor with access to dietary and recipe files.\nYou:\n1. Always present disclaimers (you're not a doctor!)\n2. Provide references to the files when possible\n3. Focus on general nutrition or recipe tips.\n4. Encourage professional consultation for more detailed advice.",
+  "model": "gpt-4o-mini",
+  "name": "health-search-agent",
+  "tool_resources": {
+    "file_search": {
+      "vector_store_ids": [
+        "vs_hTsevlCoBvUBZyn1du2KR9Dw"
+      ]
+    }
+  },
+  "tools": [
+    {
+      "type": "file_search"
+    }
+  ]
+}
+
+--- OUTBOUND RESPONSE #10 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:56:56 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: e31bd5a73dfaca43666287f7ffb29a88
+< openai-processing-ms: 99
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.279
+<
+{
+  "id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+  "object": "assistant",
+  "created_at": 1792951016,
+  "name": "health-search-agent",
+  "description": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health resource advisor with access to dietary and recipe files.\nYou:\n1. Always present disclaimers (you're not a doctor!)\n2. Provide references to the files when possible\n3. Focus on general nutrition or recipe tips.\n4. Encourage professional consultation for more detailed advice.",
+  "tools": [
+    {
+      "type": "file_search"
+    }
+  ],
+  "top_p": 1.0,
+  "temperature": 1.0,
+  "tool_resources": {
+    "file_search": {
+      "vector_store_ids": [
+        "vs_hTsevlCoBvUBZyn1du2KR9Dw"
+      ]
+    }
+  },
+  "metadata": {},
+  "response_format": "auto"
+}
+Created agent: health-search-agent (asst_p8euSkeFOs7X2LW2EooL67P6)
+
+--- OUTBOUND REQUEST #11 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 2
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{}
+
+--- OUTBOUND RESPONSE #11 ---
+< 200 OK
+< Content-Length: 137
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:56:56 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 1c78fb0be6a70dcbf02be741d77fe911
+< openai-processing-ms: 90
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 71
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.237
+<
+{
+  "id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+  "object": "thread",
+  "created_at": 1792951016,
+  "metadata": {},
+  "tool_resources": {}
+}
+Created thread: thread_Fha7QGB8LSWBpA4Mpb3xm6Or
+
+================================================================================
+3. Question 1
+================================================================================
+User: Could you suggest a gluten-free lunch recipe?
+
+--- OUTBOUND REQUEST #12 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/messages?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 76
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "content": "Could you suggest a gluten-free lunch recipe?",
+  "role": "user"
+}
+
+--- OUTBOUND RESPONSE #12 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:56:57 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 362d057e12a6f46f72e0ee8c083f39e9
+< openai-processing-ms: 99
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 33
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.241
+<
+{
+  "id": "msg_D85JED9aCZVilEUUxIBqNtIa",
+  "object": "thread.message",
+  "created_at": 1792951017,
+  "assistant_id": null,
+  "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+  "run_id": null,
+  "role": "user",
+  "content": [
+    {
+      "type": "text",
+      "text": {
+        "value": "Could you suggest a gluten-free lunch recipe?",
+        "annotations": []
+      }
+    }
+  ],
+  "attachments": [],
+  "metadata": {}
+}
+
+--- OUTBOUND REQUEST #13 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/runs?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 66
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+  "stream": false
+}
+
+--- OUTBOUND RESPONSE #13 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:56:57 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: ac256ce47f874381567fa0265637d94e
+< openai-processing-ms: 321
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 19
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.681
+<
+{
+  "id": "run_PXkfSqHJUbZnBg6pgdK4BJfP",
+  "object": "thread.run",
+  "created_at": 1792951017,
+  "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+  "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+  "status": "queued",
+  "started_at": null,
+  "expires_at": 1792952817,
+  "cancelled_at": null,
+  "failed_at": null,
+  "completed_at": null,
+  "required_action": null,
+  "last_error": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health resource advisor with access to dietary and recipe files.\nYou:\n1. Always present disclaimers (you're not a doctor!)\n2. Provide references to the files when possible\n3. Focus on general nutrition or recipe tips.\n4. Encourage professional consultation for more detailed advice.",
+  "tools": [
+    {
+      "type": "file_search"
+    }
+  ],
+  "tool_resources": {},
+  "metadata": {},
+  "temperature": 1.0,
+  "top_p": 1.0,
+  "max_completion_tokens": null,
+  "max_prompt_tokens": null,
+  "truncation_strategy": {
+    "type": "auto",
+    "last_messages": null
+  },
+  "incomplete_details": null,
+  "usage": null,
+  "response_format": "auto",
+  "tool_choice": "auto",
+  "parallel_tool_calls": true
+}
+
+--- OUTBOUND REQUEST #14 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/runs/run_PXkfSqHJUbZnBg6pgdK4BJfP?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #14 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:56:59 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: b6fdce28c1106c0b85be8ad3caa08e18
+< openai-processing-ms: 126
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 21
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.306
+<
+{
+  "id": "run_PXkfSqHJUbZnBg6pgdK4BJfP",
+  "object": "thread.run",
+  "created_at": 1792951017,
+  "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+  "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+  "status": "in_progress",
+  "started_at": 1792951018,
+  "expires_at": 1792952817,
+  "cancelled_at": null,
+  "failed_at": null,
+  "completed_at": null,
+  "required_action": null,
+  "last_error": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health resource advisor with access to dietary and recipe files.\nYou:\n1. Always present disclaimers (you're not a doctor!)\n2. Provide references to the files when possible\n3. Focus on general nutrition or recipe tips.\n4. Encourage professional consultation for more detailed advice.",
+  "tools": [
+    {
+      "type": "file_search"
+    }
+  ],
+  "tool_resources": {},
+  "metadata": {},
+  "temperature": 1.0,
+  "top_p": 1.0,
+  "max_completion_tokens": null,
+  "max_prompt_tokens": null,
+  "truncation_strategy": {
+    "type": "auto",
+    "last_messages": null
+  },
+  "incomplete_details": null,
+  "usage": null,
+  "response_format": "auto",
+  "tool_choice": "auto",
+  "parallel_tool_calls": true
+}
+
+HTTP #15 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/runs/run_PXkfSqHJUbZnBg6pgdK4BJfP?api-version=v1 -> 200 OK, status: completed
+Run status: RunStatus.COMPLETED
+(tokens: prompt 2054, completion 215)
+
+================================================================================
+4. Question 2
+================================================================================
+User: Show me some heart-healthy meal ideas.
+
+--- OUTBOUND REQUEST #16 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/messages?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 69
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "content": "Show me some heart-healthy meal ideas.",
+  "role": "user"
+}
+
+--- OUTBOUND RESPONSE #16 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:01 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 0e30835d20edad03fd0e86321b55cf1d
+< openai-processing-ms: 129
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 35
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.258
+<
+{
+  "id": "msg_hlrbMDvHjxexZQy8Xi8qtzHY",
+  "object": "thread.message",
+  "created_at": 1792951021,
+  "assistant_id": null,
+  "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+  "run_id": null,
+  "role": "user",
+  "content": [
+    {
+      "type": "text",
+      "text": {
+        "value": "Show me some heart-healthy meal ideas.",
+        "annotations": []
+      }
+    }
+  ],
+  "attachments": [],
+  "metadata": {}
+}
+
+--- OUTBOUND REQUEST #17 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/runs?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 66
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+  "stream": false
+}
+
+--- OUTBOUND RESPONSE #17 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:02 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 6a1bc915ad5f443dc7952d179141b638
+< openai-processing-ms: 344
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 5
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.574
+<
+{
+  "id": "run_FzikFpaP6YHPvitS4Huh5lGD",
+  "object": "thread.run",
+  "created_at": 1792951021,
+  "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+  "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+  "status": "queued",
+  "started_at": null,
+  "expires_at": 1792952821,
+  "cancelled_at": null,
+  "failed_at": null,
+  "completed_at": null,
+  "required_action": null,
+  "last_error": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health resource advisor with access to dietary and recipe files.\nYou:\n1. Always present disclaimers (you're not a doctor!)\n2. Provide references to the files when possible\n3. Focus on general nutrition or recipe tips.\n4. Encourage professional consultation for more detailed advice.",
+  "tools": [
+    {
+      "type": "file_search"
+    }
+  ],
+  "tool_resources": {},
+  "metadata": {},
+  "temperature": 1.0,
+  "top_p": 1.0,
+  "max_completion_tokens": null,
+  "max_prompt_tokens": null,
+  "truncation_strategy": {
+    "type": "auto",
+    "last_messages": null
+  },
+  "incomplete_details": null,
+  "usage": null,
+  "response_format": "auto",
+  "tool_choice": "auto",
+  "parallel_tool_calls": true
+}
+
+--- OUTBOUND REQUEST #18 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/runs/run_FzikFpaP6YHPvitS4Huh5lGD?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #18 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:03 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 890085320f179d2a945f53d5fa151add
+< openai-processing-ms: 123
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.302
+<
+{
+  "id": "run_FzikFpaP6YHPvitS4Huh5lGD",
+  "object": "thread.run",
+  "created_at": 1792951021,
+  "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+  "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+  "status": "in_progress",
+  "started_at": 1792951022,
+  "expires_at": 1792952821,
+  "cancelled_at": null,
+  "failed_at": null,
+  "completed_at": null,
+  "required_action": null,
+  "last_error": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health resource advisor with access to dietary and recipe files.\nYou:\n1. Always present disclaimers (you're not a doctor!)\n2. Provide references to the files when possible\n3. Focus on general nutrition or recipe tips.\n4. Encourage professional consultation for more detailed advice.",
+  "tools": [
+    {
+      "type": "file_search"
+    }
+  ],
+  "tool_resources": {},
+  "metadata": {},
+  "temperature": 1.0,
+  "top_p": 1.0,
+  "max_completion_tokens": null,
+  "max_prompt_tokens": null,
+  "truncation_strategy": {
+    "type": "auto",
+    "last_messages": null
+  },
+  "incomplete_details": null,
+  "usage": null,
+  "response_format": "auto",
+  "tool_choice": "auto",
+  "parallel_tool_calls": true
+}
+
+HTTP #19 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/runs/run_FzikFpaP6YHPvitS4Huh5lGD?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #20 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/runs/run_FzikFpaP6YHPvitS4Huh5lGD?api-version=v1 -> 200 OK, status: completed
+Run status: RunStatus.COMPLETED
+(tokens: prompt 2549, completion 261)
+
+================================================================================
+5. Question 3
+================================================================================
+User: What guidelines do you have for someone with diabetes?
+
+--- OUTBOUND REQUEST #21 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/messages?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 85
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "content": "What guidelines do you have for someone with diabetes?",
+  "role": "user"
+}
+
+--- OUTBOUND RESPONSE #21 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:07 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 3331776908979485dad9cf70be8b470f
+< openai-processing-ms: 118
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.287
+<
+{
+  "id": "msg_9CyjKLlcU7KNiWOW55rJLtg0",
+  "object": "thread.message",
+  "created_at": 1792951026,
+  "assistant_id": null,
+  "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+  "run_id": null,
+  "role": "user",
+  "content": [
+    {
+      "type": "text",
+      "text": {
+        "value": "What guidelines do you have for someone with diabetes?",
+        "annotations": []
+      }
+    }
+  ],
+  "attachments": [],
+  "metadata": {}
+}
+
+--- OUTBOUND REQUEST #22 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/runs?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 66
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+  "stream": false
+}
+
+--- OUTBOUND RESPONSE #22 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:08 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 13c2674486e2ef75330d78aecee07148
+< openai-processing-ms: 755
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.955
+<
+{
+  "id": "run_zCy8EUmJSdYYOFvzFOW5mVRp",
+  "object": "thread.run",
+  "created_at": 1792951027,
+  "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+  "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+  "status": "queued",
+  "started_at": null,
+  "expires_at": 1792952827,
+  "cancelled_at": null,
+  "failed_at": null,
+  "completed_at": null,
+  "required_action": null,
+  "last_error": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health resource advisor with access to dietary and recipe files.\nYou:\n1. Always present disclaimers (you're not a doctor!)\n2. Provide references to the files when possible\n3. Focus on general nutrition or recipe tips.\n4. Encourage professional consultation for more detailed advice.",
+  "tools": [
+    {
+      "type": "file_search"
+    }
+  ],
+  "tool_resources": {},
+  "metadata": {},
+  "temperature": 1.0,
+  "top_p": 1.0,
+  "max_completion_tokens": null,
+  "max_prompt_tokens": null,
+  "truncation_strategy": {
+    "type": "auto",
+    "last_messages": null
+  },
+  "incomplete_details": null,
+  "usage": null,
+  "response_format": "auto",
+  "tool_choice": "auto",
+  "parallel_tool_calls": true
+}
+
+--- OUTBOUND REQUEST #23 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/runs/run_zCy8EUmJSdYYOFvzFOW5mVRp?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #23 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:09 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: ebac43907a2a517040e357ab49cb0a65
+< openai-processing-ms: 107
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 23
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.256
+<
+{
+  "id": "run_zCy8EUmJSdYYOFvzFOW5mVRp",
+  "object": "thread.run",
+  "created_at": 1792951027,
+  "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+  "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+  "status": "in_progress",
+  "started_at": 1792951028,
+  "expires_at": 1792952827,
+  "cancelled_at": null,
+  "failed_at": null,
+  "completed_at": null,
+  "required_action": null,
+  "last_error": null,
+  "model": "gpt-4o-mini",
+  "instructions": "You are a health resource advisor with access to dietary and recipe files.\nYou:\n1. Always present disclaimers (you're not a doctor!)\n2. Provide references to the files when possible\n3. Focus on general nutrition or recipe tips.\n4. Encourage professional consultation for more detailed advice.",
+  "tools": [
+    {
+      "type": "file_search"
+    }
+  ],
+  "tool_resources": {},
+  "metadata": {},
+  "temperature": 1.0,
+  "top_p": 1.0,
+  "max_completion_tokens": null,
+  "max_prompt_tokens": null,
+  "truncation_strategy": {
+    "type": "auto",
+    "last_messages": null
+  },
+  "incomplete_details": null,
+  "usage": null,
+  "response_format": "auto",
+  "tool_choice": "auto",
+  "parallel_tool_calls": true
+}
+
+HTTP #24 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/runs/run_zCy8EUmJSdYYOFvzFOW5mVRp?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #25 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/runs/run_zCy8EUmJSdYYOFvzFOW5mVRp?api-version=v1 -> 200 OK, status: completed
+Run status: RunStatus.COMPLETED
+(tokens: prompt 3139, completion 197)
+
+================================================================================
+Conversation with citations (oldest to newest)
+================================================================================
+
+--- OUTBOUND REQUEST #26 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/messages?api-version=v1&order=asc
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #26 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:12 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: c6342f7069a6e7a550d4d9dbe1451ad8
+< openai-processing-ms: 104
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 25
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.222
+<
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "msg_D85JED9aCZVilEUUxIBqNtIa",
+      "object": "thread.message",
+      "created_at": 1792951017,
+      "assistant_id": null,
+      "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+      "run_id": null,
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": {
+            "value": "Could you suggest a gluten-free lunch recipe?",
+            "annotations": []
+          }
+        }
+      ],
+      "attachments": [],
+      "metadata": {}
+    },
+    {
+      "id": "msg_OS6eUvmrnTLvQx1kV3RAcM8z",
+      "object": "thread.message",
+      "created_at": 1792951019,
+      "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+      "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+      "run_id": "run_PXkfSqHJUbZnBg6pgdK4BJfP",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": {
+            "value": "Here's a simple and delicious gluten-free lunch recipe you can try:\n\n### Quinoa Bowl\n\n**Ingredients:**\n- Quinoa\n- Your choice of vegetables (e.g., bell peppers, spinach, cherry tomatoes)\n- Olive oil\n- Salt and pepper to taste\n\n**Instructions:**\n1. Cook the quinoa according to the package instructions.\n2. While the quinoa is cooking, chop your vegetables.\n3. In a pan, heat a little olive oil over medium heat.\n4. Sauté the chopped vegetables until they are tender.\n5. Once the quinoa is cooked, combine it with the sautéed vegetables.\n6. Season with salt and pepper to taste.\n7. Serve warm and enjoy your nutritious gluten-free lunch!\n\nFor more gluten-free recipe ideas, you can refer to the recipes file【4:1†source】. \n\n**Disclaimer:** I'm not a doctor, so it's always a good idea to consult with a healthcare professional or nutritionist for personalized dietary advice.",
+            "annotations": [
+              {
+                "type": "file_citation",
+                "text": "【4:1†source】",
+                "start_index": 706,
+                "end_index": 718,
+                "file_citation": {
+                  "file_id": "assistant-D52kjz8Wu8iHcB8Ku2aWuA"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "attachments": [],
+      "metadata": {}
+    },
+    {
+      "id": "msg_hlrbMDvHjxexZQy8Xi8qtzHY",
+      "object": "thread.message",
+      "created_at": 1792951021,
+      "assistant_id": null,
+      "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+      "run_id": null,
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": {
+            "value": "Show me some heart-healthy meal ideas.",
+            "annotations": []
+          }
+        }
+      ],
+      "attachments": [],
+      "metadata": {}
+    },
+    {
+      "id": "msg_Ygn3Vryvy2tLFDAHa8CNavBY",
+      "object": "thread.message",
+      "created_at": 1792951024,
+      "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+      "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+      "run_id": "run_FzikFpaP6YHPvitS4Huh5lGD",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": {
+            "value": "Here are some heart-healthy meal ideas for you:\n\n### 1. Baked Salmon\n**Ingredien...(1029 characters)",
+            "annotations": [
+              {
+                "type": "file_citation",
+                "text": "【8:0†source】",
+                "start_index": 888,
+                "end_index": 900,
+                "file_citation": {
+                  "file_id": "assistant-D52kjz8Wu8iHcB8Ku2aWuA"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "attachments": [],
+      "metadata": {}
+    },
+    {
+      "id": "msg_9CyjKLlcU7KNiWOW55rJLtg0",
+      "object": "thread.message",
+      "created_at": 1792951026,
+      "assistant_id": null,
+      "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+      "run_id": null,
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": {
+            "value": "What guidelines do you have for someone with diabetes?",
+            "annotations": []
+          }
+        }
+      ],
+      "attachments": [],
+      "metadata": {}
+    },
+    {
+      "id": "msg_Fx6Av5tmWPmMEGmEUlo0ATaF",
+      "object": "thread.message",
+      "created_at": 1792951030,
+      "assistant_id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+      "thread_id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+      "run_id": "run_zCy8EUmJSdYYOFvzFOW5mVRp",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": {
+            "value": "Here are some key dietary guidelines for someone with diabetes:\n\n### General Guidelines\n1. **Eat a Variety of Foods**: Incorporate different food groups to ensure you're getting a balanced diet.\n2. **Control Portion Sizes**: Be mindful of portion sizes to help manage blood sugar levels.\n3. **Stay Hydrated**: Drink plenty of water throughout the day.\n\n### Specific Guidelines\n- **Monitor Carbohydrate Intake**: Keep track of the carbohydrates you consume as they impact blood sugar levels.\n- **Choose Low Glycemic Foods**: Opt for foods that have a low glycemic index, as they release glucose more slowly into the bloodstream【12:0†source】.\n\nThese guidelines can help maintain healthy blood sugar levels and overall health. \n\n**Disclaimer:** I'm not a doctor, so it's always best to consult with a healthcare professional for personalized advice tailored to your individual health needs.",
+            "annotations": [
+              {
+                "type": "file_citation",
+                "text": "【12:0†source】",
+                "start_index": 626,
+                "end_index": 639,
+                "file_citation": {
+                  "file_id": "assistant-RXF1TLZLAb8Lm3bRA44MDq"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "attachments": [],
+      "metadata": {}
+    }
+  ],
+  "first_id": "msg_D85JED9aCZVilEUUxIBqNtIa",
+  "last_id": "msg_Fx6Av5tmWPmMEGmEUlo0ATaF",
+  "has_more": false
+}
+
+USER: Could you suggest a gluten-free lunch recipe?
+
+ASSISTANT: Here's a simple and delicious gluten-free lunch recipe you can try:
+
+### Quinoa Bowl
+
+**Ingredients:**
+- Quinoa
+- Your choice of vegetables (e.g., bell peppers, spinach, cherry tomatoes)
+- Olive oil
+- Salt and pepper to taste
+
+**Instructions:**
+1. Cook the quinoa according to the package instructions.
+2. While the quinoa is cooking, chop your vegetables.
+3. In a pan, heat a little olive oil over medium heat.
+4. Sauté the chopped vegetables until they are tender.
+5. Once the quinoa is cooked, combine it with the sautéed vegetables.
+6. Season with salt and pepper to taste.
+7. Serve warm and enjoy your nutritious gluten-free lunch!
+
+For more gluten-free recipe ideas, you can refer to the recipes file【4:1†source】. 
+
+**Disclaimer:** I'm not a doctor, so it's always a good idea to consult with a healthcare professional or nutritionist for personalized dietary advice.
+  citation 【4:1†source】 -> recipes.md
+
+USER: Show me some heart-healthy meal ideas.
+
+ASSISTANT: Here are some heart-healthy meal ideas for you:
+
+### 1. Baked Salmon
+**Ingredients:**
+- Salmon fillet
+- Lemon slices
+- Fresh herbs (like dill or parsley)
+
+**Instructions:**
+1. Preheat your oven to 400°F (200°C).
+2. Place the salmon on a baking sheet lined with parchment paper.
+3. Season with salt, pepper, and top with lemon slices and herbs.
+4. Bake for about 15-20 minutes or until the salmon is cooked through.
+
+### 2. Mediterranean Bowl
+**Ingredients:**
+- Canned chickpeas (rinsed and drained)
+- Mixed vegetables (e.g., cucumber, tomatoes, bell peppers)
+- Tahini sauce or dressing
+
+**Instructions:**
+1. In a bowl, combine the chickpeas and chopped vegetables.
+2. Drizzle with tahini sauce and mix well.
+3. Serve chilled or at room temperature.
+
+These meals are not only delicious but also support heart health by incorporating healthy fats, lean proteins, and a variety of vegetables【8:0†source】.
+
+**Disclaimer:** I'm not a doctor, so it's important to consult with a healthcare professional for personalized dietary advice.
+  citation 【8:0†source】 -> recipes.md
+
+USER: What guidelines do you have for someone with diabetes?
+
+ASSISTANT: Here are some key dietary guidelines for someone with diabetes:
+
+### General Guidelines
+1. **Eat a Variety of Foods**: Incorporate different food groups to ensure you're getting a balanced diet.
+2. **Control Portion Sizes**: Be mindful of portion sizes to help manage blood sugar levels.
+3. **Stay Hydrated**: Drink plenty of water throughout the day.
+
+### Specific Guidelines
+- **Monitor Carbohydrate Intake**: Keep track of the carbohydrates you consume as they impact blood sugar levels.
+- **Choose Low Glycemic Foods**: Opt for foods that have a low glycemic index, as they release glucose more slowly into the bloodstream【12:0†source】.
+
+These guidelines can help maintain healthy blood sugar levels and overall health. 
+
+**Disclaimer:** I'm not a doctor, so it's always best to consult with a healthcare professional for personalized advice tailored to your individual health needs.
+  citation 【12:0†source】 -> guidelines.md
+
+--- OUTBOUND REQUEST #27 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or/messages?api-version=v1&order=asc&after=msg_Fx6Av5tmWPmMEGmEUlo0ATaF
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #27 ---
+< 200 OK
+< Content-Length: 96
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:13 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 4e57e47c9c6e913f649c347ead478d45
+< openai-processing-ms: 81
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.395
+<
+{
+  "object": "list",
+  "data": [],
+  "first_id": null,
+  "last_id": null,
+  "has_more": false
+}
+
+================================================================================
+Cleanup
+================================================================================
+
+--- OUTBOUND REQUEST #28 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_Fha7QGB8LSWBpA4Mpb3xm6Or?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #28 ---
+< 200 OK
+< Content-Length: 94
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:13 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: 2dd6199f0315023c4a04155754f30037
+< openai-processing-ms: 84
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 11
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.201
+<
+{
+  "id": "thread_Fha7QGB8LSWBpA4Mpb3xm6Or",
+  "object": "thread.deleted",
+  "deleted": true
+}
+Deleted thread: thread_Fha7QGB8LSWBpA4Mpb3xm6Or
+
+--- OUTBOUND REQUEST #29 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/assistants/asst_p8euSkeFOs7X2LW2EooL67P6?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #29 ---
+< 200 OK
+< Content-Length: 95
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:14 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< X-Request-ID: ed81c6710cc3cabb7f98c8e7c1babacf
+< openai-processing-ms: 93
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 23
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.266
+<
+{
+  "id": "asst_p8euSkeFOs7X2LW2EooL67P6",
+  "object": "assistant.deleted",
+  "deleted": true
+}
+Deleted agent: asst_p8euSkeFOs7X2LW2EooL67P6
+
+--- OUTBOUND REQUEST #30 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/vector_stores/vs_hTsevlCoBvUBZyn1du2KR9Dw?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #30 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:13 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< x-request-id: <id>
+< openai-processing-ms: 3577
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 21
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: hyena-eastus2-02
+<
+{
+  "id": "vs_hTsevlCoBvUBZyn1du2KR9Dw",
+  "object": "vector_store.deleted",
+  "deleted": true
+}
+Deleted vector store: vs_hTsevlCoBvUBZyn1du2KR9Dw
+
+--- OUTBOUND REQUEST #31 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/files/assistant-D52kjz8Wu8iHcB8Ku2aWuA?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #31 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:21 GMT
+< Server: istio-envoy
+< Access-Control-Allow-Origin: *
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< x-request-id: <id>
+< openai-processing-ms: 3606
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 5
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: hyena-eastus2-02
+<
+{
+  "object": "file",
+  "deleted": true,
+  "id": "assistant-D52kjz8Wu8iHcB8Ku2aWuA"
+}
+Deleted file from the project: recipes.md (assistant-D52kjz8Wu8iHcB8Ku2aWuA)
+
+--- OUTBOUND REQUEST #32 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/files/assistant-RXF1TLZLAb8Lm3bRA44MDq?api-version=v1
+> User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #32 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:57:23 GMT
+< Server: istio-envoy
+< Access-Control-Allow-Origin: *
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-ms-middleware-request-id: <id>
+< openai-version: 2020-10-01
+< x-request-id: <id>
+< openai-processing-ms: 1449
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-http2-stream-id: 3
+< apim-request-id: <id>
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< azureml-served-by-cluster: hyena-eastus2-02
+<
+{
+  "object": "file",
+  "deleted": true,
+  "id": "assistant-RXF1TLZLAb8Lm3bRA44MDq"
+}
+Deleted file from the project: guidelines.md (assistant-RXF1TLZLAb8Lm3bRA44MDq)
+
+================================================================================
+DONE
+================================================================================
