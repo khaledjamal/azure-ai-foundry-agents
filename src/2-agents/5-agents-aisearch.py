@@ -108,6 +108,12 @@ Any health or fitness information you provide is for general educational purpose
 """.strip()
 
 
+def print_section(title):
+    print("\n" + "=" * 80)
+    print(title)
+    print("=" * 80)
+
+
 def load_environment():
     env_path = load_env(required=True)
     print(f"Loaded .env from: {env_path}")
@@ -491,6 +497,53 @@ def cleanup_index(index_client):
         print(f"Deleted temporary index: {INDEX_NAME}")
 
 
+def run_questions(project_client, agent):
+    """Step 3: ask each question on its own thread; return (number, status, error) for each run that didn't complete."""
+    failed_runs = []
+    for index, question in enumerate(QUESTIONS, start=1):
+        print_section(f"QUESTION {index} OF {len(QUESTIONS)}")
+        run = run_agent_query(project_client, agent, question)
+        # Azure reports a failed run as a status, not as a Python error, so check it here.
+        if run.status != RunStatus.COMPLETED:
+            failed_runs.append((index, run.status, getattr(run, "last_error", None)))
+    return failed_runs
+
+
+def check_results(failed_runs):
+    """Every agent run must have completed; print which ones didn't."""
+    print("\n" + "=" * 80)
+    if failed_runs:
+        print(f"FINISHED WITH ERRORS: {len(failed_runs)} of {len(QUESTIONS)} agent runs did not complete")
+        print("=" * 80)
+        for index, status, error in failed_runs:
+            print(f"Question {index}: status {status}, error: {error}")
+        return False
+    print(f"COMPLETED: all {len(QUESTIONS)} agent runs finished with status COMPLETED")
+    print("=" * 80)
+    return True
+
+
+def cleanup(project_client, agent, index_client):
+    """Step 4: delete the agent and the index (each question's thread is already deleted), close the project client."""
+    if DELETE_AGENT_AFTER_RUN and project_client is not None and agent is not None:
+        try:
+            cleanup_agent(project_client, agent)
+        except Exception as exc:
+            print(f"Could not delete temporary agent: {exc}")
+
+    if DELETE_INDEX_AFTER_RUN and index_client is not None:
+        try:
+            cleanup_index(index_client)
+        except Exception as exc:
+            print(f"Could not delete temporary index: {exc}")
+
+    if project_client is not None:
+        try:
+            project_client.close()
+        except Exception as exc:
+            print(f"Could not close the project client: {exc}")
+
+
 def main():
     print("=" * 80)
     print("AZURE AI SEARCH + FOUNDRY AGENT FITNESS DEMO")
@@ -503,70 +556,29 @@ def main():
     search_client = None
     project_client = None
     agent = None
-    failed_runs = []
+    passed = False
 
     try:
-        print("\n" + "=" * 80)
-        print("STEP 1: CREATE AND POPULATE AZURE AI SEARCH INDEX")
-        print("=" * 80)
+        print_section("STEP 1: CREATE AND POPULATE AZURE AI SEARCH INDEX")
         index_client, search_client = create_search_clients()
         create_fitness_index(index_client)
         upload_fitness_documents(search_client)
         verify_search_index(search_client)
 
-        print("\n" + "=" * 80)
-        print("STEP 2: CREATE FOUNDRY AGENT WITH AZURE AI SEARCH TOOL AND PRICE FUNCTION")
-        print("=" * 80)
+        print_section("STEP 2: CREATE FOUNDRY AGENT WITH AZURE AI SEARCH TOOL AND PRICE FUNCTION")
         project_client = create_project_client()
         search_connection = resolve_ai_search_connection(project_client)
         agent = create_search_agent(project_client, search_connection, search_client)
 
-        print("\n" + "=" * 80)
-        print("STEP 3: RUN AGENT QUERIES")
-        print("=" * 80)
-        for index, question in enumerate(QUESTIONS, start=1):
-            print("\n" + "=" * 80)
-            print(f"QUESTION {index} OF {len(QUESTIONS)}")
-            print("=" * 80)
-            run = run_agent_query(project_client, agent, question)
-            # Azure reports a failed run as a status, not as a Python error, so check it here.
-            if run.status != RunStatus.COMPLETED:
-                failed_runs.append((index, run.status, getattr(run, "last_error", None)))
-
-        print("\n" + "=" * 80)
-        if failed_runs:
-            print(f"FINISHED WITH ERRORS: {len(failed_runs)} of {len(QUESTIONS)} agent runs did not complete")
-            print("=" * 80)
-            for index, status, error in failed_runs:
-                print(f"Question {index}: status {status}, error: {error}")
-        else:
-            print(f"COMPLETED: all {len(QUESTIONS)} agent runs finished with status COMPLETED")
-            print("=" * 80)
+        print_section("STEP 3: RUN AGENT QUERIES")
+        failed_runs = run_questions(project_client, agent)
+        passed = check_results(failed_runs)
 
     finally:
-        print("\n" + "=" * 80)
-        print("CLEANUP")
-        print("=" * 80)
+        print_section("CLEANUP")
+        cleanup(project_client, agent, index_client)
 
-        if DELETE_AGENT_AFTER_RUN and project_client is not None and agent is not None:
-            try:
-                cleanup_agent(project_client, agent)
-            except Exception as exc:
-                print(f"Could not delete temporary agent: {exc}")
-
-        if DELETE_INDEX_AFTER_RUN and index_client is not None:
-            try:
-                cleanup_index(index_client)
-            except Exception as exc:
-                print(f"Could not delete temporary index: {exc}")
-
-        if project_client is not None:
-            try:
-                project_client.close()
-            except Exception as exc:
-                print(f"Could not close the project client: {exc}")
-
-    if failed_runs:
+    if not passed:
         sys.exit(1)
 
 
