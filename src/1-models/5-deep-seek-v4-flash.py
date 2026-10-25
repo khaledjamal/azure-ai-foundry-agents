@@ -114,41 +114,57 @@ def ask(client, model, system_prompt, question, reasoning_effort):
     }
 
 
-def main():
-    load_env()
+def print_section(title):
+    print()
+    print("=" * 80)
+    print(title)
+    print("=" * 80)
+
+
+def load_settings():
     endpoint = require_env("OPENAI_ENDPOINT").rstrip("/")
     model = os.getenv("DEEPSEEK_MODEL_DEPLOYMENT_NAME") or "DeepSeek-V4-Flash"
     print(f"Endpoint: {endpoint}/openai/v1/")
     print(f"Model: {model}, thinking off (default) and on (reasoning_effort=high)")
+    return endpoint, model
 
+
+def create_client(endpoint):
+    """The plain OpenAI client on the Azure OpenAI v1 endpoint, signed in with an Entra ID token."""
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
     client = OpenAI(base_url=f"{endpoint}/openai/v1/", api_key=token_provider)
+    return client
 
+
+def run_prompts(client, model):
+    """Ask every prompt with thinking off and on; return {(prompt name, mode): result}."""
     results = {}
     for name, system_prompt, question in PROMPTS:
-        print()
-        print("=" * 80)
-        print(f"Prompt '{name}': {question}")
-        print("=" * 80)
+        print_section(f"Prompt '{name}': {question}")
         for mode, reasoning_effort in MODES:
             result = ask(client, model, system_prompt, question, reasoning_effort)
             results[(name, mode)] = result
-            print(
-                f"\n--- thinking {mode}: {result['seconds']:.1f} s, tokens in {result['prompt_tokens']} / out "
-                f"{result['completion_tokens']}, finish={result['finish']}"
-            )
-            if result["thinking"]:
-                print(f"[thinking, {len(result['thinking'].split())} words]")
-                print(result["thinking"])
-                print("[answer]")
-            print(result["answer"])
-            if name == "pace":
-                print(f"[pace answer correct: {'yes' if pace_is_correct(result['answer']) else 'no'}]")
+            print_result(name, mode, result)
+    return results
 
-    print()
-    print("=" * 80)
-    print("Comparison (all three prompts)")
-    print("=" * 80)
+
+def print_result(name, mode, result):
+    print(
+        f"\n--- thinking {mode}: {result['seconds']:.1f} s, tokens in {result['prompt_tokens']} / out "
+        f"{result['completion_tokens']}, finish={result['finish']}"
+    )
+    if result["thinking"]:
+        print(f"[thinking, {len(result['thinking'].split())} words]")
+        print(result["thinking"])
+        print("[answer]")
+    print(result["answer"])
+    if name == "pace":
+        print(f"[pace answer correct: {'yes' if pace_is_correct(result['answer']) else 'no'}]")
+
+
+def print_comparison(results):
+    """One row per mode: tokens, time and cost over all prompts, and whether the pace answer was right."""
+    print_section("Comparison (all three prompts)")
     print(f"{'thinking':10}{'tokens in':>10}{'tokens out':>12}{'seconds':>9}{'cost USD':>11}  pace correct")
     for mode, _ in MODES:
         rows = [results[(name, mode)] for name, _, _ in PROMPTS]
@@ -159,6 +175,9 @@ def main():
         correct = "yes" if pace_is_correct(results[("pace", mode)]["answer"]) else "no"
         print(f"{mode:10}{tokens_in:>10}{tokens_out:>12}{seconds:>9.1f}{cost:>11.5f}  {correct}")
 
+
+def check_results(results):
+    """Every call answered, and every thinking-on call returned its thinking."""
     checks = [
         ("every call answered", all(result["answer"] for result in results.values())),
         (
@@ -169,7 +188,17 @@ def main():
     print()
     for check, passed in checks:
         print(f"Check: {'PASS' if passed else 'FAIL'}  {check}")
-    raise SystemExit(0 if all(passed for _, passed in checks) else 1)
+    return all(passed for _, passed in checks)
+
+
+def main():
+    load_env()
+    endpoint, model = load_settings()
+    client = create_client(endpoint)
+    results = run_prompts(client, model)
+    print_comparison(results)
+    passed = check_results(results)
+    raise SystemExit(0 if passed else 1)
 
 
 if __name__ == "__main__":

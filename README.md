@@ -113,7 +113,7 @@ Microsoft's original notebook, what each script cleans up and the generated imag
 | [Image generation](src/1-models/2-embeddings-image-generation.py) | `gpt-image-2` through the Azure OpenAI v1 endpoint with an Entra ID token | [output](sample-output/2-embeddings-image-generation.py-output-20261018-133622.txt) |
 | [Basic RAG](src/1-models/3-basic-rag-azure-openai.py) | vector index in Azure AI Search, answers grounded in the top matches | [output](sample-output/3-basic-rag-azure-openai.py-output-20261014-094211.txt) |
 | [Phi-4 vs gpt-4o-mini](src/1-models/4-phi-4.py) | Phi-4, Phi-4-reasoning and gpt-4o-mini on the same prompts: answers, tokens, time and cost | [output](sample-output/4-phi-4.py-output-20261018-164134.txt) |
-| [DeepSeek thinking off vs on](src/1-models/5-deep-seek-v4-flash.py) | DeepSeek-V4-Flash with and without thinking (`reasoning_effort`) | [output](sample-output/5-deep-seek-v4-flash.py-output-20261018-170548.txt) |
+| [DeepSeek thinking off vs on](src/1-models/5-deep-seek-v4-flash.py) | DeepSeek-V4-Flash with and without thinking (`reasoning_effort`) | [output](sample-output/5-deep-seek-v4-flash.py-output-20261025-220051.txt) |
 | [Agent basics](src/2-agents/1-basics.py) | Foundry Agent Service: agent, thread, messages, run | [output](sample-output/1-basics.py-output-20261014-094247.txt) |
 | [Code Interpreter](src/2-agents/2-code-interpreter.py) | agent analyzes a CSV and returns a chart file | [output](sample-output/2-code-interpreter.py-output-20261025-215724.txt) |
 | [File Search](src/2-agents/3-file-search.py) | vector store over Markdown files, answers with file citations | [output](sample-output/3-file-search.py-output-20261025-215612.txt) |

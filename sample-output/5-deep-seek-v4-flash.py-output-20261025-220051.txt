@@ -1,0 +1,1042 @@
+Sample output of src/1-models/5-deep-seek-v4-flash.py
+Run on 2026-10-25 22:00 with: uv run python src/1-models/5-deep-seek-v4-flash.py
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+Endpoint: https://<resource-name>.openai.azure.com/openai/v1/
+Model: DeepSeek-V4-Flash, thinking off (default) and on (reasoning_effort=high)
+
+================================================================================
+Prompt 'trip': Plan a 5-day cultural trip to Kyoto in April. Include hidden gems and safety considerations.
+================================================================================
+
+--- OUTBOUND REQUEST #1 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 293
+>
+{
+  "model": "DeepSeek-V4-Flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a travel expert. Provide detailed plans with rationale."
+    },
+    {
+      "role": "user",
+      "content": "Plan a 5-day cultural trip to Kyoto in April. Include hidden gems and safety considerations."
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+--- OUTBOUND RESPONSE #1 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:00:54 GMT
+< Server: istio-envoy
+< Transfer-Encoding: chunked
+< x-ms-rai-invoked: true
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: d20260920113705-cf5b15c9
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: DeepSeek-V4-Flash
+< x-ratelimit-remaining-requests: 19
+< x-ratelimit-reset-requests: 3
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19927
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 435
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "bf8c3d2af8ec405c88cdbf5d109b2c64",
+  "model": "DeepSeek-V4-Flash",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Here is a detailed 5-day cultural itinerary for Kyoto in April, designed to imme...(8814 characters)"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 35,
+    "completion_tokens": 2422,
+    "total_tokens": 2457,
+    "audio_prompt_tokens": 0
+  },
+  "created": 1792951254,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- thinking off: 13.2 s, tokens in 35 / out 2422, finish=stop
+Here is a detailed 5-day cultural itinerary for Kyoto in April, designed to immerse you in the city’s beauty while avoiding the heaviest crowds. The plan balances iconic sites with hidden gems and prioritizes safety.
+
+### Overview & Rationale
+
+- **Why April?** Cherry blossoms (sakura) are in full bloom, but Kyoto is extremely crowded. This plan uses early mornings, weekdays, and lesser-known locations to mitigate crowds.
+- **Core Philosophy:** Slow travel. You’ll walk through historic neighborhoods, use public transit, and focus on sensory experiences (temple gardens, tea, incense, local crafts).
+- **Safety First:** Kyoto is very safe, but we’ll address common concerns: crowds (pickpocketing risk), heat (April can be warm), and temple etiquette (quiet, respectful behavior).
+
+---
+
+### Day 1: Arashiyama – Bamboo, Temples & a Secret Garden
+
+**Theme:** Nature, tranquility, and early-bird strategy.
+
+- **6:30 AM: Arashiyama Bamboo Grove** (arrive before 7:30 AM to avoid crowds). Walk the path in silence – the light filtering through bamboo is magical.
+- **8:00 AM: Tenryu-ji Temple** – A UNESCO World Heritage site with a stunning pond garden. *Tip:* Sit on the veranda for 10 minutes and watch the koi.
+- **9:30 AM: Hidden Gem – Otagi Nenbutsu-ji Temple** (north of Arashiyama). A hillside temple with 1,200 moss-covered stone Rakan statues, each with a unique expression. Almost no tourists.
+- **11:00 AM: Sagano Scenic Railway** (if available – book ahead). Alternatively, walk along the Hozu River to Togetsukyo Bridge.
+- **Lunch:** *Shoraian* (tofu kaiseki) – a Michelin-starred tofu restaurant with a river view. Reserve 1 month ahead.
+- **2:00 PM: Jojakko-ji Temple** – A quiet hillside temple with a mossy stone staircase and a view of the city.
+- **4:00 PM: Return to central Kyoto. Evening:** *Pontocho Alley* – narrow lantern-lit street with traditional restaurants. *Safety:* Stick to well-lit alleys; avoid unlicensed touts.
+
+**Safety Note:** Arashiyama is crowded after 9 AM. Keep valuables in front pockets or a crossbody bag. Use the JR Sagano Line (not the private line) to avoid confusion.
+
+---
+
+### Day 2: Eastern Kyoto – Philosopher’s Path & Hidden Temples
+
+**Theme:** Cherry blossoms, tea, and spiritual quiet.
+
+- **7:00 AM: Philosopher’s Path** (Tetsugaku-no-Michi) – Start at the northern end (Ginkaku-ji) to walk south. The path is lined with cherry trees. *Tip:* Stop at *Honen-in Temple* (free, quiet) for a moss garden and a small bamboo grove.
+- **9:00 AM: Hidden Gem – Enko-ji Temple** (just off the path). A rarely visited temple with a “borrowed landscape” garden that frames Mount Hiei. *Activity:* Try *shakyo* (sutra copying) – a meditative practice.
+- **10:30 AM: Nanzen-ji Temple** – Massive complex with a Roman aqueduct (a quirky surprise). *Safety:* The stone steps can be slippery; wear sturdy shoes.
+- **Lunch:** *Shigetsu* (Zen vegetarian) at Tenryu-ji (reserve) or a simple *soba* shop near Nanzen-ji.
+- **1:30 PM: Hidden Gem – Shoren-in Temple** – A former imperial villa with a stunning garden and a “nightingale floor” (chirps when you walk). It’s often overlooked.
+- **3:00 PM: Maruyama Park** – Kyoto’s most famous cherry blossom spot. The weeping cherry tree is iconic. *Safety:* Pickpockets operate here; keep bags zipped.
+- **Evening:** *Gion District* – Walk through Hanamikoji Street. *Safety:* Do not photograph geiko (geisha) without permission – it’s considered rude and can lead to confrontation.
+
+---
+
+### Day 3: Northern Kyoto – Moss, Mountains & a Secret Waterfall
+
+**Theme:** Nature, solitude, and a physical challenge.
+
+- **8:00 AM: Kinkaku-ji** (Golden Pavilion) – Arrive at opening to beat crowds. *Tip:* View it from the pond’s edge, not the main path.
+- **9:30 AM: Hidden Gem – Ryoan-ji Temple** – Famous for its rock garden, but most visitors miss the *kyoyochi* (mirror pond) and the hidden waterfall behind the main hall.
+- **11:00 AM: Ninna-ji Temple** – A UNESCO site with a five-story pagoda and a beautiful cherry blossom grove. *Secret:* The Omuro Palace garden is rarely crowded.
+- **Lunch:** *Soba* at a local shop in the Ninna-ji neighborhood.
+- **1:30 PM: Hidden Gem – Okochi Sanso Villa** (near Arashiyama, but separate). A former actor’s villa with a Japanese garden, bamboo grove, and a view of the Hozu River. Includes matcha and a sweet.
+- **3:30 PM: Takao** (northwest Kyoto) – A mountain area with a hidden temple, *Jingo-ji*. *Activity:* Hike the *Kiyotaki River* trail to a small waterfall. *Safety:* The trail is rocky; wear hiking shoes. Bring water and a whistle. No shops after 4 PM.
+- **Evening:** Return to Kyoto. Dinner at a *kaiseki* restaurant in central Kyoto (e.g., *Kikunoi* – reserve 2 months ahead).
+
+**Safety Note:** Takao is remote. Use a taxi or bus (bus #8 from Kyoto Station). Tell someone your plan. Mobile signal is spotty.
+
+---
+
+### Day 4: Southern Kyoto – Tea, Bamboo & a Samurai Experience
+
+**Theme:** Craftsmanship, history, and interactive culture.
+
+- **8:00 AM: Fushimi Inari Shrine** – Start early to avoid crowds. Walk only the first 30 minutes (to the Yotsutsuji intersection) – the lower path is beautiful and less crowded. *Safety:* The paths are narrow; watch for cyclists.
+- **10:00 AM: Hidden Gem – Tofuku-ji Temple** – A massive Zen temple with a stunning *hojo* garden (dry landscape) and a covered bridge over a valley of maples (green in April). Almost empty.
+- **11:30 AM: Byodo-in Temple** (Uji) – A 30-minute train ride south. The Phoenix Hall is iconic. *Tip:* Visit the *Uji River* for a peaceful walk.
+- **Lunch:** *Matcha soba* or *matcha parfait* in Uji (try *Nakamura Tokichi*).
+- **2:00 PM: Hidden Gem – Taiho-an Tea House** (Uji) – A small, authentic tea ceremony experience (book ahead). You’ll learn to whisk matcha.
+- **4:00 PM: Samurai & Ninja Museum** (Kyoto city) – Interactive museum where you can wear samurai armor and throw shuriken. *Safety:* The staff will guide you; follow instructions.
+- **Evening:** *Nishiki Market* – Kyoto’s “kitchen.” *Safety:* Keep bags close; it’s crowded. Try *tako tamago* (octopus with quail egg).
+
+---
+
+### Day 5: Western Kyoto – Moss, Temples & a Farewell
+
+**Theme:** Serenity, reflection, and last-minute discoveries.
+
+- **7:30 AM: Saiho-ji Temple** (Kokedera – Moss Temple) – *Must reserve 1 month in advance* (via postcard). A 2-hour meditation walk through 120 varieties of moss. *Safety:* No photos allowed; be silent.
+- **10:00 AM: Hidden Gem – Matsuo Taisha Shrine** – A quiet Shinto shrine with a beautiful *shin-en* (sacred garden) and a small waterfall. *Activity:* Write a *ema* (votive tablet).
+- **11:30 AM: Katsura Imperial Villa** (reserve online 1 month ahead). A masterpiece of Japanese architecture and garden design. *Tip:* The guided tour is in Japanese but the garden is the highlight.
+- **Lunch:** *Okonomiyaki* at a local shop in the Katsura area.
+- **2:00 PM: Hidden Gem – Shugakuin Imperial Villa** – Another imperial villa with tiered gardens and a view of Kyoto. *Reserve ahead.*
+- **4:00 PM: Final stop – Kennin-ji Temple** (Gion) – Kyoto’s oldest Zen temple. *Secret:* The *twin dragons* ceiling painting is stunning.
+- **Evening:** Farewell dinner at a *ryokan* (traditional inn) – e.g., *Hiiragiya* (reserve 3 months ahead).
+
+---
+
+### Safety & Practical Considerations
+
+| **Risk** | **Solution** |
+|----------|--------------|
+| **Crowds & pickpockets** | Use a money belt or crossbody bag. Keep phone in front pocket. Avoid crowded trains during rush hour (7:30–9 AM, 5–7 PM). |
+| **Heat & dehydration** | April can reach 20°C (68°F). Carry a water bottle (tap water is safe). Temples have water fountains. |
+| **Temple etiquette** | Remove shoes before entering. No loud talking. No photos in some halls (look for signs). |
+| **Getting lost** | Download offline Google Maps. Kyoto’s bus system is complex; use the subway or walk. |
+| **Earthquake** | Know evacuation points (parks, schools). Most temples have emergency signs. |
+| **Night safety** | Kyoto is very safe, but avoid dark alleys in Gion after midnight. Stick to main streets. |
+| **Medical** | Kyoto University Hospital (English-speaking). Pharmacies (薬局) sell basic items. |
+| **Transport** | Buy a *Kyoto City Bus & Subway 1-Day Pass* (¥1,100). For hidden gems, use taxis (¥640 starting fare). |
+
+### Final Tips
+
+- **Book everything early** – April is peak season. Reserve temples (Saiho-ji, Katsura) 1–2 months ahead.
+- **Dress in layers** – mornings are cool (10°C/50°F), afternoons warm.
+- **Learn 3 phrases:** *Sumimasen* (excuse me/sorry), *Arigato gozaimasu* (thank you), *Kore wa ikura desu ka?* (how much?).
+- **Hidden gem bonus:** *Kibune* (north of Kyoto) – a riverside village with *kawadoko* (river dining) in summer, but in April it’s quiet and beautiful.
+
+Enjoy your journey – Kyoto in April is a living painting.
+
+--- OUTBOUND REQUEST #2 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 319
+>
+{
+  "model": "DeepSeek-V4-Flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a travel expert. Provide detailed plans with rationale."
+    },
+    {
+      "role": "user",
+      "content": "Plan a 5-day cultural trip to Kyoto in April. Include hidden gems and safety considerations."
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7,
+  "reasoning_effort": "high"
+}
+
+--- OUTBOUND RESPONSE #2 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:01:06 GMT
+< Server: istio-envoy
+< Transfer-Encoding: chunked
+< x-ms-rai-invoked: true
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: d20260919071828-68b66d75
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: DeepSeek-V4-Flash
+< x-ratelimit-remaining-requests: 19
+< x-ratelimit-reset-requests: 3
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19921
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 191
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "156cfe202c6342e08d77c76d1c54b003",
+  "model": "DeepSeek-V4-Flash",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Here’s a detailed 5-day cultural itinerary for Kyoto in April, balancing iconic ...(10065 characters)",
+        "reasoning_content": "We need to plan a 5-day cultural trip to Kyoto in April. April is cherry blossom...(2853 characters)"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 35,
+    "completion_tokens": 3581,
+    "total_tokens": 3616,
+    "audio_prompt_tokens": 0
+  },
+  "created": 1792951266,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- thinking on: 17.9 s, tokens in 35 / out 3581, finish=stop
+[thinking, 406 words]
+We need to plan a 5-day cultural trip to Kyoto in April. April is cherry blossom season, so it's peak tourist time. Need hidden gems and safety considerations. Provide detailed plans with rationale. 
+
+First, structure: Day-by-day itinerary with activities, times, locations. Include hidden gems (less crowded, authentic experiences). Safety: general Japan safety (low crime), but specific to Kyoto: crowds, pickpockets, weather (April can be chilly/rainy), transportation etiquette, temple etiquette, food safety. Also note COVID? Not specified but could mention general health precautions.
+
+Hidden gems: e.g., Philosopher's Path is popular but crowded; alternatives like Kurama/Kibune, Otagi Nenbutsu-ji, Fushimi Inari less crowded early morning, Tofuku-ji, Shugakuin Imperial Villa, Kokedera (Saiho-ji) but requires reservation. Also consider local crafts, tea ceremonies in less touristy places.
+
+Rationale: Why each day's plan makes sense culturally, avoids crowds, respects traditions.
+
+Day 1: Arrival, central Kyoto (Nijo Castle, Nishiki Market, Pontocho evening). Hidden gem: Kyoto International Manga Museum? Or a small sake brewery.
+
+Day 2: Eastern Kyoto (Kiyomizu-dera early, then walk through Sannenzaka/Ninenzaka, but busy; hidden gem: Otagi Nenbutsu-ji (northwest) or even better: early morning at Kiyomizu then go to Kodai-ji and Maruyama Park for cherry blossoms, then less-known temples like Shoren-in.
+
+Day 3: Northern Kyoto: Kurama/Kibune (cable car, hiking, temple), then Kurama-dera. Hidden gem: Kurama Onsen (foot bath) or Kibune's riverside dining. Safety: hiking trails may be slippery.
+
+Day 4: Western Kyoto: Arashiyama bamboo grove early (5:30am to avoid crowds), then Tenryu-ji, then hidden gem: Otagi Nenbutsu-ji (nearby but less visited), or Adashino Nenbutsu-ji. Afternoon: Kokedera (if reservation made weeks in advance) or Saga-Toriimoto preserved street.
+
+Day 5: Southern Kyoto: Fushimi Inari early (6am), then Tofuku-ji (less crowded, great gardens), then afternoon: Uji (Byodo-in, tea culture) - hidden gem: Uji's Taihoan tea house, or walk along Uji River. Depart.
+
+Safety considerations: Stay hydrated, wear comfortable shoes, follow temple rules (no photos in some areas, remove shoes), beware of monkeys in Arashiyama (don't feed), pickpockets in crowded areas, use public transport passes, have backup cash (some places cash only), check weather forecast, bring umbrella, respect quiet zones.
+
+Also include transportation tips: use bus pass (500 yen day pass) or IC card. Hotels: stay near Kyoto Station or central.
+
+Provide rationale for each day's choices: e.g., "Day 1: Start with Nijo Castle to understand shogunate history, then Nishiki Market for local food culture, evening Pontocho for geisha sighting (less crowded than Gion). Hidden gem: a small sake bar in Pontocho."
+
+Make it comprehensive but concise.
+[answer]
+Here’s a detailed 5-day cultural itinerary for Kyoto in April, balancing iconic sites with hidden gems and practical safety advice. April brings cherry blossoms and peak crowds, so early starts and off-the-beaten-path choices are key.
+
+---
+
+### **Day 1: Arrival & Central Kyoto – Shogunate & Street Food**
+**Morning**  
+- **Nijo Castle** (9:00–11:30) – Explore the “nightingale floors” and opulent interiors of the Tokugawa shogun’s Kyoto residence. Arrive just after opening to avoid queues.  
+- **Walk to Kyoto Imperial Palace** (20 min) – Stroll through the free, sprawling grounds (no ticket needed for outer gardens). Cherry trees here bloom mid-April.
+
+**Lunch**  
+- **Nishiki Market** (11:45–13:00) – “Kyoto’s Kitchen.” Try *tamagoyaki* (rolled omelet) at **Aritsugu** or *yuba* (tofu skin) at **Nishiki Yuba**. Hidden gem: **Kyo Yasai** (pickled vegetables) at the eastern end.
+
+**Afternoon**  
+- **Kyoto International Manga Museum** (14:00–16:00) – A quirky, less-crowded spot with 50,000 manga volumes. The building is a former elementary school with a peaceful courtyard.  
+- **Pontocho Alley** (evening) – Narrow lantern-lit lane along the Kamo River. Skip the touristy Gion; here you might spot a *maiko* (apprentice geisha) walking to a private dinner. For a hidden gem, book a kaiseki meal at **Wasabi** (reserve weeks ahead) or grab *yakitori* at **Torisei**.
+
+**Safety & Practical Notes**  
+- Keep bags zipped in Nishiki and Pontocho (pickpocket risk in crowds).  
+- Many restaurants are cash-only; carry ¥10,000–¥15,000.
+
+**Rationale** – Start with Nijo Castle to understand Kyoto’s feudal history, then dive into local food culture at Nishiki. Pontocho offers a more authentic evening than Gion’s tourist crush.
+
+---
+
+### **Day 2: Eastern Kyoto – Temples, Bamboo & Blossoms (Without the Crowds)**
+**Early Morning (6:30–8:30)**  
+- **Kiyomizu-dera** – Arrive at 6:30 (opens 6:00). The wooden terrace and cherry trees are stunning without the 10 a.m. mobs.  
+- **Sannenzaka & Ninenzaka slopes** – Walk downhill as shops open (7:30). Most tourists arrive after 9.
+
+**Hidden Gem: Otagi Nenbutsu-ji** (9:30–10:30) – A 15-min bus ride west of Kiyomizu. This hillside temple is covered in 1,200 mossy stone *rakan* statues, each with a unique expression. Almost empty even in peak season. *Bus #206 to “Otagi Nenbutsu-ji mae.”*
+
+**Midday**  
+- **Philosopher’s Path** (11:00–12:30) – Walk the northern section (from Ginkaku-ji to Nanzen-ji). The southern part is jammed; start at **Ginkaku-ji** (Silver Pavilion) and go south only as far as **Honen-in** – a tiny, serene temple with a cherry-lined path and no entry fee.
+
+**Lunch**  
+- **Omen** (north end of Philosopher’s Path) – Famous for thick udon in a hot pot. Order the *shio* (salt) broth.
+
+**Afternoon**  
+- **Nanzen-ji** (13:30–15:00) – Massive temple complex with a rare Roman-style aqueduct. The sub-temple **Tenju-an** has a hidden garden with a waterfall.  
+- **Shoren-in** (15:15–16:15) – A short walk south. A former imperial villa with a painted screen room and a pond garden that glows with cherry petals.
+
+**Safety** – The Philosopher’s Path can be slippery after rain. Wear non-slip shoes. Keep to the right on narrow paths.
+
+**Rationale** – By starting at 6:30, you beat 80% of visitors. Otagi Nenbutsu-ji is a true hidden gem that offers a whimsical, peaceful contrast to Kiyomizu’s scale.
+
+---
+
+### **Day 3: Northern Kyoto – Mountain Temples & Onsen**
+**Morning**  
+- **Kurama-dera** (8:30–11:30) – Take the Eizan Railway to Kurama (30 min from Demachiyanagi Station). Hike up through the cedar forest to the main hall (30 min). The *yaku-ō-ji* shrine inside has a unique “fire festival” history.  
+- **Kurama Onsen** (11:30–12:30) – Soak in the outdoor foot bath (free) or book a full bath (¥1,000). The sulfur water is said to heal fatigue.
+
+**Lunch**  
+- **Kibune** (13:00–14:00) – Walk 20 min down the mountain to Kibune village. Eat *kawadoko* (riverside dining) at **Hirobun** – they serve *nagashi-somen* (flowing noodles) in summer, but in April you get a set meal with river views. Reserve a week ahead.
+
+**Afternoon**  
+- **Kifune Shrine** (14:15–15:00) – A short walk from the bus stop. The vermilion gates and mossy steps are especially beautiful under cherry blossoms.  
+- **Return to Kyoto** – Stop at **Shugakuin Imperial Villa** (requires free reservation online 3 months ahead). If not possible, visit the nearby **Hosen-in** temple, which has a rock garden and a hidden cherry tree over 300 years old.
+
+**Safety** – The Kurama hike has uneven stone steps; use hiking poles or sturdy shoes. Monkeys are common – do not feed or stare directly.
+
+**Rationale** – This day takes you out of the city into the forested mountains, offering a different cultural perspective (Shinto mountain worship) and a relaxing onsen break. Kibune’s riverside dining is a Kyoto rite of passage.
+
+---
+
+### **Day 4: Western Kyoto – Arashiyama’s Secrets & Moss Gardens**
+**Early Morning (5:30–7:30)**  
+- **Arashiyama Bamboo Grove** – Arrive at 5:30 (dawn) to have the path nearly to yourself. The light filtering through the bamboo is magical.  
+- **Tenryu-ji** (opens 7:30) – Enter right at opening. The Sogenchi Pond Garden is a masterpiece; sit on the veranda for 10 minutes of silence.
+
+**Hidden Gem: Adashino Nenbutsu-ji** (8:30–9:30) – A 15-min walk north of the bamboo grove. This temple is covered in thousands of stone memorial statues for the dead, set in a bamboo grove. Few tourists come here.
+
+**Late Morning**  
+- **Saga-Toriimoto Preserved Street** (9:45–11:00) – Walk from Adashino south along this charming lane of thatched-roof houses. Stop for *matcha* ice cream at **Sagano-yu** (a former bathhouse turned café).
+
+**Lunch**  
+- **Yoshikawa** (11:30–12:30) – A Michelin-recommended tempura restaurant in a traditional house. Reserve 2 weeks ahead. Alternatively, **Mitsuyasu** for *unagi* (eel) – cash only.
+
+**Afternoon**  
+- **Saiho-ji (Kokedera)** (14:00–16:00) – This “moss temple” requires a postal reservation months in advance (¥3,000). If you didn’t get in, substitute **Gio-ji** – a smaller moss garden with a thatched hut and a bamboo grove.  
+- **Katsura Imperial Villa** (16:30–17:30) – If you reserved online (free, 3 months ahead), this is the pinnacle of Japanese garden design. Otherwise, walk the outer perimeter (public path) for a glimpse.
+
+**Safety** – Arashiyama’s bamboo grove gets claustrophobic after 8 a.m. – leave by then. Monkeys in the Iwatayama Monkey Park can be aggressive; keep food hidden.
+
+**Rationale** – The 5:30 a.m. start is the only way to enjoy the bamboo grove without crowds. Adashino Nenbutsu-ji and Saga-Toriimoto are true hidden gems that give you a sense of Edo-period Kyoto.
+
+---
+
+### **Day 5: Southern Kyoto – Fushimi Inari & Uji Tea Culture**
+**Early Morning (6:00–8:30)**  
+- **Fushimi Inari Shrine** – Enter at 6:00 (open 24h). Hike the main path to the **Yotsutsuji intersection** (30 min) – most tourists stop here. Continue up the less-crowded **Senbon Torii** path for a view of the city.
+
+**Hidden Gem: Tofuku-ji** (9:00–10:30) – A 10-min walk from Fushimi Inari. This temple has four Zen gardens, including a dry landscape with raked gravel and a bridge over a ravine. In April, the maple leaves are fresh green – beautiful and nearly empty.
+
+**Late Morning**  
+- **Uji** (11:00–13:30) – Take the Keihan Line (20 min). Visit **Byodo-in** (Phoenix Hall) on the ¥10 coin – the museum inside has a flying Buddha statue. Then walk to **Taihoan** (a teahouse with a hidden garden) for a *matcha* ceremony (¥500, no reservation needed).
+
+**Lunch**  
+- **Nakamura Tokichi** (Uji) – Famous for *matcha parfait* and *soba* with green tea broth. Expect a 20–30 min queue.
+
+**Afternoon**  
+- **Uji River Walk** (14:00–15:00) – Cross the bridge to **Kosho-ji** – a quiet temple with a bamboo grove and a tea field.  
+- **Depart** – From Uji, take the JR Nara Line directly to Kyoto Station (20 min) for your departure.
+
+**Safety** – Fushimi Inari’s steps can be slippery with morning dew. Wear grippy shoes. Keep valuables in front pockets – the shrine is a hotspot for pickpockets during peak hours (after 9 a.m.).
+
+**Rationale** – Fushimi Inari at dawn is a spiritual experience, not a tourist crush. Tofuku-ji is a serene alternative to the overcrowded Kinkaku-ji. Uji offers a deep dive into tea culture without the rush of central Kyoto.
+
+---
+
+### **General Safety & Practical Tips for Kyoto in April**
+- **Weather** – April averages 10–20°C (50–68°F). Pack layers, a light rain jacket, and an umbrella. Cherry blossom season can bring sudden showers.
+- **Crowds** – Expect heavy congestion at major sites (Kiyomizu, Fushimi Inari, Arashiyama) after 9 a.m. Always carry a small hand towel for wiping sweat or drying hands in temple washrooms (many lack paper towels).
+- **Transport** – Get an **IC card** (Suica or ICOCA) for trains/buses. A **Kyoto City Bus One-Day Pass** (¥700) is good for central Kyoto. Taxis are expensive and slow in traffic.
+- **Temple Etiquette** – Remove shoes before stepping onto tatami. Do not take photos where signs prohibit. Bow slightly when entering.
+- **Health** – Cherry blossom pollen can trigger allergies; bring antihistamines. Tap water is safe to drink.
+- **Money** – Many small shops, temple entry fees, and restaurants are cash-only. Carry at least ¥20,000 in small bills.
+- **Emergency** – Dial 110 (police) or 119 (fire/ambulance). The **Kyoto Tourist Information Center** (Kyoto Station, 2F) has English-speaking staff.
+
+---
+
+### **Why This Itinerary Works**
+- **Hidden gems** (Otagi Nenbutsu-ji, Adashino, Tofuku-ji) provide breathing room from crowds.  
+- **Early starts** (5:30–6:30 a.m.) let you experience iconic sites in peace.  
+- **Cultural depth** – You cover shogunate history (Nijo), Zen gardens (Nanzen-ji, Tofuku-ji), Shinto shrines (Fushimi, Kifune), tea culture (Uji), and local arts (Manga Museum, pottery in Saga-Toriimoto).  
+- **Safety** – Each day accounts for weather, crowd density, and physical demands (hiking, stairs).  
+
+Enjoy your Kyoto journey!
+
+================================================================================
+Prompt 'technical': How can I optimize a PostgreSQL database handling 10k transactions/second?
+Consider indexing strategies, hardware requirements, and query optimization. Please reason step by step, and put your final answer within \boxed{}.
+================================================================================
+
+--- OUTBOUND REQUEST #3 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 331
+>
+{
+  "model": "DeepSeek-V4-Flash",
+  "messages": [
+    {
+      "role": "user",
+      "content": "How can I optimize a PostgreSQL database handling 10k transactions/second?\nConsider indexing strategies, hardware requirements, and query optimization. Please reason step by step, and put your final answer within \\boxed{}."
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+--- OUTBOUND RESPONSE #3 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:01:24 GMT
+< Server: istio-envoy
+< Transfer-Encoding: chunked
+< x-ms-rai-invoked: true
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: d20260919071828-68b66d75
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: DeepSeek-V4-Flash
+< x-ratelimit-remaining-requests: 19
+< x-ratelimit-reset-requests: 3
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19918
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 793
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "dddd1269b3ff43bd96aefb0d73233849",
+  "model": "DeepSeek-V4-Flash",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "To optimize a PostgreSQL database for 10,000 transactions per second (TPS), you ...(3809 characters)"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 46,
+    "completion_tokens": 969,
+    "total_tokens": 1015,
+    "audio_prompt_tokens": 0
+  },
+  "created": 1792951284,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- thinking off: 5.8 s, tokens in 46 / out 969, finish=stop
+To optimize a PostgreSQL database for 10,000 transactions per second (TPS), you need a systematic approach covering hardware, configuration, indexing, and query design. Here’s a step-by-step reasoning:
+
+### Step 1: Assess the workload type
+- **10k TPS** is high but manageable if transactions are simple (e.g., single-row insert/update) and not all are write-heavy.
+- Determine read/write ratio, transaction isolation level, and whether you need strict durability (synchronous commit) or can tolerate async.
+
+### Step 2: Hardware requirements
+- **Storage**: Use NVMe SSDs with high IOPS (≥200k random write IOPS). RAID 10 for redundancy.
+- **RAM**: As much as possible—ideally enough to hold the entire working set (e.g., 128–512 GB). PostgreSQL relies on `shared_buffers` (25% of RAM) and OS cache.
+- **CPU**: High clock speed (≥3.5 GHz) with enough cores (16–32 physical cores) for parallel query execution and connection handling.
+- **Network**: 10 GbE or faster to avoid bottleneck.
+
+### Step 3: PostgreSQL configuration tuning
+- `max_connections`: Keep low (e.g., 50–200) and use connection pooling (PgBouncer) to avoid overhead.
+- `shared_buffers`: 25% of RAM (e.g., 32 GB on 128 GB RAM).
+- `effective_cache_size`: 75% of RAM.
+- `wal_buffers`: 64 MB.
+- `checkpoint_completion_target`: 0.9.
+- `synchronous_commit`: Off (if data loss acceptable) or `remote_write` for higher throughput.
+- `work_mem`: Start at 4–8 MB per query, monitor for disk sorts.
+- `autovacuum`: Tune aggressively—`autovacuum_vacuum_scale_factor` = 0.01, `autovacuum_vacuum_cost_limit` = 2000.
+- Disable `full_page_writes` only if hardware supports atomic writes (rarely safe).
+
+### Step 4: Indexing strategies
+- **Avoid over-indexing**: Each index slows writes. Use only indexes that support critical queries.
+- **Use partial indexes**: `CREATE INDEX ... WHERE status = 'active'` to reduce index size.
+- **Covering indexes**: `CREATE INDEX ON table (a, b) INCLUDE (c, d)` to avoid heap lookups.
+- **BRIN indexes**: For large, sequentially inserted tables (e.g., time-series data) to reduce index size.
+- **B-tree for equality/range**: Ensure leading column has high selectivity.
+- **Use UNIQUE constraints** carefully—they double-check on every write.
+- **Monitor unused indexes** with `pg_stat_user_indexes`.
+
+### Step 5: Query optimization
+- **Use prepared statements**: Reduces parse overhead.
+- **Batch operations**: `INSERT INTO ... VALUES (...), (...), (...)` instead of single-row inserts.
+- **Avoid SELECT ***: Only fetch needed columns.
+- **Use `EXPLAIN (ANALYZE, BUFFERS)`** to find sequential scans, nested loops, or index scans with high buffer hits.
+- **Partitioning**: For large tables (e.g., by date), use declarative partitioning to reduce index size and improve maintenance.
+- **Write to staging tables** then batch insert into main tables using `COPY` for bulk loads.
+
+### Step 6: Connection and concurrency
+- **Connection pooling**: Use PgBouncer (transaction mode) to reuse connections.
+- **Application-level retry logic**: Handle serialization errors (40001) gracefully.
+- **Use `READ COMMITTED`** isolation unless stronger guarantees are needed.
+
+### Step 7: Monitoring and maintenance
+- Enable `pg_stat_statements` to identify slow queries.
+- Regular vacuum and analyze (especially after bulk loads).
+- Use `pg_repack` to reduce bloat without downtime.
+
+### Step 8: Realistic test
+- Simulate 10k TPS with tools like `pgbench` (with custom scripts) or `sysbench`.
+- Measure latency: Each transaction should complete in <10 ms at p99.
+
+### Final Answer
+\boxed{\text{Use NVMe RAID 10, ≥128 GB RAM, tune shared_buffers (25% RAM), connection pooling (PgBouncer), partial/covering indexes, batch writes, prepared statements, and partition large tables. Monitor with pg_stat_statements and autovacuum aggressively.}}
+
+--- OUTBOUND REQUEST #4 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 357
+>
+{
+  "model": "DeepSeek-V4-Flash",
+  "messages": [
+    {
+      "role": "user",
+      "content": "How can I optimize a PostgreSQL database handling 10k transactions/second?\nConsider indexing strategies, hardware requirements, and query optimization. Please reason step by step, and put your final answer within \\boxed{}."
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7,
+  "reasoning_effort": "high"
+}
+
+--- OUTBOUND RESPONSE #4 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:01:29 GMT
+< Server: istio-envoy
+< Transfer-Encoding: chunked
+< x-ms-rai-invoked: true
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: d20260920113705-cf5b15c9
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: DeepSeek-V4-Flash
+< x-ratelimit-remaining-requests: 19
+< x-ratelimit-reset-requests: 3
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19911
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 807
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "e04b502450414b1d8281975a3f63d285",
+  "model": "DeepSeek-V4-Flash",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "## Step-by-Step Optimization for 10k TPS on PostgreSQL\n\n### 1. Understand the Wo...(5935 characters)",
+        "reasoning_content": "We need to provide a comprehensive answer on optimizing a PostgreSQL database fo...(2417 characters)"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 46,
+    "completion_tokens": 2051,
+    "total_tokens": 2097,
+    "audio_prompt_tokens": 0
+  },
+  "created": 1792951290,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- thinking on: 9.2 s, tokens in 46 / out 2051, finish=stop
+[thinking, 337 words]
+We need to provide a comprehensive answer on optimizing a PostgreSQL database for 10k transactions per second. The user asks for indexing strategies, hardware requirements, and query optimization. We need to reason step by step and put final answer in \boxed{}.
+
+We should structure the answer:
+
+- Understand the workload: 10k TPS is high. Need to consider read vs write mix, transaction types (OLTP). We'll assume typical OLTP with many small transactions.
+
+- Hardware: fast storage (NVMe SSDs), sufficient RAM (to fit working set), multi-core CPUs, network. Possibly use replication for read scaling, but focus on single node optimization first.
+
+- PostgreSQL configuration: tuning parameters like shared_buffers, work_mem, effective_cache_size, wal settings, checkpoint tuning, etc.
+
+- Indexing strategies: choose indexes wisely to avoid overhead. Use B-tree for equality/range, partial indexes, covering indexes (include columns), composite indexes with column order, avoid over-indexing. Consider BRIN for large tables with natural ordering. Use UNIQUE constraints where appropriate. Monitor unused indexes.
+
+- Query optimization: use EXPLAIN ANALYZE, identify slow queries. Optimize by rewriting queries, using appropriate joins, avoiding unnecessary sorting, using prepared statements. Consider connection pooling to handle many concurrent connections.
+
+- Partitioning: for large tables, range or hash partitioning to improve maintenance and query performance.
+
+- Efficient transaction handling: keep transactions short, avoid long-running transactions, use appropriate isolation levels.
+
+- Use of caching: application-level caching (Redis) to reduce load.
+
+- Monitoring and profiling: pg_stat_statements, pg_stat_activity, slow query log.
+
+- Consider using connection poolers like PgBouncer.
+
+- Possibly use read replicas for read-only queries.
+
+- For very high write throughput, consider batching writes, using unlogged tables for transient data, or using partitioning to reduce index size.
+
+We need to produce a reasoned step-by-step answer, then put final summary in \boxed{}.
+
+Given the instruction "Please reason step by step, and put your final answer within \boxed{}", we should output the reasoning and then a boxed final answer. The final answer could be a concise set of recommendations. Possibly the box should contain the key optimization strategies.
+
+I'll produce a detailed answer with sections.
+[answer]
+## Step-by-Step Optimization for 10k TPS on PostgreSQL
+
+### 1. Understand the Workload
+- **10k transactions/second** implies a heavy OLTP load (many small, fast read/write operations).
+- Determine the read/write ratio: if mostly writes, focus on write throughput; if reads dominate, consider caching and replicas.
+- Transaction characteristics: short-lived, high concurrency, often involving primary key lookups or small range scans.
+
+### 2. Hardware Requirements
+- **CPU**: Multi-core (16+ cores) with high clock speed; PostgreSQL benefits from parallel query execution and many connections.
+- **RAM**: Enough to hold the entire **working set** (frequently accessed data + indexes) in memory. Rule of thumb: 1–2× the size of the database for OLTP. For 10k TPS, start with 128–256 GB.
+- **Storage**: **NVMe SSDs** with high IOPS and low latency. RAID 10 for redundancy and performance. Avoid spinning disks.
+- **Network**: 10 GbE or faster; low latency between app and database.
+
+### 3. PostgreSQL Configuration Tuning
+- `shared_buffers` = 25% of RAM (e.g., 32–64 GB for 128 GB RAM).  
+- `effective_cache_size` = 50–75% of RAM (helps planner estimate index scans).  
+- `work_mem` = 4–16 MB per query (increase carefully to avoid memory blowout; use for sort/hash operations).  
+- `maintenance_work_mem` = 1–2 GB for vacuum and index creation.  
+- `wal_buffers` = 16–64 MB.  
+- `checkpoint_completion_target` = 0.9 (spread writes).  
+- `max_wal_size` = 4–8 GB (tune to balance recovery time and write frequency).  
+- `max_connections` = set to expected peak concurrent connections (e.g., 200–500) and use connection pooling (PgBouncer) to avoid overhead.  
+- `synchronous_commit` = `off` for write-heavy workloads (risk of losing last few transactions on crash).  
+- `autovacuum` tuning: increase `autovacuum_vacuum_scale_factor` or use `autovacuum_vacuum_threshold` to keep up with high write rates; consider `autovacuum_naptime` = 5–10s.
+
+### 4. Indexing Strategies
+- **Use the right index type**:
+  - **B-tree**: default for equality and range queries.
+  - **BRIN**: for very large tables with natural ordering (e.g., time-series data); much smaller than B-tree.
+  - **Hash**: only for equality (rarely beneficial over B-tree).
+  - **GiST/GIN**: for full-text search, arrays, spatial data.
+- **Composite indexes**: order columns by selectivity (most selective first). Include filter and join columns.
+- **Covering indexes** (PostgreSQL 11+): `CREATE INDEX ... INCLUDE (col1, col2)` to allow index-only scans.
+- **Partial indexes**: `WHERE` clause to index only frequently queried subsets (e.g., `WHERE status = 'active'`).
+- **Avoid over-indexing**: each index slows down INSERT/UPDATE/DELETE. Monitor unused indexes with `pg_stat_user_indexes`.
+- **Consider UNIQUE constraints** for primary keys and business keys (they double as indexes).
+- **Use `EXPLAIN (ANALYZE, BUFFERS)`** to verify index usage.
+
+### 5. Query Optimization
+- **Write efficient SQL**:
+  - Use `WHERE` clauses that match index columns.
+  - Avoid functions on indexed columns (e.g., `WHERE DATE(col) = ...`).
+  - Use `EXISTS` instead of `IN` for subqueries when possible.
+  - Prefer `JOIN` over correlated subqueries.
+  - Use `LIMIT` to reduce result sets.
+- **Prepared statements** to avoid repeated planning overhead.
+- **Batch operations**: use `INSERT ... VALUES (..), (..)` or `COPY` for bulk loads.
+- **Connection pooling**: use PgBouncer in transaction mode to reuse backend connections.
+- **Read replicas**: offload read-only queries (reports, analytics) to replicas.
+- **Application-level caching**: Redis/Memcached for hot data to reduce DB load.
+
+### 6. Partitioning
+- For large tables (100s of millions of rows), use **range partitioning** (e.g., by date) or **hash partitioning**.
+- Benefits: faster data removal (DROP PARTITION), improved query pruning, easier maintenance.
+- Ensure partition pruning works in queries (use `WHERE` on partition key).
+
+### 7. Transaction Management
+- Keep transactions **short** – commit quickly to release locks and WAL flush.
+- Use appropriate isolation level: `READ COMMITTED` for most OLTP; avoid `SERIALIZABLE` unless needed.
+- Minimize lock contention: order table accesses consistently, use `NOWAIT` or `SKIP LOCKED` for queue tables.
+
+### 8. Monitoring and Maintenance
+- Enable `pg_stat_statements` to track query performance.
+- Monitor slow queries with `log_min_duration_statement`.
+- Regularly run `VACUUM` (autovacuum should handle it, but monitor bloat).
+- Use `pg_repack` to rebuild bloated tables/indexes without downtime.
+- Set up alerts for long-running queries, high replication lag, disk I/O.
+
+### 9. Scaling Beyond a Single Node
+- If 10k TPS exceeds a single node’s capacity, consider:
+  - **Read replicas** for read scaling.
+  - **Sharding** (e.g., Citus, pg_shard) for write scaling.
+  - **Caching layer** (Redis) to absorb reads.
+- For high write throughput, use **unlogged tables** for transient data (e.g., session storage) – they are faster but not crash-safe.
+
+### 10. Testing and Iteration
+- Use benchmarking tools (pgbench, sysbench) to simulate 10k TPS.
+- Iterate on configuration and schema based on `EXPLAIN ANALYZE` results and wait events (`pg_stat_activity`).
+
+## Final Answer
+
+\boxed{
+\text{Optimize for 10k TPS PostgreSQL:} \\
+\text{1. Hardware: NVMe SSDs, 128+ GB RAM, multi-core CPU, 10 GbE.} \\
+\text{2. Configuration: shared\_buffers=25\% RAM, effective\_cache=50-75\%, work\_mem=4-16MB, checkpoint tuning, autovacuum aggressive.} \\
+\text{3. Indexing: B-tree for primary keys, composite+covering indexes, partial indexes, BRIN for time-series, avoid over-indexing.} \\
+\text{4. Queries: short transactions, prepared statements, batch writes, connection pooling (PgBouncer).} \\
+\text{5. Partitioning: range/hash for large tables.} \\
+\text{6. Monitoring: pg\_stat\_statements, slow query log, vacuum bloat.} \\
+\text{7. Scaling: read replicas, caching, sharding if needed.}
+}
+
+================================================================================
+Prompt 'pace': I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what average pace per km do I need, and how many seconds per km faster is that than my current pace? End with one line: 'Answer: <pace>, <seconds>'.
+================================================================================
+
+--- OUTBOUND REQUEST #5 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 317
+>
+{
+  "model": "DeepSeek-V4-Flash",
+  "messages": [
+    {
+      "role": "user",
+      "content": "I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what average pace per km do I need, and how many seconds per km faster is that than my current pace? End with one line: 'Answer: <pace>, <seconds>'."
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+
+--- OUTBOUND RESPONSE #5 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:01:39 GMT
+< Server: istio-envoy
+< Transfer-Encoding: chunked
+< x-ms-rai-invoked: true
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: d20260919134555-5c096809
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: DeepSeek-V4-Flash
+< x-ratelimit-remaining-requests: 19
+< x-ratelimit-reset-requests: 3
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19921
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 5
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "eba08dd998954901a8bf9a8a83bb20df",
+  "model": "DeepSeek-V4-Flash",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "First, find your current pace per km.  \nTotal time: 31 minutes 30 seconds = 31.5 minutes.  \nCurrent pace: 31.5 minutes ÷ 5 km = 6.3 minutes per km.  \n6.3 minutes = 6 minutes + 0.3 × 60 seconds = 6 minutes 18 seconds per km.  \n\nTo finish in 30 minutes, required pace: 30 minutes ÷ 5 km = 6.0 minutes per km = 6 minutes exactly.  \nDifference: 6:18 − 6:00 = 18 seconds per km faster.\n\nAnswer: 6:00 per km, 18"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 62,
+    "completion_tokens": 140,
+    "total_tokens": 202,
+    "audio_prompt_tokens": 0
+  },
+  "created": 1792951299,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- thinking off: 1.0 s, tokens in 62 / out 140, finish=stop
+First, find your current pace per km.  
+Total time: 31 minutes 30 seconds = 31.5 minutes.  
+Current pace: 31.5 minutes ÷ 5 km = 6.3 minutes per km.  
+6.3 minutes = 6 minutes + 0.3 × 60 seconds = 6 minutes 18 seconds per km.  
+
+To finish in 30 minutes, required pace: 30 minutes ÷ 5 km = 6.0 minutes per km = 6 minutes exactly.  
+Difference: 6:18 − 6:00 = 18 seconds per km faster.
+
+Answer: 6:00 per km, 18
+[pace answer correct: yes]
+
+--- OUTBOUND REQUEST #6 ---
+> POST https://<resource-name>.openai.azure.com/openai/v1/chat/completions
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: OpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 343
+>
+{
+  "model": "DeepSeek-V4-Flash",
+  "messages": [
+    {
+      "role": "user",
+      "content": "I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what average pace per km do I need, and how many seconds per km faster is that than my current pace? End with one line: 'Answer: <pace>, <seconds>'."
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7,
+  "reasoning_effort": "high"
+}
+
+--- OUTBOUND RESPONSE #6 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 18:01:40 GMT
+< Server: istio-envoy
+< Transfer-Encoding: chunked
+< x-ms-rai-invoked: true
+< x-request-id: <id>
+< x-ms-client-request-id: Not-Set
+< azureml-model-session: d20260920113705-cf5b15c9
+< x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< azureai-requested-tier: default
+< azureai-processed-tier: default
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: DeepSeek-V4-Flash
+< x-ratelimit-remaining-requests: 18
+< x-ratelimit-reset-requests: 5
+< x-ratelimit-limit-requests: 20
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 19915
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 20000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< apim-request-id: <id>
+< x-http2-stream-id: 843
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "id": "2966050c22ab4c8fbcd85e21cfcace48",
+  "model": "DeepSeek-V4-Flash",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Current pace: 31 min 30 sec for 5 km = 31.5 min = 1890 sec, so per km = 1890/5 = 378 sec (6:18). Target pace: 30 min = 1800 sec, per km = 1800/5 = 360 sec (6:00). Difference: 378 - 360 = 18 sec faster.\n\nAnswer: 6:00, 18",
+        "reasoning_content": "We need to compute current pace per km and target pace per km. Current time: 31 minutes 30 seconds = 31.5 minutes = 31.5 * 60 = 1890 seconds for 5 km. So current pace per km = 1890/5 = 378 seconds per km = 6 minutes 18 seconds per km (since 6*60=360, 18 seconds). Target: 30 minutes = 1800 seconds for 5 km, so target pace = 1800/5 = 360 seconds per km = 6 minutes exactly. Difference: 378 - 360 = 18 seconds per km faster. So answer: 6:00 per km, 18 seconds faster. But the instruction: \"Answer: <pace>, <seconds>\" likely means the pace as something like \"6:00\" and seconds difference. However, the problem says \"average pace per km\" and \"how many seconds per km faster\". So we can output \"6:00, 18\". But careful: The current pace is 6:18, target is 6:00, so it's 18 seconds faster. So answer: 6:00, 18. But the format: \"Answer: <pace>, <seconds>\" maybe pace in minutes:seconds. So I'll output: Answer: 6:00, 18."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 62,
+    "completion_tokens": 382,
+    "total_tokens": 444,
+    "audio_prompt_tokens": 0
+  },
+  "created": 1792951300,
+  "object": "chat.completion",
+  "prompt_filter_results": null
+}
+
+--- thinking on: 2.1 s, tokens in 62 / out 382, finish=stop
+[thinking, 169 words]
+We need to compute current pace per km and target pace per km. Current time: 31 minutes 30 seconds = 31.5 minutes = 31.5 * 60 = 1890 seconds for 5 km. So current pace per km = 1890/5 = 378 seconds per km = 6 minutes 18 seconds per km (since 6*60=360, 18 seconds). Target: 30 minutes = 1800 seconds for 5 km, so target pace = 1800/5 = 360 seconds per km = 6 minutes exactly. Difference: 378 - 360 = 18 seconds per km faster. So answer: 6:00 per km, 18 seconds faster. But the instruction: "Answer: <pace>, <seconds>" likely means the pace as something like "6:00" and seconds difference. However, the problem says "average pace per km" and "how many seconds per km faster". So we can output "6:00, 18". But careful: The current pace is 6:18, target is 6:00, so it's 18 seconds faster. So answer: 6:00, 18. But the format: "Answer: <pace>, <seconds>" maybe pace in minutes:seconds. So I'll output: Answer: 6:00, 18.
+[answer]
+Current pace: 31 min 30 sec for 5 km = 31.5 min = 1890 sec, so per km = 1890/5 = 378 sec (6:18). Target pace: 30 min = 1800 sec, per km = 1800/5 = 360 sec (6:00). Difference: 378 - 360 = 18 sec faster.
+
+Answer: 6:00, 18
+[pace answer correct: yes]
+
+================================================================================
+Comparison (all three prompts)
+================================================================================
+thinking   tokens in  tokens out  seconds   cost USD  pace correct
+off              143        3531     19.9    0.00183  yes
+on               143        6014     29.2    0.00309  yes
+
+Check: PASS  every call answered
+Check: PASS  every thinking-on call returned its thinking
