@@ -1,0 +1,180 @@
+Sample output of src/1-models/2-embeddings-project-client.py
+Run on 2026-10-26 17:44 with: uv run python src/1-models/2-embeddings-project-client.py
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+
+================================================================================
+TEXT EMBEDDINGS - AIProjectClient
+================================================================================
+Loaded .env from: .env
+Model deployment:  text-embedding-3-small
+Connection method: AIProjectClient.get_openai_client()
+Project endpoint:  https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
+Model endpoint:    https://<resource-name>.services.ai.azure.com/openai/  (chosen by the project client)
+API version:       2024-08-01-preview
+
+================================================================================
+1. Embed health-themed phrases
+================================================================================
+
+--- OUTBOUND REQUEST #1 ---
+> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: AzureOpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 197
+>
+{
+  "model": "text-embedding-3-small",
+  "input": [
+    "An apple a day keeps the doctor away 🍎",
+    "Quick 15-minute HIIT workout routine 🏋️",
+    "Mindful breathing exercises 🧘"
+  ],
+  "encoding_format": "base64"
+}
+
+--- OUTBOUND RESPONSE #1 ---
+< 200 OK
+< Content-Length: 24826
+< Content-Type: application/json
+< Date: Mon, 26 Oct 2026 13:44:08 GMT
+< Server: istio-envoy
+< Vary: Origin
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< x-ratelimit-remaining-tokens: 149972
+< x-ratelimit-limit-tokens: 150000
+< azureml-model-session: d20261013063958-ec0511f2
+< x-ms-served-model: text-embedding-3-small-1
+< x-request-id: <id>
+< x-http2-stream-id: 613
+< x-ms-client-request-id: Not-Set
+< x-ms-deployment-name: text-embedding-3-small
+<
+{
+  "object": "list",
+  "data": [
+    {
+      "object": "embedding",
+      "embedding": "AGCwvAAgersAwJI7AMAEPQAAQTsAAJq7AEBuPADgoTwA4Iy9AEA8vAAghzwAQEq8AABBvAAguTwAoHG7...(8192 characters)",
+      "index": 0
+    },
+    {
+      "object": "embedding",
+      "embedding": "AKBuvQAAqzwAwFu9AAD7vACAmLwAAL+7AEASvQAgCz0AYJE9AOC/vADgfDwAoGc6AKBGvABgKDwAwCg9...(8192 characters)",
+      "index": 1
+    },
+    {
+      "object": "embedding",
+      "embedding": "ACAevACAQD0A4DC7ACDdPADAiL0A4Gy8AAC/vAAAOT0AgG28AGAhPQCgkDwAYDi6AIApPAAgvrsAgFo9...(8192 characters)",
+      "index": 2
+    }
+  ],
+  "model": "text-embedding-3-small",
+  "usage": {
+    "prompt_tokens": 30,
+    "total_tokens": 30
+  }
+}
+Sentence 0: 'An apple a day keeps the doctor away 🍎'
+  Embedding length=1536
+  Sample: [-0.0215, -0.0038, ..., -0.0083, 0.0336]
+Sentence 1: 'Quick 15-minute HIIT workout routine 🏋️'
+  Embedding length=1536
+  Sample: [-0.0583, 0.0209, ..., 0.0095, -0.0158]
+Sentence 2: 'Mindful breathing exercises 🧘'
+  Embedding length=1536
+  Sample: [-0.0097, 0.0470, ..., 0.0402, 0.0018]
+(tokens: 30)
+
+================================================================================
+2. Embed user text with a prompt template in front
+================================================================================
+
+--- OUTBOUND REQUEST #2 ---
+> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: AzureOpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 256
+>
+{
+  "model": "text-embedding-3-small",
+  "input": [
+    "You are HealthFitGPT, a fitness guidance model.\nPlease focus on healthy advice and disclaim you're not a doctor.\n\nUser message: Can you suggest a quick home workout for busy moms?"
+  ],
+  "encoding_format": "base64"
+}
+
+--- OUTBOUND RESPONSE #2 ---
+< 200 OK
+< Content-Length: 8346
+< Content-Type: application/json
+< Date: Mon, 26 Oct 2026 13:44:09 GMT
+< Server: istio-envoy
+< Vary: Origin
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< x-ratelimit-remaining-tokens: 149927
+< x-ratelimit-limit-tokens: 150000
+< azureml-model-session: d20261024225244-6bf6d8bf
+< x-ms-served-model: text-embedding-3-small-1
+< x-request-id: <id>
+< x-http2-stream-id: 867
+< x-ms-client-request-id: Not-Set
+< x-ms-deployment-name: text-embedding-3-small
+<
+{
+  "object": "list",
+  "data": [
+    {
+      "object": "embedding",
+      "embedding": "AKCeOQCAHz0AYIu8AGDNPADgJr0AwB+7AAATvQDglD0AQFo9AIDSOwBgqjsAIBU9AGCtOwCAEL0AwHS8...(8192 characters)",
+      "index": 0
+    }
+  ],
+  "model": "text-embedding-3-small",
+  "usage": {
+    "prompt_tokens": 40,
+    "total_tokens": 40
+  }
+}
+User text: Can you suggest a quick home workout for busy moms?
+Embedding length=1536
+First few dims: [0.000303, 0.03894, -0.017014, 0.02507, -0.040741, -0.002438, -0.035889, 0.072693]
+(tokens: 40)
+
+================================================================================
+DONE
+================================================================================

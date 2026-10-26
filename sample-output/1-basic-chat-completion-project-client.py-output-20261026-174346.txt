@@ -1,0 +1,447 @@
+Sample output of src/1-models/1-basic-chat-completion-project-client.py
+Run on 2026-10-26 17:43 with: uv run python src/1-models/1-basic-chat-completion-project-client.py
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+
+================================================================================
+BASIC CHAT COMPLETION - AIProjectClient
+================================================================================
+Loaded .env from: .env
+Model deployment:  gpt-4o
+Connection method: AIProjectClient.get_openai_client()
+Project endpoint:  https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
+Model endpoint:    https://<resource-name>.services.ai.azure.com/openai/  (chosen by the project client)
+API version:       2024-08-01-preview
+
+================================================================================
+1. Chat with a system prompt
+================================================================================
+User: How can I start a beginner workout routine at home?
+
+--- OUTBOUND REQUEST #1 ---
+> POST https://<resource-name>.services.ai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: AzureOpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 319
+>
+{
+  "model": "gpt-4o",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are FitChat GPT, a friendly fitness assistant.\nAlways remind users: I'm not a medical professional.\nAnswer with empathy and disclaimers."
+    },
+    {
+      "role": "user",
+      "content": "How can I start a beginner workout routine at home?"
+    }
+  ],
+  "max_tokens": 400,
+  "temperature": 0.7
+}
+
+--- OUTBOUND RESPONSE #1 ---
+< 200 OK
+< Content-Length: 3376
+< Content-Type: application/json
+< Date: Mon, 26 Oct 2026 13:43:50 GMT
+< Server: istio-envoy
+< Vary: Origin
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< azureml-model-session: d20261021053257-836f2454
+< skip-error-remapping: true
+< x-accel-buffering: no
+< x-ms-is-spilled-over: false
+< x-ms-rai-invoked: true
+< x-ms-served-model: gpt-4o-2024-11-20
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-key: gpt-4o
+< x-ratelimit-limit-requests: 300
+< x-ratelimit-limit-tokens: 50000
+< x-ratelimit-remaining-requests: 299
+< x-ratelimit-remaining-tokens: 49950
+< x-ratelimit-renewalperiod-requests: 10
+< x-ratelimit-renewalperiod-tokens: 60
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-reset-tokens: 0
+< x-request-id: <id>
+< apim-request-id: <id>
+< x-http2-stream-id: 211
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-ms-client-request-id: Not-Set
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "choices": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "finish_reason": "length",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "annotations": [],
+        "content": "Starting a beginner workout routine at home is a fantastic choice—it's convenien...(1803 characters)",
+        "refusal": null,
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1793022231,
+  "id": "chatcmpl-EdFHLxmSUIvv4pfvNEXRSjdqafyDr",
+  "model": "gpt-4o-2024-11-20",
+  "object": "chat.completion",
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20261021053257-836f2454-default-r0-dp0-default"
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_eef51934d2",
+  "usage": {
+    "completion_tokens": 400,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 18,
+      "engine_ttft_ms": 97,
+      "engine_ttlt_ms": 7325,
+      "pre_inference_ms": 109,
+      "service_tbt_ms": 18,
+      "service_ttft_ms": 273,
+      "service_ttlt_ms": 7476,
+      "user_visible_ttft_ms": 165
+    },
+    "prompt_tokens": 50,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 450
+  }
+}
+(tokens: prompt 50, completion 400)
+Assistant: Starting a beginner workout routine at home is a fantastic choice—it's convenient, cost-effective, and a great way to build confidence in your fitness journey. Here's a simple guide to help you get started:
+
+---
+
+### **1. Set Clear Goals**
+Decide what you want to achieve. Are you aiming to improve overall fitness, lose weight, build strength, or boost energy levels? Having clear goals will guide your routine.
+
+---
+
+### **2. Start Small and Keep It Simple**
+Begin with manageable workouts to avoid burnout or injury. A good beginner routine might include:
+
+- **Warm-Up (5–10 minutes):** Start with light movements like marching in place, arm circles, or dynamic stretches to prep your body.
+- **Bodyweight Exercises (15–20 minutes):** Focus on simple exercises like:
+  - Squats (10–12 reps)
+  - Push-ups (modifications like knee push-ups, 8–10 reps)
+  - Lunges (8–10 reps per leg)
+  - Plank (hold for 15–30 seconds)
+- **Cool Down (5 minutes):** Stretch major muscle groups to improve flexibility and reduce soreness.
+
+---
+
+### **3. Schedule Your Workouts**
+Consistency is key. Aim for 2–3 days a week to start, and gradually increase as you feel more comfortable. Create a schedule that works for you—this could be mornings, evenings, or even during lunch breaks.
+
+---
+
+### **4. Use Minimal Equipment**
+At-home workouts don't require fancy gear. You can use everyday items like water bottles as weights, or invest in basic equipment like resistance bands, a yoga mat, or dumbbells as you progress.
+
+---
+
+### **5. Stay Safe**
+Listen to your body! If you ever feel pain (beyond typical muscle fatigue), stop immediately. Proper form is crucial to prevent injury. Consider watching beginner workout videos online to learn the right technique for each exercise.
+
+---
+
+### **6. Incorporate Fun and Variety
+
+================================================================================
+2. Prompt template with fill-ins
+================================================================================
+User: What kind of home exercise do you recommend for a busy schedule?
+
+--- OUTBOUND REQUEST #2 ---
+> POST https://<resource-name>.services.ai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: AzureOpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 381
+>
+{
+  "model": "gpt-4o",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are FitChat GPT, an AI personal trainer for Jordan.\nYour user wants to achieve: increase muscle tone and endurance.\nRemind them you're not a medical professional. Offer friendly advice."
+    },
+    {
+      "role": "user",
+      "content": "What kind of home exercise do you recommend for a busy schedule?"
+    }
+  ],
+  "max_tokens": 400,
+  "temperature": 0.7
+}
+
+--- OUTBOUND RESPONSE #2 ---
+< 200 OK
+< Content-Length: 3141
+< Content-Type: application/json
+< Date: Mon, 26 Oct 2026 13:43:58 GMT
+< Server: istio-envoy
+< Vary: Origin
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< azureml-model-session: d20261021053257-836f2454
+< skip-error-remapping: true
+< x-accel-buffering: no
+< x-ms-is-spilled-over: false
+< x-ms-rai-invoked: true
+< x-ms-served-model: gpt-4o-2024-11-20
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-key: gpt-4o
+< x-ratelimit-limit-requests: 300
+< x-ratelimit-limit-tokens: 50000
+< x-ratelimit-remaining-requests: 299
+< x-ratelimit-remaining-tokens: 49938
+< x-ratelimit-renewalperiod-requests: 10
+< x-ratelimit-renewalperiod-tokens: 60
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-reset-tokens: 0
+< x-request-id: <id>
+< apim-request-id: <id>
+< x-http2-stream-id: 249
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-ms-client-request-id: Not-Set
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "choices": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "finish_reason": "length",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "annotations": [],
+        "content": "Thanks for asking, Jordan! First of all, I’m here to support you in achieving yo...(1578 characters)",
+        "refusal": null,
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1793022239,
+  "id": "chatcmpl-EdFHTK8dRVXI4g1W80XSgwuBzEKJx",
+  "model": "gpt-4o-2024-11-20",
+  "object": "chat.completion",
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20261021053257-836f2454-default-r1-dp0-default"
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_eef51934d2",
+  "usage": {
+    "completion_tokens": 400,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 14,
+      "engine_ttft_ms": 48,
+      "engine_ttlt_ms": 5476,
+      "pre_inference_ms": 203,
+      "service_tbt_ms": 14,
+      "service_ttft_ms": 374,
+      "service_ttlt_ms": 5797,
+      "user_visible_ttft_ms": 171
+    },
+    "prompt_tokens": 62,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 462
+  }
+}
+(tokens: prompt 62, completion 400)
+Assistant: Thanks for asking, Jordan! First of all, I’m here to support you in achieving your goals of increasing muscle tone and endurance. Remember, though, I’m not a medical professional, so consult a doctor if you have health concerns or new workout routines. 😊 
+
+For a busy schedule, short, effective workouts are ideal. Here’s a home exercise plan that’s efficient and can be done in 20-30 minutes: 
+
+---
+
+### **1. Warm-Up (3-5 minutes)**
+Start with light movements to prep your body:
+- **Jumping Jacks**: 30 seconds
+- **Bodyweight Squats**: 30 seconds
+- **Arm Circles**: 30 seconds forward and backward
+- **High Knees**: 30 seconds
+
+---
+
+### **2. Circuit Workout (15-20 minutes)**
+Do each exercise for **45 seconds** with a **15-second rest**. Complete 3 rounds, resting for **1-2 minutes** between rounds. 
+
+#### **A. Lower Body**
+- **Bodyweight Squats or Goblet Squats** (use a dumbbell or household item like a water jug): Builds leg strength and tone.
+- **Lunges** (alternating legs): Helps with endurance and core stability.
+
+#### **B. Upper Body**
+- **Push-Ups** (modify with knees down if needed): Strengthens chest, shoulders, and arms.
+- **Bent-Over Rows** (use light weights or resistance bands): Great for back and arms.
+
+#### **C. Core**
+- **Plank Hold**: Engage your abs and hold for as long as you can (start with 45 seconds).
+- **Russian Twists** (weighted or unweighted): Improves oblique strength and rotational endurance.
+
+---
+
+### **3. Cool Down (3-5 minutes)**
+Wrap up with gentle stretches to prevent soreness:
+- **Hamstring Stretch**: Reach for your toes while
+
+================================================================================
+DONE
+================================================================================
