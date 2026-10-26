@@ -24,8 +24,8 @@ jobs:
       - run: python -m compileall -q src scripts tests
 
   # Unit tests of the shared HTTP logging and record/replay helpers against a local server (no Azure), with the HTTP
-  # libraries the labs use (and azure-identity, for the replay placeholder token), at the versions in
-  # requirements-labs.txt.
+  # libraries the labs use (and azure-identity, for the replay placeholder token; python-dotenv, for the .env
+  # settings), at the versions in requirements-labs.txt.
   test:
     runs-on: ubuntu-latest
     steps:
@@ -35,5 +35,5 @@ jobs:
           python-version: "3.13"
       - run: >-
           pip install -e . requests==2.34.2 httpx2==2.13.1 httpx==0.28.1 aiohttp==3.14.5 azure-core==1.41.0
-          azure-identity==1.26.0
+          azure-identity==1.26.0 python-dotenv==1.2.4
       - run: python -m unittest discover -s tests -v
