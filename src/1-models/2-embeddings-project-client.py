@@ -16,6 +16,8 @@ Connection method:
 - Client: AIProjectClient from azure-ai-projects, created with the Foundry project endpoint, connects to the project
   and hands back a ready AzureOpenAI client through get_openai_client().
 - Sign-in: an Entra ID token from the Azure CLI login instead of an API key.
+- Clean-up: the credential, the project client and the OpenAI client open in one `with`, as in Microsoft's SDK
+  samples, and close in reverse order when the calls are done.
 
 Run from the project root:
     uv run python src/1-models/2-embeddings-project-client.py
@@ -70,18 +72,11 @@ def get_project_endpoint():
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
-def create_clients():
-    project_endpoint = get_project_endpoint()
-    api_version = require_env("OPENAI_API_VERSION")
-
-    project_client = AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential())
-    client = project_client.get_openai_client(api_version=api_version)
-
+def print_connection(project_endpoint, openai_client, api_version):
     print("Connection method: AIProjectClient.get_openai_client()")
     print(f"Project endpoint:  {project_endpoint}")
-    print(f"Model endpoint:    {client.base_url}  (chosen by the project client)")
+    print(f"Model endpoint:    {openai_client.base_url}  (chosen by the project client)")
     print(f"API version:       {api_version}")
-    return project_client, client
 
 
 def sample(vector):
@@ -93,11 +88,18 @@ def main():
     load_environment()
     model = require_env("EMBEDDING_MODEL_DEPLOYMENT_NAME")
     print(f"Model deployment:  {model}")
-    project_client, client = create_clients()
+    project_endpoint = get_project_endpoint()
+    api_version = require_env("OPENAI_API_VERSION")
 
-    with project_client:
+    with (
+        DefaultAzureCredential() as credential,
+        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        project_client.get_openai_client(api_version=api_version) as openai_client,
+    ):
+        print_connection(project_endpoint, openai_client, api_version)
+
         print_section("1. Embed health-themed phrases")
-        response = client.embeddings.create(model=model, input=TEXT_PHRASES)
+        response = openai_client.embeddings.create(model=model, input=TEXT_PHRASES)
         for i, item in enumerate(response.data):
             print(f"Sentence {i}: '{TEXT_PHRASES[i]}'")
             print(f"  Embedding length={len(item.embedding)}")
@@ -106,7 +108,7 @@ def main():
 
         print_section("2. Embed user text with a prompt template in front")
         user_text = "Can you suggest a quick home workout for busy moms?"
-        response = client.embeddings.create(model=model, input=[f"{TEMPLATE_SYSTEM} {user_text}"])
+        response = openai_client.embeddings.create(model=model, input=[f"{TEMPLATE_SYSTEM} {user_text}"])
         vector = response.data[0].embedding
         print(f"User text: {user_text}")
         print(f"Embedding length={len(vector)}")

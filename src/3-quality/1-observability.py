@@ -209,9 +209,9 @@ def list_connections(project_client):
 
 
 def chat_call(project_client, model, api_version):
-    client = project_client.get_openai_client(api_version=api_version)
+    openai_client = project_client.get_openai_client(api_version=api_version)
     print(f"User: {CHAT_QUESTION}")
-    response = client.chat.completions.create(model=model, messages=[{"role": "user", "content": CHAT_QUESTION}])
+    response = openai_client.chat.completions.create(model=model, messages=[{"role": "user", "content": CHAT_QUESTION}])
     print(f"Assistant: {response.choices[0].message.content}")
 
 

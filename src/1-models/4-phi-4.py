@@ -106,11 +106,11 @@ def cost(model, prompt_tokens, completion_tokens):
     return (prompt_tokens * price_in + completion_tokens * price_out) / 1_000_000
 
 
-def ask(client, model, system_prompt, question, reasoning):
+def ask(openai_client, model, system_prompt, question, reasoning):
     if reasoning:
         system_prompt = f"{REASONING_SYSTEM_PROMPT}\n\n{system_prompt}"
     start = time.perf_counter()
-    response = client.chat.completions.create(
+    response = openai_client.chat.completions.create(
         model=model,
         messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": question}],
         temperature=0.8 if reasoning else 0.3,
@@ -147,20 +147,20 @@ def load_settings():
     return endpoint, models
 
 
-def create_client(endpoint):
+def create_openai_client(endpoint):
     """The plain OpenAI client on the Azure OpenAI v1 endpoint, signed in with an Entra ID token."""
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
-    client = OpenAI(base_url=f"{endpoint}/openai/v1/", api_key=token_provider)
-    return client
+    openai_client = OpenAI(base_url=f"{endpoint}/openai/v1/", api_key=token_provider)
+    return openai_client
 
 
-def run_prompts(client, models):
+def run_prompts(openai_client, models):
     """Ask every prompt on every model; return {(model, prompt name): result}."""
     results = {}
     for name, system_prompt, question in PROMPTS:
         print_section(f"Prompt '{name}': {question}")
         for model, reasoning in models:
-            result = ask(client, model, system_prompt, question, reasoning)
+            result = ask(openai_client, model, system_prompt, question, reasoning)
             results[(model, name)] = result
             print_result(name, model, result)
     return results
@@ -201,8 +201,8 @@ def check_results(results):
 def main():
     load_env()
     endpoint, models = load_settings()
-    client = create_client(endpoint)
-    results = run_prompts(client, models)
+    openai_client = create_openai_client(endpoint)
+    results = run_prompts(openai_client, models)
     print_comparison(results, models)
     passed = check_results(results)
     raise SystemExit(0 if passed else 1)

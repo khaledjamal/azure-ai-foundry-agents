@@ -75,10 +75,10 @@ def call_rest(endpoint, api_version, deployment, token, messages):
     return response.status_code, seconds, response.json()
 
 
-def call_sdk(client, deployment, messages):
+def call_sdk(openai_client, deployment, messages):
     """Same request through the SDK; return (status, seconds, ChatCompletion). The HTTP log shows the request."""
     start = time.perf_counter()
-    raw = client.chat.completions.with_raw_response.create(model=deployment, messages=messages, **SETTINGS)
+    raw = openai_client.chat.completions.with_raw_response.create(model=deployment, messages=messages, **SETTINGS)
     seconds = time.perf_counter() - start
     print(f"\nHTTP {raw.status_code} in {seconds:.2f} s")
     return raw.status_code, seconds, raw.parse()
@@ -120,8 +120,10 @@ def rest_step(endpoint, api_version, model, token_provider):
 
 def sdk_step(endpoint, api_version, model, token_provider):
     """Step 2: the same request through the AzureOpenAI client; return the same fields as rest_step()."""
-    client = AzureOpenAI(azure_endpoint=endpoint, azure_ad_token_provider=token_provider, api_version=api_version)
-    status, seconds, completion = call_sdk(client, model, MESSAGES)
+    openai_client = AzureOpenAI(
+        azure_endpoint=endpoint, azure_ad_token_provider=token_provider, api_version=api_version
+    )
+    status, seconds, completion = call_sdk(openai_client, model, MESSAGES)
     answer = completion.choices[0].message.content or ""
     print(f"Parsed into: {type(completion).__module__}.{type(completion).__name__}")
     print(f"\nAssistant: {answer}")

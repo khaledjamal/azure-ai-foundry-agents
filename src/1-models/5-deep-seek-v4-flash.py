@@ -90,11 +90,11 @@ def pace_is_correct(answer):
     return pace_ok and re.search(r"\b18\b", last) is not None
 
 
-def ask(client, model, system_prompt, question, reasoning_effort):
+def ask(openai_client, model, system_prompt, question, reasoning_effort):
     messages = [{"role": "system", "content": system_prompt}] if system_prompt else []
     messages.append({"role": "user", "content": question})
     start = time.perf_counter()
-    response = client.chat.completions.create(
+    response = openai_client.chat.completions.create(
         model=model,
         messages=messages,
         temperature=0.7,
@@ -129,20 +129,20 @@ def load_settings():
     return endpoint, model
 
 
-def create_client(endpoint):
+def create_openai_client(endpoint):
     """The plain OpenAI client on the Azure OpenAI v1 endpoint, signed in with an Entra ID token."""
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
-    client = OpenAI(base_url=f"{endpoint}/openai/v1/", api_key=token_provider)
-    return client
+    openai_client = OpenAI(base_url=f"{endpoint}/openai/v1/", api_key=token_provider)
+    return openai_client
 
 
-def run_prompts(client, model):
+def run_prompts(openai_client, model):
     """Ask every prompt with thinking off and on; return {(prompt name, mode): result}."""
     results = {}
     for name, system_prompt, question in PROMPTS:
         print_section(f"Prompt '{name}': {question}")
         for mode, reasoning_effort in MODES:
-            result = ask(client, model, system_prompt, question, reasoning_effort)
+            result = ask(openai_client, model, system_prompt, question, reasoning_effort)
             results[(name, mode)] = result
             print_result(name, mode, result)
     return results
@@ -194,8 +194,8 @@ def check_results(results):
 def main():
     load_env()
     endpoint, model = load_settings()
-    client = create_client(endpoint)
-    results = run_prompts(client, model)
+    openai_client = create_openai_client(endpoint)
+    results = run_prompts(openai_client, model)
     print_comparison(results)
     passed = check_results(results)
     raise SystemExit(0 if passed else 1)

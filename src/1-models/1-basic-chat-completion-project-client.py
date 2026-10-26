@@ -16,6 +16,8 @@ Connection method:
 - Client: AIProjectClient from azure-ai-projects, created with the Foundry project endpoint, connects to the project
   and hands back a ready AzureOpenAI client through get_openai_client().
 - Sign-in: an Entra ID token from the Azure CLI login instead of an API key.
+- Clean-up: the credential, the project client and the OpenAI client open in one `with`, as in Microsoft's SDK
+  samples, and close in reverse order when the calls are done.
 
 Run from the project root:
     uv run python src/1-models/1-basic-chat-completion-project-client.py
@@ -70,22 +72,15 @@ def get_project_endpoint():
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
-def create_clients():
-    project_endpoint = get_project_endpoint()
-    api_version = require_env("OPENAI_API_VERSION")
-
-    project_client = AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential())
-    client = project_client.get_openai_client(api_version=api_version)
-
+def print_connection(project_endpoint, openai_client, api_version):
     print("Connection method: AIProjectClient.get_openai_client()")
     print(f"Project endpoint:  {project_endpoint}")
-    print(f"Model endpoint:    {client.base_url}  (chosen by the project client)")
+    print(f"Model endpoint:    {openai_client.base_url}  (chosen by the project client)")
     print(f"API version:       {api_version}")
-    return project_client, client
 
 
-def chat(client, model, system_prompt, user_input):
-    response = client.chat.completions.create(
+def chat(openai_client, model, system_prompt, user_input):
+    response = openai_client.chat.completions.create(
         model=model,
         messages=[
             {"role": "system", "content": system_prompt},
@@ -104,13 +99,20 @@ def main():
     load_environment()
     model = require_env("OPENAI_DEPLOYMENT_NAME")
     print(f"Model deployment:  {model}")
-    project_client, client = create_clients()
+    project_endpoint = get_project_endpoint()
+    api_version = require_env("OPENAI_API_VERSION")
 
-    with project_client:
+    with (
+        DefaultAzureCredential() as credential,
+        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        project_client.get_openai_client(api_version=api_version) as openai_client,
+    ):
+        print_connection(project_endpoint, openai_client, api_version)
+
         print_section("1. Chat with a system prompt")
         question = "How can I start a beginner workout routine at home?"
         print(f"User: {question}")
-        answer = chat(client, model, FITNESS_SYSTEM_PROMPT, question)
+        answer = chat(openai_client, model, FITNESS_SYSTEM_PROMPT, question)
         print(f"Assistant: {answer}")
 
         print_section("2. Prompt template with fill-ins")
@@ -120,7 +122,7 @@ def main():
         )
         question = "What kind of home exercise do you recommend for a busy schedule?"
         print(f"User: {question}")
-        answer = chat(client, model, system_prompt, question)
+        answer = chat(openai_client, model, system_prompt, question)
         print(f"Assistant: {answer}")
 
     print_section("DONE")

@@ -167,8 +167,8 @@ def with_price_text(document):
     return {**document, "Description": f"{document['Description']} Price: ${document['Price']:.2f}."}
 
 
-async def get_search_connection(client):
-    connection = await client.connections.get_default(ConnectionType.AZURE_AI_SEARCH, include_credentials=True)
+async def get_search_connection(project_client):
+    connection = await project_client.connections.get_default(ConnectionType.AZURE_AI_SEARCH, include_credentials=True)
     api_key = getattr(connection.credentials, "api_key", None)
     if not api_key:
         raise RuntimeError(f"Connection {connection.name} has no API key; this lab expects key auth for AI Search.")
@@ -219,14 +219,16 @@ async def print_direct_search(search_client, text):
         print(f"  {doc['Name']} | {doc['Category']} | ${doc['Price']:.2f} | {doc['Description']}")
 
 
-async def print_tool_calls(client, thread_id):
+async def print_tool_calls(project_client, thread_id):
     # Shows what each tool returned to the model in the latest run (e.g. which fields the search tool passed on).
-    runs = client.agents.runs.list(thread_id=thread_id, order=ListSortOrder.DESCENDING, limit=1)
+    runs = project_client.agents.runs.list(thread_id=thread_id, order=ListSortOrder.DESCENDING, limit=1)
     run = await anext(aiter(runs))
     offered = [t.function.name if t.type == "function" else t.type for t in run.tools or []]
     print(f"  Tools offered in run {run.id} ({run.status}): {offered}")
     print("  Tool calls:")
-    async for step in client.agents.run_steps.list(thread_id=thread_id, run_id=run.id, order=ListSortOrder.ASCENDING):
+    async for step in project_client.agents.run_steps.list(
+        thread_id=thread_id, run_id=run.id, order=ListSortOrder.ASCENDING
+    ):
         for call in getattr(step.step_details, "tool_calls", None) or []:
             if call.type == "azure_ai_search":
                 print(f"  - azure_ai_search input: {call.azure_ai_search.get('input')}")
@@ -253,7 +255,7 @@ def create_search_clients(connection, search_key):
     return index_client, search_client
 
 
-async def create_agent(client, model, connection):
+async def create_agent(project_client, model, connection):
     """Step 2: create the Foundry agent with the Azure AI Search tool on the index; return its definition."""
     search_tool = AzureAISearchTool(
         index_connection_id=connection.id,
@@ -261,7 +263,7 @@ async def create_agent(client, model, connection):
         query_type=AzureAISearchQueryType.SIMPLE,
         top_k=5,
     )
-    definition = await client.agents.create_agent(
+    definition = await project_client.agents.create_agent(
         model=model,
         name=AGENT_NAME,
         instructions=AGENT_INSTRUCTIONS,
@@ -272,20 +274,20 @@ async def create_agent(client, model, connection):
     return definition
 
 
-async def ask(client, agent, thread, question):
+async def ask(project_client, agent, thread, question):
     """Step 3: ask one question on the thread, print the answer and the tool calls; return the thread."""
     print(f"\n# User: {question}")
     response = await agent.get_response(messages=question, thread=thread)
     thread = response.thread
     print(f"# Agent: {response.message.content}")
     try:
-        await print_tool_calls(client, thread.id)
+        await print_tool_calls(project_client, thread.id)
     except Exception as exc:
         print(f"  Could not list tool calls: {exc!r}")
     return thread
 
 
-async def cleanup(client, index_client, search_client, thread, definition, index_created):
+async def cleanup(project_client, index_client, search_client, thread, definition, index_created):
     """Step 4: delete what the run created (thread, agent, index) and close the search clients."""
     if thread is not None and thread.id is not None:
         try:
@@ -295,7 +297,7 @@ async def cleanup(client, index_client, search_client, thread, definition, index
             print(f"Could not delete thread: {exc}")
     if definition is not None:
         try:
-            await client.agents.delete_agent(definition.id)
+            await project_client.agents.delete_agent(definition.id)
             print(f"Deleted agent: {definition.id}")
         except Exception as exc:
             print(f"Could not delete agent: {exc}")
@@ -316,9 +318,9 @@ async def main():
 
     async with (
         DefaultAzureCredential() as credential,
-        AzureAIAgent.create_client(credential=credential, endpoint=project_endpoint) as client,
+        AzureAIAgent.create_client(credential=credential, endpoint=project_endpoint) as project_client,
     ):
-        connection, search_key = await get_search_connection(client)
+        connection, search_key = await get_search_connection(project_client)
         index_client, search_client = create_search_clients(connection, search_key)
         index_created = False
         definition = None
@@ -332,17 +334,19 @@ async def main():
             await print_direct_search(search_client, "Strength")
 
             print("\n=== Step 2: create the agent (Azure AI Search tool + local price plugin) ===")
-            definition = await create_agent(client, model, connection)
+            definition = await create_agent(project_client, model, connection)
             # Semantic Kernel wraps the Foundry agent and adds the local price plugin.
-            agent = AzureAIAgent(client=client, definition=definition, plugins=[FitnessCatalogPlugin(search_client)])
+            agent = AzureAIAgent(
+                client=project_client, definition=definition, plugins=[FitnessCatalogPlugin(search_client)]
+            )
 
             print("\n=== Step 3: ask the agent ===")
-            thread = AzureAIAgentThread(client=client)
+            thread = AzureAIAgentThread(client=project_client)
             for question in QUESTIONS:
-                thread = await ask(client, agent, thread, question)
+                thread = await ask(project_client, agent, thread, question)
         finally:
             print("\n=== Cleanup ===")
-            await cleanup(client, index_client, search_client, thread, definition, index_created)
+            await cleanup(project_client, index_client, search_client, thread, definition, index_created)
 
 
 if __name__ == "__main__":

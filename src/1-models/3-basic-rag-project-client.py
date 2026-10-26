@@ -15,7 +15,14 @@ What it does:
 Connection method:
 - Models: AIProjectClient from azure-ai-projects, created with the Foundry project endpoint, hands back an
   AzureOpenAI client through get_openai_client(), using an Entra ID token from the Azure CLI login.
+- Why two clients:
+  - project_client is the entry point to the Foundry project: it knows the project and builds clients for the
+    project's services. This lab uses it only to build the OpenAI client; the agent labs also create and run agents
+    with it.
+  - openai_client makes the model calls (embeddings and chat).
 - Azure AI Search: its own endpoint and API key from .env.
+- Clean-up: the credential, the project client and the OpenAI client open in one `with`, as in Microsoft's SDK
+  samples, and close in reverse order when the calls are done.
 
 Run from the project root:
     uv run python src/1-models/3-basic-rag-project-client.py
@@ -109,22 +116,15 @@ def get_project_endpoint():
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
-def create_clients():
-    project_endpoint = get_project_endpoint()
-    api_version = require_env("OPENAI_API_VERSION")
-
-    project_client = AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential())
-    client = project_client.get_openai_client(api_version=api_version)
-
+def print_connection(project_endpoint, openai_client, api_version):
     print("Connection method: AIProjectClient.get_openai_client()")
     print(f"Project endpoint:  {project_endpoint}")
-    print(f"Model endpoint:    {client.base_url}  (chosen by the project client)")
+    print(f"Model endpoint:    {openai_client.base_url}  (chosen by the project client)")
     print(f"API version:       {api_version}")
-    return project_client, client
 
 
-def embed(client, model, text):
-    return client.embeddings.create(model=model, input=[text]).data[0].embedding
+def embed(openai_client, model, text):
+    return openai_client.embeddings.create(model=model, input=[text]).data[0].embedding
 
 
 def create_healthtips_index(index_client, index_name, dimension):
@@ -177,9 +177,9 @@ def wait_for_documents(search_client, expected, timeout_seconds=30):
         time.sleep(1)
 
 
-def rag_chat(client, search_client, embedding_model, chat_model, query, top_k=3):
+def rag_chat(openai_client, search_client, embedding_model, chat_model, query, top_k=3):
     vector_query = VectorizedQuery(
-        vector=embed(client, embedding_model, query),
+        vector=embed(openai_client, embedding_model, query),
         k_nearest_neighbors=top_k,
         fields="embedding",
     )
@@ -195,7 +195,7 @@ def rag_chat(client, search_client, embedding_model, chat_model, query, top_k=3)
         "Answer user questions using ONLY the text from these docs.\n"
         "Docs:\n" + "\n".join(top_docs) + "\nIf unsure, say 'I'm not sure'.\n"
     )
-    response = client.chat.completions.create(
+    response = openai_client.chat.completions.create(
         model=chat_model,
         messages=[
             {"role": "system", "content": system_text},
@@ -224,12 +224,18 @@ def main():
     print(f"Embedding model:   {embedding_model}")
     print(f"Search endpoint:   {search_endpoint}")
 
-    # kj: what is the difference between project_client and client? and why do we need both?
-    project_client, client = create_clients()
+    project_endpoint = get_project_endpoint()
+    api_version = require_env("OPENAI_API_VERSION")
 
-    with project_client:
+    with (
+        DefaultAzureCredential() as credential,
+        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        project_client.get_openai_client(api_version=api_version) as openai_client,
+    ):
+        print_connection(project_endpoint, openai_client, api_version)
+
         print_section("1. Build the vector index")
-        vectors = [embed(client, embedding_model, tip["content"]) for tip in HEALTH_TIPS]
+        vectors = [embed(openai_client, embedding_model, tip["content"]) for tip in HEALTH_TIPS]
         print(f"Embedded {len(vectors)} tips, vector length {len(vectors[0])}")
 
         index_client = SearchIndexClient(endpoint=search_endpoint, credential=search_credential)
@@ -244,7 +250,7 @@ def main():
         for number, question in enumerate(QUESTIONS, start=1):
             print_section(f"{number + 1}. RAG question {number}")
             print(f"User: {question}")
-            answer = rag_chat(client, search_client, embedding_model, chat_model, question)
+            answer = rag_chat(openai_client, search_client, embedding_model, chat_model, question)
             print(f"Assistant: {answer}")
 
     print_section("DONE")

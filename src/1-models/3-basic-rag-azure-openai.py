@@ -106,7 +106,7 @@ def create_openai_client():
     api_version = require_env("OPENAI_API_VERSION")
 
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
-    client = AzureOpenAI(
+    openai_client = AzureOpenAI(
         azure_endpoint=endpoint,
         azure_ad_token_provider=token_provider,
         api_version=api_version,
@@ -115,11 +115,11 @@ def create_openai_client():
     print("Connection method: AzureOpenAI (direct)")
     print(f"Endpoint:          {endpoint}")
     print(f"API version:       {api_version}")
-    return client
+    return openai_client
 
 
-def embed(client, model, text):
-    return client.embeddings.create(model=model, input=[text]).data[0].embedding
+def embed(openai_client, model, text):
+    return openai_client.embeddings.create(model=model, input=[text]).data[0].embedding
 
 
 def create_healthtips_index(index_client, index_name, dimension):
@@ -172,9 +172,9 @@ def wait_for_documents(search_client, expected, timeout_seconds=30):
         time.sleep(1)
 
 
-def rag_chat(client, search_client, embedding_model, chat_model, query, top_k=3):
+def rag_chat(openai_client, search_client, embedding_model, chat_model, query, top_k=3):
     vector_query = VectorizedQuery(
-        vector=embed(client, embedding_model, query),
+        vector=embed(openai_client, embedding_model, query),
         k_nearest_neighbors=top_k,
         fields="embedding",
     )
@@ -190,7 +190,7 @@ def rag_chat(client, search_client, embedding_model, chat_model, query, top_k=3)
         "Answer user questions using ONLY the text from these docs.\n"
         "Docs:\n" + "\n".join(top_docs) + "\nIf unsure, say 'I'm not sure'.\n"
     )
-    response = client.chat.completions.create(
+    response = openai_client.chat.completions.create(
         model=chat_model,
         messages=[
             {"role": "system", "content": system_text},
@@ -215,10 +215,10 @@ def main():
     print(f"Chat model:        {chat_model}")
     print(f"Embedding model:   {embedding_model}")
     print(f"Search endpoint:   {search_endpoint}")
-    client = create_openai_client()
+    openai_client = create_openai_client()
 
     print_section("1. Build the vector index")
-    vectors = [embed(client, embedding_model, tip["content"]) for tip in HEALTH_TIPS]
+    vectors = [embed(openai_client, embedding_model, tip["content"]) for tip in HEALTH_TIPS]
     print(f"Embedded {len(vectors)} tips, vector length {len(vectors[0])}")
 
     index_client = SearchIndexClient(endpoint=search_endpoint, credential=search_credential)
@@ -233,7 +233,7 @@ def main():
     for number, question in enumerate(QUESTIONS, start=1):
         print_section(f"{number + 1}. RAG question {number}")
         print(f"User: {question}")
-        answer = rag_chat(client, search_client, embedding_model, chat_model, question)
+        answer = rag_chat(openai_client, search_client, embedding_model, chat_model, question)
         print(f"Assistant: {answer}")
 
     print_section("DONE")

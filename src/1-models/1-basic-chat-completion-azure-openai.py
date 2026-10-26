@@ -64,12 +64,12 @@ def require_env(name):
     return value
 
 
-def create_client():
+def create_openai_client():
     endpoint = require_env("OPENAI_ENDPOINT")
     api_version = require_env("OPENAI_API_VERSION")
 
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
-    client = AzureOpenAI(
+    openai_client = AzureOpenAI(
         azure_endpoint=endpoint,
         azure_ad_token_provider=token_provider,
         api_version=api_version,
@@ -78,11 +78,11 @@ def create_client():
     print("Connection method: AzureOpenAI (direct)")
     print(f"Endpoint:          {endpoint}")
     print(f"API version:       {api_version}")
-    return client
+    return openai_client
 
 
-def chat(client, model, system_prompt, user_input):
-    response = client.chat.completions.create(
+def chat(openai_client, model, system_prompt, user_input):
+    response = openai_client.chat.completions.create(
         model=model,
         messages=[
             {"role": "system", "content": system_prompt},
@@ -101,12 +101,12 @@ def main():
     load_environment()
     model = require_env("OPENAI_DEPLOYMENT_NAME")
     print(f"Model deployment:  {model}")
-    client = create_client()
+    openai_client = create_openai_client()
 
     print_section("1. Chat with a system prompt")
     question = "How can I start a beginner workout routine at home?"
     print(f"User: {question}")
-    answer = chat(client, model, FITNESS_SYSTEM_PROMPT, question)
+    answer = chat(openai_client, model, FITNESS_SYSTEM_PROMPT, question)
     print(f"Assistant: {answer}")
 
     print_section("2. Prompt template with fill-ins")
@@ -116,7 +116,7 @@ def main():
     )
     question = "What kind of home exercise do you recommend for a busy schedule?"
     print(f"User: {question}")
-    answer = chat(client, model, system_prompt, question)
+    answer = chat(openai_client, model, system_prompt, question)
     print(f"Assistant: {answer}")
 
     print_section("DONE")

@@ -71,24 +71,24 @@ def parse_args():
     return parser.parse_args()
 
 
-def create_client():
+def create_openai_client():
     """Return the plain OpenAI client on the Azure OpenAI v1 endpoint, signed in with an Entra ID token."""
     endpoint = require_env("OPENAI_ENDPOINT").rstrip("/")
     base_url = f"{endpoint}/openai/v1/"
     print(f"Endpoint: {base_url}")
     # The v1 endpoint takes the plain OpenAI client; the token provider is called for each request.
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
-    client = OpenAI(base_url=base_url, api_key=token_provider)
-    return client
+    openai_client = OpenAI(base_url=base_url, api_key=token_provider)
+    return openai_client
 
 
-def generate_image(client, args):
+def generate_image(openai_client, args):
     """Step 1: send the prompt through images.generate and return the result. The HTTP log shows the request."""
     print(f"Model deployment: {args.model}")
     print(f"Prompt: {args.prompt}")
     print(f"Size: {args.size}, quality: {args.quality}")
     start = time.perf_counter()
-    result = client.images.generate(
+    result = openai_client.images.generate(
         model=args.model, prompt=args.prompt, size=args.size, quality=args.quality, output_format="png", n=1
     )
     seconds = time.perf_counter() - start
@@ -135,8 +135,8 @@ def check_image(saved, size, requested_size):
 def main():
     load_env()
     args = parse_args()
-    client = create_client()
-    result = generate_image(client, args)
+    openai_client = create_openai_client()
+    result = generate_image(openai_client, args)
     print_details(result)
     saved, size = save_image(result.data[0], args.output_dir)
     passed = check_image(saved, size, args.size)

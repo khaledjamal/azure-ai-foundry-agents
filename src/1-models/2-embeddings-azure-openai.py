@@ -63,12 +63,12 @@ def require_env(name):
     return value
 
 
-def create_client():
+def create_openai_client():
     endpoint = require_env("OPENAI_ENDPOINT")
     api_version = require_env("OPENAI_API_VERSION")
 
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
-    client = AzureOpenAI(
+    openai_client = AzureOpenAI(
         azure_endpoint=endpoint,
         azure_ad_token_provider=token_provider,
         api_version=api_version,
@@ -77,7 +77,7 @@ def create_client():
     print("Connection method: AzureOpenAI (direct)")
     print(f"Endpoint:          {endpoint}")
     print(f"API version:       {api_version}")
-    return client
+    return openai_client
 
 
 def sample(vector):
@@ -89,10 +89,10 @@ def main():
     load_environment()
     model = require_env("EMBEDDING_MODEL_DEPLOYMENT_NAME")
     print(f"Model deployment:  {model}")
-    client = create_client()
+    openai_client = create_openai_client()
 
     print_section("1. Embed health-themed phrases")
-    response = client.embeddings.create(model=model, input=TEXT_PHRASES)
+    response = openai_client.embeddings.create(model=model, input=TEXT_PHRASES)
     for i, item in enumerate(response.data):
         print(f"Sentence {i}: '{TEXT_PHRASES[i]}'")
         print(f"  Embedding length={len(item.embedding)}")
@@ -101,7 +101,7 @@ def main():
 
     print_section("2. Embed user text with a prompt template in front")
     user_text = "Can you suggest a quick home workout for busy moms?"
-    response = client.embeddings.create(model=model, input=[f"{TEMPLATE_SYSTEM} {user_text}"])
+    response = openai_client.embeddings.create(model=model, input=[f"{TEMPLATE_SYSTEM} {user_text}"])
     vector = response.data[0].embedding
     print(f"User text: {user_text}")
     print(f"Embedding length={len(vector)}")
