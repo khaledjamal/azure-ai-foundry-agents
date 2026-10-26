@@ -1,14 +1,17 @@
 """Record web service calls to JSON files once, then replay them: the same code runs again without paying again.
 
-Settings (environment variables, read when http_log.enable() runs):
+Settings (read when http_log.enable() runs, from the shell or else from the repo's .env, since the labs load .env
+only after enable()):
     HTTP_REPLAY                off (default) | record | replay
-    HTTP_REPLAY_DIR            folder of the recording (one folder per scenario); needed for record and replay
+    HTTP_REPLAY_DIR            folder of the recording (one folder per scenario); needed for replay; a record run
+                               without it saves to runs/recordings/<script>-<timestamp>/
     HTTP_REPLAY_IGNORE_FIELDS  JSON body fields left out when requests are matched (comma-separated names, at any
                                depth); default none
 
 record: every call is made for real, and each finished call is saved as one JSON file in HTTP_REPLAY_DIR: the
 request (method, URL, headers, body) and the whole response (status, headers, body, never shortened; a server-sent
-event stream is kept as its text). Secrets are redacted (authorization and key headers, key query parameters, token,
+event stream is kept as its text). recording-info.txt next to them notes the date, command, git commit and installed
+package versions. Secrets are redacted (authorization and key headers, key query parameters, token,
 key and credential fields in JSON bodies); the shape of a redacted object is kept, so code that reads
 `credentials.key` still works on replay. Real hosts and IDs stay as they are: recordings are private files.
 
@@ -38,13 +41,22 @@ import io
 import ipaddress
 import json
 import os
+import platform
 import re
+import shlex
 import socket
+import subprocess
+import sys
 import threading
+from datetime import datetime
+from importlib import metadata
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urlsplit
 
+from dotenv import dotenv_values
+
 from workshop_utils import http_log
+from workshop_utils.settings import ENV_FILE, REPO_ROOT
 
 MODES = ("off", "record", "replay")
 REPLAY_HEADER = "x-http-replay"
@@ -75,7 +87,7 @@ def mode():
 
 def install(mode=None, directory=None, ignore_fields=None):
     """Start record or replay as HTTP_REPLAY (or the arguments) say; does nothing when the mode is off."""
-    mode = (mode or os.environ.get("HTTP_REPLAY", "off")).strip().lower() or "off"
+    mode = (mode or _setting("HTTP_REPLAY") or "off").strip().lower() or "off"
     if mode not in MODES:
         raise ValueError(f"HTTP_REPLAY must be one of {', '.join(MODES)}, not {mode!r}")
     if mode == "off":
@@ -84,14 +96,17 @@ def install(mode=None, directory=None, ignore_fields=None):
         if mode != _state["mode"]:
             raise RuntimeError(f"http_replay is already in {_state['mode']} mode")
         return
-    directory = directory or os.environ.get("HTTP_REPLAY_DIR")
+    directory = directory or _setting("HTTP_REPLAY_DIR")
+    if not directory and mode == "record":
+        directory = _default_directory()
     if not directory:
         raise ValueError(f"HTTP_REPLAY={mode} needs HTTP_REPLAY_DIR (the recording's folder)")
     if ignore_fields is None:
-        ignore_fields = [f for f in os.environ.get("HTTP_REPLAY_IGNORE_FIELDS", "").split(",") if f.strip()]
+        ignore_fields = [f for f in (_setting("HTTP_REPLAY_IGNORE_FIELDS") or "").split(",") if f.strip()]
     _state.update(mode=mode, dir=Path(directory), ignore=frozenset(f.strip() for f in ignore_fields))
     if mode == "record":
         _state["dir"].mkdir(parents=True, exist_ok=True)
+        _write_recording_info()
         http_log.add_observer(_save)
     else:
         _load()
@@ -106,7 +121,57 @@ def install(mode=None, directory=None, ignore_fields=None):
         _patch_aiohttp()
         if logging_on:
             http_log._install_hooks()
-    print(f"[http_replay] {mode} mode, folder {_state['dir']}")
+    print(f"[http_replay] {mode} mode, folder {_shown_path(_state['dir'])}")
+
+
+def _setting(name):
+    """The shell's value of an HTTP_REPLAY* setting, else the one in the repo's .env, else None."""
+    if name in os.environ:
+        return os.environ[name]
+    return dotenv_values(ENV_FILE).get(name) if ENV_FILE.exists() else None
+
+
+def _default_directory():
+    """runs/recordings/<script>-<timestamp>/ at the repo root, for a record run without HTTP_REPLAY_DIR."""
+    script = Path(sys.argv[0]).stem or "python"
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    return REPO_ROOT / "runs" / "recordings" / f"{script}-{stamp}"
+
+
+def _shown_path(path):
+    """The path relative to the repo when it is inside it, so printed output carries no home folder."""
+    try:
+        return path.resolve().relative_to(REPO_ROOT)
+    except ValueError:
+        return path
+
+
+def _git_commit():
+    try:
+        commit = subprocess.run(
+            ["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True, text=True, check=True
+        ).stdout.strip()
+        changes = subprocess.run(
+            ["git", "-C", str(REPO_ROOT), "status", "--porcelain"], capture_output=True, text=True, check=True
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return "unknown"
+    return f"{commit} (uncommitted changes)" if changes else commit
+
+
+def _write_recording_info():
+    """recording-info.txt: when and how the recording was made, so a later replay can be judged against it."""
+    packages = sorted(f"{dist.metadata['Name']}=={dist.version}" for dist in metadata.distributions())
+    commit = _git_commit()
+    lines = [
+        f"date: {datetime.now().astimezone().isoformat(timespec='seconds')}",
+        f"command: {shlex.join(sys.argv)}",
+        f"git commit: {commit}",
+        f"python: {platform.python_version()}",
+        "packages:",
+        *(f"  {package}" for package in packages),
+    ]
+    (_state["dir"] / "recording-info.txt").write_text("\n".join(lines) + "\n")
 
 
 def uninstall():

@@ -7,12 +7,14 @@ No Azure, no cost. Run from the repo root with the venv that has requests, httpx
 import asyncio
 import gzip
 import json
+import os
 import socket
 import tempfile
 import threading
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from unittest import mock
 
 import requests
 
@@ -35,6 +37,14 @@ try:
     from azure.identity.aio import DefaultAzureCredential as AsyncDefaultAzureCredential
 except ImportError:
     DefaultAzureCredential = None
+
+
+def setUpModule():
+    """Use only the settings each test sets: not the shell's HTTP_REPLAY* values, nor the developer's .env."""
+    kept = {name: value for name, value in os.environ.items() if not name.startswith("HTTP_REPLAY")}
+    unittest.enterModuleContext(mock.patch.dict(os.environ, kept, clear=True))
+    unittest.enterModuleContext(mock.patch.object(http_replay, "ENV_FILE", Path(os.devnull)))
+
 
 REPLY = {"output_text": "Hello", "access_token": "secret-token-value"}
 CONNECTION = {"name": "search", "credentials": {"type": "ApiKey", "key": "real-search-key"}}
@@ -318,6 +328,37 @@ class ReplaySafetyTest(ReplayTestCase):
     def test_off_by_default(self):
         http_log.enable(level="off")
         self.assertEqual(http_replay.mode(), "off")
+
+    def with_env_file(self, text):
+        """Point the module at a .env with this text and a repo root in the test folder."""
+        env_file = self.folder / ".env"
+        env_file.write_text(text)
+        for name, value in (("ENV_FILE", env_file), ("REPO_ROOT", self.folder)):
+            patcher = mock.patch.object(http_replay, name, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_env_file_turns_recording_on_with_a_default_folder(self):
+        self.with_env_file("HTTP_REPLAY=record\n")
+        http_log.enable(level="off")
+        self.assertEqual(http_replay.mode(), "record")
+        folders = list((self.folder / "runs" / "recordings").iterdir())
+        self.assertEqual(len(folders), 1)
+        self.assertRegex(folders[0].name, r"-\d{8}-\d{6}$")
+        info = (folders[0] / "recording-info.txt").read_text()
+        for field in ("date: ", "command: ", "git commit: ", "python: ", "packages:"):
+            self.assertIn(field, info)
+
+    def test_shell_setting_wins_over_env_file(self):
+        self.with_env_file("HTTP_REPLAY=record\n")
+        with mock.patch.dict(os.environ, {"HTTP_REPLAY": "off"}):
+            http_log.enable(level="off")
+        self.assertEqual(http_replay.mode(), "off")
+
+    def test_record_into_a_given_folder_writes_recording_info(self):
+        self.record(lambda: requests.get(f"{self.base}/reply", timeout=10))
+        self.assertTrue((self.folder / "recording-info.txt").exists())
+        self.assertEqual(len(list(self.folder.glob("*.json"))), 1)
 
 
 def _redacted(reply):

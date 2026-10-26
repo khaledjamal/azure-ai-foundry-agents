@@ -194,8 +194,8 @@ HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/chat uv run python src/1-mode
 
 | Variable | Values |
 |---|---|
-| `HTTP_REPLAY` | `off` (default), `record`, `replay` |
-| `HTTP_REPLAY_DIR` | folder of the recording: one JSON file per call, with the whole response; secrets redacted |
+| `HTTP_REPLAY` | `off` (default), `record`, `replay`; set in the shell or in `.env` (`HTTP_REPLAY=record` there saves every run) |
+| `HTTP_REPLAY_DIR` | folder of the recording: one JSON file per call, with the whole response; secrets redacted. Needed for `replay`; `record` without it saves to `runs/recordings/<script>-<timestamp>/`. Each recording has a `recording-info.txt` (date, command, git commit, package versions) |
 | `HTTP_REPLAY_IGNORE_FIELDS` | JSON body fields left out when requests are matched, comma-separated (for values that change on every run) |
 
 A replayed request must match a recorded one (method, URL, body); one that doesn't fails with `HttpReplayMiss`

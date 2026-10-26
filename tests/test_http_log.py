@@ -7,14 +7,17 @@ Run from the repo root with the venv that has requests, httpx2 and httpx install
 import asyncio
 import gzip
 import json
+import os
 import re
 import threading
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from unittest import mock
 
 import requests
 
-from workshop_utils import http_log
+from workshop_utils import http_log, http_replay
 
 try:
     import httpx2
@@ -28,6 +31,14 @@ try:
     import aiohttp
 except ImportError:
     aiohttp = None
+
+
+def setUpModule():
+    """Use only the settings each test sets: not the shell's HTTP_REPLAY* values, nor the developer's .env."""
+    kept = {name: value for name, value in os.environ.items() if not name.startswith("HTTP_REPLAY")}
+    unittest.enterModuleContext(mock.patch.dict(os.environ, kept, clear=True))
+    unittest.enterModuleContext(mock.patch.object(http_replay, "ENV_FILE", Path(os.devnull)))
+
 
 CHAT_REPLY = {
     "choices": [{"message": {"role": "assistant", "content": "Hello"}}],
