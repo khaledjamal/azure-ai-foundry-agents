@@ -105,13 +105,13 @@ Microsoft's original notebook, what each script cleans up and the generated imag
 
 | Lab | What it shows | Sample output |
 |---|---|---|
-| [Setup check](src/check-setup.py) | read-only check of settings, sign-in, deployments and connections; no model call | [output](sample-output/check-setup.py-output-20261018-172359.txt) |
-| [Chat completion](src/1-models/1-basic-chat-completion-azure-openai.py) | the same calls through `openai.AzureOpenAI` and through the Foundry project client | [output](sample-output/1-basic-chat-completion-azure-openai.py-output-20261016-070614.txt) |
+| [Setup check](src/check-setup.py) | read-only check of settings, sign-in, deployments and connections; no model call | [output](sample-output/check-setup.py-output-20261026-202245.txt) |
+| [Chat completion](src/1-models/1-basic-chat-completion-azure-openai.py) | the same calls through `openai.AzureOpenAI` and through the Foundry project client | [output](sample-output/1-basic-chat-completion-azure-openai.py-output-20261026-202252.txt) |
 | [Chat: REST vs SDK](src/1-models/1-basic-chat-completion-rest-vs-sdk.py) (new) | one chat request sent by hand with `requests` and through the `openai` SDK, side by side | [output](sample-output/1-basic-chat-completion-rest-vs-sdk.py-output-20261025-215820.txt) |
-| [Embeddings](src/1-models/2-embeddings-azure-openai.py) | text embeddings with `text-embedding-3-small` | [output](sample-output/2-embeddings-azure-openai.py-output-20261014-094054.txt) |
+| [Embeddings](src/1-models/2-embeddings-azure-openai.py) | text embeddings with `text-embedding-3-small` | [output](sample-output/2-embeddings-azure-openai.py-output-20261026-202311.txt) |
 | [Image embeddings](src/1-models/2-embeddings-image-embeddings.py) | Cohere `embed-v-4-0`: an X-ray image and text captions in one vector space | [output](sample-output/2-embeddings-image-embeddings.py-output-20261025-170122.txt) |
 | [Image generation](src/1-models/2-embeddings-image-generation.py) | `gpt-image-2` through the Azure OpenAI v1 endpoint with an Entra ID token | [output](sample-output/2-embeddings-image-generation.py-output-20261025-221237.txt) |
-| [Basic RAG](src/1-models/3-basic-rag-azure-openai.py) | vector index in Azure AI Search, answers grounded in the top matches | [output](sample-output/3-basic-rag-azure-openai.py-output-20261014-094211.txt) |
+| [Basic RAG](src/1-models/3-basic-rag-azure-openai.py) | vector index in Azure AI Search, answers grounded in the top matches | [output](sample-output/3-basic-rag-azure-openai.py-output-20261026-202316.txt) |
 | [Phi-4 vs gpt-4o-mini](src/1-models/4-phi-4.py) | Phi-4, Phi-4-reasoning and gpt-4o-mini on the same prompts: answers, tokens, time and cost | [output](sample-output/4-phi-4.py-output-20261025-215829.txt) |
 | [DeepSeek thinking off vs on](src/1-models/5-deep-seek-v4-flash.py) | DeepSeek-V4-Flash with and without thinking (`reasoning_effort`) | [output](sample-output/5-deep-seek-v4-flash.py-output-20261025-220051.txt) |
 | [Agent basics](src/2-agents/1-basics.py) | Foundry Agent Service: agent, thread, messages, run | [output](sample-output/1-basics.py-output-20261014-094247.txt) |

@@ -1,0 +1,599 @@
+Sample output of src/check-setup.py
+Run on 2026-10-26 20:22 with: uv run python src/check-setup.py
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+
+================================================================================
+1. Settings in .env
+================================================================================
+  PASS  chat, agents (required): all set
+  PASS  embeddings, RAG, AI Search agent: all set
+  PASS  evaluation judge model: all set
+  PASS  Grounding with Bing: all set
+  PASS  Azure Functions MCP: all set
+  PASS  image scripts: all set
+  PASS  Phi-4: all set
+  PASS  DeepSeek: all set
+  PASS  Foundry project: set
+
+================================================================================
+2. Sign-in (DefaultAzureCredential)
+================================================================================
+  Token for Azure AI services received, valid until 2026-10-26 17:27 UTC
+
+================================================================================
+3. Foundry project
+================================================================================
+  Project endpoint: https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
+
+--- OUTBOUND REQUEST #1 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/deployments?api-version=v1
+> User-Agent: azsdk-python-ai-projects/1.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #1 ---
+< 200 OK
+< Content-Length: 2117
+< Content-Type: application/json
+< Date: Mon, 26 Oct 2026 16:22:50 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "value": [
+    {
+      "name": "gpt-4o-mini",
+      "type": "ModelDeployment",
+      "modelName": "gpt-4o-mini",
+      "modelVersion": "2024-07-18",
+      "modelPublisher": "OpenAI",
+      "capabilities": {
+        "chat_completion": "true"
+      },
+      "sku": {
+        "name": "GlobalStandard",
+        "capacity": 200
+      }
+    },
+    {
+      "name": "text-embedding-3-small",
+      "type": "ModelDeployment",
+      "modelName": "text-embedding-3-small",
+      "modelVersion": "1",
+      "modelPublisher": "OpenAI",
+      "capabilities": {
+        "embeddings": "true"
+      },
+      "sku": {
+        "name": "GlobalStandard",
+        "capacity": 150
+      }
+    },
+    {
+      "name": "gpt-4o",
+      "type": "ModelDeployment",
+      "modelName": "gpt-4o",
+      "modelVersion": "2024-11-20",
+      "modelPublisher": "OpenAI",
+      "capabilities": {
+        "chat_completion": "true"
+      },
+      "sku": {
+        "name": "DataZoneStandard",
+        "capacity": 50
+      }
+    },
+    {
+      "name": "gpt-image-2",
+      "type": "ModelDeployment",
+      "modelName": "gpt-image-2",
+      "modelVersion": "2026-04-21",
+      "modelPublisher": "OpenAI",
+      "capabilities": {},
+      "sku": {
+        "name": "GlobalStandard",
+        "capacity": 1
+      }
+    },
+    {
+      "name": "embed-v-4-0",
+      "type": "ModelDeployment",
+      "modelName": "embed-v-4-0",
+      "modelVersion": "1",
+      "modelPublisher": "Cohere",
+      "capabilities": {},
+      "sku": {
+        "name": "GlobalStandard",
+        "capacity": 10
+      }
+    },
+    {
+      "name": "Phi-4",
+      "type": "ModelDeployment",
+      "modelName": "Phi-4",
+      "modelVersion": "7",
+      "modelPublisher": "Microsoft",
+      "capabilities": {
+        "chat_completion": "true"
+      },
+      "sku": {
+        "name": "GlobalStandard",
+        "capacity": 20
+      }
+    },
+    {
+      "name": "Phi-4-reasoning",
+      "type": "ModelDeployment",
+      "modelName": "Phi-4-reasoning",
+      "modelVersion": "1",
+      "modelPublisher": "Microsoft",
+      "capabilities": {
+        "chat_completion": "true"
+      },
+      "sku": {
+        "name": "GlobalStandard",
+        "capacity": 20
+      }
+    },
+    {
+      "name": "DeepSeek-V4-Flash",
+      "type": "ModelDeployment",
+      "modelName": "DeepSeek-V4-Flash",
+      "modelVersion": "2026-04-23",
+      "modelPublisher": "DeepSeek",
+      "capabilities": {
+        "chat_completion": "true"
+      },
+      "sku": {
+        "name": "GlobalStandard",
+        "capacity": 20
+      }
+    },
+    {
+      "name": "gpt-5.4-mini",
+      "type": "ModelDeployment",
+      "modelName": "gpt-5.4-mini",
+      "modelVersion": "2026-03-17",
+      "modelPublisher": "OpenAI",
+      "capabilities": {
+        "chat_completion": "true"
+      },
+      "sku": {
+        "name": "GlobalStandard",
+        "capacity": 50
+      }
+    },
+    {
+      "name": "gpt-5.4-nano",
+      "type": "ModelDeployment",
+      "modelName": "gpt-5.4-nano",
+      "modelVersion": "2026-03-17",
+      "modelPublisher": "OpenAI",
+      "capabilities": {
+        "chat_completion": "true"
+      },
+      "sku": {
+        "name": "GlobalStandard",
+        "capacity": 50
+      }
+    }
+  ]
+}
+
+--- OUTBOUND REQUEST #2 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/connections?api-version=v1
+> User-Agent: azsdk-python-ai-projects/1.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #2 ---
+< 200 OK
+< Content-Type: application/json; charset=utf-8
+< Date: Mon, 26 Oct 2026 16:22:50 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< azureml-served-by-cluster: vienna-eastus2-01
+< x-request-time: 0.029
+< apim-request-id: <id>
+< x-ms-region: East US 2
+<
+{
+  "value": [
+    {
+      "name": "<bing-connection-name>",
+      "id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/<bing-connection-name>",
+      "type": "GroundingWithBingSearch",
+      "target": "https://api.bing.microsoft.com/",
+      "isDefault": true,
+      "credentials": "<redacted>",
+      "metadata": {
+        "displayName": "<bing-connection-name>",
+        "type": "bing_grounding",
+        "ApiType": "Azure",
+        "ResourceId": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Bing/accounts/<bing-connection-name>"
+      }
+    },
+    {
+      "name": "<search-service>",
+      "id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/<search-service>",
+      "type": "CognitiveSearch",
+      "target": "https://<search-service>.search.windows.net",
+      "isDefault": true,
+      "credentials": "<redacted>",
+      "metadata": {
+        "ApiType": "Azure",
+        "ResourceId": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Search/searchServices/<search-service>",
+        "location": "centralus",
+        "displayName": "<search-service>",
+        "ApiVersion": "2024-05-01-preview",
+        "DeploymentApiVersion": "2023-11-01"
+      }
+    },
+    {
+      "name": "<app-insights>",
+      "id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/<app-insights>",
+      "type": "AppInsights",
+      "target": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/microsoft.insights/components/<app-insights>",
+      "isDefault": true,
+      "credentials": "<redacted>",
+      "metadata": {
+        "ApiType": "Azure",
+        "ResourceId": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/microsoft.insights/components/<app-insights>"
+      }
+    },
+    {
+      "name": "workout-mcp-key",
+      "id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/workout-mcp-key",
+      "type": "CustomKeys",
+      "target": "https://<function-app>.azurewebsites.net/runtime/webhooks/mcp",
+      "isDefault": true,
+      "credentials": "<redacted>",
+      "metadata": {}
+    }
+  ]
+}
+  Deployments (10):
+    gpt-4o-mini                OpenAI     gpt-4o-mini 2024-07-18 GlobalStandard
+    text-embedding-3-small     OpenAI     text-embedding-3-small 1 GlobalStandard
+    gpt-4o                     OpenAI     gpt-4o 2024-11-20 DataZoneStandard
+    gpt-image-2                OpenAI     gpt-image-2 2026-04-21 GlobalStandard
+    embed-v-4-0                Cohere     embed-v-4-0 1 GlobalStandard
+    Phi-4                      Microsoft  Phi-4 7 GlobalStandard
+    Phi-4-reasoning            Microsoft  Phi-4-reasoning 1 GlobalStandard
+    DeepSeek-V4-Flash          DeepSeek   DeepSeek-V4-Flash 2026-04-23 GlobalStandard
+    gpt-5.4-mini               OpenAI     gpt-5.4-mini 2026-03-17 GlobalStandard
+    gpt-5.4-nano               OpenAI     gpt-5.4-nano 2026-03-17 GlobalStandard
+  Connections (4):
+    <bing-connection-name>         GroundingWithBingSearch
+    <search-service>          ConnectionType.AZURE_AI_SEARCH
+    <app-insights>                    ConnectionType.APPLICATION_INSIGHTS
+    workout-mcp-key                          ConnectionType.CUSTOM
+
+================================================================================
+4. Settings that name deployments and connections
+================================================================================
+  PASS  DEEPSEEK_MODEL_DEPLOYMENT_NAME=DeepSeek-V4-Flash
+  PASS  EMBEDDING_MODEL_DEPLOYMENT_NAME=text-embedding-3-small
+  PASS  IMAGE_EMBEDDING_MODEL_DEPLOYMENT_NAME=embed-v-4-0
+  PASS  IMAGE_MODEL_DEPLOYMENT_NAME=gpt-image-2
+  PASS  MODEL_DEPLOYMENT_NAME=gpt-4o-mini
+  PASS  OPENAI_DEPLOYMENT_NAME=gpt-4o
+  PASS  PHI_MODEL_DEPLOYMENT_NAME=Phi-4
+  PASS  PHI_REASONING_MODEL_DEPLOYMENT_NAME=Phi-4-reasoning
+  PASS  GROUNDING_WITH_BING_CONNECTION_NAME names a project connection
+
+================================================================================
+5. Azure AI Search
+================================================================================
+
+--- OUTBOUND REQUEST #3 ---
+> GET https://<search-service>.search.windows.net/indexes?api-version=2026-04-01
+> User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json;odata.metadata=minimal
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> api-key: <redacted>
+
+--- OUTBOUND RESPONSE #3 ---
+< 200 OK
+< Transfer-Encoding: chunked
+< Content-Type: application/json; odata.metadata=minimal; odata.streaming=true; charset=utf-8
+< Content-Encoding: gzip
+< Vary: Accept-Encoding
+< Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
+< Preference-Applied: odata.include-annotations="*"
+< OData-Version: 4.0
+< request-id: <id>
+< elapsed-time: 133
+< Date: Mon, 26 Oct 2026 16:22:51 GMT
+<
+{
+  "@odata.context": "https://<search-service>.search.windows.net/$metadata#indexes",
+  "value": [
+    {
+      "@odata.etag": "\"0x8DF33673B99DFE5\"",
+      "name": "healthtips-index",
+      "description": null,
+      "defaultScoringProfile": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "Edm.String",
+          "searchable": false,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": true,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "content",
+          "type": "Edm.String",
+          "searchable": true,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "source",
+          "type": "Edm.String",
+          "searchable": false,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "embedding",
+          "type": "Collection(Edm.Single)",
+          "searchable": true,
+          "filterable": false,
+          "retrievable": false,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": 1536,
+          "vectorSearchProfile": "myHnswProfile",
+          "vectorEncoding": null,
+          "synonymMaps": []
+        }
+      ],
+      "scoringProfiles": [],
+      "corsOptions": null,
+      "suggesters": [],
+      "analyzers": [],
+      "normalizers": [],
+      "tokenizers": [],
+      "tokenFilters": [],
+      "charFilters": [],
+      "encryptionKey": null,
+      "similarity": {
+        "@odata.type": "#Microsoft.Azure.Search.BM25Similarity",
+        "k1": null,
+        "b": null
+      },
+      "semantic": null,
+      "vectorSearch": {
+        "algorithms": [
+          {
+            "name": "myHnsw",
+            "kind": "hnsw",
+            "hnswParameters": {
+              "metric": "cosine",
+              "m": 4,
+              "efConstruction": 400,
+              "efSearch": 500
+            },
+            "exhaustiveKnnParameters": null
+          }
+        ],
+        "profiles": [
+          {
+            "name": "myHnswProfile",
+            "algorithm": "myHnsw",
+            "vectorizer": null,
+            "compression": null
+          }
+        ],
+        "vectorizers": [],
+        "compressions": []
+      }
+    },
+    {
+      "@odata.etag": "\"0x8DF31335BA06445\"",
+      "name": "literature-index",
+      "description": null,
+      "defaultScoringProfile": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "Edm.String",
+          "searchable": false,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": true,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "title",
+          "type": "Edm.String",
+          "searchable": true,
+          "filterable": true,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "abstract",
+          "type": "Edm.String",
+          "searchable": true,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "content",
+          "type": "Edm.String",
+          "searchable": true,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "authors",
+          "type": "Collection(Edm.String)",
+          "searchable": true,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "publicationDate",
+          "type": "Edm.DateTimeOffset",
+          "searchable": false,
+          "filterable": true,
+          "retrievable": true,
+          "stored": true,
+          "sortable": true,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        }
+      ],
+      "scoringProfiles": [],
+      "corsOptions": null,
+      "suggesters": [],
+      "analyzers": [],
+      "normalizers": [],
+      "tokenizers": [],
+      "tokenFilters": [],
+      "charFilters": [],
+      "encryptionKey": null,
+      "similarity": {
+        "@odata.type": "#Microsoft.Azure.Search.BM25Similarity",
+        "k1": null,
+        "b": null
+      },
+      "semantic": null,
+      "vectorSearch": null
+    }
+  ]
+}
+  Key works; 2 index(es): healthtips-index, literature-index
+
+================================================================================
+Summary
+================================================================================
+  21 passed, 0 warnings, OK
