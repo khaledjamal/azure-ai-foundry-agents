@@ -25,9 +25,12 @@ MODEL_DEPLOYMENT_NAME. Paid: the Agent Service lists Web Search per 1,000 transa
 Grounding with Bing is $14 per 1,000 (checked 2026-10-18), so a run with 3-9 searches is about $0.04-0.13, plus
 gpt-4o-mini tokens.
 
+The instructions carry today's date, as in the Bing lab. --today sets that date (default: today), so a recorded run
+can be replayed on a later day with the recording's date.
+
 Needs azure-ai-projects>=2 (in the separate agents venv). Run from the project root:
     source ../../.venv-agents-v2/bin/activate
-    python src/2-agents/4-web-search.py [--model gpt-4o-mini]
+    python src/2-agents/4-web-search.py [--model gpt-4o-mini] [--today YYYY-MM-DD]
 """
 
 import argparse
@@ -111,56 +114,83 @@ def show_response(response):
     return answer, sources, queries
 
 
-def main():
-    load_env()
+def parse_args():
     parser = argparse.ArgumentParser(description="Foundry agent with the built-in Web Search tool")
     parser.add_argument("--model", default=os.getenv("MODEL_DEPLOYMENT_NAME") or "gpt-4o-mini")
-    args = parser.parse_args()
+    parser.add_argument(
+        "--today",
+        type=date.fromisoformat,
+        default=date.today(),
+        help="date written into the instructions (default: today); a replay passes the recording's date",
+    )
+    return parser.parse_args()
 
+
+def load_settings(model):
     project_endpoint = get_project_endpoint()
     print(f"Project endpoint: {project_endpoint}")
-    print(f"Model deployment: {args.model}")
+    print(f"Model deployment: {model}")
+    return project_endpoint
 
-    with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project:
-        openai_client = project.get_openai_client()
-        agent = project.agents.create_version(
-            agent_name=AGENT_NAME,
-            definition=PromptAgentDefinition(
-                model=args.model, instructions=build_instructions(date.today()), tools=[WebSearchTool()]
-            ),
-        )
-        print(f"\nAgent created: name={agent.name} version={agent.version} (tool: web_search, no connection)")
-        agent_reference = {"agent_reference": {"name": agent.name, "type": "agent_reference"}}
 
-        totals = {"input": 0, "output": 0, "searches": 0}
-        results = []
-        try:
-            for question in QUESTIONS:
-                print(f"\nUser: {question}")
-                response = openai_client.responses.create(
-                    input=question, tool_choice="required", extra_body=agent_reference
-                )
-                print(f"Response (status {response.status}):")
-                answer, sources, queries = show_response(response)
-                if response.usage:
-                    totals["input"] += response.usage.input_tokens
-                    totals["output"] += response.usage.output_tokens
-                totals["searches"] += sum(1 for item in response.output if item.type == "web_search_call")
-                print(f"\nAgent: {answer}")
-                print("Sources:")
-                for number, (title, url) in enumerate(sources, start=1):
-                    print(f"  [{number}] {title}: {url}")
-                if not sources:
-                    print("  (none)")
-                for query in queries:
-                    print(f"Bing search: https://www.bing.com/search?q={quote_plus(query)}")
-                results.append((question, response.status, answer, sources))
-        finally:
-            project.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
-            print(f"\nAgent version deleted: {agent.name} v{agent.version}")
+def create_agent(project, model, today):
+    """Create an agent version with the built-in Web Search tool; it needs no project connection."""
+    agent = project.agents.create_version(
+        agent_name=AGENT_NAME,
+        definition=PromptAgentDefinition(model=model, instructions=build_instructions(today), tools=[WebSearchTool()]),
+    )
+    print(f"\nAgent created: name={agent.name} version={agent.version} (tool: web_search, no connection)")
+    return agent
 
+
+def ask(openai_client, agent_reference, question, totals):
+    """Send one question with a required search; return the response status, answer, sources and search queries."""
+    print(f"\nUser: {question}")
+    response = openai_client.responses.create(input=question, tool_choice="required", extra_body=agent_reference)
+    print(f"Response (status {response.status}):")
+    answer, sources, queries = show_response(response)
+    if response.usage:
+        totals["input"] += response.usage.input_tokens
+        totals["output"] += response.usage.output_tokens
+    totals["searches"] += sum(1 for item in response.output if item.type == "web_search_call")
+    return response.status, answer, sources, queries
+
+
+def print_answer(answer, sources, queries):
+    print(f"\nAgent: {answer}")
+    print("Sources:")
+    for number, (title, url) in enumerate(sources, start=1):
+        print(f"  [{number}] {title}: {url}")
+    if not sources:
+        print("  (none)")
+    for query in queries:
+        print(f"Bing search: https://www.bing.com/search?q={quote_plus(query)}")
+
+
+def ask_questions(openai_client, agent):
+    """Ask each question in its own response; return (question, status, answer, sources) and the totals."""
+    agent_reference = {"agent_reference": {"name": agent.name, "type": "agent_reference"}}
+    totals = {"input": 0, "output": 0, "searches": 0}
+    results = []
+    for question in QUESTIONS:
+        status, answer, sources, queries = ask(openai_client, agent_reference, question, totals)
+        print_answer(answer, sources, queries)
+        results.append((question, status, answer, sources))
+    return results, totals
+
+
+def cleanup(project, agent):
+    project.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
+    print(f"\nAgent version deleted: {agent.name} v{agent.version}")
+
+
+def print_totals(totals):
     print(f"Total tokens: input {totals['input']}, output {totals['output']}")
     print(f"Web searches: {totals['searches']} (about ${totals['searches'] * PRICE_PER_SEARCH:.3f} at the Bing rate)")
+
+
+def check_results(results):
+    """Every question got a completed answer with at least one source."""
     checks = [
         (f"answered with sources: {question}", status == "completed" and bool(answer.strip()) and bool(sources))
         for question, status, answer, sources in results
@@ -168,7 +198,25 @@ def main():
     print("Checks:")
     for name, passed in checks:
         print(f"  {'PASS' if passed else 'FAIL'}  {name}")
-    raise SystemExit(0 if len(checks) == len(QUESTIONS) and all(passed for _, passed in checks) else 1)
+    return len(checks) == len(QUESTIONS) and all(passed for _, passed in checks)
+
+
+def main():
+    load_env()
+    args = parse_args()
+    project_endpoint = load_settings(args.model)
+
+    with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project:
+        openai_client = project.get_openai_client()
+        agent = create_agent(project, args.model, args.today)
+        try:
+            results, totals = ask_questions(openai_client, agent)
+        finally:
+            cleanup(project, agent)
+
+    print_totals(totals)
+    passed = check_results(results)
+    raise SystemExit(0 if passed else 1)
 
 
 if __name__ == "__main__":
