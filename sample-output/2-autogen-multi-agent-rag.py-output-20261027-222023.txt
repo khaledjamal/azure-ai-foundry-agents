@@ -1,0 +1,505 @@
+Sample output of src/4-frameworks/2-autogen-multi-agent-rag.py
+Run on 2026-10-27 22:20 with: uv run python src/4-frameworks/2-autogen-multi-agent-rag.py
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+
+================================================================================
+AUTOGEN MULTI-AGENT RAG
+================================================================================
+Loaded .env from: .env
+Azure OpenAI endpoint: https://<resource-name>.openai.azure.com/
+Chat deployment:       gpt-4o-mini (API version 2024-08-01-preview)
+Embedding deployment:  text-embedding-3-small
+
+--- OUTBOUND REQUEST #1 ---
+> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: AzureOpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 389
+>
+{
+  "model": "text-embedding-3-small",
+  "input": [
+    "Do a 10-minute HIIT workout to boost your metabolism.",
+    "Take a brisk 15-minute walk to clear your mind and improve circulation.",
+    "Stretch for 5 minutes every hour if you're sitting at a desk.",
+    "Incorporate strength training twice a week for overall fitness.",
+    "Drink water regularly to stay hydrated during workouts."
+  ],
+  "encoding_format": "base64"
+}
+
+--- OUTBOUND RESPONSE #1 ---
+< 200 OK
+< Content-Length: 41306
+< Content-Type: application/json
+< Date: Tue, 27 Oct 2026 18:20:27 GMT
+< Server: istio-envoy
+< Vary: Origin
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< x-ratelimit-remaining-tokens: 149922
+< x-ratelimit-limit-tokens: 150000
+< azureml-model-session: d20261023211206-7f1ae363
+< x-ms-served-model: text-embedding-3-small-1
+< x-request-id: <id>
+< x-http2-stream-id: 959
+< x-ms-client-request-id: Not-Set
+< x-ms-deployment-name: text-embedding-3-small
+<
+{
+  "object": "list",
+  "data": [
+    {
+      "object": "embedding",
+      "embedding": "AEDbvAAAtjwAQFm8AEAFvQBgOr0AoNs7AODkvADg9jwAQFY9ACAnvQCAebsAIOW7AEDevABAKDsA4AM9...(8192 characters)",
+      "index": 0
+    },
+    {
+      "object": "embedding",
+      "embedding": "AADXOwDART0AAH69AMCPOwBgkL0AwKi6ACCAvQBgRLwAoKc8AECOPQCgwzwAIE49AEAZPADgrzwAIHk9...(8192 characters)",
+      "index": 1
+    },
+    {
+      "object": "embedding",
+      "embedding": "AMAjvQAgSz0AwDG7ACDiOwCgijsAoAm7AOBduwCARjwAYAM9AKDGPABgkbsAgF88AABnPABgmLwAYG49...(8192 characters)",
+      "index": 2
+    },
+    {
+      "object": "embedding",
+      "embedding": "AIAkPQDgMT0AQIM9AIBduwCghbsAYJg9AAAjOwAAVz0A4IU9AAA/PQCACTsAwBM8AAALPQCAfbwAQA89...(8192 characters)",
+      "index": 3
+    },
+    {
+      "object": "embedding",
+      "embedding": "AIDePAAgaj0AQCm9AIAEPABge7wAICU9ACCDOwBA6TwA4Fm8AODZPABASzwAQGI9AEA0vABgbroAYOg8...(8192 characters)",
+      "index": 4
+    }
+  ],
+  "model": "text-embedding-3-small",
+  "usage": {
+    "prompt_tokens": 64,
+    "total_tokens": 64
+  }
+}
+Embedded 5 health tips.
+
+================================================================================
+Query
+================================================================================
+user: I'm very busy but want to stay fit. What quick exercises can I do?
+
+--- OUTBOUND REQUEST #2 ---
+> POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: autogen-python/0.7.5
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: async:asyncio
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 708
+>
+{
+  "model": "gpt-4o-mini",
+  "stream": false,
+  "messages": [
+    {
+      "content": "You are a smart retrieval agent. Your task is to fetch relevant fitness and health tips for the user's question. Call the tool 'retrieve_tips' once with the user's question.",
+      "role": "system"
+    },
+    {
+      "role": "user",
+      "name": "user",
+      "content": "I'm very busy but want to stay fit. What quick exercises can I do?"
+    }
+  ],
+  "tool_choice": "auto",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "retrieve_tips",
+        "description": "Return the health tips closest in meaning to the user's question.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "description": "query",
+              "title": "Query",
+              "type": "string"
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        },
+        "strict": false
+      }
+    }
+  ]
+}
+
+--- OUTBOUND RESPONSE #2 ---
+< 200 OK
+< Content-Length: 1259
+< Content-Type: application/json
+< Date: Tue, 27 Oct 2026 18:20:27 GMT
+< Server: istio-envoy
+< Vary: Origin
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< azureml-model-session: d20261025034216-aab5dbc5
+< skip-error-remapping: true
+< x-accel-buffering: no
+< x-ms-is-spilled-over: false
+< x-ms-rai-invoked: true
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-remaining-tokens: 199891
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-renewalperiod-tokens: 60
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-reset-tokens: 0
+< x-request-id: <id>
+< apim-request-id: <id>
+< x-http2-stream-id: 681
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-ms-client-request-id: Not-Set
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "choices": [
+    {
+      "content_filter_result": {
+        "error": {
+          "code": "content_filter_error",
+          "message": "The contents are not filtered"
+        }
+      },
+      "content_filter_results": {},
+      "finish_reason": "tool_calls",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "annotations": [],
+        "content": null,
+        "refusal": null,
+        "role": "assistant",
+        "tool_calls": [
+          {
+            "function": {
+              "arguments": "{\"query\":\"quick exercises for busy people\"}",
+              "name": "retrieve_tips"
+            },
+            "id": "call_WzHAZ8TPdFYpxeWgoEqC7icK",
+            "type": "function"
+          }
+        ]
+      }
+    }
+  ],
+  "created": 1793125228,
+  "id": "chatcmpl-Edg4a2Oe4xy64bnQjYdvre5wBiL9m",
+  "model": "gpt-4o-mini-2024-07-18",
+  "object": "chat.completion",
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {}
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20261025034216-aab5dbc5-default-r1-dp0-default"
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_4b2adf74ff",
+  "usage": {
+    "completion_tokens": 19,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 8,
+      "engine_ttft_ms": 34,
+      "engine_ttlt_ms": 196,
+      "pre_inference_ms": 231,
+      "service_tbt_ms": 7,
+      "service_ttft_ms": 538,
+      "service_ttlt_ms": 677,
+      "user_visible_ttft_ms": 307
+    },
+    "prompt_tokens": 109,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 128
+  }
+}
+
+RetrieverAgent -> tool call: retrieve_tips({"query":"quick exercises for busy people"})
+
+--- OUTBOUND REQUEST #3 ---
+> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: AzureOpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 105
+>
+{
+  "model": "text-embedding-3-small",
+  "input": [
+    "quick exercises for busy people"
+  ],
+  "encoding_format": "base64"
+}
+
+--- OUTBOUND RESPONSE #3 ---
+< 200 OK
+< Content-Length: 8344
+< Content-Type: application/json
+< Date: Tue, 27 Oct 2026 18:20:29 GMT
+< Server: istio-envoy
+< Vary: Origin
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< x-ratelimit-remaining-tokens: 149914
+< x-ratelimit-limit-tokens: 150000
+< azureml-model-session: d20261014070325-2cffadc7
+< x-ms-served-model: text-embedding-3-small-1
+< x-request-id: <id>
+< x-http2-stream-id: 979
+< x-ms-client-request-id: Not-Set
+< x-ms-deployment-name: text-embedding-3-small
+<
+{
+  "object": "list",
+  "data": [
+    {
+      "object": "embedding",
+      "embedding": "AMA2vQCAPD0AAPW7AGA9vQAgOr0AwEC8AKANvQAAiD0AwAk9AMD+OwDgVDwAYIC8AAACPQAgpDwAAM07...(8192 characters)",
+      "index": 0
+    }
+  ],
+  "model": "text-embedding-3-small",
+  "usage": {
+    "prompt_tokens": 5,
+    "total_tokens": 5
+  }
+}
+  [tool] retrieve_tips(query='quick exercises for busy people') similarity: tip2 0.45, tip3 0.42, tip1 0.42, tip4 0.29, tip5 0.28
+RetrieverAgent <- tool result:
+Source: Health Coach => Take a brisk 15-minute walk to clear your mind and improve circulation.
+Source: Wellness Expert => Stretch for 5 minutes every hour if you're sitting at a desk.
+Source: Fitness Guru => Do a 10-minute HIIT workout to boost your metabolism.
+
+RetrieverAgent:
+Source: Health Coach => Take a brisk 15-minute walk to clear your mind and improve circulation.
+Source: Wellness Expert => Stretch for 5 minutes every hour if you're sitting at a desk.
+Source: Fitness Guru => Do a 10-minute HIIT workout to boost your metabolism.
+
+--- OUTBOUND REQUEST #4 ---
+> POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: autogen-python/0.7.5
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: async:asyncio
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 791
+>
+{
+  "model": "gpt-4o-mini",
+  "stream": false,
+  "messages": [
+    {
+      "content": "You are a friendly fitness coach. Craft a fun and engaging response to the user's question using only the health tips the RetrieverAgent provided, and name each tip's source. Do not add exercises, tips or facts that are not in those tips. Say briefly that this is not medical advice.",
+      "role": "system"
+    },
+    {
+      "role": "user",
+      "name": "user",
+      "content": "I'm very busy but want to stay fit. What quick exercises can I do?"
+    },
+    {
+      "role": "user",
+      "name": "RetrieverAgent",
+      "content": "Source: Health Coach => Take a brisk 15-minute walk to clear your mind and improve circulation.\nSource: Wellness Expert => Stretch for 5 minutes every hour if you're sitting at a desk.\nSource: Fitness Guru => Do a 10-minute HIIT workout to boost your metabolism."
+    }
+  ]
+}
+
+--- OUTBOUND RESPONSE #4 ---
+< 200 OK
+< Content-Length: 1839
+< Content-Type: application/json
+< Date: Tue, 27 Oct 2026 18:20:30 GMT
+< Server: istio-envoy
+< Vary: Origin
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< azureml-model-session: d20261026042327-37c54a62
+< skip-error-remapping: true
+< x-accel-buffering: no
+< x-ms-is-spilled-over: false
+< x-ms-rai-invoked: true
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-remaining-tokens: 199850
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-renewalperiod-tokens: 60
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-reset-tokens: 0
+< x-request-id: <id>
+< apim-request-id: <id>
+< x-http2-stream-id: 721
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-ms-client-request-id: Not-Set
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "choices": [
+    {
+      "content_filter_result": {
+        "error": {
+          "code": "content_filter_error",
+          "message": "The contents are not filtered"
+        }
+      },
+      "content_filter_results": {},
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "annotations": [],
+        "content": "Hey there! It’s awesome that you want to stay fit despite your busy schedule! Here are some quick and fun tips to get you moving:\n\n1. **Brisk Walk**: Take a 15-minute brisk walk to clear your mind and improve circulation. Perfect for a quick break! (Source: Health Coach)\n\n2. **Desk Stretching**: If you find yourself sitting at a desk, stretch for 5 minutes every hour. It’s a great way to stay flexible and energized! (Source: Wellness Expert)\n\n3. **HIIT Workout**: Try a 10-minute HIIT workout to give your metabolism a nice boost. You can squeeze this in whenever you have a little spare time! (Source: Fitness Guru)\n\nRemember, these tips are fun ways to stay active, but they don't replace medical advice. Keep up the great work!💪😊",
+        "refusal": null,
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1793125230,
+  "id": "chatcmpl-Edg4cMSxWt7BrKFD3onK5Va0NFuwG",
+  "model": "gpt-4o-mini-2024-07-18",
+  "object": "chat.completion",
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {}
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20261026042327-37c54a62-default-r8-dp0-default"
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_4b2adf74ff",
+  "usage": {
+    "completion_tokens": 176,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 11,
+      "engine_ttft_ms": 30,
+      "engine_ttlt_ms": 2059,
+      "pre_inference_ms": 82,
+      "service_tbt_ms": 12,
+      "service_ttft_ms": 373,
+      "service_ttlt_ms": 2397,
+      "user_visible_ttft_ms": 292
+    },
+    "prompt_tokens": 150,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 326
+  }
+}
+
+ResponderAgent:
+Hey there! It’s awesome that you want to stay fit despite your busy schedule! Here are some quick and fun tips to get you moving:
+
+1. **Brisk Walk**: Take a 15-minute brisk walk to clear your mind and improve circulation. Perfect for a quick break! (Source: Health Coach)
+
+2. **Desk Stretching**: If you find yourself sitting at a desk, stretch for 5 minutes every hour. It’s a great way to stay flexible and energized! (Source: Wellness Expert)
+
+3. **HIIT Workout**: Try a 10-minute HIIT workout to give your metabolism a nice boost. You can squeeze this in whenever you have a little spare time! (Source: Fitness Guru)
+
+Remember, these tips are fun ways to stay active, but they don't replace medical advice. Keep up the great work!💪😊
+
+(chat tokens: prompt 259, completion 195)
+
+================================================================================
+Result
+================================================================================
+Stop reason: 'ResponderAgent' answered
+COMPLETED: the ResponderAgent answered.

@@ -126,8 +126,8 @@ Microsoft's original notebook, what each script cleans up and the generated imag
 | [Evaluation](src/3-quality/2-evaluation.py) | `azure-ai-evaluation`: F1, plus relevance and groundedness judged by a model | [output](sample-output/2-evaluation.py-output-20261025-220212.txt) |
 | [GenAI Ops](src/3-quality/3-e2e-genai-ops.py) | safety evaluators, direct attacks against a test agent, indirect attack generation, quality and RAG evaluation, all traced | [rerun after the fix](sample-output/3-e2e-genai-ops.py-output-20261016-031924.txt), [full run before it](sample-output/3-e2e-genai-ops.py-output-20261016-030225.txt) |
 | [Semantic Kernel agent](src/4-frameworks/1-rag-sk-agents-aisearch.py) | `AzureAIAgent` with a `@kernel_function` price plugin | [output](sample-output/1-rag-sk-agents-aisearch.py-output-20261025-215423.txt) |
-| [AutoGen multi-agent RAG](src/4-frameworks/2-autogen-multi-agent-rag.py) | retriever and responder agents, embedding search over tips | [output](sample-output/2-autogen-multi-agent-rag.py-output-20261015-165725.txt) |
-| [AutoGen wellness agents](src/4-frameworks/3-autogen-personalized-heart-rate.py) | heart-rate summary from sample wearable data, then two agents plan workouts; not medical advice | [output](sample-output/3-autogen-personalized-heart-rate.py-output-20261015-165744.txt) |
+| [AutoGen multi-agent RAG](src/4-frameworks/2-autogen-multi-agent-rag.py) | retriever and responder agents, embedding search over tips | [output](sample-output/2-autogen-multi-agent-rag.py-output-20261027-222023.txt) |
+| [AutoGen wellness agents](src/4-frameworks/3-autogen-personalized-heart-rate.py) | heart-rate summary from sample wearable data, then two agents plan workouts; not medical advice | [output](sample-output/3-autogen-personalized-heart-rate.py-output-20261027-222033.txt) |
 
 ## Model choice
 
