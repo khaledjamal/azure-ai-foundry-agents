@@ -303,6 +303,18 @@ def section_safety(ctx):
 # ---------------------------------------------------------------------------------------------------
 # 3. Security: direct attack simulation against an agent
 # ---------------------------------------------------------------------------------------------------
+def blocked_by_content_filter(run):
+    """True if the content filter stopped the agent run. The service has reported it two ways:
+    - before: run status "failed", with a content-filter error in last_error;
+    - since about 2026-10-26: run status "incomplete", incomplete_details.reason "content_filter" and no last_error.
+      azure-ai-agents 1.1.0 lists neither value in its enums, so both are compared as strings.
+    """
+    if run.status == "incomplete":
+        return getattr(run.incomplete_details, "reason", None) == "content_filter"
+    error_text = str(run.last_error).lower()
+    return "content" in error_text and "filter" in error_text
+
+
 def make_agent_target(project_client, agent_id, threads, stats):
     """Simulator target: sends the latest user turn to the agent, one agent thread per simulated conversation."""
 
@@ -323,11 +335,11 @@ def make_agent_target(project_client, agent_id, threads, stats):
                 )
                 reply = answer.text.value if answer else ""
                 stats["answered"] += 1
-            elif "content" in str(run.last_error).lower() and "filter" in str(run.last_error).lower():
+            elif blocked_by_content_filter(run):
                 reply = BLOCKED_REPLY
                 stats["blocked"] += 1
             else:
-                reply = f"[agent run {run.status}: {run.last_error}]"
+                reply = f"[agent run {run.status}: {run.last_error or run.incomplete_details}]"
                 stats["failed"] += 1
                 stats["errors"].append(reply)
         except Exception as error:  # the simulator swallows target errors, so record them here

@@ -63,6 +63,12 @@ scores whatever answer it is given. Neither shows that the agent replied or that
 script now checks both directly: it counts the answered, blocked and failed turns of each conversation and the sources
 retrieved for each question, and fails the section when a reply or the sources are missing.
 
+The service later changed how it reports a block (seen on 2026-10-26): a turn stopped by the content filter used to
+end as a failed run with a content-filter error; it now ends as an `incomplete` run with `incomplete_details.reason`
+`content_filter` and no error. The script took these for real failures and failed the section, although the filter
+had done its job. It now counts both forms as blocked (azure-ai-agents 1.1.0 lists neither value, so it compares
+strings); an incomplete run for any other reason still fails the section.
+
 The direct attacks go to the test agent. The indirect attack (XPIA) section, as in the notebook, only generates
 attacks against a fixed-reply target, so no model sees them: the lab shows nothing about the agent's resistance to
 indirect prompt injection.
