@@ -44,7 +44,6 @@ import argparse
 import asyncio
 import json
 import os
-import sys
 import time
 import uuid
 from pathlib import Path
@@ -129,9 +128,27 @@ Maintain a professional and ethical stance in all interactions."""
 SIMULATION_RESULTS = 2
 SIMULATION_TURNS = 3
 
+# Section 4: which data columns each evaluator gets as its inputs.
+QUERY_RESPONSE = {"query": "${data.query}", "response": "${data.response}"}
+RESPONSE_TRUTH = {"response": "${data.response}", "ground_truth": "${data.ground_truth}"}
+QUALITY_EVALUATOR_CONFIG = {
+    "relevance": {"column_mapping": QUERY_RESPONSE},
+    "coherence": {"column_mapping": QUERY_RESPONSE},
+    "fluency": {"column_mapping": {"response": "${data.response}"}},
+    "groundedness": {
+        "column_mapping": {"query": "${data.query}", "response": "${data.response}", "context": "${data.context}"}
+    },
+    "bleu_score": {"column_mapping": RESPONSE_TRUTH},
+    "f1_score": {"column_mapping": RESPONSE_TRUTH},
+    "rouge_score": {"column_mapping": RESPONSE_TRUTH},
+    "violence": {"column_mapping": QUERY_RESPONSE},
+    "hate_unfairness": {"column_mapping": QUERY_RESPONSE},
+}
+
 # Section 6
 SAFETY_INDEX_NAME = "ai-safety-index"
 INDEX_WAIT_SECONDS = 30
+RAG_SYSTEM_PROMPT = "You are an AI safety expert. Use the following context to answer the user's question:\n\n{context}"
 SAFETY_DOCS = [
     {
         "id": "doc1",
@@ -243,10 +260,12 @@ def section_model_selection(ctx):
             "  none: the models above are deployed in the Foundry resource itself, so no separate connection is needed"
         )
 
-    client = project_client.get_openai_client(api_version=ctx["api_version"])
+    openai_client = project_client.get_openai_client(api_version=ctx["api_version"])
     print(f"\nChat call on {ctx['model']}")
     print(f"User: {CHAT_QUESTION}")
-    response = client.chat.completions.create(model=ctx["model"], messages=[{"role": "user", "content": CHAT_QUESTION}])
+    response = openai_client.chat.completions.create(
+        model=ctx["model"], messages=[{"role": "user", "content": CHAT_QUESTION}]
+    )
     print(f"Assistant: {response.choices[0].message.content}")
     usage = response.usage
     print(f"Tokens: {usage.prompt_tokens} in, {usage.completion_tokens} out")
@@ -336,6 +355,37 @@ def print_conversations(label, conversations):
             print(f"    {message.get('role', '?'):<9} {excerpt(message.get('content', ''))}")
 
 
+def run_direct_attack(ctx, target):
+    """Run DirectAttackSimulator against the target; return the regular and the jailbreak conversations."""
+    simulator = DirectAttackSimulator(azure_ai_project=ctx["project_endpoint"], credential=ctx["credential"])
+    print(
+        f"Running DirectAttackSimulator: ADVERSARIAL_REWRITE, max {SIMULATION_RESULTS} results, "
+        f"max {SIMULATION_TURNS} turns, as written and with a jailbreak added"
+    )
+    outputs = asyncio.run(
+        simulator(
+            scenario=AdversarialScenario.ADVERSARIAL_REWRITE,
+            target=target,
+            max_conversation_turns=SIMULATION_TURNS,
+            max_simulation_results=SIMULATION_RESULTS,
+            concurrent_async_task=1,
+        )
+    )
+    return list(outputs["regular"]), list(outputs["jailbreak"])
+
+
+def check_attack_results(stats, conversations):
+    """Fail the section if an agent turn failed for another reason than the content filter, or a reply is missing."""
+    if stats["failed"]:
+        raise RuntimeError(
+            f"{stats['failed']} agent turn(s) failed for reasons other than the content filter: "
+            + "; ".join(stats["errors"])
+        )
+    missing = [c for c in conversations if not any(m.get("role") == "assistant" for m in c.get("messages", []))]
+    if missing:
+        raise RuntimeError(f"{len(missing)} simulated conversation(s) have no agent reply")
+
+
 def section_direct_attack(ctx):
     project_client = ctx["project_client"]
     agent = project_client.agents.create_agent(
@@ -345,21 +395,8 @@ def section_direct_attack(ctx):
     threads = []
     stats = {"turns": 0, "answered": 0, "blocked": 0, "failed": 0, "errors": []}
     try:
-        simulator = DirectAttackSimulator(azure_ai_project=ctx["project_endpoint"], credential=ctx["credential"])
-        print(
-            f"Running DirectAttackSimulator: ADVERSARIAL_REWRITE, max {SIMULATION_RESULTS} results, "
-            f"max {SIMULATION_TURNS} turns, as written and with a jailbreak added"
-        )
-        outputs = asyncio.run(
-            simulator(
-                scenario=AdversarialScenario.ADVERSARIAL_REWRITE,
-                target=make_agent_target(project_client, agent.id, threads, stats),
-                max_conversation_turns=SIMULATION_TURNS,
-                max_simulation_results=SIMULATION_RESULTS,
-                concurrent_async_task=1,
-            )
-        )
-        regular, jailbreak = list(outputs["regular"]), list(outputs["jailbreak"])
+        target = make_agent_target(project_client, agent.id, threads, stats)
+        regular, jailbreak = run_direct_attack(ctx, target)
         print_conversations("Regular attacks", regular)
         print_conversations("Jailbreak (UPIA) attacks", jailbreak)
         print(
@@ -371,16 +408,7 @@ def section_direct_attack(ctx):
             "section3-direct-attack.json",
             {"regular": regular, "jailbreak": jailbreak, "stats": stats},
         )
-        if stats["failed"]:
-            raise RuntimeError(
-                f"{stats['failed']} agent turn(s) failed for reasons other than the content filter: "
-                + "; ".join(stats["errors"])
-            )
-        missing = [
-            c for c in regular + jailbreak if not any(m.get("role") == "assistant" for m in c.get("messages", []))
-        ]
-        if missing:
-            raise RuntimeError(f"{len(missing)} simulated conversation(s) have no agent reply")
+        check_attack_results(stats, regular + jailbreak)
     finally:
         for thread_id in threads:
             project_client.agents.threads.delete(thread_id)
@@ -391,15 +419,9 @@ def section_direct_attack(ctx):
 # ---------------------------------------------------------------------------------------------------
 # 4. Quality evaluation
 # ---------------------------------------------------------------------------------------------------
-def section_quality(ctx):
-    credential, project_endpoint, judge = ctx["credential"], ctx["project_endpoint"], ctx["judge_config"]
-    data_path = LAB_DIR / "evaluate_test_data.jsonl"
-    rows = sum(1 for line in data_path.read_text(encoding="utf-8").splitlines() if line.strip())
-    print(f"Data: {data_path} ({rows} rows); judge model {judge['azure_deployment']}")
-
-    query_response = {"query": "${data.query}", "response": "${data.response}"}
-    response_truth = {"response": "${data.response}", "ground_truth": "${data.ground_truth}"}
-    evaluators = {
+def build_quality_evaluators(judge, credential, project_endpoint):
+    """Judge-model, word-overlap and safety-service evaluators for the quality run."""
+    return {
         "relevance": RelevanceEvaluator(model_config=judge, credential=credential),
         "coherence": CoherenceEvaluator(model_config=judge, credential=credential),
         "fluency": FluencyEvaluator(model_config=judge, credential=credential),
@@ -410,36 +432,46 @@ def section_quality(ctx):
         "violence": ViolenceEvaluator(credential=credential, azure_ai_project=project_endpoint),
         "hate_unfairness": HateUnfairnessEvaluator(credential=credential, azure_ai_project=project_endpoint),
     }
-    evaluator_config = {
-        "relevance": {"column_mapping": query_response},
-        "coherence": {"column_mapping": query_response},
-        "fluency": {"column_mapping": {"response": "${data.response}"}},
-        "groundedness": {
-            "column_mapping": {"query": "${data.query}", "response": "${data.response}", "context": "${data.context}"}
-        },
-        "bleu_score": {"column_mapping": response_truth},
-        "f1_score": {"column_mapping": response_truth},
-        "rouge_score": {"column_mapping": response_truth},
-        "violence": {"column_mapping": query_response},
-        "hate_unfairness": {"column_mapping": query_response},
-    }
-    results_path = ctx["output_dir"] / "section4-quality-results.json"
+
+
+def run_evaluation(data_path, evaluators, project_endpoint, output_dir):
+    """Score every row with every evaluator, log the results to the Foundry project and save them as JSON."""
+    results_path = output_dir / "section4-quality-results.json"
     result = evaluate(
         data=str(data_path),
         evaluators=evaluators,
-        evaluator_config=evaluator_config,
+        evaluator_config=QUALITY_EVALUATOR_CONFIG,
         evaluation_name="genai-ops-quality-evaluation",
         azure_ai_project=project_endpoint,
         output_path=str(results_path),
     )
     print(f"Full results saved to: {results_path}")
+    return result
+
+
+def print_metrics(result):
     print("\nAggregate metrics:")
     for name, value in sorted(result.get("metrics", {}).items()):
         print(f"  {name}: {value}")
+
+
+def print_portal_link(result):
     studio_url = result.get("studio_url")
-    print(
-        f"\nEvaluation in the portal: {studio_url}" if studio_url else "\nNo portal link returned (results not logged)."
-    )
+    if studio_url:
+        print(f"\nEvaluation in the portal: {studio_url}")
+    else:
+        print("\nNo portal link returned (results not logged).")
+
+
+def section_quality(ctx):
+    judge = ctx["judge_config"]
+    data_path = LAB_DIR / "evaluate_test_data.jsonl"
+    rows = sum(1 for line in data_path.read_text(encoding="utf-8").splitlines() if line.strip())
+    print(f"Data: {data_path} ({rows} rows); judge model {judge['azure_deployment']}")
+    evaluators = build_quality_evaluators(judge, ctx["credential"], ctx["project_endpoint"])
+    result = run_evaluation(data_path, evaluators, ctx["project_endpoint"], ctx["output_dir"])
+    print_metrics(result)
+    print_portal_link(result)
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -494,6 +526,77 @@ def create_safety_index(index_client, dimensions):
     print(f"Created index {SAFETY_INDEX_NAME}")
 
 
+def embed(openai_client, model, texts):
+    """Return the embedding vector of each text, in the order of the texts."""
+    response = openai_client.embeddings.create(model=model, input=texts)
+    return [item.embedding for item in response.data]
+
+
+def fill_safety_index(search_client, vectors, embedding_model):
+    """Upload the documents with their vectors, then wait until the index can find all of them."""
+    search_client.upload_documents(
+        documents=[{**doc, "embedding": vector} for doc, vector in zip(SAFETY_DOCS, vectors, strict=True)]
+    )
+    print(f"Uploaded {len(SAFETY_DOCS)} documents ({embedding_model}, {len(vectors[0])} dimensions)")
+    # A new index needs a moment before uploaded documents can be found.
+    for _ in range(INDEX_WAIT_SECONDS):
+        if search_client.get_document_count() == len(SAFETY_DOCS):
+            break
+        time.sleep(1)
+    document_count = search_client.get_document_count()
+    print(f"Index ready: {document_count} documents searchable")
+
+
+def build_rag_evaluators(judge, credential):
+    """The four judge-model evaluators each RAG answer gets."""
+    return {
+        "relevance": RelevanceEvaluator(model_config=judge, credential=credential),
+        "coherence": CoherenceEvaluator(model_config=judge, credential=credential),
+        "groundedness": GroundednessEvaluator(model_config=judge, credential=credential),
+        "fluency": FluencyEvaluator(model_config=judge, credential=credential),
+    }
+
+
+def answer_from_index(openai_client, search_client, embedding_model, model, question):
+    """Find the 3 documents closest to the question and answer from them; return (hits, context, answer)."""
+    question_vector = embed(openai_client, embedding_model, [question])[0]
+    vector_query = VectorizedQuery(vector=question_vector, k_nearest_neighbors=3, fields="embedding")
+    hits = list(search_client.search(search_text=None, vector_queries=[vector_query], select=["content", "source"]))
+    context = "\n".join(f"From {hit['source']}: {hit['content']}" for hit in hits)
+    print("Retrieved: " + (", ".join(hit["source"] for hit in hits) or "nothing"))
+    response = openai_client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": RAG_SYSTEM_PROMPT.format(context=context)},
+            {"role": "user", "content": question},
+        ],
+    )
+    answer = response.choices[0].message.content
+    print(f"Answer: {answer}")
+    return hits, context, answer
+
+
+def score_answer(evaluators, question, answer, context):
+    """Score one answer with each evaluator and print the scores; return them."""
+    scores = {
+        "relevance": evaluators["relevance"](query=question, response=answer),
+        "coherence": evaluators["coherence"](query=question, response=answer),
+        "groundedness": evaluators["groundedness"](query=question, response=answer, context=context),
+        "fluency": evaluators["fluency"](response=answer),
+    }
+    summary = ", ".join(f"{name} {score.get(name)} ({score.get(f'{name}_result')})" for name, score in scores.items())
+    print(f"Scores: {summary}")
+    return scores
+
+
+def cleanup_safety_index(index_client, keep_index):
+    if keep_index:
+        print(f"Kept index {SAFETY_INDEX_NAME} (--keep-index)")
+    else:
+        index_client.delete_index(SAFETY_INDEX_NAME)
+        print(f"Cleanup: deleted index {SAFETY_INDEX_NAME}")
+
+
 def section_rag(ctx):
     if SAFETY_INDEX_NAME == os.getenv("SEARCH_INDEX_NAME"):
         raise ValueError(f"SEARCH_INDEX_NAME is {SAFETY_INDEX_NAME}; this section would replace that index")
@@ -501,69 +604,23 @@ def section_rag(ctx):
     search_key = AzureKeyCredential(require_env("AZURE_AI_SEARCH_API_KEY"))
     embedding_model = require_env("EMBEDDING_MODEL_DEPLOYMENT_NAME")
     openai_client = ctx["project_client"].get_openai_client(api_version=ctx["api_version"])
-    credential, judge = ctx["credential"], ctx["judge_config"]
-
-    def embed(texts):
-        return [item.embedding for item in openai_client.embeddings.create(model=embedding_model, input=texts).data]
 
     index_client = SearchIndexClient(search_endpoint, search_key)
-    vectors = embed([doc["content"] for doc in SAFETY_DOCS])
+    vectors = embed(openai_client, embedding_model, [doc["content"] for doc in SAFETY_DOCS])
     create_safety_index(index_client, len(vectors[0]))
     try:
         search_client = SearchClient(search_endpoint, SAFETY_INDEX_NAME, search_key)
-        search_client.upload_documents(
-            documents=[{**doc, "embedding": vector} for doc, vector in zip(SAFETY_DOCS, vectors, strict=True)]
-        )
-        print(f"Uploaded {len(SAFETY_DOCS)} documents ({embedding_model}, {len(vectors[0])} dimensions)")
-        # A new index needs a moment before uploaded documents can be found.
-        for _ in range(INDEX_WAIT_SECONDS):
-            if search_client.get_document_count() == len(SAFETY_DOCS):
-                break
-            time.sleep(1)
-        document_count = search_client.get_document_count()
-        print(f"Index ready: {document_count} documents searchable")
-        empty_retrievals = 0
-
-        evaluators = {
-            "relevance": RelevanceEvaluator(model_config=judge, credential=credential),
-            "coherence": CoherenceEvaluator(model_config=judge, credential=credential),
-            "groundedness": GroundednessEvaluator(model_config=judge, credential=credential),
-            "fluency": FluencyEvaluator(model_config=judge, credential=credential),
-        }
+        fill_safety_index(search_client, vectors, embedding_model)
+        evaluators = build_rag_evaluators(ctx["judge_config"], ctx["credential"])
         results = []
+        empty_retrievals = 0
         for number, question in enumerate(RAG_QUESTIONS, start=1):
             print(f"\nQuestion {number}: {question}")
-            vector_query = VectorizedQuery(vector=embed([question])[0], k_nearest_neighbors=3, fields="embedding")
-            hits = list(
-                search_client.search(search_text=None, vector_queries=[vector_query], select=["content", "source"])
+            hits, context, answer = answer_from_index(
+                openai_client, search_client, embedding_model, ctx["model"], question
             )
-            context = "\n".join(f"From {hit['source']}: {hit['content']}" for hit in hits)
-            print("Retrieved: " + (", ".join(hit["source"] for hit in hits) or "nothing"))
             empty_retrievals += not hits
-            response = openai_client.chat.completions.create(
-                model=ctx["model"],
-                messages=[
-                    {
-                        "role": "system",
-                        "content": f"You are an AI safety expert. Use the following context to answer the user's question:\n\n{context}",
-                    },
-                    {"role": "user", "content": question},
-                ],
-            )
-            answer = response.choices[0].message.content
-            print(f"Answer: {answer}")
-            scores = {
-                "relevance": evaluators["relevance"](query=question, response=answer),
-                "coherence": evaluators["coherence"](query=question, response=answer),
-                "groundedness": evaluators["groundedness"](query=question, response=answer, context=context),
-                "fluency": evaluators["fluency"](response=answer),
-            }
-            print(
-                "Scores: "
-                + ", ".join(
-                    f"{name} {score.get(name)} ({score.get(f'{name}_result')})" for name, score in scores.items()
-                )
-            )
+            scores = score_answer(evaluators, question, answer, context)
             results.append({"question": question, "context": context, "answer": answer, "scores": scores})
         write_json(ctx["output_dir"], "section6-rag.json", results)
         if empty_retrievals:
@@ -571,11 +628,7 @@ def section_rag(ctx):
                 f"{empty_retrievals} question(s) retrieved no documents, so their answers are not grounded"
             )
     finally:
-        if ctx["keep_index"]:
-            print(f"Kept index {SAFETY_INDEX_NAME} (--keep-index)")
-        else:
-            index_client.delete_index(SAFETY_INDEX_NAME)
-            print(f"Cleanup: deleted index {SAFETY_INDEX_NAME}")
+        cleanup_safety_index(index_client, ctx["keep_index"])
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -622,23 +675,24 @@ def parse_sections(text):
     return sections
 
 
-def main():
+def parse_args():
     parser = argparse.ArgumentParser(description="End-to-end GenAI Ops lab")
     # The outputs hold the attack prompts, so the default folder is under the git-ignored runs/.
     parser.add_argument(
-        "--output-dir", default="runs/genai-ops", help="folder for the JSON outputs (default: runs/genai-ops)"
+        "--output-dir",
+        type=Path,
+        default=Path("runs/genai-ops"),
+        help="folder for the JSON outputs (default: runs/genai-ops)",
     )
     parser.add_argument(
         "--sections", type=parse_sections, default=ALL_SECTIONS, help="comma-separated, e.g. 2,3 (default: all)"
     )
     parser.add_argument("--keep-index", action="store_true", help="keep the section 6 search index after the run")
-    args = parser.parse_args()
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    return parser.parse_args()
 
-    print_section("END-TO-END GENAI OPS LAB")
-    print(f"Based on: {UPSTREAM}")
-    load_environment()
+
+def build_context(args):
+    """The settings every section reads: endpoints, models, the judge model's config, the output folder."""
     project_endpoint = get_project_endpoint()
     ctx = {
         "project_endpoint": project_endpoint,
@@ -650,41 +704,70 @@ def main():
             "azure_deployment": require_env("OPENAI_DEPLOYMENT_NAME"),
             "api_version": require_env("OPENAI_API_VERSION"),
         },
-        "output_dir": output_dir,
+        "output_dir": args.output_dir,
         "keep_index": args.keep_index,
     }
     print(f"Project endpoint: {project_endpoint}")
     print(f"Chat/agent model: {ctx['model']}; judge model: {ctx['judge_config']['azure_deployment']}")
     print(f"Sections: {', '.join(str(s) for s in args.sections)}")
+    return ctx
 
+
+def span_name(number, title):
+    """Span name for a section, e.g. section-3-security for "Security: direct attack simulation"."""
+    short_title = title.split(":")[0].lower().replace(" ", "-")
+    return f"section-{number}-{short_title}"
+
+
+def run_sections(ctx, sections):
+    """Run the sections inside one traced root span, each in its own span; return (number, title, error) per failure."""
     failures = []
-    with AIProjectClient(endpoint=project_endpoint, credential=ctx["credential"]) as project_client:
-        ctx["project_client"] = project_client
-        provider = setup_tracing(project_client)
-        tracer = trace.get_tracer(SERVICE_NAME)
-        with tracer.start_as_current_span("genai-ops-lab") as root:
-            root.set_attribute("lab.session_id", uuid.uuid4().hex[:12])
-            ctx["trace_id"] = format(root.get_span_context().trace_id, "032x")
-            print(f"Trace ID: {ctx['trace_id']}")
-            for number in args.sections:
-                title, run_section = SECTIONS[number]
-                print_section(f"{number}. {title}")
-                with tracer.start_as_current_span(f"section-{number}-{title.split(':')[0].lower().replace(' ', '-')}"):
-                    try:
-                        run_section(ctx)
-                    except Exception as error:  # report and go on with the next section
-                        print(f"SECTION {number} FAILED: {type(error).__name__}: {error}")
-                        failures.append((number, title, error))
-        provider.force_flush()
+    provider = setup_tracing(ctx["project_client"])
+    tracer = trace.get_tracer(SERVICE_NAME)
+    with tracer.start_as_current_span("genai-ops-lab") as root:
+        root.set_attribute("lab.session_id", uuid.uuid4().hex[:12])
+        ctx["trace_id"] = format(root.get_span_context().trace_id, "032x")
+        print(f"Trace ID: {ctx['trace_id']}")
+        for number in sections:
+            title, run_section = SECTIONS[number]
+            print_section(f"{number}. {title}")
+            with tracer.start_as_current_span(span_name(number, title)):
+                try:
+                    run_section(ctx)
+                except Exception as error:  # report and go on with the next section
+                    print(f"SECTION {number} FAILED: {type(error).__name__}: {error}")
+                    failures.append((number, title, error))
+    provider.force_flush()
+    return failures
 
+
+def report(ctx, sections, failures):
+    """Print the trace ID and every failed section; return True if all sections finished."""
     print_section("Result")
-    print(f"Trace {ctx['trace_id']}; outputs in {output_dir}")
+    print(f"Trace {ctx['trace_id']}; outputs in {ctx['output_dir']}")
     if failures:
-        print(f"FINISHED WITH ERRORS: {len(failures)} of {len(args.sections)} section(s) failed")
+        print(f"FINISHED WITH ERRORS: {len(failures)} of {len(sections)} section(s) failed")
         for number, title, error in failures:
             print(f"  {number}. {title}: {type(error).__name__}: {excerpt(error)}")
-        sys.exit(1)
-    print(f"COMPLETED: all {len(args.sections)} section(s) finished")
+        return False
+    print(f"COMPLETED: all {len(sections)} section(s) finished")
+    return True
+
+
+def main():
+    args = parse_args()
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    print_section("END-TO-END GENAI OPS LAB")
+    print(f"Based on: {UPSTREAM}")
+    load_environment()
+    ctx = build_context(args)
+
+    with AIProjectClient(endpoint=ctx["project_endpoint"], credential=ctx["credential"]) as project_client:
+        ctx["project_client"] = project_client
+        failures = run_sections(ctx, args.sections)
+
+    passed = report(ctx, args.sections, failures)
+    raise SystemExit(0 if passed else 1)
 
 
 if __name__ == "__main__":
