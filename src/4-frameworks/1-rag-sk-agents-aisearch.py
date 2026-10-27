@@ -3,34 +3,41 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/4-frameworks/1-rag-sk-agents-aisearch.ipynb
 
-This script builds the same kind of shopping assistant as the Azure AI Search agent lab, but through Semantic Kernel,
-Microsoft's open-source framework for AI apps. On gpt-4o it made the same tool calls and gave the same answers as on
-gpt-4o-mini, at about 17 times the cost (about $0.011 against $0.0007 per run).
+This script builds the same kind of shopping assistant as the Azure AI Search agent lab,
+but through Semantic Kernel, Microsoft's open-source framework for AI apps. On gpt-4o it
+made the same tool calls and gave the same answers as on gpt-4o-mini, at about 17 times
+the cost (about $0.011 against $0.0007 per run).
 
 What it does:
 1. Builds a small fitness product index in Azure AI Search.
-2. Creates a Foundry agent with the Azure AI Search tool and wraps it in Semantic Kernel's AzureAIAgent.
+2. Creates a Foundry agent with the Azure AI Search tool and wraps it in Semantic
+   Kernel's AzureAIAgent.
 3. Asks two shopping questions on one thread.
 4. Deletes everything it created (thread, agent, index).
 
 Changes from the notebook (it used Semantic Kernel calls that no longer exist):
-- Current Semantic Kernel API: AzureAIAgent.create_client() with the Foundry project endpoint (the notebook's
-  connection string and AzureAIAgentSettings.create() no longer exist), AzureAIAgentThread and get_response().
-- Price as text: each product's Description also states its price ("Price: $499.00."). The numeric Price field
-  is not searchable, so on its own it never reaches the model through the search tool. This is the same problem as
-  in the agent lab, fixed the same way.
-- Price filter plugin: a Semantic Kernel plugin (find_items_under), code running here in this script, queries the
-  index with a real filter (Price le <max>), so a budget question gets an exact answer instead of the model
-  comparing prices itself.
-- Tool output: after each answer the script prints the tools offered to the model in that run and every tool
-  call with what it returned, so the output shows which product fields the search tool actually passed on.
+- Current Semantic Kernel API: AzureAIAgent.create_client() with the Foundry project
+  endpoint (the notebook's connection string and AzureAIAgentSettings.create() no longer
+  exist), AzureAIAgentThread and get_response().
+- Price as text: each product's Description also states its price ("Price: $499.00.").
+  The numeric Price field is not searchable, so on its own it never reaches the model
+  through the search tool. This is the same problem as in the agent lab, fixed the same
+  way.
+- Price filter plugin: a Semantic Kernel plugin (find_items_under), code running here in
+  this script, queries the index with a real filter (Price le <max>), so a budget
+  question gets an exact answer instead of the model comparing prices itself.
+- Tool output: after each answer the script prints the tools offered to the model in
+  that run and every tool call with what it returned, so the output shows which product
+  fields the search tool actually passed on.
 
 Connection method:
-- Client: AIProjectClient (async) from azure-ai-projects, created by Semantic Kernel with the Foundry project
-  endpoint and an Entra ID token from the Azure CLI login.
-- Azure AI Search: the endpoint and key come from the project's default Azure AI Search connection.
+- Client: AIProjectClient (async) from azure-ai-projects, created by Semantic Kernel
+  with the Foundry project endpoint and an Entra ID token from the Azure CLI login.
+- Azure AI Search: the endpoint and key come from the project's default Azure AI Search
+  connection.
 
-Uses its own environment (see requirements.txt in this folder). Run from the project root:
+Uses its own environment (see requirements.txt in this folder). Run from the project
+root:
     .venv-semantic-kernel/bin/python src/4-frameworks/1-rag-sk-agents-aisearch.py
 """
 
@@ -103,7 +110,8 @@ Always include a disclaimer that you are not providing medical advice.
 
 
 class FitnessCatalogPlugin:
-    """Local tool for the agent: exact price filtering on the search index (runs in this script, not in Azure)."""
+    """Local tool for the agent: exact price filtering on the search index (runs in this
+    script, not in Azure)."""
 
     def __init__(self, search_client):
         self._search_client = search_client
@@ -163,7 +171,8 @@ def get_project_endpoint():
 
 
 def with_price_text(document):
-    # The numeric Price stays for filtering; the text copy lets the search tool show the price to the model.
+    # The numeric Price stays for filtering; the text copy lets the search tool show the
+    # price to the model.
     return {**document, "Description": f"{document['Description']} Price: ${document['Price']:.2f}."}
 
 
@@ -220,7 +229,8 @@ async def print_direct_search(search_client, text):
 
 
 async def print_tool_calls(project_client, thread_id):
-    # Shows what each tool returned to the model in the latest run (e.g. which fields the search tool passed on).
+    # Shows what each tool returned to the model in the latest run (e.g. which fields
+    # the search tool passed on).
     runs = project_client.agents.runs.list(thread_id=thread_id, order=ListSortOrder.DESCENDING, limit=1)
     run = await anext(aiter(runs))
     offered = [t.function.name if t.type == "function" else t.type for t in run.tools or []]
@@ -235,7 +245,8 @@ async def print_tool_calls(project_client, thread_id):
                 print(f"    azure_ai_search output: {call.azure_ai_search.get('output')}")
             elif call.type == "function":
                 print(f"  - function {call.function.name}({call.function.arguments})")
-                # The SDK model has no output attribute; the value is only in the raw response data.
+                # The SDK model has no output attribute; the value is only in the raw
+                # response data.
                 print(f"    output: {call.function.get('output')}")
             else:
                 print(f"  - {call.type}")
@@ -256,7 +267,8 @@ def create_search_clients(connection, search_key):
 
 
 async def create_agent(project_client, model, connection):
-    """Step 2: create the Foundry agent with the Azure AI Search tool on the index; return its definition."""
+    """Step 2: create the Foundry agent with the Azure AI Search tool on the index;
+    return its definition."""
     search_tool = AzureAISearchTool(
         index_connection_id=connection.id,
         index_name=INDEX_NAME,
@@ -275,7 +287,8 @@ async def create_agent(project_client, model, connection):
 
 
 async def ask(project_client, agent, thread, question):
-    """Step 3: ask one question on the thread, print the answer and the tool calls; return the thread."""
+    """Step 3: ask one question on the thread, print the answer and the tool calls;
+    return the thread."""
     print(f"\n# User: {question}")
     response = await agent.get_response(messages=question, thread=thread)
     thread = response.thread
@@ -288,7 +301,8 @@ async def ask(project_client, agent, thread, question):
 
 
 async def cleanup(project_client, index_client, search_client, thread, definition, index_created):
-    """Step 4: delete what the run created (thread, agent, index) and close the search clients."""
+    """Step 4: delete what the run created (thread, agent, index) and close the search
+    clients."""
     if thread is not None and thread.id is not None:
         try:
             await thread.delete()

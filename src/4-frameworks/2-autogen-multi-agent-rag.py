@@ -1,27 +1,33 @@
-"""AutoGen multi-agent RAG lab (2-autogen-multi-agent-rag.ipynb) as a script, on AutoGen 0.7.
+"""AutoGen multi-agent RAG lab (2-autogen-multi-agent-rag.ipynb) as a script, on AutoGen
+0.7.
 
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/4-frameworks/2-autogen-multi-agent-rag.ipynb
 
-This script has two AI agents share a task with AutoGen, Microsoft's open-source framework for multi-agent apps.
-Splitting the work this way keeps the answer close to the retrieved tips.
+This script has two AI agents share a task with AutoGen, Microsoft's open-source
+framework for multi-agent apps. Splitting the work this way keeps the answer close to
+the retrieved tips.
 
 What it does (the two agents take turns in a RoundRobinGroupChat):
-1. RetrieverAgent calls a local retrieve_tips tool to find the most relevant health tips.
+1. RetrieverAgent calls a local retrieve_tips tool to find the most relevant health
+   tips.
 2. ResponderAgent writes the answer, instructed to use only those tips.
 
 Changes from the notebook:
-- Uses the Azure OpenAI deployments of the Foundry project (OPENAI_ENDPOINT, MODEL_DEPLOYMENT_NAME,
-  EMBEDDING_MODEL_DEPLOYMENT_NAME) with an Entra ID token from the Azure CLI login, instead of GitHub Models
-  with a GITHUB_TOKEN.
-- No hand-written model_info: the notebook declared function_calling False while giving the retriever a tool.
-- retrieve_tips searches by meaning (embeddings + cosine similarity, top 3) instead of keywords; the notebook
-  matched any query word as a substring, so "a" or "i" matched every tip.
-- The retriever passes the tool result on word for word (reflect_on_tool_use=False) and the responder may
-  only use those tips, so the answer stays grounded in them.
-- The chat stops after the responder's answer (the notebook's max_turns=4 ran the retriever again).
-- The final result is a TaskResult (no .content); the script reports its stop reason and exits 1 if the
-  responder never answered.
+- Uses the Azure OpenAI deployments of the Foundry project (OPENAI_ENDPOINT,
+  MODEL_DEPLOYMENT_NAME, EMBEDDING_MODEL_DEPLOYMENT_NAME) with an Entra ID token from
+  the Azure CLI login, instead of GitHub Models with a GITHUB_TOKEN.
+- No hand-written model_info: the notebook declared function_calling False while giving
+  the retriever a tool.
+- retrieve_tips searches by meaning (embeddings + cosine similarity, top 3) instead of
+  keywords; the notebook matched any query word as a substring, so "a" or "i" matched
+  every tip.
+- The retriever passes the tool result on word for word (reflect_on_tool_use=False) and
+  the responder may only use those tips, so the answer stays grounded in them.
+- The chat stops after the responder's answer (the notebook's max_turns=4 ran the
+  retriever again).
+- The final result is a TaskResult (no .content); the script reports its stop reason and
+  exits 1 if the responder never answered.
 
 Run from the project root:
     uv run python src/4-frameworks/2-autogen-multi-agent-rag.py
@@ -76,7 +82,8 @@ def cosine(a, b):
 
 
 def make_retrieve_tips(embed):
-    """Embed the tips once; the returned tool embeds each query and returns the closest tips."""
+    """Embed the tips once; the returned tool embeds each query and returns the closest
+    tips."""
     tip_vectors = embed([tip["content"] for tip in HEALTH_TIPS])
     print(f"Embedded {len(HEALTH_TIPS)} health tips.")
 
@@ -165,7 +172,8 @@ def create_team(model_client, retrieve_tips):
         ),
         model_client=model_client,
     )
-    # Stop as soon as the responder has answered; MaxMessageTermination is a safety limit.
+    # Stop as soon as the responder has answered; MaxMessageTermination is a safety
+    # limit.
     termination = SourceMatchTermination(["ResponderAgent"]) | MaxMessageTermination(8)
     return RoundRobinGroupChat([retriever, responder], termination_condition=termination)
 

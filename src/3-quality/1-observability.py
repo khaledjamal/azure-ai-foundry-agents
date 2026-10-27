@@ -1,32 +1,39 @@
-"""Observability lab (1-Observability.ipynb) as a script: tracing a chat call and a file-search agent
-with OpenTelemetry, to the console or to Application Insights (shown on the Foundry portal's Tracing page).
+"""Observability lab (1-Observability.ipynb) as a script: tracing a chat call and a
+file-search agent with OpenTelemetry, to the console or to Application Insights (shown
+on the Foundry portal's Tracing page).
 
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/3-quality_attributes/1-Observability.ipynb
 
-This script makes an AI app's behavior visible with tracing: every model and agent call becomes a span, a timed record
-with its model, token counts and status. This is how a team finds a slow step, a failed run or a jump in token use in
-production. Prompts and answers stay out of the traces unless asked for, since they may hold private data.
+This script makes an AI app's behavior visible with tracing: every model and agent call
+becomes a span, a timed record with its model, token counts and status. This is how a
+team finds a slow step, a failed run or a jump in token use in production. Prompts and
+answers stay out of the traces unless asked for, since they may hold private data.
 
 What it does:
 1. Lists the project's connections.
 2. Makes one chat call.
-3. Builds a small file-search agent over two small Markdown files and asks it three questions on one thread.
+3. Builds a small file-search agent over two small Markdown files and asks it three
+   questions on one thread.
 4. Deletes everything it created.
 
-Tracing setup (replaces the notebook's project_client.telemetry.enable() and .inference, tracing calls that no longer
-exist):
-- OpenAIInstrumentor (opentelemetry-instrumentation-openai-v2) traces the OpenAI client calls.
+Tracing setup (replaces the notebook's project_client.telemetry.enable() and .inference,
+tracing calls that no longer exist):
+- OpenAIInstrumentor (opentelemetry-instrumentation-openai-v2) traces the OpenAI client
+  calls.
 - AIAgentsInstrumentor (azure-ai-agents) traces agent, thread, message and run calls.
-- --destination console: spans go to a local OpenTelemetry tracer, printed one line each.
-- --destination azure-monitor: spans also go to the Application Insights resource connected to the project
-  (project_client.telemetry.get_application_insights_connection_string()), via configure_azure_monitor; there they
-  also appear on the Foundry portal's Tracing page.
+- --destination console: spans go to a local OpenTelemetry tracer, printed one line
+  each.
+- --destination azure-monitor: spans also go to the Application Insights resource
+  connected to the project
+  (project_client.telemetry.get_application_insights_connection_string()), via
+  configure_azure_monitor; there they also appear on the Foundry portal's Tracing page.
 - --record-content also records prompts and answers in the spans (off by default).
 
 Run from the project root:
     uv run python src/3-quality/1-observability.py --destination console
-    uv run python src/3-quality/1-observability.py --destination azure-monitor --record-content
+    uv run python src/3-quality/1-observability.py --destination azure-monitor
+        --record-content
 """
 
 import argparse
@@ -125,7 +132,8 @@ SHOWN_ATTRIBUTES = {
 
 
 class CompactConsoleExporter(SpanExporter):
-    """Prints one line per GenAI or lab span; Azure SDK and HTTP spans are only counted."""
+    """Prints one line per GenAI or lab span; Azure SDK and HTTP spans are only
+    counted."""
 
     def __init__(self):
         self.hidden = 0
@@ -182,7 +190,8 @@ def setup_tracing(destination, project_client, record_content):
         from azure.monitor.opentelemetry import configure_azure_monitor
 
         connection_string = project_client.telemetry.get_application_insights_connection_string()
-        # sampling_ratio=1.0 keeps every span; the default rate-limited sampler drops spans in bursts.
+        # sampling_ratio=1.0 keeps every span; the default rate-limited sampler drops
+        # spans in bursts.
         configure_azure_monitor(connection_string=connection_string, resource=resource, sampling_ratio=1.0)
         provider = trace.get_tracer_provider()
         print("Tracing to Application Insights (connection found on the Foundry project) and the console.")

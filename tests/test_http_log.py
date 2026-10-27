@@ -34,7 +34,8 @@ except ImportError:
 
 
 def setUpModule():
-    """Use only the settings each test sets: not the shell's HTTP_REPLAY* values, nor the developer's .env."""
+    """Use only the settings each test sets: not the shell's HTTP_REPLAY* values, nor
+    the developer's .env."""
     kept = {name: value for name, value in os.environ.items() if not name.startswith("HTTP_REPLAY")}
     unittest.enterModuleContext(mock.patch.dict(os.environ, kept, clear=True))
     unittest.enterModuleContext(mock.patch.object(http_replay, "ENV_FILE", Path(os.devnull)))
@@ -45,7 +46,8 @@ CHAT_REPLY = {
     "usage": {"prompt_tokens": 12, "completion_tokens": 3},
     "access_token": "secret-token-value",
 }
-# Like a gpt-image reply: about 2 MB of base64 in one field, more than MAX_CAPTURE, with fields after it.
+# Like a gpt-image reply: about 2 MB of base64 in one field, more than MAX_CAPTURE, with
+# fields after it.
 BIG_JSON_REPLY = {"data": [{"b64_json": "A" * 2_000_000}], "usage": {"input_tokens": 19, "output_tokens": 196}}
 SSE_EVENTS = [
     {"choices": [{"delta": {"content": "Hel"}}]},
@@ -212,14 +214,16 @@ class RequestsLogTest(LogTestCase):
 
 @unittest.skipIf(httpx2 is None and httpx is None, "neither httpx2 nor httpx is installed")
 class HttpxLogTest(LogTestCase):
-    """The same transport hooks for every installed httpx flavour (the openai SDK uses httpx2)."""
+    """The same transport hooks for every installed httpx flavour (the openai SDK uses
+    httpx2)."""
 
     def clients(self):
         return [module for module in (httpx2, httpx) if module is not None]
 
     def test_json_body_over_the_capture_limit_is_shortened_by_field(self):
-        # A JSON body is kept whole (up to MAX_JSON_CAPTURE), so its long strings are shortened one by one and the
-        # fields after them still show, instead of the raw text being cut in the middle of the base64.
+        # A JSON body is kept whole (up to MAX_JSON_CAPTURE), so its long strings are
+        # shortened one by one and the fields after them still show, instead of the raw
+        # text being cut in the middle of the base64.
         for module in self.clients():
             with self.subTest(module=module.__name__), module.Client() as client:
                 url = f"{self.base}/big-json?client={module.__name__}"
@@ -233,7 +237,8 @@ class HttpxLogTest(LogTestCase):
     def test_sync_gzip_json(self):
         for module in self.clients():
             with self.subTest(module=module.__name__), module.Client() as client:
-                # A query per client: a second GET of the same URL would be logged as a status check.
+                # A query per client: a second GET of the same URL would be logged as a
+                # status check.
                 url = f"{self.base}/gzip?client={module.__name__}"
                 text, response = self.logged(lambda url=url: client.get(url, headers={"Cookie": "a=b"}))
                 self.assertEqual(response.json()["usage"]["completion_tokens"], 3)
@@ -298,7 +303,8 @@ class AiohttpLogTest(LogTestCase):
         self.assertNotIn("secret-token-value", text)
 
     def test_gzip_without_automatic_decompression_is_decoded(self):
-        # azure-core makes its sessions with auto_decompress=False and reads the compressed bytes with read().
+        # azure-core makes its sessions with auto_decompress=False and reads the
+        # compressed bytes with read().
         async def call(session):
             response = await session.request("GET", f"{self.base}/gzip")
             body = await response.read()

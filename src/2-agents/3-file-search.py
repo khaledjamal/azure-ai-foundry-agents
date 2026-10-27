@@ -3,19 +3,22 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_service/3-file-search.ipynb
 
-This script gives an agent the File Search tool, so it answers from your own documents. It is the managed form of RAG,
-with no search service to set up.
+This script gives an agent the File Search tool, so it answers from your own documents.
+It is the managed form of RAG, with no search service to set up.
 
 What it does:
-1. Uploads two short Markdown files (recipes and dietary guidelines) into a vector store, a search index the Agent
-   Service manages.
+1. Uploads two short Markdown files (recipes and dietary guidelines) into a vector
+   store, a search index the Agent Service manages.
 2. Creates a health resource agent with the File Search tool.
-3. Asks three questions on one thread, such as a gluten-free lunch recipe, and checks that each run completed.
-4. Prints the answers, each with citations naming the file it used, so a reader can check where it came from.
-5. Deletes everything it created in the project: the thread, the agent, the vector store and the uploaded files.
+3. Asks three questions on one thread, such as a gluten-free lunch recipe, and checks
+   that each run completed.
+4. Prints the answers, each with citations naming the file it used, so a reader can
+   check where it came from.
+5. Deletes everything it created in the project: the thread, the agent, the vector store
+   and the uploaded files.
 
-Connection method: AIProjectClient from azure-ai-projects, created with the Foundry project
-endpoint and an Entra ID token from the Azure CLI login.
+Connection method: AIProjectClient from azure-ai-projects, created with the Foundry
+project endpoint and an Entra ID token from the Azure CLI login.
 
 Run from the project root:
     uv run python src/2-agents/3-file-search.py
@@ -153,7 +156,8 @@ def upload_sample_files(project_client):
 
 
 def build_vector_store(project_client, file_ids):
-    """Step 1: put the uploaded files into a vector store, a search index the Agent Service manages; return it."""
+    """Step 1: put the uploaded files into a vector store, a search index the Agent
+    Service manages; return it."""
     vector_store = project_client.agents.vector_stores.create_and_poll(file_ids=file_ids, name=VECTOR_STORE_NAME)
     counts = vector_store.file_counts
     print(
@@ -184,12 +188,14 @@ def create_thread(project_client):
 
 
 def ask_questions(project_client, thread, agent):
-    """Step 3: ask each question on the thread; return the numbers of the questions whose run didn't complete."""
+    """Step 3: ask each question on the thread; return the numbers of the questions
+    whose run didn't complete."""
     failed = []
     for number, question in enumerate(QUESTIONS, start=1):
         print_section(f"{number + 2}. Question {number}")
         run = ask(project_client, thread.id, agent.id, question)
-        # Azure reports a failed run as a status, not as a Python error, so check it here.
+        # Azure reports a failed run as a status, not as a Python error, so check it
+        # here.
         if run.status != RunStatus.COMPLETED:
             failed.append(number)
     return failed
@@ -218,7 +224,8 @@ def print_conversation(project_client, thread_id, file_names):
 
 
 def cleanup(project_client, thread, agent, vector_store, uploaded):
-    """Step 5: delete what the run created (whatever got created before an error): thread, agent, store, files."""
+    """Step 5: delete what the run created (whatever got created before an error):
+    thread, agent, store, files."""
     if thread:
         project_client.agents.threads.delete(thread.id)
         print(f"Deleted thread: {thread.id}")

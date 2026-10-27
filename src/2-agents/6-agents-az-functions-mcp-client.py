@@ -1,8 +1,10 @@
-"""Direct test of the Azure Functions MCP server: list its tools and call them, without any model or agent.
+"""Direct test of the Azure Functions MCP server: list its tools and call them, without
+any model or agent.
 
-This script talks to the workout MCP server directly, with no model and no agent, so there are no model charges. MCP
-(Model Context Protocol) is the open standard that lets AI agents use outside tools. Testing the server separately
-helps tell server or tool problems apart from problems in the agent integration.
+This script talks to the workout MCP server directly, with no model and no agent, so
+there are no model charges. MCP (Model Context Protocol) is the open standard that lets
+AI agents use outside tools. Testing the server separately helps tell server or tool
+problems apart from problems in the agent integration.
 
 What it does:
 1. Lists the server's tools.
@@ -10,8 +12,9 @@ What it does:
 
 Servers:
 - Local: `func start` in src/functions-mcp-server.
-- Deployed on Azure Functions: set AZURE_FUNCTIONS_MCP_URL (https://<app>.azurewebsites.net/runtime/webhooks/mcp) and
-  AZURE_FUNCTIONS_MCP_KEY (the `mcp_extension` system key) in .env; the key is sent as x-functions-key.
+- Deployed on Azure Functions: set AZURE_FUNCTIONS_MCP_URL
+  (https://<app>.azurewebsites.net/runtime/webhooks/mcp) and AZURE_FUNCTIONS_MCP_KEY
+  (the `mcp_extension` system key) in .env; the key is sent as x-functions-key.
 
 Needs the `mcp` package (in the separate agents venv). Run from the project root:
     source ../../.venv-agents-v2/bin/activate

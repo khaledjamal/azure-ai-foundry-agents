@@ -1,18 +1,26 @@
-# Lint and format settings for the lab scripts: `ruff check .` and `ruff format --check .` from the project root.
+# Lint and format settings for the lab scripts: `ruff check .` and `ruff format --check .`
+# from the project root.
 line-length = 120
 target-version = "py313"
 # Saved local runs (git-ignored) are not checked.
 extend-exclude = ["runs"]
 
 [lint]
-# Ruff's default rule set plus import order (I), likely bugs (B) and outdated syntax (UP).
-extend-select = ["I", "B", "UP"]
-# BLE001 (catching any Exception): deliberate in the scripts. Cleanup must go on to the next resource whatever the
-# failure, and each error is printed, not hidden.
+# Ruff's default rule set plus import order (I), likely bugs (B), outdated syntax (UP)
+# and docstring and comment lines over max-doc-length (W505).
+extend-select = ["I", "B", "UP", "W505"]
+# BLE001 (catching any Exception): deliberate in the scripts. Cleanup must go on to the
+# next resource whatever the failure, and each error is printed, not hidden.
 ignore = ["BLE001"]
 
+[lint.pycodestyle]
+# Prose (docstrings and comments) wraps at 88 so it reads in a phone code viewer in
+# landscape (about 90 columns); code lines may be longer.
+max-doc-length = 88
+
 [lint.per-file-ignores]
-# LOG015 (root logger): Azure Functions samples log with logging.info and the Functions host captures it.
+# LOG015 (root logger): Azure Functions samples log with logging.info and the Functions
+# host captures it.
 "src/functions-mcp-server/function_app.py" = ["LOG015"]
 
 [format]

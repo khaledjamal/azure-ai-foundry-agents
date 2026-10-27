@@ -3,18 +3,21 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_service/2-code_interpreter.ipynb
 
-This script gives an agent the Code Interpreter tool: a sandbox where the agent writes and runs its own Python code.
-This is how an agent computes numbers instead of guessing them.
+This script gives an agent the Code Interpreter tool: a sandbox where the agent writes
+and runs its own Python code. This is how an agent computes numbers instead of guessing
+them.
 
 What it does:
 1. Uploads a small nutrition table (CSV).
 2. Creates a health calculator agent with the Code Interpreter tool.
-3. Asks it to calculate and explain a BMI, and to analyze the nutrition data with a chart.
+3. Asks it to calculate and explain a BMI, and to analyze the nutrition data with a
+   chart.
 4. Saves any charts it draws.
-5. Deletes everything it created in the project: threads, the agent, and the uploaded and generated files.
+5. Deletes everything it created in the project: threads, the agent, and the uploaded
+   and generated files.
 
-Connection method: AIProjectClient from azure-ai-projects, created with the Foundry project
-endpoint and an Entra ID token from the Azure CLI login.
+Connection method: AIProjectClient from azure-ai-projects, created with the Foundry
+project endpoint and an Entra ID token from the Azure CLI login.
 
 Run from the project root:
     uv run python src/2-agents/2-code-interpreter.py [--output-dir DIR]
@@ -162,7 +165,8 @@ def show_results(project_client, thread_id, run_id, output_dir, generated_file_i
         for text_message in message.text_messages:
             print(f"ASSISTANT: {text_message.text.value}")
         image_ids += [image.image_file.file_id for image in message.image_contents]
-        # A file saved under /mnt/data comes back as a link in the text (sandbox:/mnt/data/...).
+        # A file saved under /mnt/data comes back as a link in the text
+        # (sandbox:/mnt/data/...).
         for annotation in message.file_path_annotations:
             print(f"[file link: {annotation.text} -> {annotation.file_path.file_id}]")
             image_ids.append(annotation.file_path.file_id)
@@ -194,7 +198,8 @@ def load_settings():
 
 
 def upload_sample_data(project_client):
-    """Step 1: write the nutrition table to a temporary CSV file and upload it to the project; return the file."""
+    """Step 1: write the nutrition table to a temporary CSV file and upload it to the
+    project; return the file."""
     with tempfile.TemporaryDirectory() as temp_dir:
         csv_path = write_sample_csv(temp_dir)
         uploaded_file = project_client.agents.files.upload_and_poll(
@@ -206,7 +211,8 @@ def upload_sample_data(project_client):
 
 
 def create_agent(project_client, model, uploaded_file):
-    """Step 2: create the agent with the Code Interpreter tool, which can read the uploaded file."""
+    """Step 2: create the agent with the Code Interpreter tool, which can read the
+    uploaded file."""
     code_tool = CodeInterpreterTool(file_ids=[uploaded_file.id])
     agent = project_client.agents.create_agent(
         model=model,
@@ -220,7 +226,8 @@ def create_agent(project_client, model, uploaded_file):
 
 
 def cleanup(project_client, threads, agent, uploaded_file, generated_file_ids):
-    """Step 5: delete what the run created: threads, the agent, and the uploaded and generated files."""
+    """Step 5: delete what the run created: threads, the agent, and the uploaded and
+    generated files."""
     for thread in threads:
         project_client.agents.threads.delete(thread.id)
         print(f"Deleted thread: {thread.id}")
@@ -248,7 +255,8 @@ def main():
             uploaded_file = upload_sample_data(project_client)
             agent = create_agent(project_client, model, uploaded_file)
 
-            # Steps 3 and 4: each request on its own thread; charts are saved to the output folder.
+            # Steps 3 and 4: each request on its own thread; charts are saved to the
+            # output folder.
             for number, (title, request) in enumerate(REQUESTS, start=2):
                 print_section(f"{number}. {title}")
                 thread, run = ask(project_client, agent.id, request)

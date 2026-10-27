@@ -1,32 +1,38 @@
-"""Foundry agent (new agents API, azure-ai-projects 2.x) with the built-in Web Search tool, next to the Bing lab.
+"""Foundry agent (new agents API, azure-ai-projects 2.x) with the built-in Web Search
+tool, next to the Bing lab.
 
 New: not in Microsoft's workshop.
 
-This script is a companion to the Bing lab (4-bing-grounding.py): the same three health questions, instructions and
-checks, but the agent uses the newer built-in Web Search tool (`WebSearchTool` instead of `BingGroundingTool`).
+This script is a companion to the Bing lab (4-bing-grounding.py): the same three health
+questions, instructions and checks, but the agent uses the newer built-in Web Search
+tool (`WebSearchTool` instead of `BingGroundingTool`).
 
 Why this tool:
-- Microsoft's docs now say to start with it: it needs no Grounding with Bing resource and no project connection, so
-  the agent definition holds only the tool.
-- Underneath it still uses Grounding with Bing, so Bing's terms apply and the queries leave the Azure compliance
-  boundary, as in the Bing lab.
-- In the recorded run it cited more sources (11 against 7) and read about twice the input tokens, still under a cent:
-  no quality gap, and less to set up, which makes it the simpler default for a new agent.
+- Microsoft's docs now say to start with it: it needs no Grounding with Bing resource
+  and no project connection, so the agent definition holds only the tool.
+- Underneath it still uses Grounding with Bing, so Bing's terms apply and the queries
+  leave the Azure compliance boundary, as in the Bing lab.
+- In the recorded run it cited more sources (11 against 7) and read about twice the
+  input tokens, still under a cent: no quality gap, and less to set up, which makes it
+  the simpler default for a new agent.
 
 What it does:
 1. Asks each question in its own response with tool_choice="required".
-2. For each answer, prints the text with numbered citations, the source websites and the query of each search (from
-   the `web_search_call` items), with a Bing search URL built from it.
+2. For each answer, prints the text with numbered citations, the source websites and the
+   query of each search (from the `web_search_call` items), with a Bing search URL built
+   from it.
 3. Deletes the agent version at the end.
 Exits with 1 unless every question got an answer with at least one source.
 
-Settings from .env: AZURE_AI_SERVICES_ENDPOINT (or AZURE_AI_PROJECT_ENDPOINT), AZURE_AI_PROJECT_NAME,
-MODEL_DEPLOYMENT_NAME. Paid: the Agent Service lists Web Search per 1,000 transactions without a published rate;
-Grounding with Bing is $14 per 1,000 (checked 2026-10-18), so a run with 3-9 searches is about $0.04-0.13, plus
-gpt-4o-mini tokens.
+Settings from .env: AZURE_AI_SERVICES_ENDPOINT (or AZURE_AI_PROJECT_ENDPOINT),
+AZURE_AI_PROJECT_NAME, MODEL_DEPLOYMENT_NAME. Paid: the Agent Service lists Web Search
+per 1,000 transactions without a published rate; Grounding with Bing is $14 per 1,000
+(checked 2026-10-18), so a run with 3-9 searches is about $0.04-0.13, plus gpt-4o-mini
+tokens.
 
-The instructions carry today's date, as in the Bing lab. --today sets that date (default: today), so a recorded run
-can be replayed on a later day with the recording's date.
+The instructions carry today's date, as in the Bing lab. --today sets that date
+(default: today), so a recorded run can be replayed on a later day with the recording's
+date.
 
 Needs azure-ai-projects>=2 (in the separate agents venv). Run from the project root:
     source ../../.venv-agents-v2/bin/activate
@@ -46,7 +52,8 @@ from workshop_utils import http_log
 from workshop_utils.settings import load_env
 
 AGENT_NAME = "health-web-search-agent"
-# The same questions as the Bing lab (4-bing-grounding.py), so the two runs can be compared.
+# The same questions as the Bing lab (4-bing-grounding.py), so the two runs can be
+# compared.
 QUESTIONS = [
     "What are some new HIIT workout trends I should know about?",
     "What's the current WHO recommendation for sugar intake?",
@@ -76,7 +83,8 @@ def get_project_endpoint():
 
 
 def number_citations(text, annotations):
-    """Replace each cited span with [n] where it is a raw marker; return the new text and the numbered sources."""
+    """Replace each cited span with [n] where it is a raw marker; return the new text
+    and the numbered sources."""
     sources, replacements = [], []
     for annotation in annotations:
         if annotation.type != "url_citation":
@@ -93,7 +101,8 @@ def number_citations(text, annotations):
 
 
 def show_response(response):
-    """Print one response's output items; return (answer text, sources, search queries)."""
+    """Print one response's output items; return (answer text, sources, search
+    queries)."""
     answer, sources, queries = "", [], []
     for item in response.output:
         if item.type == "web_search_call":
@@ -134,7 +143,8 @@ def load_settings(model):
 
 
 def create_agent(project, model, today):
-    """Create an agent version with the built-in Web Search tool; it needs no project connection."""
+    """Create an agent version with the built-in Web Search tool; it needs no project
+    connection."""
     agent = project.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(model=model, instructions=build_instructions(today), tools=[WebSearchTool()]),
@@ -144,7 +154,8 @@ def create_agent(project, model, today):
 
 
 def ask(openai_client, agent_reference, question, totals):
-    """Send one question with a required search; return the response status, answer, sources and search queries."""
+    """Send one question with a required search; return the response status, answer,
+    sources and search queries."""
     print(f"\nUser: {question}")
     response = openai_client.responses.create(input=question, tool_choice="required", extra_body=agent_reference)
     print(f"Response (status {response.status}):")
@@ -168,7 +179,8 @@ def print_answer(answer, sources, queries):
 
 
 def ask_questions(openai_client, agent):
-    """Ask each question in its own response; return (question, status, answer, sources) and the totals."""
+    """Ask each question in its own response; return (question, status, answer, sources)
+    and the totals."""
     agent_reference = {"agent_reference": {"name": agent.name, "type": "agent_reference"}}
     totals = {"input": 0, "output": 0, "searches": 0}
     results = []

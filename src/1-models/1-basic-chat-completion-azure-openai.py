@@ -3,20 +3,23 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/1-basic-chat-completion.ipynb
 
-This script makes the simplest call to a model deployed in Azure AI Foundry. It prints every HTTP request and
-response, so you can see exactly what the library sends.
+This script makes the simplest call to a model deployed in Azure AI Foundry. It prints
+every HTTP request and response, so you can see exactly what the library sends.
 
 What it does:
-1. A system message sets the assistant's role (a fitness assistant that reminds users it isn't a medical
-   professional), a user question goes in, and the model's answer comes out, with its token counts.
-2. A second call fills a prompt template with a user's name and goal, the usual way to personalize prompts.
+1. A system message sets the assistant's role (a fitness assistant that reminds users it
+   isn't a medical professional), a user question goes in, and the model's answer comes
+   out, with its token counts.
+2. A second call fills a prompt template with a user's name and goal, the usual way to
+   personalize prompts.
 
 Connection method:
-- Client: the openai package's AzureOpenAI client, pointed straight at the Azure OpenAI endpoint (OPENAI_ENDPOINT).
-- Sign-in: an Entra ID token from the Azure CLI login instead of an API key, the way apps on Azure avoid storing
-  secrets.
-- Twin: 1-basic-chat-completion-project-client.py makes the same calls through the Foundry project SDK, which starts
-  from the project and gets the OpenAI client from it.
+- Client: the openai package's AzureOpenAI client, pointed straight at the Azure OpenAI
+  endpoint (OPENAI_ENDPOINT).
+- Sign-in: an Entra ID token from the Azure CLI login instead of an API key, the way
+  apps on Azure avoid storing secrets.
+- Twin: 1-basic-chat-completion-project-client.py makes the same calls through the
+  Foundry project SDK, which starts from the project and gets the OpenAI client from it.
 
 Run from the project root:
     uv run python src/1-models/1-basic-chat-completion-azure-openai.py

@@ -1,31 +1,39 @@
-"""DeepSeek lab (5-deep-seek-r1.ipynb) as a script, on DeepSeek-V4-Flash: the same prompts with thinking off and on.
+"""DeepSeek lab (5-deep-seek-r1.ipynb) as a script, on DeepSeek-V4-Flash: the same
+prompts with thinking off and on.
 
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/5-deep-seek-r1.ipynb
 
-This script runs DeepSeek-V4-Flash on the same three prompts twice, with thinking off and on, to show what step-by-step
-reasoning adds and what it costs. In the recorded run both modes got the calculation right; with thinking, that answer
-took 4.8 s instead of 1.4 s, and the three prompts cost $0.003 instead of $0.002.
+This script runs DeepSeek-V4-Flash on the same three prompts twice, with thinking off
+and on, to show what step-by-step reasoning adds and what it costs. In the recorded run
+both modes got the calculation right; with thinking, that answer took 4.8 s instead of
+1.4 s, and the three prompts cost $0.003 instead of $0.002.
 
 Each prompt runs twice, thinking off and on:
   1. the notebook's travel planning question (5 cultural days in Kyoto),
-  2. the notebook's technical question (a PostgreSQL database at 10k transactions per second),
-  3. the pace calculation from the Phi-4 lab, with one right answer (6:00 per km, 18 seconds per km faster).
-It prints each answer, the thinking for the "on" calls, and a table comparing tokens, time and cost of the two modes.
-Exits with 1 unless every call answered and every "on" call returned its thinking.
+  2. the notebook's technical question (a PostgreSQL database at 10k transactions per
+     second),
+  3. the pace calculation from the Phi-4 lab, with one right answer (6:00 per km, 18
+     seconds per km faster).
+It prints each answer, the thinking for the "on" calls, and a table comparing tokens,
+time and cost of the two modes. Exits with 1 unless every call answered and every "on"
+call returned its thinking.
 
 Changes from the notebook:
-- Model: the notebook called a serverless DeepSeek-R1, now retired on Azure (Microsoft lists DeepSeek-V4-Pro as its
-  replacement); this script uses the cheaper DeepSeek-V4-Flash (GA), deployed on the Foundry resource.
-- SDK: the notebook used the azure-ai-inference SDK (retired 2026-08-26); here the calls go through the Azure OpenAI
-  v1 endpoint ({OPENAI_ENDPOINT}/openai/v1/) with an Entra ID token.
-- Thinking: the notebook cut the reasoning out of the reply with a <think> regex. V4-Flash answers without thinking
-  by default; with reasoning_effort="high" it thinks first and returns the thinking in the message's separate
-  `reasoning_content` field, so no regex is needed. (The DeepSeek API's own `thinking` request field is rejected by
+- Model: the notebook called a serverless DeepSeek-R1, now retired on Azure (Microsoft
+  lists DeepSeek-V4-Pro as its replacement); this script uses the cheaper
+  DeepSeek-V4-Flash (GA), deployed on the Foundry resource.
+- SDK: the notebook used the azure-ai-inference SDK (retired 2026-08-26); here the calls
+  go through the Azure OpenAI v1 endpoint ({OPENAI_ENDPOINT}/openai/v1/) with an Entra
+  ID token.
+- Thinking: the notebook cut the reasoning out of the reply with a <think> regex.
+  V4-Flash answers without thinking by default; with reasoning_effort="high" it thinks
+  first and returns the thinking in the message's separate `reasoning_content` field, so
+  no regex is needed. (The DeepSeek API's own `thinking` request field is rejected by
   the Azure endpoint.)
 
-Settings from .env: OPENAI_ENDPOINT, DEEPSEEK_MODEL_DEPLOYMENT_NAME (default DeepSeek-V4-Flash). Paid:
-six calls, about $0.01 per run (prices below).
+Settings from .env: OPENAI_ENDPOINT, DEEPSEEK_MODEL_DEPLOYMENT_NAME (default
+DeepSeek-V4-Flash). Paid: six calls, about $0.01 per run (prices below).
 
 Run from the project root:
     uv run python src/1-models/5-deep-seek-v4-flash.py
@@ -42,8 +50,8 @@ from workshop_utils import http_log
 from workshop_utils.settings import load_env
 
 COGNITIVE_SERVICES_SCOPE = "https://cognitiveservices.azure.com/.default"
-# USD per 1M input / output tokens, DeepSeek-V4-Flash Global deployment in East US 2 (Azure Retail Prices API,
-# checked 2026-10-18). DeepSeek-R1 was 1.35 / 5.40.
+# USD per 1M input / output tokens, DeepSeek-V4-Flash Global deployment in East US 2
+# (Azure Retail Prices API, checked 2026-10-18). DeepSeek-R1 was 1.35 / 5.40.
 PRICE_IN, PRICE_OUT = 0.19, 0.51
 MAX_TOKENS = 4096
 # (name, system prompt or None, user message); the first two are the notebook's prompts.
@@ -130,14 +138,16 @@ def load_settings():
 
 
 def create_openai_client(endpoint):
-    """The plain OpenAI client on the Azure OpenAI v1 endpoint, signed in with an Entra ID token."""
+    """The plain OpenAI client on the Azure OpenAI v1 endpoint, signed in with an Entra
+    ID token."""
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
     openai_client = OpenAI(base_url=f"{endpoint}/openai/v1/", api_key=token_provider)
     return openai_client
 
 
 def run_prompts(openai_client, model):
-    """Ask every prompt with thinking off and on; return {(prompt name, mode): result}."""
+    """Ask every prompt with thinking off and on; return {(prompt name, mode):
+    result}."""
     results = {}
     for name, system_prompt, question in PROMPTS:
         print_section(f"Prompt '{name}': {question}")
@@ -163,7 +173,8 @@ def print_result(name, mode, result):
 
 
 def print_comparison(results):
-    """One row per mode: tokens, time and cost over all prompts, and whether the pace answer was right."""
+    """One row per mode: tokens, time and cost over all prompts, and whether the pace
+    answer was right."""
     print_section("Comparison (all three prompts)")
     print(f"{'thinking':10}{'tokens in':>10}{'tokens out':>12}{'seconds':>9}{'cost USD':>11}  pace correct")
     for mode, _ in MODES:

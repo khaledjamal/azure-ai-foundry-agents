@@ -1,21 +1,26 @@
-"""Read-only setup check for the labs, the script version of the three 1-introduction notebooks.
+"""Read-only setup check for the labs, the script version of the three 1-introduction
+notebooks.
 
 Workshop notebooks:
 https://github.com/Azure/ai-foundry-workshop/tree/273c24c/1-introduction
 
-This script checks that everything the labs need is in place before any of them runs. It prints a result for each
-check, so a setup problem shows up here with a clear message instead of as an error in the middle of a lab. It costs
-nothing because it calls no model.
+This script checks that everything the labs need is in place before any of them runs. It
+prints a result for each check, so a setup problem shows up here with a clear message
+instead of as an error in the middle of a lab. It costs nothing because it calls no
+model.
 
-The notebooks troubleshoot DefaultAzureCredential, create the project client and list models and connections. This
-script does the same checks in one go:
+The notebooks troubleshoot DefaultAzureCredential, create the project client and list
+models and connections. This script does the same checks in one go:
   1. which lab settings are set in .env (names only, values are never printed),
-  2. Entra ID sign-in works: a token for Azure AI services from DefaultAzureCredential (`az login` locally),
-  3. the Foundry project answers: its model deployments and connections, through AIProjectClient,
-  4. the project has what the labs expect: every *_DEPLOYMENT_NAME setting names an existing deployment and the Bing
-     connection exists,
+  2. Entra ID sign-in works: a token for Azure AI services from DefaultAzureCredential
+     (`az login` locally),
+  3. the Foundry project answers: its model deployments and connections, through
+     AIProjectClient,
+  4. the project has what the labs expect: every *_DEPLOYMENT_NAME setting names an
+     existing deployment and the Bing connection exists,
   5. Azure AI Search accepts its key: the index names can be listed.
-Exits with 1 if sign-in, the project or a required setting fails; optional labs only get a warning.
+Exits with 1 if sign-in, the project or a required setting fails; optional labs only get
+a warning.
 
 Run from the project root:
     uv run python src/check-setup.py
@@ -33,7 +38,8 @@ from workshop_utils import http_log
 from workshop_utils.settings import ENV_FILE, load_env
 
 COGNITIVE_SERVICES_SCOPE = "https://cognitiveservices.azure.com/.default"
-# Settings per lab group; "required" groups fail the check when a setting is missing, the others only warn.
+# Settings per lab group; "required" groups fail the check when a setting is missing,
+# the others only warn.
 SETTINGS = [
     ("chat, agents (required)", True, ["AZURE_AI_SERVICES_ENDPOINT", "OPENAI_ENDPOINT", "OPENAI_API_VERSION"]),
     (
@@ -67,7 +73,8 @@ def get_project_endpoint():
 
 
 def check_settings(checks):
-    """Step 1: which lab settings are set (names only). Stops with the summary if the Foundry project isn't set."""
+    """Step 1: which lab settings are set (names only). Stops with the summary if the
+    Foundry project isn't set."""
     print_section("1. Settings in .env")
     if not ENV_FILE.exists():
         print(f"Missing: {ENV_FILE} (copy .env.example)")
@@ -89,7 +96,8 @@ def check_settings(checks):
 
 
 def check_sign_in(checks):
-    """Step 2: get a token for Azure AI services; return the credential. Stops with the summary if sign-in fails."""
+    """Step 2: get a token for Azure AI services; return the credential. Stops with the
+    summary if sign-in fails."""
     print_section("2. Sign-in (DefaultAzureCredential)")
     credential = DefaultAzureCredential()
     try:
@@ -105,7 +113,8 @@ def check_sign_in(checks):
 
 
 def check_project(checks, credential):
-    """Step 3: list the project's deployments and connections; return both. Stops with the summary on an error."""
+    """Step 3: list the project's deployments and connections; return both. Stops with
+    the summary on an error."""
     print_section("3. Foundry project")
     endpoint = get_project_endpoint()
     print(f"  Project endpoint: {endpoint}")
@@ -132,7 +141,8 @@ def check_project(checks, credential):
 
 
 def check_named_deployments(checks, deployments, connections):
-    """Step 4: every *_DEPLOYMENT_NAME setting names an existing deployment, and the Bing connection exists."""
+    """Step 4: every *_DEPLOYMENT_NAME setting names an existing deployment, and the
+    Bing connection exists."""
     print_section("4. Settings that name deployments and connections")
     model = os.getenv("MODEL_DEPLOYMENT_NAME") or "gpt-4o-mini"
     deployment_names = {deployment.name for deployment in deployments}
@@ -152,7 +162,8 @@ def check_named_deployments(checks, deployments, connections):
 
 
 def check_search(checks):
-    """Step 5: Azure AI Search accepts its key, shown by listing the index names. Skipped if not set."""
+    """Step 5: Azure AI Search accepts its key, shown by listing the index names.
+    Skipped if not set."""
     print_section("5. Azure AI Search")
     search_endpoint, search_key = os.getenv("AZURE_AI_SEARCH_ENDPOINT"), os.getenv("AZURE_AI_SEARCH_API_KEY")
     if search_endpoint and search_key:

@@ -1,22 +1,24 @@
 """Remote MCP server on Azure Functions with two workout tools (fixed logic, no model).
 
-This file is the server side of the MCP lab: a small app on Azure Functions that offers two workout tools to any AI
-agent that speaks MCP (Model Context Protocol), the open standard for giving agents tools.
+This file is the server side of the MCP lab: a small app on Azure Functions that offers
+two workout tools to any AI agent that speaks MCP (Model Context Protocol), the open
+standard for giving agents tools.
 
-Tools (the plans come from fixed rules, not a model, so the answers are predictable, with no model charges):
+Tools (the plans come from fixed rules, not a model, so the answers are predictable,
+with no model charges):
 - One lists the workout goals it knows.
 - The other builds a workout plan for a goal and a number of minutes.
 
 How it is served:
-- The Functions MCP extension serves every `@app.mcp_tool()` function as a tool at /runtime/webhooks/mcp
-  (Streamable HTTP): the tool name comes from the function name, the description from its docstring and the input
-  schema from its typed parameters.
-- In Azure the endpoint needs the `mcp_extension` system key in the `x-functions-key` header, so only callers that
-  have it can use the tools.
+- The Functions MCP extension serves every `@app.mcp_tool()` function as a tool at
+  /runtime/webhooks/mcp (Streamable HTTP): the tool name comes from the function name,
+  the description from its docstring and the input schema from its typed parameters.
+- In Azure the endpoint needs the `mcp_extension` system key in the `x-functions-key`
+  header, so only callers that have it can use the tools.
 - The app scales to zero when idle, so it costs almost nothing.
 
-The plan logic lives in plain functions (`list_goals`, `build_workout`), so it can be tested without the Functions
-host:
+The plan logic lives in plain functions (`list_goals`, `build_workout`), so it can be
+tested without the Functions host:
     python function_app.py
 """
 
@@ -58,7 +60,8 @@ def list_goals():
 
 
 def build_workout(goal, minutes):
-    """Return a workout plan as a dict, or a dict with an "error" key when the input is invalid."""
+    """Return a workout plan as a dict, or a dict with an "error" key when the input is
+    invalid."""
     goal = str(goal or "").strip().lower()
     if goal not in WORKOUTS:
         return {"error": f"Unknown goal '{goal}'. Use one of: {', '.join(WORKOUTS)}."}
@@ -93,7 +96,7 @@ def build_workout(goal, minutes):
 
 @app.mcp_tool()
 def list_workout_goals() -> str:
-    """List the workout goals that suggest_workout knows, with a short description of each."""
+    """List the workout goals that suggest_workout knows, with a short description of each."""  # noqa: W505 - the agent gets this docstring as the tool description
     logging.info("list_workout_goals called")
     return json.dumps(list_goals())
 
@@ -107,7 +110,7 @@ def suggest_workout(goal: str, minutes: int) -> str:
     """Suggest a simple home workout plan (warm-up, main block, cool-down) for a goal and a length in minutes.
 
     Call list_workout_goals first if you don't know the goals.
-    """
+    """  # noqa: W505 - the agent gets this docstring as the tool description
     logging.info("suggest_workout called with goal=%r minutes=%r", goal, minutes)
     return json.dumps(build_workout(goal, minutes))
 

@@ -1,30 +1,35 @@
-"""Image generation part of the embeddings lab (2-embeddings.ipynb, section 5) as a script, on gpt-image-2.
+"""Image generation part of the embeddings lab (2-embeddings.ipynb, section 5) as a
+script, on gpt-image-2.
 
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/2-embeddings.ipynb
 
-This script generates an image from a text prompt with gpt-image-2 in Azure AI Foundry and saves it as a PNG file. You
-choose the quality, which sets the price: from under a cent at low quality to about 20 cents at high.
+This script generates an image from a text prompt with gpt-image-2 in Azure AI Foundry
+and saves it as a PNG file. You choose the quality, which sets the price: from under a
+cent at low quality to about 20 cents at high.
 
 What it does:
-1. Sends the notebook's prompt through the openai SDK's `images.generate` on the Azure OpenAI v1 endpoint
-   ({OPENAI_ENDPOINT}/openai/v1/).
-2. Gets the image back as base64 (gpt-image models don't return a URL) and saves it as a PNG named with a timestamp.
+1. Sends the notebook's prompt through the openai SDK's `images.generate` on the Azure
+   OpenAI v1 endpoint ({OPENAI_ENDPOINT}/openai/v1/).
+2. Gets the image back as base64 (gpt-image models don't return a URL) and saves it as a
+   PNG named with a timestamp.
 3. Checks the file: exits with 1 unless a valid PNG of the requested size was saved.
 
 Changes from the notebook:
-- Model: the notebook used DALL-E 3, which was retired on Azure on 2026-03-04; this version moves to its successor,
-  gpt-image-2.
+- Model: the notebook used DALL-E 3, which was retired on Azure on 2026-03-04; this
+  version moves to its successor, gpt-image-2.
 - Sign-in: an Entra ID token from the Azure CLI login instead of the notebook's API key.
 - It replaces an earlier script, old-dalle3_image_generation.py.
 
-Settings from .env: OPENAI_ENDPOINT, IMAGE_MODEL_DEPLOYMENT_NAME (default gpt-image-2). Paid: one image
-per run; at OpenAI's published gpt-image rates about $0.006 at low quality (the default), $0.05 medium, $0.21 high
-(the Azure price for gpt-image-2 wasn't listed when checked on 2026-10-18; see Cost Management after a run).
+Settings from .env: OPENAI_ENDPOINT, IMAGE_MODEL_DEPLOYMENT_NAME (default gpt-image-2).
+Paid: one image per run; at OpenAI's published gpt-image rates about $0.006 at low
+quality (the default), $0.05 medium, $0.21 high (the Azure price for gpt-image-2 wasn't
+listed when checked on 2026-10-18; see Cost Management after a run).
 
 Run from the project root:
-    uv run python src/1-models/2-embeddings-image-generation.py [--quality low|medium|high]
-        [--size 1024x1024] [--output-dir generated-images] [--prompt "..."]
+    uv run python src/1-models/2-embeddings-image-generation.py
+        [--quality low|medium|high] [--size 1024x1024] [--output-dir generated-images]
+        [--prompt "..."]
 """
 
 import argparse
@@ -55,7 +60,8 @@ def require_env(name):
 
 
 def png_size(data):
-    """Return (width, height) from a PNG's IHDR header, or None if the bytes aren't a PNG."""
+    """Return (width, height) from a PNG's IHDR header, or None if the bytes aren't a
+    PNG."""
     if len(data) < 24 or not data.startswith(PNG_SIGNATURE) or data[12:16] != b"IHDR":
         return None
     return struct.unpack(">II", data[16:24])
@@ -72,18 +78,21 @@ def parse_args():
 
 
 def create_openai_client():
-    """Return the plain OpenAI client on the Azure OpenAI v1 endpoint, signed in with an Entra ID token."""
+    """Return the plain OpenAI client on the Azure OpenAI v1 endpoint, signed in with an
+    Entra ID token."""
     endpoint = require_env("OPENAI_ENDPOINT").rstrip("/")
     base_url = f"{endpoint}/openai/v1/"
     print(f"Endpoint: {base_url}")
-    # The v1 endpoint takes the plain OpenAI client; the token provider is called for each request.
+    # The v1 endpoint takes the plain OpenAI client; the token provider is called for
+    # each request.
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
     openai_client = OpenAI(base_url=base_url, api_key=token_provider)
     return openai_client
 
 
 def generate_image(openai_client, args):
-    """Step 1: send the prompt through images.generate and return the result. The HTTP log shows the request."""
+    """Step 1: send the prompt through images.generate and return the result. The HTTP
+    log shows the request."""
     print(f"Model deployment: {args.model}")
     print(f"Prompt: {args.prompt}")
     print(f"Size: {args.size}, quality: {args.quality}")
@@ -109,7 +118,8 @@ def print_details(result):
 
 
 def save_image(image, output_dir):
-    """Step 2: decode the base64 image and save it as a PNG named with a timestamp; return (path, size) or (None, ...)."""
+    """Step 2: decode the base64 image and save it as a PNG named with a timestamp;
+    return (path, size) or (None, ...)."""
     data = base64.b64decode(image.b64_json) if image.b64_json else b""
     size = png_size(data)
     if not data:

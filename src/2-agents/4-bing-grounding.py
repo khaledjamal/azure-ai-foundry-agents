@@ -1,30 +1,36 @@
-"""Foundry agent (new agents API, azure-ai-projects 2.x) that grounds its answers with Grounding with Bing Search.
+"""Foundry agent (new agents API, azure-ai-projects 2.x) that grounds its answers with
+Grounding with Bing Search.
 
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_service/4-bing_grounding.ipynb
 
-This script builds an agent that searches the web with Grounding with Bing before it answers, for questions the model's
-training data can't cover, such as recent health news. It is the script version of 4-bing_grounding.ipynb, written fresh
-for the new agents API (it replaces an earlier classic-API version, old-4-bing_grounding.py).
+This script builds an agent that searches the web with Grounding with Bing before it
+answers, for questions the model's training data can't cover, such as recent health
+news. It is the script version of 4-bing_grounding.ipynb, written fresh for the new
+agents API (it replaces an earlier classic-API version, old-4-bing_grounding.py).
 
 What it does:
-1. Creates the agent. Its Bing tool uses the project connection named in GROUNDING_WITH_BING_CONNECTION_NAME, so the
-   Bing key stays in a Foundry project connection and the agent definition holds no key.
-2. Asks the notebook's three health questions, each in its own response with tool_choice="required", so every
-   question runs at least one Bing search.
-3. For each answer, prints the text with numbered citations, the source websites and the Bing search URL of each
-   search (built from the query the agent sent), because Grounding with Bing's use and display requirements ask for
-   both.
+1. Creates the agent. Its Bing tool uses the project connection named in
+   GROUNDING_WITH_BING_CONNECTION_NAME, so the Bing key stays in a Foundry project
+   connection and the agent definition holds no key.
+2. Asks the notebook's three health questions, each in its own response with
+   tool_choice="required", so every question runs at least one Bing search.
+3. For each answer, prints the text with numbered citations, the source websites and the
+   Bing search URL of each search (built from the query the agent sent), because
+   Grounding with Bing's use and display requirements ask for both.
 4. Deletes the agent version at the end.
-Exits with 1 unless every question got an answer with at least one source and a Bing search URL.
+Exits with 1 unless every question got an answer with at least one source and a Bing
+search URL.
 
-Finding: the model writes the Bing query itself and otherwise dates "news" by its training data (one run searched
-"... news 2023"). The fix: the instructions carry today's date and ask for official health sources first. --today
-sets that date (default: today), so a recorded run can be replayed on a later day with the recording's date.
+Finding: the model writes the Bing query itself and otherwise dates "news" by its
+training data (one run searched "... news 2023"). The fix: the instructions carry
+today's date and ask for official health sources first. --today sets that date (default:
+today), so a recorded run can be replayed on a later day with the recording's date.
 
 Settings from .env: GROUNDING_WITH_BING_CONNECTION_NAME, AZURE_AI_SERVICES_ENDPOINT (or
-AZURE_AI_PROJECT_ENDPOINT), AZURE_AI_PROJECT_NAME, MODEL_DEPLOYMENT_NAME. Paid: Grounding with Bing costs $14 per
-1,000 searches (checked 2026-10-18), so a run with 3-9 searches is about $0.04-0.13, plus gpt-4o-mini tokens.
+AZURE_AI_PROJECT_ENDPOINT), AZURE_AI_PROJECT_NAME, MODEL_DEPLOYMENT_NAME. Paid:
+Grounding with Bing costs $14 per 1,000 searches (checked 2026-10-18), so a run with 3-9
+searches is about $0.04-0.13, plus gpt-4o-mini tokens.
 
 Needs azure-ai-projects>=2 (in the separate agents venv). Run from the project root:
     source ../../.venv-agents-v2/bin/activate
@@ -79,7 +85,8 @@ def get_project_endpoint():
 
 
 def number_citations(text, annotations):
-    """Replace each cited marker (e.g. 【4:0†source】) with [n]; return the new text and the numbered (title, url) list."""
+    """Replace each cited marker (e.g. 【4:0†source】) with [n]; return the new text and
+    the numbered (title, url) list."""
     sources, replacements = [], []
     for annotation in annotations:
         if annotation.type != "url_citation":
@@ -96,7 +103,8 @@ def number_citations(text, annotations):
 
 
 def show_response(response):
-    """Print one response's output items; return (answer text, sources, Bing search URLs)."""
+    """Print one response's output items; return (answer text, sources, Bing search
+    URLs)."""
     answer, sources, search_urls = "", [], []
     for item in response.output:
         if item.type == "bing_grounding_call":
@@ -136,7 +144,8 @@ def load_settings(model):
 
 
 def create_agent(project, model, connection_name, today):
-    """Create an agent version with the Bing tool; the Bing key stays in the project connection."""
+    """Create an agent version with the Bing tool; the Bing key stays in the project
+    connection."""
     connection = project.connections.get(connection_name)
     print(f"Bing connection: {connection.name} ({connection.type})")
     tool = BingGroundingTool(
@@ -153,7 +162,8 @@ def create_agent(project, model, connection_name, today):
 
 
 def ask(openai_client, agent_reference, question, totals):
-    """Send one question with a required search; return the response status, answer, sources and search URLs."""
+    """Send one question with a required search; return the response status, answer,
+    sources and search URLs."""
     print(f"\nUser: {question}")
     response = openai_client.responses.create(input=question, tool_choice="required", extra_body=agent_reference)
     print(f"Response (status {response.status}):")
@@ -177,7 +187,8 @@ def print_answer(answer, sources, search_urls):
 
 
 def ask_questions(openai_client, agent):
-    """Ask each question in its own response; return (question, status, answer, sources, search URLs) and the totals."""
+    """Ask each question in its own response; return (question, status, answer, sources,
+    search URLs) and the totals."""
     agent_reference = {"agent_reference": {"name": agent.name, "type": "agent_reference"}}
     totals = {"input": 0, "output": 0, "searches": 0}
     results = []
@@ -199,7 +210,8 @@ def print_totals(totals):
 
 
 def check_results(results):
-    """Every question got a completed answer with at least one source and a Bing search URL."""
+    """Every question got a completed answer with at least one source and a Bing search
+    URL."""
     checks = [
         (
             f"answered with sources and a Bing search URL: {question}",

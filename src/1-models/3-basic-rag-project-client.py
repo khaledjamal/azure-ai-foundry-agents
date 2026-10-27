@@ -3,26 +3,30 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/3-basic-rag.ipynb
 
-This script runs the same retrieval-augmented generation (RAG) as its twin, 3-basic-rag-azure-openai.py, but gets the
-OpenAI client through the Azure AI Foundry project SDK instead of the Azure OpenAI endpoint. RAG is the usual way to
-steer a model to answer from your own documents instead of its general knowledge.
+This script runs the same retrieval-augmented generation (RAG) as its twin,
+3-basic-rag-azure-openai.py, but gets the OpenAI client through the Azure AI Foundry
+project SDK instead of the Azure OpenAI endpoint. RAG is the usual way to steer a model
+to answer from your own documents instead of its general knowledge.
 
 What it does:
-1. Turns six health tips into embeddings and stores them in an Azure AI Search vector index.
-2. For each question, finds the three closest tips and gives only those to the model as context, with an instruction
-   to say "I'm not sure" when they don't cover the question.
+1. Turns six health tips into embeddings and stores them in an Azure AI Search vector
+   index.
+2. For each question, finds the three closest tips and gives only those to the model as
+   context, with an instruction to say "I'm not sure" when they don't cover the
+   question.
 
 Connection method:
-- Models: AIProjectClient from azure-ai-projects, created with the Foundry project endpoint, hands back an
-  AzureOpenAI client through get_openai_client(), using an Entra ID token from the Azure CLI login.
+- Models: AIProjectClient from azure-ai-projects, created with the Foundry project
+  endpoint, hands back an AzureOpenAI client through get_openai_client(), using an Entra
+  ID token from the Azure CLI login.
 - Why two clients:
-  - project_client is the entry point to the Foundry project: it knows the project and builds clients for the
-    project's services. This lab uses it only to build the OpenAI client; the agent labs also create and run agents
-    with it.
+  - project_client is the entry point to the Foundry project: it knows the project and
+    builds clients for the project's services. This lab uses it only to build the OpenAI
+    client; the agent labs also create and run agents with it.
   - openai_client makes the model calls (embeddings and chat).
 - Azure AI Search: its own endpoint and API key from .env.
-- Clean-up: the credential, the project client and the OpenAI client open in one `with`, as in Microsoft's SDK
-  samples, and close in reverse order when the calls are done.
+- Clean-up: the credential, the project client and the OpenAI client open in one `with`,
+  as in Microsoft's SDK samples, and close in reverse order when the calls are done.
 
 Run from the project root:
     uv run python src/1-models/3-basic-rag-project-client.py

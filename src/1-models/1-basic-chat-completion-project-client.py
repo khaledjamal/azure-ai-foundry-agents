@@ -3,21 +3,25 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/1-basic-chat-completion.ipynb
 
-This script makes the same two chat calls as its twin, 1-basic-chat-completion-azure-openai.py, but starts from the
-Foundry project instead of the Azure OpenAI endpoint. Starting from the project gives one entry point for models,
-agents and connections, which is how the agent labs work. It prints every HTTP request and response.
+This script makes the same two chat calls as its twin,
+1-basic-chat-completion-azure-openai.py, but starts from the Foundry project instead of
+the Azure OpenAI endpoint. Starting from the project gives one entry point for models,
+agents and connections, which is how the agent labs work. It prints every HTTP request
+and response.
 
 What it does:
-1. A system message sets the assistant's role (a fitness assistant that reminds users it isn't a medical
-   professional), a user question goes in, and the model's answer comes out, with its token counts.
+1. A system message sets the assistant's role (a fitness assistant that reminds users it
+   isn't a medical professional), a user question goes in, and the model's answer comes
+   out, with its token counts.
 2. A second call fills a prompt template with a user's name and goal.
 
 Connection method:
-- Client: AIProjectClient from azure-ai-projects, created with the Foundry project endpoint, connects to the project
-  and hands back a ready AzureOpenAI client through get_openai_client().
+- Client: AIProjectClient from azure-ai-projects, created with the Foundry project
+  endpoint, connects to the project and hands back a ready AzureOpenAI client through
+  get_openai_client().
 - Sign-in: an Entra ID token from the Azure CLI login instead of an API key.
-- Clean-up: the credential, the project client and the OpenAI client open in one `with`, as in Microsoft's SDK
-  samples, and close in reverse order when the calls are done.
+- Clean-up: the credential, the project client and the OpenAI client open in one `with`,
+  as in Microsoft's SDK samples, and close in reverse order when the calls are done.
 
 Run from the project root:
     uv run python src/1-models/1-basic-chat-completion-project-client.py

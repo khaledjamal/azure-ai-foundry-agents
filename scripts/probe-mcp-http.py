@@ -1,8 +1,10 @@
-"""Send raw MCP JSON-RPC requests over HTTP and print each status, header and body, to debug an MCP endpoint.
+"""Send raw MCP JSON-RPC requests over HTTP and print each status, header and body, to
+debug an MCP endpoint.
 
-Sends initialize, the initialized notification, then tools/list, reusing the Mcp-Session-Id the server returns.
-URL and key come from AZURE_FUNCTIONS_MCP_URL and AZURE_FUNCTIONS_MCP_KEY in .env (the key is sent as
-x-functions-key and never printed). Run from the repo root:
+Sends initialize, the initialized notification, then tools/list, reusing the
+Mcp-Session-Id the server returns. URL and key come from AZURE_FUNCTIONS_MCP_URL and
+AZURE_FUNCTIONS_MCP_KEY in .env (the key is sent as x-functions-key and never printed).
+Run from the repo root:
     python scripts/probe-mcp-http.py [--url URL]
 """
 

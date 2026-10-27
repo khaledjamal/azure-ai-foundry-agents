@@ -3,9 +3,9 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/2-embeddings.ipynb
 
-This script turns text into embeddings: lists of numbers (vectors) that capture meaning, so texts about similar things
-end up close together. Embeddings are the building block of search by meaning and of RAG (the next lab stores them in
-Azure AI Search).
+This script turns text into embeddings: lists of numbers (vectors) that capture meaning,
+so texts about similar things end up close together. Embeddings are the building block
+of search by meaning and of RAG (the next lab stores them in Azure AI Search).
 
 What it does:
 1. Embeds three short health phrases.
@@ -13,9 +13,11 @@ What it does:
 3. Prints each vector's length and first values.
 
 Connection method:
-- Client: the openai package's AzureOpenAI client, created directly with the Azure OpenAI endpoint (OPENAI_ENDPOINT).
+- Client: the openai package's AzureOpenAI client, created directly with the Azure
+  OpenAI endpoint (OPENAI_ENDPOINT).
 - Sign-in: an Entra ID token from the Azure CLI login instead of an API key.
-- Twin: 2-embeddings-project-client.py makes the same calls through the Foundry project SDK.
+- Twin: 2-embeddings-project-client.py makes the same calls through the Foundry project
+  SDK.
 
 Run from the project root:
     uv run python src/1-models/2-embeddings-azure-openai.py

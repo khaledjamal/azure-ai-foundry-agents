@@ -1,31 +1,37 @@
-"""Phi-4 lab (4-phi-4.ipynb) as a script: Phi-4, Phi-4-reasoning and gpt-4o-mini on the same prompts.
+"""Phi-4 lab (4-phi-4.ipynb) as a script: Phi-4, Phi-4-reasoning and gpt-4o-mini on the
+same prompts.
 
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/4-phi-4.ipynb
 
-This script compares three models on the same three prompts: Microsoft's small Phi-4, Phi-4-reasoning (which thinks step
-by step before answering) and gpt-4o-mini. It answers a practical question: does a smaller model or a reasoning model
-pay off? In the recorded run all three got the calculation right, gpt-4o-mini was the fastest at about the same cost,
-and Phi-4-reasoning took about 9 times as long for the same answers.
+This script compares three models on the same three prompts: Microsoft's small Phi-4,
+Phi-4-reasoning (which thinks step by step before answering) and gpt-4o-mini. It answers
+a practical question: does a smaller model or a reasoning model pay off? In the recorded
+run all three got the calculation right, gpt-4o-mini was the fastest at about the same
+cost, and Phi-4-reasoning took about 9 times as long for the same answers.
 
 Each model gets three prompts:
   1. the notebook's chat question (a weekly 5K training schedule),
   2. the notebook's "RAG-like" question, answered from a short context snippet,
-  3. a pace calculation with one right answer (6:00 per km, 18 seconds per km faster), to show what reasoning adds.
-A table at the end compares tokens, time and cost per model. Exits with 1 unless every model answered every prompt.
+  3. a pace calculation with one right answer (6:00 per km, 18 seconds per km faster),
+     to show what reasoning adds.
+A table at the end compares tokens, time and cost per model. Exits with 1 unless every
+model answered every prompt.
 
 Changes from the notebook:
-- The notebook called a serverless Phi-4 through the azure-ai-inference SDK (retired 2026-08-26). Here Phi-4
-  (version 7) and Phi-4-reasoning are deployed on the Foundry resource, and all three models are called the same way,
-  like the OpenAI models: the openai SDK on the Azure OpenAI v1 endpoint ({OPENAI_ENDPOINT}/openai/v1/) with an
+- The notebook called a serverless Phi-4 through the azure-ai-inference SDK (retired
+  2026-08-26). Here Phi-4 (version 7) and Phi-4-reasoning are deployed on the Foundry
+  resource, and all three models are called the same way, like the OpenAI models: the
+  openai SDK on the Azure OpenAI v1 endpoint ({OPENAI_ENDPOINT}/openai/v1/) with an
   Entra ID token.
-- Phi-4-reasoning gets the system prompt from its model card, which asks for the thinking between <think> tags before
-  the answer. On this Azure deployment the tags are removed from the reply and the message's `reasoning` field stays
-  empty, so the thinking and the answer arrive as one text, printed as is.
+- Phi-4-reasoning gets the system prompt from its model card, which asks for the
+  thinking between <think> tags before the answer. On this Azure deployment the tags are
+  removed from the reply and the message's `reasoning` field stays empty, so the
+  thinking and the answer arrive as one text, printed as is.
 
 Settings from .env: OPENAI_ENDPOINT, PHI_MODEL_DEPLOYMENT_NAME (default Phi-4),
-PHI_REASONING_MODEL_DEPLOYMENT_NAME (default Phi-4-reasoning), MODEL_DEPLOYMENT_NAME (default gpt-4o-mini). Paid:
-nine small calls, well under $0.01 per run (prices below).
+PHI_REASONING_MODEL_DEPLOYMENT_NAME (default Phi-4-reasoning), MODEL_DEPLOYMENT_NAME
+(default gpt-4o-mini). Paid: nine small calls, well under $0.01 per run (prices below).
 
 Run from the project root:
     uv run python src/1-models/4-phi-4.py
@@ -42,7 +48,8 @@ from workshop_utils import http_log
 from workshop_utils.settings import load_env
 
 COGNITIVE_SERVICES_SCOPE = "https://cognitiveservices.azure.com/.default"
-# USD per 1M input / output tokens, Global deployments in East US 2 (Azure Retail Prices API, checked 2026-10-18).
+# USD per 1M input / output tokens, Global deployments in East US 2 (Azure Retail Prices
+# API, checked 2026-10-18).
 PRICES = {"Phi-4": (0.125, 0.50), "Phi-4-reasoning": (0.125, 0.50), "gpt-4o-mini": (0.15, 0.60)}
 SYSTEM_PROMPT = (
     "You are a helpful AI assistant, focusing on health and fitness. Remind users that you are not a medical "
@@ -72,8 +79,9 @@ PROMPTS = [
         ),
     ),
 ]
-# The system prompt from Phi-4-reasoning's model card; the lab's own system prompt is added after it. The <think>
-# tags it asks for are special tokens, which the Azure endpoint strips (it also rejects skip_special_tokens=False).
+# The system prompt from Phi-4-reasoning's model card; the lab's own system prompt is
+# added after it. The <think> tags it asks for are special tokens, which the Azure
+# endpoint strips (it also rejects skip_special_tokens=False).
 REASONING_SYSTEM_PROMPT = (
     "You are Phi, a language model trained by Microsoft to help users. Your role as an assistant involves thoroughly "
     "exploring questions through a systematic thinking process before providing the final precise and accurate "
@@ -135,7 +143,8 @@ def print_section(title):
 
 
 def load_settings():
-    """Return the endpoint and the (model, reasoning) pairs: Phi-4, Phi-4-reasoning and gpt-4o-mini."""
+    """Return the endpoint and the (model, reasoning) pairs: Phi-4, Phi-4-reasoning and
+    gpt-4o-mini."""
     endpoint = require_env("OPENAI_ENDPOINT").rstrip("/")
     models = [
         (os.getenv("PHI_MODEL_DEPLOYMENT_NAME") or "Phi-4", False),
@@ -148,7 +157,8 @@ def load_settings():
 
 
 def create_openai_client(endpoint):
-    """The plain OpenAI client on the Azure OpenAI v1 endpoint, signed in with an Entra ID token."""
+    """The plain OpenAI client on the Azure OpenAI v1 endpoint, signed in with an Entra
+    ID token."""
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
     openai_client = OpenAI(base_url=f"{endpoint}/openai/v1/", api_key=token_provider)
     return openai_client
@@ -177,7 +187,8 @@ def print_result(name, model, result):
 
 
 def print_comparison(results, models):
-    """One row per model: tokens, time and cost over all prompts, and whether the pace answer was right."""
+    """One row per model: tokens, time and cost over all prompts, and whether the pace
+    answer was right."""
     print_section("Comparison (all three prompts)")
     print(f"{'model':18}{'tokens in':>10}{'tokens out':>12}{'seconds':>9}{'cost USD':>11}  pace correct")
     for model, _ in models:

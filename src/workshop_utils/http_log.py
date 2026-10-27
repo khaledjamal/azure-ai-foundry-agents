@@ -1,15 +1,20 @@
-"""Log every HTTP request and response a script makes, in one format, with secrets redacted.
+"""Log every HTTP request and response a script makes, in one format, with secrets
+redacted.
 
-Call `enable()` once at the start of a script. It wraps the one transport method that every request of an HTTP
-library passes through, so calls made by clients built deep inside an SDK are logged too:
+Call `enable()` once at the start of a script. It wraps the one transport method that
+every request of an HTTP library passes through, so calls made by clients built deep
+inside an SDK are logged too:
 
-- requests (`HTTPAdapter.send`): plain REST calls, the azure-* SDKs (azure-core) and azure-identity
-- httpx2 and httpx (`HTTPTransport.handle_request` and its async twin): openai, Semantic Kernel, AutoGen, the MCP
-  client
-- aiohttp (a `TraceConfig` added to every new `ClientSession`, aiohttp's own tracing hooks): the async azure-* SDK
-  clients (`azure.ai.projects.aio`, `azure.search.documents.aio`, ...)
+- requests (`HTTPAdapter.send`): plain REST calls, the azure-* SDKs (azure-core) and
+  azure-identity
+- httpx2 and httpx (`HTTPTransport.handle_request` and its async twin): openai, Semantic
+  Kernel, AutoGen, the MCP client
+- aiohttp (a `TraceConfig` added to every new `ClientSession`, aiohttp's own tracing
+  hooks): the async azure-* SDK clients (`azure.ai.projects.aio`,
+  `azure.search.documents.aio`, ...)
 
-Output (the format of a Spring RestTemplate logging interceptor, with a call number to pair the two blocks):
+Output (the format of a Spring RestTemplate logging interceptor, with a call number to
+pair the two blocks):
 
     --- OUTBOUND REQUEST #1 ---
     > POST https://<resource>.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=...
@@ -30,25 +35,30 @@ Output (the format of a Spring RestTemplate logging interceptor, with a call num
 
 Settings (environment variables, or the arguments of `enable()`, which take precedence):
     HTTP_LOG           full (default) | summary (one line per call) | off
-    HTTP_LOG_METRICS   false (default) | true: time, sizes and token usage per call, and totals when the script ends
-    HTTP_LOG_MAX_BODY  characters shown of each body (default 8192); the rest is cut with "...more..."
+    HTTP_LOG_METRICS   false (default) | true: time, sizes and token usage per call,
+                       and totals when the script ends
+    HTTP_LOG_MAX_BODY  characters shown of each body (default 8192); the rest is cut
+                       with "...more..."
     HTTP_LOG_POLLS     short (default) | full: how status checks are logged
 
-Status checks: a GET to the same URL as an earlier GET (an agent run polled until it ends, for example) is logged as
-one line with the reply's "status" field, `HTTP #7 GET <url> -> 200 OK, status: in_progress`. The first GET of a URL
-is logged in full, so the reply's shape is shown once.
+Status checks: a GET to the same URL as an earlier GET (an agent run polled until it
+ends, for example) is logged as one line with the reply's "status" field, `HTTP #7 GET
+<url> -> 200 OK, status: in_progress`. The first GET of a URL is logged in full, so the
+reply's shape is shown once.
 
-Secrets are redacted: authorization and key headers, cookies, key and signature query parameters (for example the
-Functions `?code=` key), and token, password and credential fields in JSON and form bodies. Long strings inside JSON
-(base64 images, for example) are shortened and binary bodies are shown as type and size.
+Secrets are redacted: authorization and key headers, cookies, key and signature query
+parameters (for example the Functions `?code=` key), and token, password and credential
+fields in JSON and form bodies. Long strings inside JSON (base64 images, for example)
+are shortened and binary bodies are shown as type and size.
 
-The response block is written once its body has been read, so a streamed reply (server-sent events) is logged when
-the stream ends, without slowing the stream down. With aiohttp the body is logged when it is read with `read()`, as
-azure-core does for every call that isn't a download; a body read piece by piece from `response.content` is noted
-in the log, not shown.
+The response block is written once its body has been read, so a streamed reply
+(server-sent events) is logged when the stream ends, without slowing the stream down.
+With aiohttp the body is logged when it is read with `read()`, as azure-core does for
+every call that isn't a download; a body read piece by piece from `response.content` is
+noted in the log, not shown.
 
-Record and replay (workshop_utils/http_replay.py) use the same hooks: `enable()` also starts them when HTTP_REPLAY
-is set to record or replay.
+Record and replay (workshop_utils/http_replay.py) use the same hooks: `enable()` also
+starts them when HTTP_REPLAY is set to record or replay.
 """
 
 import atexit
@@ -68,7 +78,8 @@ LEVELS = ("full", "summary", "off")
 POLL_MODES = ("short", "full")
 DEFAULT_MAX_BODY = 8 * 1024
 REDACTED = "<redacted>"
-# Header, query parameter and body field names whose values are secrets (compared in lower case).
+# Header, query parameter and body field names whose values are secrets (compared in
+# lower case).
 SECRET_HEADERS = {
     "authorization",
     "proxy-authorization",
@@ -111,8 +122,9 @@ SECRET_FIELDS = {
 LONG_STRING = 1000
 BINARY_TYPES = ("image/", "audio/", "video/", "application/octet-stream", "application/pdf", "application/zip")
 MAX_CAPTURE = 1024 * 1024  # bytes of a body kept for the log; the rest is counted, not stored
-# A JSON body is kept whole up to this size: only a complete body parses, so only then can its long strings (a
-# base64 image, for example) be shortened one by one and the fields after them still be shown.
+# A JSON body is kept whole up to this size: only a complete body parses, so only then
+# can its long strings (a base64 image, for example) be shortened one by one and the
+# fields after them still be shown.
 MAX_JSON_CAPTURE = 32 * 1024 * 1024
 
 _settings = {"level": "full", "metrics": False, "max_body": DEFAULT_MAX_BODY, "polls": "short"}
@@ -126,10 +138,11 @@ _observers = []  # functions called with each finished call (http_replay's recor
 
 
 def enable(level=None, metrics=None, max_body=None, polls=None):
-    """Start logging HTTP calls. Safe to call more than once; later calls only change the settings.
+    """Start logging HTTP calls. Safe to call more than once; later calls only change
+    the settings.
 
-    Also starts record or replay when HTTP_REPLAY says so (http_replay.py), before the logging hooks, so a replayed
-    call is logged like a real one.
+    Also starts record or replay when HTTP_REPLAY says so (http_replay.py), before the
+    logging hooks, so a replayed call is logged like a real one.
     """
     from workshop_utils import http_replay
 
@@ -173,8 +186,9 @@ def disable():
 
 
 def add_observer(function):
-    """Call function(call, body) for every finished call: the request and response as sent and received, and the
-    whole response body (decompressed), whatever the log level. Used by http_replay to record calls."""
+    """Call function(call, body) for every finished call: the request and response as
+    sent and received, and the whole response body (decompressed), whatever the log
+    level. Used by http_replay to record calls."""
     if function not in _observers:
         _observers.append(function)
 
@@ -184,8 +198,9 @@ def remove_observer(function):
         _observers.remove(function)
 
 
-# ---------------------------------------------------------------------------------------------------------------
-# One HTTP call: writes the request block when it starts and the response block when its body has been read.
+# --------------------------------------------------------------------------------------
+# One HTTP call: writes the request block when it starts and the response block when its
+# body has been read.
 
 
 class _Call:
@@ -221,7 +236,8 @@ class _Call:
             _write(lines)
 
     def response(self, status, reason, headers, encoding=None):
-        """Status and headers arrived; `encoding` is the Content-Encoding the body bytes still have, if any."""
+        """Status and headers arrived; `encoding` is the Content-Encoding the body bytes
+        still have, if any."""
         self.status, self.reason, self.headers = status, reason or "", list(headers)
         self.encoding = encoding
         if "json" in (_header(self.headers, "content-type") or "").lower():
@@ -305,8 +321,9 @@ def _at_exit():
         _write([f"HTTP totals: {t['calls']} calls, {t['seconds']:.2f} s in calls, {sizes}{tokens}"])
 
 
-# ---------------------------------------------------------------------------------------------------------------
-# requests: wrap HTTPAdapter.send, and tee the raw urllib3 response so the body is logged as it is read.
+# --------------------------------------------------------------------------------------
+# requests: wrap HTTPAdapter.send, and tee the raw urllib3 response so the body is
+# logged as it is read.
 
 
 def _patch_requests():
@@ -339,7 +356,8 @@ def _patch_requests():
 
 
 class _RawTee:
-    """Stands in for urllib3's HTTPResponse: passes every read through and keeps a copy for the log."""
+    """Stands in for urllib3's HTTPResponse: passes every read through and keeps a copy
+    for the log."""
 
     def __init__(self, raw, call):
         object.__setattr__(self, "_raw", raw)
@@ -375,8 +393,9 @@ class _RawTee:
         self._raw.close()
 
 
-# ---------------------------------------------------------------------------------------------------------------
-# httpx2 / httpx: wrap the transports, and tee the response stream so the body is logged as it is read.
+# --------------------------------------------------------------------------------------
+# httpx2 / httpx: wrap the transports, and tee the response stream so the body is logged
+# as it is read.
 
 
 def _patch_httpx(module_name):
@@ -455,10 +474,11 @@ def _patch_httpx(module_name):
     async_cls.handle_async_request = handle_async_request
 
 
-# ---------------------------------------------------------------------------------------------------------------
-# aiohttp: add a TraceConfig to every new ClientSession (aiohttp's public tracing hooks). The request block is written
-# when the response headers arrive (the body has been sent by then), the response block when `read()` returns the
-# body. Sessions made before enable() aren't logged.
+# --------------------------------------------------------------------------------------
+# aiohttp: add a TraceConfig to every new ClientSession (aiohttp's public tracing
+# hooks). The request block is written when the response headers arrive (the body has
+# been sent by then), the response block when `read()` returns the body. Sessions made
+# before enable() aren't logged.
 
 
 def _patch_aiohttp():
@@ -493,7 +513,8 @@ def _patch_aiohttp():
             return
         call = ctx.call = start(ctx, params)
         response = params.response
-        # azure-core turns automatic decompression off and decompresses itself: the bytes read are still compressed.
+        # azure-core turns automatic decompression off and decompresses itself: the
+        # bytes read are still compressed.
         encoding = None if session.auto_decompress else response.headers.get("Content-Encoding")
         headers = [(name.decode("latin-1"), value.decode("latin-1")) for name, value in response.raw_headers]
         call.response(response.status, response.reason, headers, encoding)
@@ -541,7 +562,7 @@ def _patch_aiohttp():
     response_cls.close = close
 
 
-# ---------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # Formatting and redaction.
 
 
@@ -580,11 +601,13 @@ def _redact_json(value):
 
 
 def _decode(data, encoding):
-    """Undo gzip/deflate on body bytes that are still compressed (a raw transport stream)."""
+    """Undo gzip/deflate on body bytes that are still compressed (a raw transport
+    stream)."""
     if not data or not encoding:
         return data
     encoding = encoding.lower()
-    # decompressobj also handles a body cut at its capture limit; deflate is zlib-wrapped or raw, depending on the server.
+    # decompressobj also handles a body cut at its capture limit; deflate is
+    # zlib-wrapped or raw, depending on the server.
     window_bits = {"gzip": [16 + zlib.MAX_WBITS], "deflate": [zlib.MAX_WBITS, -zlib.MAX_WBITS]}.get(encoding, [])
     for bits in window_bits:
         try:
@@ -620,7 +643,8 @@ def _format_body(body, content_type):
 
 
 def _status_field(body, content_type):
-    """The top-level "status" of a JSON reply (an agent run's in_progress / completed, for example), or None."""
+    """The top-level "status" of a JSON reply (an agent run's in_progress / completed,
+    for example), or None."""
     if not isinstance(body, bytes) or "json" not in (content_type or "").lower():
         return None
     try:

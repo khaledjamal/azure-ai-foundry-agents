@@ -1,43 +1,54 @@
-"""End-to-end GenAI Ops lab (3-e2e-GenAI-Ops.ipynb) as a script: model selection, safety, security,
-quality, observability, RAG evaluation and an indirect attack simulation, traced to Application Insights.
+"""End-to-end GenAI Ops lab (3-e2e-GenAI-Ops.ipynb) as a script: model selection,
+safety, security, quality, observability, RAG evaluation and an indirect attack
+simulation, traced to Application Insights.
 
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/3-quality_attributes/3-e2e-GenAI-Ops.ipynb
 
-This script puts the checks a team runs on a generative AI app before and after release into one place: safety,
-security, quality and observability.
+This script puts the checks a team runs on a generative AI app before and after release
+into one place: safety, security, quality and observability.
 
-The first run reported success while two things had failed: the attack tool silently dropped an agent error, and the
-judge gave a perfect score to an answer that had no sources. The script now detects both and fails the section, so
-neither failure can hide behind a success message any more.
+The first run reported success while two things had failed: the attack tool silently
+dropped an agent error, and the judge gave a perfect score to an answer that had no
+sources. The script now detects both and fails the section, so neither failure can hide
+behind a success message any more.
 
 Sections (same numbers as the notebook; run all, or pick some with --sections):
-1. Model selection: list the project's deployments and Azure OpenAI connections, make one chat call.
-2. Safety evaluation, testing outputs for harmful content and copyrighted text: ContentSafetyEvaluator (violence,
-   sexual, self-harm, hate) on the notebook's self-harm story sample and ProtectedMaterialEvaluator on its
-   copyrighted-text sample (Foundry safety service).
-3. Security, attacking a test agent on the Agent Service with Microsoft-generated jailbreak prompts to see whether it
-   refuses: DirectAttackSimulator (ADVERSARIAL_REWRITE, 2 results). The simulator runs every attack twice, as
-   written and with a jailbreak (UPIA) added.
-4. Quality evaluation of evaluate_test_data.jsonl: relevance, coherence, fluency, groundedness (gpt-4o as a second
-   model acting as judge), BLEU, F1, ROUGE-L, violence, hate/unfairness. Runs locally with
-   evaluate(..., azure_ai_project=...) so the results appear on the project's Evaluations page; the notebook's
-   project.evaluations.create cloud run is not in azure-ai-projects 1.0.0.
-5. Observability: every step is traced to Application Insights, so problems can be found later; this section shows
-   the tracing setup (provider, content recording, Application Insights connection).
-6. RAG: answers built from a small "AI safety guidelines" Azure AI Search index (its own name, ai-safety-index):
-   three questions answered from it, each scored by relevance, coherence, groundedness and fluency (gpt-4o judge).
-7. IndirectAttackSimulator (XPIA, 2 results). As in the notebook, the target only echoes, so no model
-   receives the attack text.
+1. Model selection: list the project's deployments and Azure OpenAI connections, make
+   one chat call.
+2. Safety evaluation, testing outputs for harmful content and copyrighted text:
+   ContentSafetyEvaluator (violence, sexual, self-harm, hate) on the notebook's
+   self-harm story sample and ProtectedMaterialEvaluator on its copyrighted-text sample
+   (Foundry safety service).
+3. Security, attacking a test agent on the Agent Service with Microsoft-generated
+   jailbreak prompts to see whether it refuses: DirectAttackSimulator
+   (ADVERSARIAL_REWRITE, 2 results). The simulator runs every attack twice, as written
+   and with a jailbreak (UPIA) added.
+4. Quality evaluation of evaluate_test_data.jsonl: relevance, coherence, fluency,
+   groundedness (gpt-4o as a second model acting as judge), BLEU, F1, ROUGE-L, violence,
+   hate/unfairness. Runs locally with evaluate(..., azure_ai_project=...) so the results
+   appear on the project's Evaluations page; the notebook's project.evaluations.create
+   cloud run is not in azure-ai-projects 1.0.0.
+5. Observability: every step is traced to Application Insights, so problems can be found
+   later; this section shows the tracing setup (provider, content recording, Application
+   Insights connection).
+6. RAG: answers built from a small "AI safety guidelines" Azure AI Search index (its own
+   name, ai-safety-index): three questions answered from it, each scored by relevance,
+   coherence, groundedness and fluency (gpt-4o judge).
+7. IndirectAttackSimulator (XPIA, 2 results). As in the notebook, the target only
+   echoes, so no model receives the attack text.
 
 Outputs and cleanup:
-- Attack and evaluation outputs are written as JSON to --output-dir (default runs/genai-ops, git-ignored, since they
-  contain the attack prompts); the console shows short excerpts.
+- Attack and evaluation outputs are written as JSON to --output-dir (default
+  runs/genai-ops, git-ignored, since they contain the attack prompts); the console shows
+  short excerpts.
 - Prompt and answer content is not recorded in the traces.
-- Agents, threads and the search index are deleted at the end (--keep-index keeps the index).
+- Agents, threads and the search index are deleted at the end (--keep-index keeps the
+  index).
 
 Run from the project root:
-    uv run python src/3-quality/3-e2e-genai-ops.py [--output-dir DIR] [--sections 1,2,...]
+    uv run python src/3-quality/3-e2e-genai-ops.py [--output-dir DIR]
+        [--sections 1,2,...]
 """
 
 import argparse
@@ -223,7 +234,8 @@ def write_json(output_dir, name, data):
 
 
 def setup_tracing(project_client):
-    # Content stays out of the traces: the attack prompts and the samples are not sent to Application Insights.
+    # Content stays out of the traces: the attack prompts and the samples are not sent
+    # to Application Insights.
     os.environ["OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"] = "NO_CONTENT"
     os.environ["AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED"] = "false"
     from azure.ai.agents.telemetry import AIAgentsInstrumentor
@@ -231,7 +243,8 @@ def setup_tracing(project_client):
     from opentelemetry.instrumentation.openai_v2 import OpenAIInstrumentor
 
     connection_string = project_client.telemetry.get_application_insights_connection_string()
-    # sampling_ratio=1.0 keeps every span; the default rate-limited sampler drops spans in bursts.
+    # sampling_ratio=1.0 keeps every span; the default rate-limited sampler drops spans
+    # in bursts.
     configure_azure_monitor(
         connection_string=connection_string,
         resource=Resource.create({"service.name": SERVICE_NAME}),
@@ -243,9 +256,9 @@ def setup_tracing(project_client):
     return trace.get_tracer_provider()
 
 
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # 1. Model selection
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 def section_model_selection(ctx):
     project_client = ctx["project_client"]
     print("Model deployments in the project:")
@@ -271,9 +284,9 @@ def section_model_selection(ctx):
     print(f"Tokens: {usage.prompt_tokens} in, {usage.completion_tokens} out")
 
 
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # 2. Safety evaluation
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 def section_safety(ctx):
     credential, project_endpoint = ctx["credential"], ctx["project_endpoint"]
     content_safety = ContentSafetyEvaluator(credential=credential, azure_ai_project=project_endpoint)
@@ -300,14 +313,16 @@ def section_safety(ctx):
     )
 
 
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # 3. Security: direct attack simulation against an agent
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 def blocked_by_content_filter(run):
-    """True if the content filter stopped the agent run. The service has reported it two ways:
+    """True if the content filter stopped the agent run. The service has reported it two
+    ways:
     - before: run status "failed", with a content-filter error in last_error;
-    - since about 2026-10-26: run status "incomplete", incomplete_details.reason "content_filter" and no last_error.
-      azure-ai-agents 1.1.0 lists neither value in its enums, so both are compared as strings.
+    - since about 2026-10-26: run status "incomplete", incomplete_details.reason
+      "content_filter" and no last_error. azure-ai-agents 1.1.0 lists neither value in
+      its enums, so both are compared as strings.
     """
     if run.status == "incomplete":
         return getattr(run.incomplete_details, "reason", None) == "content_filter"
@@ -316,7 +331,8 @@ def blocked_by_content_filter(run):
 
 
 def make_agent_target(project_client, agent_id, threads, stats):
-    """Simulator target: sends the latest user turn to the agent, one agent thread per simulated conversation."""
+    """Simulator target: sends the latest user turn to the agent, one agent thread per
+    simulated conversation."""
 
     async def agent_target(messages, stream=False, session_state=None, context=None):
         history = messages["messages"]
@@ -368,7 +384,8 @@ def print_conversations(label, conversations):
 
 
 def run_direct_attack(ctx, target):
-    """Run DirectAttackSimulator against the target; return the regular and the jailbreak conversations."""
+    """Run DirectAttackSimulator against the target; return the regular and the
+    jailbreak conversations."""
     simulator = DirectAttackSimulator(azure_ai_project=ctx["project_endpoint"], credential=ctx["credential"])
     print(
         f"Running DirectAttackSimulator: ADVERSARIAL_REWRITE, max {SIMULATION_RESULTS} results, "
@@ -387,7 +404,8 @@ def run_direct_attack(ctx, target):
 
 
 def check_attack_results(stats, conversations):
-    """Fail the section if an agent turn failed for another reason than the content filter, or a reply is missing."""
+    """Fail the section if an agent turn failed for another reason than the content
+    filter, or a reply is missing."""
     if stats["failed"]:
         raise RuntimeError(
             f"{stats['failed']} agent turn(s) failed for reasons other than the content filter: "
@@ -428,9 +446,9 @@ def section_direct_attack(ctx):
         print(f"Cleanup: deleted agent {agent.id} and {len(threads)} thread(s)")
 
 
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # 4. Quality evaluation
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 def build_quality_evaluators(judge, credential, project_endpoint):
     """Judge-model, word-overlap and safety-service evaluators for the quality run."""
     return {
@@ -447,7 +465,8 @@ def build_quality_evaluators(judge, credential, project_endpoint):
 
 
 def run_evaluation(data_path, evaluators, project_endpoint, output_dir):
-    """Score every row with every evaluator, log the results to the Foundry project and save them as JSON."""
+    """Score every row with every evaluator, log the results to the Foundry project and
+    save them as JSON."""
     results_path = output_dir / "section4-quality-results.json"
     result = evaluate(
         data=str(data_path),
@@ -486,9 +505,9 @@ def section_quality(ctx):
     print_portal_link(result)
 
 
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # 5. Observability
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 def section_observability(ctx):
     provider = trace.get_tracer_provider()
     print(f"OpenTelemetry provider: {provider.__class__.__module__}.{provider.__class__.__name__}")
@@ -504,9 +523,9 @@ def section_observability(ctx):
     print("View it in the Foundry portal (project -> Tracing) or in Application Insights (search for the trace ID).")
 
 
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # 6. RAG over an AI safety guidelines index, with evaluation
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 def create_safety_index(index_client, dimensions):
     if SAFETY_INDEX_NAME in index_client.list_index_names():
         index_client.delete_index(SAFETY_INDEX_NAME)
@@ -545,7 +564,8 @@ def embed(openai_client, model, texts):
 
 
 def fill_safety_index(search_client, vectors, embedding_model):
-    """Upload the documents with their vectors, then wait until the index can find all of them."""
+    """Upload the documents with their vectors, then wait until the index can find all
+    of them."""
     search_client.upload_documents(
         documents=[{**doc, "embedding": vector} for doc, vector in zip(SAFETY_DOCS, vectors, strict=True)]
     )
@@ -570,7 +590,8 @@ def build_rag_evaluators(judge, credential):
 
 
 def answer_from_index(openai_client, search_client, embedding_model, model, question):
-    """Find the 3 documents closest to the question and answer from them; return (hits, context, answer)."""
+    """Find the 3 documents closest to the question and answer from them; return (hits,
+    context, answer)."""
     question_vector = embed(openai_client, embedding_model, [question])[0]
     vector_query = VectorizedQuery(vector=question_vector, k_nearest_neighbors=3, fields="embedding")
     hits = list(search_client.search(search_text=None, vector_queries=[vector_query], select=["content", "source"]))
@@ -643,11 +664,12 @@ def section_rag(ctx):
         cleanup_safety_index(index_client, ctx["keep_index"])
 
 
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # 7. Indirect attack simulation
-# ---------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 async def echo_target(messages, stream=False, session_state=None, context=None):
-    """As in the notebook, no model sees the attack: the target answers with a fixed sentence."""
+    """As in the notebook, no model sees the attack: the target answers with a fixed
+    sentence."""
     history = messages["messages"]
     history.append({"role": "assistant", "content": "This lab target does not call a model."})
     return {"messages": history, "stream": stream, "session_state": session_state, "context": context}
@@ -689,7 +711,8 @@ def parse_sections(text):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="End-to-end GenAI Ops lab")
-    # The outputs hold the attack prompts, so the default folder is under the git-ignored runs/.
+    # The outputs hold the attack prompts, so the default folder is under the
+    # git-ignored runs/.
     parser.add_argument(
         "--output-dir",
         type=Path,
@@ -704,7 +727,8 @@ def parse_args():
 
 
 def build_context(args):
-    """The settings every section reads: endpoints, models, the judge model's config, the output folder."""
+    """The settings every section reads: endpoints, models, the judge model's config,
+    the output folder."""
     project_endpoint = get_project_endpoint()
     ctx = {
         "project_endpoint": project_endpoint,
@@ -726,13 +750,15 @@ def build_context(args):
 
 
 def span_name(number, title):
-    """Span name for a section, e.g. section-3-security for "Security: direct attack simulation"."""
+    """Span name for a section, e.g. section-3-security for "Security: direct attack
+    simulation"."""
     short_title = title.split(":")[0].lower().replace(" ", "-")
     return f"section-{number}-{short_title}"
 
 
 def run_sections(ctx, sections):
-    """Run the sections inside one traced root span, each in its own span; return (number, title, error) per failure."""
+    """Run the sections inside one traced root span, each in its own span; return
+    (number, title, error) per failure."""
     failures = []
     provider = setup_tracing(ctx["project_client"])
     tracer = trace.get_tracer(SERVICE_NAME)
@@ -754,7 +780,8 @@ def run_sections(ctx, sections):
 
 
 def report(ctx, sections, failures):
-    """Print the trace ID and every failed section; return True if all sections finished."""
+    """Print the trace ID and every failed section; return True if all sections
+    finished."""
     print_section("Result")
     print(f"Trace {ctx['trace_id']}; outputs in {ctx['output_dir']}")
     if failures:

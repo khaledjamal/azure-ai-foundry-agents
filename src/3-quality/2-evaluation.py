@@ -3,9 +3,10 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/3-quality_attributes/2-evaluation.ipynb
 
-This script measures answer quality automatically, the way a team checks a model or prompt change before release. Its
-three sample health & fitness answers are poor on purpose (e.g. "London" as the capital of France), so low quality
-scores are the expected result and show that the evaluators work.
+This script measures answer quality automatically, the way a team checks a model or
+prompt change before release. Its three sample health & fitness answers are poor on
+purpose (e.g. "London" as the capital of France), so low quality scores are the expected
+result and show that the evaluators work.
 
 It scores each answer in four ways, with azure-ai-evaluation:
 - F1 score: word overlap between the answer and the reference answer (no model call)
@@ -14,11 +15,13 @@ It scores each answer in four ways, with azure-ai-evaluation:
 - Response length: a custom code-based evaluator
 
 Results and connection:
-- The results are also logged to the Foundry project, where they show up on the Evaluations page. This replaces the
-  notebook's cloud evaluation section, which used project_client.evaluations from the beta SDK; that API is not in
-  azure-ai-projects 1.0.0.
-- The judge model uses the Azure OpenAI endpoint (OPENAI_ENDPOINT); the Violence evaluator and result logging use the
-  Foundry project endpoint; all with an Entra ID token from the Azure CLI login.
+- The results are also logged to the Foundry project, where they show up on the
+  Evaluations page. This replaces the notebook's cloud evaluation section, which used
+  project_client.evaluations from the beta SDK; that API is not in azure-ai-projects
+  1.0.0.
+- The judge model uses the Azure OpenAI endpoint (OPENAI_ENDPOINT); the Violence
+  evaluator and result logging use the Foundry project endpoint; all with an Entra ID
+  token from the Azure CLI login.
 
 Run from the project root:
     uv run python src/3-quality/2-evaluation.py [--output-dir DIR]
@@ -133,7 +136,8 @@ def parse_args():
 
 
 def load_settings():
-    """Return the project endpoint and the judge model's config (the Azure OpenAI deployment that scores answers)."""
+    """Return the project endpoint and the judge model's config (the Azure OpenAI
+    deployment that scores answers)."""
     project_endpoint = get_project_endpoint()
     model_config = {
         "azure_endpoint": require_env("OPENAI_ENDPOINT"),
@@ -146,7 +150,8 @@ def load_settings():
 
 
 def build_evaluators(model_config, project_endpoint):
-    """The four kinds of scoring: F1 (no model), judge model, safety service and a custom code evaluator."""
+    """The four kinds of scoring: F1 (no model), judge model, safety service and a
+    custom code evaluator."""
     credential = DefaultAzureCredential()
     return {
         "f1_score": F1ScoreEvaluator(),
@@ -158,7 +163,8 @@ def build_evaluators(model_config, project_endpoint):
 
 
 def run_evaluation(data_path, evaluators, project_endpoint, output_dir):
-    """Score every row with every evaluator, log the results to the Foundry project and save them as JSON."""
+    """Score every row with every evaluator, log the results to the Foundry project and
+    save them as JSON."""
     results_path = output_dir / "evaluation_results.json"
     result = evaluate(
         data=str(data_path),

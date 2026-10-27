@@ -3,9 +3,10 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/2-embeddings.ipynb
 
-This script makes the same embedding calls as its twin, 2-embeddings-azure-openai.py, but through the Azure AI Foundry
-project SDK. Embeddings are lists of numbers (vectors) that capture meaning, so texts about similar things end up close
-together; they are the building block of search by meaning and of RAG.
+This script makes the same embedding calls as its twin, 2-embeddings-azure-openai.py,
+but through the Azure AI Foundry project SDK. Embeddings are lists of numbers (vectors)
+that capture meaning, so texts about similar things end up close together; they are the
+building block of search by meaning and of RAG.
 
 What it does:
 1. Embeds three short health phrases.
@@ -13,11 +14,12 @@ What it does:
 3. Prints each vector's length and first values.
 
 Connection method:
-- Client: AIProjectClient from azure-ai-projects, created with the Foundry project endpoint, connects to the project
-  and hands back a ready AzureOpenAI client through get_openai_client().
+- Client: AIProjectClient from azure-ai-projects, created with the Foundry project
+  endpoint, connects to the project and hands back a ready AzureOpenAI client through
+  get_openai_client().
 - Sign-in: an Entra ID token from the Azure CLI login instead of an API key.
-- Clean-up: the credential, the project client and the OpenAI client open in one `with`, as in Microsoft's SDK
-  samples, and close in reverse order when the calls are done.
+- Clean-up: the credential, the project client and the OpenAI client open in one `with`,
+  as in Microsoft's SDK samples, and close in reverse order when the calls are done.
 
 Run from the project root:
     uv run python src/1-models/2-embeddings-project-client.py

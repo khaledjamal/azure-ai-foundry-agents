@@ -1,6 +1,8 @@
-"""Tests for workshop_utils.http_replay: record calls to a local HTTP server, then replay them with the server unused.
+"""Tests for workshop_utils.http_replay: record calls to a local HTTP server, then
+replay them with the server unused.
 
-No Azure, no cost. Run from the repo root with the venv that has requests, httpx2, httpx and aiohttp installed:
+No Azure, no cost. Run from the repo root with the venv that has requests, httpx2, httpx
+and aiohttp installed:
     uv run python -m unittest discover -s tests -v
 """
 
@@ -40,7 +42,8 @@ except ImportError:
 
 
 def setUpModule():
-    """Use only the settings each test sets: not the shell's HTTP_REPLAY* values, nor the developer's .env."""
+    """Use only the settings each test sets: not the shell's HTTP_REPLAY* values, nor
+    the developer's .env."""
     kept = {name: value for name, value in os.environ.items() if not name.startswith("HTTP_REPLAY")}
     unittest.enterModuleContext(mock.patch.dict(os.environ, kept, clear=True))
     unittest.enterModuleContext(mock.patch.object(http_replay, "ENV_FILE", Path(os.devnull)))
@@ -193,7 +196,8 @@ class RequestsReplayTest(ReplayTestCase):
         self.assertIn("call 4; 3 recorded", str(error.exception))
 
     def test_multipart_bodies_match_without_their_random_boundary(self):
-        # requests picks a new random boundary for each upload, as azure-core does for file uploads.
+        # requests picks a new random boundary for each upload, as azure-core does for
+        # file uploads.
         def upload():
             files = {"file": ("notes.md", b"# Notes\n"), "purpose": (None, "assistants")}
             return requests.post(f"{self.base}/files", files=files, timeout=10).status_code
@@ -241,7 +245,8 @@ class HttpxReplayTest(ReplayTestCase):
                 self.assertEqual(self.replay(calls), (recorded[0], _redacted(recorded[1])))
 
     def test_replayed_body_is_logged_when_read(self):
-        # The log must see a replayed body as the caller reads it, as with a real one, not only at exit.
+        # The log must see a replayed body as the caller reads it, as with a real one,
+        # not only at exit.
         for module in self.clients():
             with self.subTest(module=module.__name__):
                 self.folder = self.new_folder()
@@ -269,7 +274,8 @@ class HttpxReplayTest(ReplayTestCase):
 @unittest.skipIf(aiohttp is None, "aiohttp is not installed")
 class AiohttpReplayTest(ReplayTestCase):
     def test_azure_core_style_reads(self):
-        # azure-core: auto_decompress=False, read(), and decompression only when Content-Encoding says so.
+        # azure-core: auto_decompress=False, read(), and decompression only when
+        # Content-Encoding says so.
         def calls():
             async def main():
                 async with aiohttp.ClientSession(auto_decompress=False) as session:
@@ -330,7 +336,8 @@ class ReplaySafetyTest(ReplayTestCase):
         self.assertEqual(http_replay.mode(), "off")
 
     def with_env_file(self, text):
-        """Point the module at a .env with this text and a repo root in the test folder."""
+        """Point the module at a .env with this text and a repo root in the test
+        folder."""
         env_file = self.folder / ".env"
         env_file.write_text(text)
         for name, value in (("ENV_FILE", env_file), ("REPO_ROOT", self.folder)):

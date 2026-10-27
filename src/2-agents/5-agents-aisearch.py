@@ -1,27 +1,32 @@
-"""Foundry agent with an Azure AI Search tool and a local price function tool (5-agents-aisearch.ipynb) as a script.
+"""Foundry agent with an Azure AI Search tool and a local price function tool
+(5-agents-aisearch.ipynb) as a script.
 
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_service/5-agents-aisearch.ipynb
 
-This script builds a shopping assistant for a small fitness product catalog. It uses the classic agents API, as
-Microsoft's notebook does; 5-agents-aisearch-v2.py is the same agent on the new agents API, compared on newer models.
+This script builds a shopping assistant for a small fitness product catalog. It uses the
+classic agents API, as Microsoft's notebook does; 5-agents-aisearch-v2.py is the same
+agent on the new agents API, compared on newer models.
 
 What it does:
 1. Builds a small fitness product index in Azure AI Search.
 2. Gives a classic-API agent two tools:
-   - Azure AI Search (through the project's Azure AI Search connection), to find products by description;
-   - find_items_under(max_price, category), a price filter that runs in this script as a function tool, to answer
-     budget questions exactly.
-3. Asks the notebook's two questions and prints each run's status and every tool call, so you can see which tool the
-   agent chose and what came back.
+   - Azure AI Search (through the project's Azure AI Search connection), to find
+     products by description;
+   - find_items_under(max_price, category), a price filter that runs in this script as a
+     function tool, to answer budget questions exactly.
+3. Asks the notebook's two questions and prints each run's status and every tool call,
+   so you can see which tool the agent chose and what came back.
 4. Deletes each question's thread after its answer, the agent and the index at the end.
 
-Finding: the search tool passes only text fields to the model, so prices never reached it and the agent said they
-weren't given; putting the price into the product text and adding the price filter fixed it.
+Finding: the search tool passes only text fields to the model, so prices never reached
+it and the agent said they weren't given; putting the price into the product text and
+adding the price filter fixed it.
 
-Settings from .env: AZURE_AI_SERVICES_ENDPOINT (or AZURE_AI_PROJECT_ENDPOINT), AZURE_AI_PROJECT_NAME,
-MODEL_DEPLOYMENT_NAME, AZURE_AI_SEARCH_ENDPOINT, AZURE_AI_SEARCH_API_KEY, optional AZURE_AI_SEARCH_CONNECTION_NAME.
-Paid: a few gpt-4o-mini calls, well under $0.01 per run.
+Settings from .env: AZURE_AI_SERVICES_ENDPOINT (or AZURE_AI_PROJECT_ENDPOINT),
+AZURE_AI_PROJECT_NAME, MODEL_DEPLOYMENT_NAME, AZURE_AI_SEARCH_ENDPOINT,
+AZURE_AI_SEARCH_API_KEY, optional AZURE_AI_SEARCH_CONNECTION_NAME. Paid: a few
+gpt-4o-mini calls, well under $0.01 per run.
 
 Run from the project root:
     uv run python src/2-agents/5-agents-aisearch.py
@@ -219,8 +224,9 @@ def create_fitness_index(index_client):
 
 
 def with_price_text(document):
-    # The Azure AI Search tool only passes text fields to the model (it selects FitnessItemID, Name, Category,
-    # Description), so the numeric Price never reached it. The numeric Price stays for filtering and sorting.
+    # The Azure AI Search tool only passes text fields to the model (it selects
+    # FitnessItemID, Name, Category, Description), so the numeric Price never reached
+    # it. The numeric Price stays for filtering and sorting.
     return {**document, "Description": f"{document['Description']} Price: ${document['Price']:.2f}."}
 
 
@@ -242,8 +248,9 @@ def upload_fitness_documents(search_client):
 
 
 def make_find_items_under(search_client):
-    # Local function tool: the agent asks for it, and this script runs it (not Azure). Same logic as the
-    # Semantic Kernel plugin in src/4-frameworks/1-rag-sk-agents-aisearch.py.
+    # Local function tool: the agent asks for it, and this script runs it (not Azure).
+    # Same logic as the Semantic Kernel plugin in
+    # src/4-frameworks/1-rag-sk-agents-aisearch.py.
     def products(filter_expression, top=10):
         results = search_client.search(
             search_text="*",
@@ -260,7 +267,7 @@ def make_find_items_under(search_client):
         :param max_price: Maximum price in US dollars.
         :param category: Product category, or empty for all categories.
         :return: Matching products with their prices.
-        """
+        """  # noqa: W505 - the agent gets this docstring as the tool description
         category = category.strip().title() if category and category.strip() else None
         category_filter = f" and Category eq '{category.replace(chr(39), chr(39) * 2)}'" if category else ""
 
@@ -423,7 +430,8 @@ def print_thread_messages(project_client, thread_id):
 
 
 def print_tool_calls(project_client, thread_id, run):
-    # Shows which tools the model actually called in this run, so a skipped search is visible.
+    # Shows which tools the model actually called in this run, so a skipped search is
+    # visible.
     print("Tool calls:")
     calls = 0
     for step in project_client.agents.run_steps.list(thread_id=thread_id, run_id=run.id, order=ListSortOrder.ASCENDING):
@@ -434,7 +442,8 @@ def print_tool_calls(project_client, thread_id, run):
                 print(f"    azure_ai_search output: {call.azure_ai_search.get('output')}")
             elif call.type == "function":
                 print(f"  - function {call.function.name}({call.function.arguments})")
-                # The SDK model has no output attribute; the value is only in the raw response data.
+                # The SDK model has no output attribute; the value is only in the raw
+                # response data.
                 print(f"    output: {call.function.get('output')}")
             else:
                 print(f"  - {call.type}")
@@ -472,7 +481,8 @@ def run_agent_query(project_client, agent, question):
         print_thread_messages(project_client, thread.id)
         return run
     finally:
-        # Each question gets its own thread, so delete it here rather than in the final cleanup.
+        # Each question gets its own thread, so delete it here rather than in the final
+        # cleanup.
         try:
             project_client.agents.threads.delete(thread.id)
             print(f"Deleted thread: {thread.id}")
@@ -498,12 +508,14 @@ def cleanup_index(index_client):
 
 
 def run_questions(project_client, agent):
-    """Step 3: ask each question on its own thread; return (number, status, error) for each run that didn't complete."""
+    """Step 3: ask each question on its own thread; return (number, status, error) for
+    each run that didn't complete."""
     failed_runs = []
     for index, question in enumerate(QUESTIONS, start=1):
         print_section(f"QUESTION {index} OF {len(QUESTIONS)}")
         run = run_agent_query(project_client, agent, question)
-        # Azure reports a failed run as a status, not as a Python error, so check it here.
+        # Azure reports a failed run as a status, not as a Python error, so check it
+        # here.
         if run.status != RunStatus.COMPLETED:
             failed_runs.append((index, run.status, getattr(run, "last_error", None)))
     return failed_runs
@@ -524,7 +536,8 @@ def check_results(failed_runs):
 
 
 def cleanup(project_client, agent, index_client):
-    """Step 4: delete the agent and the index (each question's thread is already deleted), close the project client."""
+    """Step 4: delete the agent and the index (each question's thread is already
+    deleted), close the project client."""
     if DELETE_AGENT_AFTER_RUN and project_client is not None and agent is not None:
         try:
             cleanup_agent(project_client, agent)

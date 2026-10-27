@@ -1,31 +1,36 @@
-"""The same chat completion sent twice: once as a raw REST request, once through the openai SDK.
+"""The same chat completion sent twice: once as a raw REST request, once through the
+openai SDK.
 
 New: not in Microsoft's workshop.
 
-This script sends the same chat question to the same model twice, once as an HTTP request built by hand and once
-through the OpenAI Python library. It is a learning companion to the chat completion lab (1-basic-chat-completion.ipynb)
-that shows what the SDK does under the hood: the library adds convenience, not magic. The request body is the same, and
-the library only adds its own headers (its user agent, for example).
+This script sends the same chat question to the same model twice, once as an HTTP
+request built by hand and once through the OpenAI Python library. It is a learning
+companion to the chat completion lab (1-basic-chat-completion.ipynb) that shows what the
+SDK does under the hood: the library adds convenience, not magic. The request body is
+the same, and the library only adds its own headers (its user agent, for example).
 
 What it does:
-  1. REST: `requests.post` to {OPENAI_ENDPOINT}/openai/deployments/{deployment}/chat/completions?api-version=...
+  1. REST: `requests.post` to
+     {OPENAI_ENDPOINT}/openai/deployments/{deployment}/chat/completions?api-version=...
      with an `Authorization: Bearer <token>` header and a JSON body.
-  2. SDK:  `AzureOpenAI(...).chat.completions.with_raw_response.create(...)`, which builds that same request and
-     also exposes the HTTP response's status.
+  2. SDK:  `AzureOpenAI(...).chat.completions.with_raw_response.create(...)`, which
+     builds that same request and also exposes the HTTP response's status.
   3. A side-by-side table at the end compares status, latency, tokens and answer length.
 
 Details:
-- Both calls go to the same Azure OpenAI deployment with the same messages and settings, signed in with the same
-  Entra ID token, so no API key is involved.
-- The HTTP log (workshop_utils.http_log) prints both requests and responses in full, headers and JSON bodies, with the
-  token redacted, so the two can be compared line by line.
+- Both calls go to the same Azure OpenAI deployment with the same messages and settings,
+  signed in with the same Entra ID token, so no API key is involved.
+- The HTTP log (workshop_utils.http_log) prints both requests and responses in full,
+  headers and JSON bodies, with the token redacted, so the two can be compared line by
+  line.
 - Exits with 1 unless both calls return an answer.
 
-Settings from .env: OPENAI_ENDPOINT, OPENAI_API_VERSION, MODEL_DEPLOYMENT_NAME. Two small paid calls on
-gpt-4o-mini, well under $0.01 per run.
+Settings from .env: OPENAI_ENDPOINT, OPENAI_API_VERSION, MODEL_DEPLOYMENT_NAME. Two
+small paid calls on gpt-4o-mini, well under $0.01 per run.
 
 Run from the project root:
-    uv run python src/1-models/1-basic-chat-completion-rest-vs-sdk.py [--model gpt-4o-mini]
+    uv run python src/1-models/1-basic-chat-completion-rest-vs-sdk.py
+        [--model gpt-4o-mini]
 """
 
 import argparse
@@ -61,7 +66,8 @@ def require_env(name):
 
 
 def call_rest(endpoint, api_version, deployment, token, messages):
-    """POST the chat completion request by hand; return (status, seconds, body or None)."""
+    """POST the chat completion request by hand; return (status, seconds, body or
+    None)."""
     url = f"{endpoint.rstrip('/')}/openai/deployments/{deployment}/chat/completions"
     params = {"api-version": api_version}
     body = {"messages": messages, **SETTINGS}
@@ -76,7 +82,8 @@ def call_rest(endpoint, api_version, deployment, token, messages):
 
 
 def call_sdk(openai_client, deployment, messages):
-    """Same request through the SDK; return (status, seconds, ChatCompletion). The HTTP log shows the request."""
+    """Same request through the SDK; return (status, seconds, ChatCompletion). The HTTP
+    log shows the request."""
     start = time.perf_counter()
     raw = openai_client.chat.completions.with_raw_response.create(model=deployment, messages=messages, **SETTINGS)
     seconds = time.perf_counter() - start
@@ -100,7 +107,8 @@ def load_settings(model):
 
 
 def rest_step(endpoint, api_version, model, token_provider):
-    """Step 1: the request by hand with requests.post; return status, latency, answer and token counts."""
+    """Step 1: the request by hand with requests.post; return status, latency, answer
+    and token counts."""
     token = token_provider()
     status, seconds, body = call_rest(endpoint, api_version, model, token, MESSAGES)
     answer, usage = "", {}
@@ -119,7 +127,8 @@ def rest_step(endpoint, api_version, model, token_provider):
 
 
 def sdk_step(endpoint, api_version, model, token_provider):
-    """Step 2: the same request through the AzureOpenAI client; return the same fields as rest_step()."""
+    """Step 2: the same request through the AzureOpenAI client; return the same fields
+    as rest_step()."""
     openai_client = AzureOpenAI(
         azure_endpoint=endpoint, azure_ad_token_provider=token_provider, api_version=api_version
     )
@@ -162,7 +171,8 @@ def main():
     args = parse_args()
     endpoint, api_version = load_settings(args.model)
     print(f"User: {QUESTION}")
-    # One Entra ID token provider for both sides: REST puts the token in the header itself, the SDK calls it.
+    # One Entra ID token provider for both sides: REST puts the token in the header
+    # itself, the SDK calls it.
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
 
     print_section("1. REST: requests.post")

@@ -1,36 +1,45 @@
-"""Record web service calls to JSON files once, then replay them: the same code runs again without paying again.
+"""Record web service calls to JSON files once, then replay them: the same code runs
+again without paying again.
 
-Settings (read when http_log.enable() runs, from the shell or else from the repo's .env, since the labs load .env
-only after enable()):
+Settings (read when http_log.enable() runs, from the shell or else from the repo's .env,
+since the labs load .env only after enable()):
     HTTP_REPLAY                off (default) | record | replay
-    HTTP_REPLAY_DIR            folder of the recording (one folder per scenario); needed for replay; a record run
-                               without it saves to runs/recordings/<script>-<timestamp>/
-    HTTP_REPLAY_IGNORE_FIELDS  JSON body fields left out when requests are matched (comma-separated names, at any
-                               depth); default none
+    HTTP_REPLAY_DIR            folder of the recording (one folder per scenario); needed
+                               for replay; a record run without it saves to
+                               runs/recordings/<script>-<timestamp>/
+    HTTP_REPLAY_IGNORE_FIELDS  JSON body fields left out when requests are matched
+                               (comma-separated names, at any depth); default none
 
-record: every call is made for real, and each finished call is saved as one JSON file in HTTP_REPLAY_DIR: the
-request (method, URL, headers, body) and the whole response (status, headers, body, never shortened; a server-sent
-event stream is kept as its text). recording-info.txt next to them notes the date, command, git commit and installed
-package versions. Secrets are redacted (authorization and key headers, key query parameters, token,
-key and credential fields in JSON bodies); the shape of a redacted object is kept, so code that reads
-`credentials.key` still works on replay. Real hosts and IDs stay as they are: recordings are private files.
+record: every call is made for real, and each finished call is saved as one JSON file in
+HTTP_REPLAY_DIR: the request (method, URL, headers, body) and the whole response
+(status, headers, body, never shortened; a server-sent event stream is kept as its
+text). recording-info.txt next to them notes the date, command, git commit and installed
+package versions. Secrets are redacted (authorization and key headers, key query
+parameters, token, key and credential fields in JSON bodies); the shape of a redacted
+object is kept, so code that reads `credentials.key` still works on replay. Real hosts
+and IDs stay as they are: recordings are private files.
 
-replay: nothing leaves the machine. Each request is matched to a recorded one by method, URL (host, path and sorted
-query) and body (JSON compared by value, HTTP_REPLAY_IGNORE_FIELDS left out; a multipart upload without its random
-boundary); headers are not compared (auth, request IDs, dates, user agent). When the same request was made several
-times, the 1st replay gets the 1st recorded answer, the 2nd the 2nd, and so on (an agent run polled until it ends, for
-example). A request with no recorded answer raises
-HttpReplayMiss naming it; there is no fall-back to the real service, so a replay can't cost money. Also in replay:
-connections to anything but this machine (loopback) are refused (HttpReplayNetworkBlocked), and the azure-identity
-credentials (DefaultAzureCredential, AzureCliCredential, sync and async) return a placeholder token, so no sign-in or
-token request is needed. Replayed responses carry the header `x-http-replay: <file name>`.
+replay: nothing leaves the machine. Each request is matched to a recorded one by method,
+URL (host, path and sorted query) and body (JSON compared by value,
+HTTP_REPLAY_IGNORE_FIELDS left out; a multipart upload without its random boundary);
+headers are not compared (auth, request IDs, dates, user agent). When the same request
+was made several times, the 1st replay gets the 1st recorded answer, the 2nd the 2nd,
+and so on (an agent run polled until it ends, for example). A request with no recorded
+answer raises HttpReplayMiss naming it; there is no fall-back to the real service, so a
+replay can't cost money. Also in replay: connections to anything but this machine
+(loopback) are refused (HttpReplayNetworkBlocked), and the azure-identity credentials
+(DefaultAzureCredential, AzureCliCredential, sync and async) return a placeholder token,
+so no sign-in or token request is needed. Replayed responses carry the header
+`x-http-replay: <file name>`.
 
-Covered: requests, httpx2 and httpx, and aiohttp (bodies read with `read()`, as azure-core does). Not covered: other
-protocols such as AMQP (Event Hubs) or gRPC, so a script that uses them must not run in record or replay mode.
+Covered: requests, httpx2 and httpx, and aiohttp (bodies read with `read()`, as
+azure-core does). Not covered: other protocols such as AMQP (Event Hubs) or gRPC, so a
+script that uses them must not run in record or replay mode.
 
-Limits: a replay shows that the code still handles the recorded answers, not that the service still answers the same
-way. A changed prompt, model or SDK version changes the requests and needs a new recording; so do random or
-time-based values in request bodies (seed them, or list them in HTTP_REPLAY_IGNORE_FIELDS).
+Limits: a replay shows that the code still handles the recorded answers, not that the
+service still answers the same way. A changed prompt, model or SDK version changes the
+requests and needs a new recording; so do random or time-based values in request bodies
+(seed them, or list them in HTTP_REPLAY_IGNORE_FIELDS).
 
 Started by http_log.enable(); `install()` is safe to call more than once.
 """
@@ -60,7 +69,8 @@ from workshop_utils.settings import ENV_FILE, REPO_ROOT
 
 MODES = ("off", "record", "replay")
 REPLAY_HEADER = "x-http-replay"
-# Response headers that describe the bytes on the wire; recordings keep the decompressed body, so they are dropped.
+# Response headers that describe the bytes on the wire; recordings keep the decompressed
+# body, so they are dropped.
 WIRE_HEADERS = {"content-length", "content-encoding", "transfer-encoding"}
 PLACEHOLDER_TOKEN = "http-replay-placeholder-token"
 KEPT_IN_SECRETS = {"type", "kind"}  # fields kept as they are inside a redacted object
@@ -86,7 +96,8 @@ def mode():
 
 
 def install(mode=None, directory=None, ignore_fields=None):
-    """Start record or replay as HTTP_REPLAY (or the arguments) say; does nothing when the mode is off."""
+    """Start record or replay as HTTP_REPLAY (or the arguments) say; does nothing when
+    the mode is off."""
     mode = (mode or _setting("HTTP_REPLAY") or "off").strip().lower() or "off"
     if mode not in MODES:
         raise ValueError(f"HTTP_REPLAY must be one of {', '.join(MODES)}, not {mode!r}")
@@ -110,7 +121,8 @@ def install(mode=None, directory=None, ignore_fields=None):
         http_log.add_observer(_save)
     else:
         _load()
-        # The replay hooks go under the logging hooks, so a replayed call is logged like a real one.
+        # The replay hooks go under the logging hooks, so a replayed call is logged like
+        # a real one.
         logging_on = bool(http_log._originals)
         http_log.disable()
         _guard_network()
@@ -125,21 +137,24 @@ def install(mode=None, directory=None, ignore_fields=None):
 
 
 def _setting(name):
-    """The shell's value of an HTTP_REPLAY* setting, else the one in the repo's .env, else None."""
+    """The shell's value of an HTTP_REPLAY* setting, else the one in the repo's .env,
+    else None."""
     if name in os.environ:
         return os.environ[name]
     return dotenv_values(ENV_FILE).get(name) if ENV_FILE.exists() else None
 
 
 def _default_directory():
-    """runs/recordings/<script>-<timestamp>/ at the repo root, for a record run without HTTP_REPLAY_DIR."""
+    """runs/recordings/<script>-<timestamp>/ at the repo root, for a record run without
+    HTTP_REPLAY_DIR."""
     script = Path(sys.argv[0]).stem or "python"
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     return REPO_ROOT / "runs" / "recordings" / f"{script}-{stamp}"
 
 
 def _shown_path(path):
-    """The path relative to the repo when it is inside it, so printed output carries no home folder."""
+    """The path relative to the repo when it is inside it, so printed output carries no
+    home folder."""
     try:
         return path.resolve().relative_to(REPO_ROOT)
     except ValueError:
@@ -160,7 +175,8 @@ def _git_commit():
 
 
 def _write_recording_info():
-    """recording-info.txt: when and how the recording was made, so a later replay can be judged against it."""
+    """recording-info.txt: when and how the recording was made, so a later replay can be
+    judged against it."""
     packages = sorted(f"{dist.metadata['Name']}=={dist.version}" for dist in metadata.distributions())
     commit = _git_commit()
     lines = [
@@ -175,7 +191,8 @@ def _write_recording_info():
 
 
 def uninstall():
-    """Stop recording or replaying (used by the tests). Also stops logging, whose hooks sit on top of the replay."""
+    """Stop recording or replaying (used by the tests). Also stops logging, whose hooks
+    sit on top of the replay."""
     http_log.disable()
     http_log.remove_observer(_save)
     for (owner, name), original in _originals.items():
@@ -186,12 +203,13 @@ def uninstall():
     _state.update(mode="off", dir=None, ignore=frozenset())
 
 
-# ---------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # Matching: the same key in both modes.
 
 
 def match_key(method, url, body):
-    """Method, host, path, sorted query and the canonical body of a request, as one string."""
+    """Method, host, path, sorted query and the canonical body of a request, as one
+    string."""
     parts = urlsplit(http_log._redact_url(str(url)))
     query = urlencode(sorted(parse_qsl(parts.query, keep_blank_values=True)))
     return f"{method.upper()} {parts.scheme}://{parts.netloc}{parts.path}?{query}\n{_canonical_body(body)}"
@@ -232,8 +250,9 @@ def _drop_fields(value, names):
 
 
 def _redact_secrets(value, inside_secret=False, key=None):
-    """Replace secret values with "<redacted>", keeping the shape of objects under a secret field name and their
-    `type` / `kind` fields (an SDK picks the credential class from them)."""
+    """Replace secret values with "<redacted>", keeping the shape of objects under a
+    secret field name and their `type` / `kind` fields (an SDK picks the credential
+    class from them)."""
     if isinstance(value, dict):
         return {
             k: _redact_secrets(v, inside_secret or k.lower() in http_log.SECRET_FIELDS, k) for k, v in value.items()
@@ -245,13 +264,14 @@ def _redact_secrets(value, inside_secret=False, key=None):
     return value
 
 
-# ---------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # Record: http_log hands every finished call to _save.
 
 
 def _save(call, body, note):
     content_type = http_log._header(call.headers, "content-type") or ""
-    # A note means the body wasn't read to the end, except for answers that have no body.
+    # A note means the body wasn't read to the end, except for answers that have no
+    # body.
     bodiless = call.status in (204, 304) or call.method == "HEAD"
     if call.status is None or (note and not (bodiless and not call.received)):
         print(f"[http_replay] NOT RECORDED (body not complete: {note}): {call.method} {call.url}")
@@ -278,7 +298,8 @@ def _save(call, body, note):
 
 
 def _body_fields(body, content_type):
-    """The body as JSON (body_json), text (body_text) or base64 (body_base64), secrets redacted."""
+    """The body as JSON (body_json), text (body_text) or base64 (body_base64), secrets
+    redacted."""
     if not body:
         return {}
     if isinstance(body, str):
@@ -309,7 +330,7 @@ def _body_bytes(fields):
     return b""
 
 
-# ---------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # Replay: load the recording, then answer each request from it.
 
 
@@ -318,14 +339,16 @@ def _load():
     if not files:
         raise FileNotFoundError(f"no recorded calls in {_state['dir']}")
     for path in files:
-        # The key is computed now, from the saved request, so HTTP_REPLAY_IGNORE_FIELDS can change after recording.
+        # The key is computed now, from the saved request, so HTTP_REPLAY_IGNORE_FIELDS
+        # can change after recording.
         request = json.loads(path.read_text())["request"]
         key = match_key(request["method"], request["url"], _body_bytes(request))
         _recorded.setdefault(hashlib.sha256(key.encode()).hexdigest(), []).append(path)
 
 
 def _answer(method, url, body):
-    """(status, reason, headers, body bytes) of the recorded answer to this request, or HttpReplayMiss."""
+    """(status, reason, headers, body bytes) of the recorded answer to this request, or
+    HttpReplayMiss."""
     key = match_key(method, url, body)
     digest = hashlib.sha256(key.encode()).hexdigest()
     with _lock:
@@ -447,8 +470,9 @@ def _patch_httpx(module_name):
         return
 
     class ReplayStream(module.SyncByteStream, module.AsyncByteStream):
-        # A stream, not content=: httpx reads content= at once, before http_log wraps the stream, so the log would
-        # never see the body being read. A stream is read when the caller reads it, as a real one is.
+        # A stream, not content=: httpx reads content= at once, before http_log wraps
+        # the stream, so the log would never see the body being read. A stream is read
+        # when the caller reads it, as a real one is.
         def __init__(self, data):
             self.data = data
 
@@ -484,7 +508,8 @@ def _patch_aiohttp():
         return
 
     class Content:
-        """The part of aiohttp's StreamReader that azure-core uses for streamed bodies."""
+        """The part of aiohttp's StreamReader that azure-core uses for streamed
+        bodies."""
 
         def __init__(self, data):
             self._data = io.BytesIO(data)

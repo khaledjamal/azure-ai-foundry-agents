@@ -3,19 +3,22 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/3-basic-rag.ipynb
 
-This script shows retrieval-augmented generation (RAG), the usual way to steer a model to answer from your own
-documents instead of its general knowledge.
+This script shows retrieval-augmented generation (RAG), the usual way to steer a model
+to answer from your own documents instead of its general knowledge.
 
 What it does:
-1. Turns six health tips into embeddings and stores them in an Azure AI Search vector index.
-2. For each question, finds the three closest tips and gives only those to the model as context, with an instruction
-   to say "I'm not sure" when they don't cover the question.
+1. Turns six health tips into embeddings and stores them in an Azure AI Search vector
+   index.
+2. For each question, finds the three closest tips and gives only those to the model as
+   context, with an instruction to say "I'm not sure" when they don't cover the
+   question.
 
 Connection method:
-- Models: the openai package's AzureOpenAI client, created directly with the Azure OpenAI endpoint (OPENAI_ENDPOINT)
-  and an Entra ID token from the Azure CLI login.
+- Models: the openai package's AzureOpenAI client, created directly with the Azure
+  OpenAI endpoint (OPENAI_ENDPOINT) and an Entra ID token from the Azure CLI login.
 - Azure AI Search: its own endpoint and API key from .env.
-- Twin: 3-basic-rag-project-client.py gets the OpenAI client through the Foundry project SDK instead.
+- Twin: 3-basic-rag-project-client.py gets the OpenAI client through the Foundry project
+  SDK instead.
 
 Run from the project root:
     uv run python src/1-models/3-basic-rag-azure-openai.py

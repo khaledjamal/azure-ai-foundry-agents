@@ -1,7 +1,7 @@
 """Delete Foundry agents with an exact name from the project; all other agents are kept.
 
-Lists every agent first (id, name, model, created time), then deletes the ones whose name matches.
-With --dry-run it only lists them.
+Lists every agent first (id, name, model, created time), then deletes the ones whose
+name matches. With --dry-run it only lists them.
 
 Run from the project root:
     uv run python scripts/delete-agents.py --name fun-fit-health-advisor [--dry-run]

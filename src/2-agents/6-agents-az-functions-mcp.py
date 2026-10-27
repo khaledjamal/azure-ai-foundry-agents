@@ -1,32 +1,41 @@
-"""Foundry agent (new agents API, azure-ai-projects 2.x) that uses the Azure Functions MCP server's workout tools.
+"""Foundry agent (new agents API, azure-ai-projects 2.x) that uses the Azure Functions
+MCP server's workout tools.
 
-Replaces Microsoft's workshop notebook, which gave the agent an Azure Functions tool through Storage queues
-(that needs the standard agent setup); here the Function app is a remote MCP server instead:
+Replaces Microsoft's workshop notebook, which gave the agent an Azure Functions tool
+through Storage queues (that needs the standard agent setup); here the Function app is a
+remote MCP server instead:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_service/6-agents-az-functions.ipynb
 
-This script connects a Foundry agent to tools hosted outside Azure AI Foundry through MCP (Model Context Protocol), the
-open standard for giving agents tools. The tools run on a small Azure Functions app (src/functions-mcp-server): one
-lists workout goals, the other plans a workout.
+This script connects a Foundry agent to tools hosted outside Azure AI Foundry through
+MCP (Model Context Protocol), the open standard for giving agents tools. The tools run
+on a small Azure Functions app (src/functions-mcp-server): one lists workout goals, the
+other plans a workout.
 
 What it does:
-1. Checks the Function app with one request without a key, before creating the agent: HTTP 403 means it is stopped
-   (the script prints the start command and exits, instead of failing midway); HTTP 401 means it is running and
-   wants the key, as expected. That request also wakes the app, so the agent's first MCP call doesn't wait for a
-   cold start.
-2. Creates the agent. Its MCP tool points to the Function app's endpoint and authenticates through the project
-   connection `workout-mcp-key` (Custom keys, key name x-functions-key), so the server's key sits in a Foundry
-   project connection, not in the agent definition or the code.
+1. Checks the Function app with one request without a key, before creating the agent:
+   HTTP 403 means it is stopped (the script prints the start command and exits, instead
+   of failing midway); HTTP 401 means it is running and wants the key, as expected. That
+   request also wakes the app, so the agent's first MCP call doesn't wait for a cold
+   start.
+2. Creates the agent. Its MCP tool points to the Function app's endpoint and
+   authenticates through the project connection `workout-mcp-key` (Custom keys, key name
+   x-functions-key), so the server's key sits in a Foundry project connection, not in
+   the agent definition or the code.
 3. Runs two turns in one conversation:
-   - "Which workout goals can you plan for?"          -> expects a list_workout_goals call
-   - "Plan a 30-minute strength workout for me."      -> expects suggest_workout(goal=strength, minutes=30)
-   Every tool call needs approval: the script approves only list_workout_goals and suggest_workout on this server
-   and denies anything else, so the agent can't call anything else on its own.
+   - "Which workout goals can you plan for?"
+     -> expects a list_workout_goals call
+   - "Plan a 30-minute strength workout for me."
+     -> expects suggest_workout(goal=strength, minutes=30)
+   Every tool call needs approval: the script approves only list_workout_goals and
+   suggest_workout on this server and denies anything else, so the agent can't call
+   anything else on its own.
 4. Deletes the agent version at the end.
 Exits with 1 unless both calls happened and both turns got an answer.
 
-Settings from .env: AZURE_FUNCTIONS_MCP_URL, AZURE_AI_SERVICES_ENDPOINT (or AZURE_AI_PROJECT_ENDPOINT),
-AZURE_AI_PROJECT_NAME, MODEL_DEPLOYMENT_NAME, AZURE_RESOURCE_GROUP (only for the start hint). A few small paid
-calls on gpt-4o-mini, well under $0.01 per run.
+Settings from .env: AZURE_FUNCTIONS_MCP_URL, AZURE_AI_SERVICES_ENDPOINT (or
+AZURE_AI_PROJECT_ENDPOINT), AZURE_AI_PROJECT_NAME, MODEL_DEPLOYMENT_NAME,
+AZURE_RESOURCE_GROUP (only for the start hint). A few small paid calls on gpt-4o-mini,
+well under $0.01 per run.
 
 Needs azure-ai-projects>=2 (in the separate agents venv). Run from the project root:
     source ../../.venv-agents-v2/bin/activate
@@ -71,7 +80,8 @@ def get_project_endpoint():
 
 
 def check_function_app(url):
-    """Return True if the Function app is running (it answers 401 without a key); print why not otherwise."""
+    """Return True if the Function app is running (it answers 401 without a key); print
+    why not otherwise."""
     app_name = urlparse(url).hostname.split(".")[0]
     resource_group = os.getenv("AZURE_RESOURCE_GROUP") or "<resource-group>"
     try:
@@ -91,7 +101,8 @@ def check_function_app(url):
 
 
 def show_output(response, totals):
-    """Print the MCP items of one response; return the approval requests and the successful MCP calls."""
+    """Print the MCP items of one response; return the approval requests and the
+    successful MCP calls."""
     approvals, calls = [], []
     for item in response.output:
         if item.type == "mcp_list_tools":
@@ -117,7 +128,8 @@ def show_output(response, totals):
 
 
 def ask(openai_client, agent_reference, question, previous_response_id, totals):
-    """Send one user turn, answer its approval requests, and return the last response and the successful calls."""
+    """Send one user turn, answer its approval requests, and return the last response
+    and the successful calls."""
     print(f"\nUser: {question}")
     follow_up = {"previous_response_id": previous_response_id} if previous_response_id else {}
     response = openai_client.responses.create(input=question, extra_body=agent_reference, **follow_up)
@@ -166,7 +178,8 @@ def load_settings(model):
 
 
 def create_agent(project, model, server_url):
-    """Create an agent version with the MCP tool; the function key comes from the project connection."""
+    """Create an agent version with the MCP tool; the function key comes from the
+    project connection."""
     connection = project.connections.get(CONNECTION_NAME)
     print(f"Key from project connection: {connection.name} ({connection.type})")
     tool = MCPTool(
@@ -185,7 +198,8 @@ def create_agent(project, model, server_url):
 
 
 def run_conversation(openai_client, agent):
-    """Ask the questions as one conversation; return the (answer, successful calls) of each turn and the tokens."""
+    """Ask the questions as one conversation; return the (answer, successful calls) of
+    each turn and the tokens."""
     agent_reference = {"agent_reference": {"name": agent.name, "type": "agent_reference"}}
     totals = {"input": 0, "output": 0}
     turns = []
@@ -203,7 +217,8 @@ def cleanup(project, agent):
 
 
 def check_results(turns):
-    """Turn 1 listed the goals, turn 2 planned a 30-minute strength workout, and both turns answered."""
+    """Turn 1 listed the goals, turn 2 planned a 30-minute strength workout, and both
+    turns answered."""
     checks = []
     if len(turns) == len(QUESTIONS):
         (answer_1, calls_1), (answer_2, calls_2) = turns

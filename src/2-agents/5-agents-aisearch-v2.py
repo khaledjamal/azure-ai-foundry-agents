@@ -1,40 +1,50 @@
-"""Foundry agent (new agents API, azure-ai-projects 2.x) with an Azure AI Search tool and a local price function tool.
+"""Foundry agent (new agents API, azure-ai-projects 2.x) with an Azure AI Search tool
+and a local price function tool.
 
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_service/5-agents-aisearch.ipynb
 
-This script moves the shopping assistant of 5-agents-aisearch.py from the classic agents API, which Microsoft retires
-on 2027-03-31, to the new one, and compares models on it. Newer models such as gpt-5.4-mini fail with the search tool
-on the classic API, so this is where they can be compared with gpt-4o-mini.
+This script moves the shopping assistant of 5-agents-aisearch.py from the classic agents
+API, which Microsoft retires on 2027-03-31, to the new one, and compares models on it.
+Newer models such as gpt-5.4-mini fail with the search tool on the classic API, so this
+is where they can be compared with gpt-4o-mini.
 
 Same as 5-agents-aisearch.py:
-- The small fitness catalog, the two questions (each model answers both), the instructions and the price logic.
-- The same two tools: Azure AI Search, to find products, and a price filter (find_items_under) that runs in this
-  script, to answer budget questions exactly.
-- The price is also in each product's text, because the search tool passes only text fields to the model.
+- The small fitness catalog, the two questions (each model answers both), the
+  instructions and the price logic.
+- The same two tools: Azure AI Search, to find products, and a price filter
+  (find_items_under) that runs in this script, to answer budget questions exactly.
+- The price is also in each product's text, because the search tool passes only text
+  fields to the model.
 
 Differences on the new API:
-- One versioned prompt agent per model (agents.create_version), called through the Responses API with an agent
-  reference; no threads or runs.
-- The function tool is declared as a JSON schema. The script runs the price filter itself: when a response contains
-  function_call items, it runs find_items_under and sends function_call_output items back with previous_response_id,
-  until the model answers.
-- The search tool reaches the index through the project's Azure AI Search connection (project_connection_id).
+- One versioned prompt agent per model (agents.create_version), called through the
+  Responses API with an agent reference; no threads or runs.
+- The function tool is declared as a JSON schema. The script runs the price filter
+  itself: when a response contains function_call items, it runs find_items_under and
+  sends function_call_output items back with previous_response_id, until the model
+  answers.
+- The search tool reaches the index through the project's Azure AI Search connection
+  (project_connection_id).
 
 Checks per model (exits with 1 if any fails):
 - both questions answered,
 - question 1 used the search tool,
 - question 2 called find_items_under(max_price=300).
-A table at the end shows the tool calls, tokens (including the model's thinking), time and cost per model. Each agent
-version is deleted after its questions, the index at the end.
+A table at the end shows the tool calls, tokens (including the model's thinking), time
+and cost per model. Each agent version is deleted after its questions, the index at the
+end.
 
-Settings from .env: AZURE_AI_SERVICES_ENDPOINT (or AZURE_AI_PROJECT_ENDPOINT), AZURE_AI_PROJECT_NAME,
-MODEL_DEPLOYMENT_NAME (default model), AZURE_AI_SEARCH_ENDPOINT, AZURE_AI_SEARCH_API_KEY, optional
-AZURE_AI_SEARCH_CONNECTION_NAME. Paid: under $0.01 per run on gpt-4o-mini; prices per model are in PRICES below.
+Settings from .env: AZURE_AI_SERVICES_ENDPOINT (or AZURE_AI_PROJECT_ENDPOINT),
+AZURE_AI_PROJECT_NAME, MODEL_DEPLOYMENT_NAME (default model), AZURE_AI_SEARCH_ENDPOINT,
+AZURE_AI_SEARCH_API_KEY, optional AZURE_AI_SEARCH_CONNECTION_NAME. Paid: under $0.01 per
+run on gpt-4o-mini; prices per model are in PRICES below.
 
-Needs azure-ai-projects>=2 and azure-search-documents (in the separate agents venv). Run from the project root:
+Needs azure-ai-projects>=2 and azure-search-documents (in the separate agents venv). Run
+from the project root:
     source ../../.venv-agents-v2/bin/activate
-    python src/2-agents/5-agents-aisearch-v2.py [--models gpt-4o-mini,gpt-5.4-mini,gpt-5.4-nano]
+    python src/2-agents/5-agents-aisearch-v2.py
+        [--models gpt-4o-mini,gpt-5.4-mini,gpt-5.4-nano]
 """
 
 import argparse
@@ -66,8 +76,9 @@ AGENT_NAME = "fitness-agent-search-v2"
 MAX_FUNCTION_ROUNDS = 4
 OUTPUT_EXCERPT = 400
 
-# USD per 1M input / output tokens, Global deployment in East US 2, Azure Retail Prices API, checked 2026-10-23.
-# Reasoning tokens are billed as output tokens (and are included in the output count).
+# USD per 1M input / output tokens, Global deployment in East US 2, Azure Retail Prices
+# API, checked 2026-10-23. Reasoning tokens are billed as output tokens (and are
+# included in the output count).
 PRICES = {
     "gpt-4o-mini": (0.15, 0.60),
     "gpt-5.4-mini": (0.75, 4.50),
@@ -192,15 +203,16 @@ def create_fitness_index(index_client, search_client):
     index_client.create_index(SearchIndex(name=INDEX_NAME, fields=fields))
     print(f"Created index: {INDEX_NAME}")
 
-    # The search tool passes only text fields to the model, so the price also goes into the description.
+    # The search tool passes only text fields to the model, so the price also goes into
+    # the description.
     documents = [{**d, "Description": f"{d['Description']} Price: ${d['Price']:.2f}."} for d in SAMPLE_DOCUMENTS]
     failed = [result.key for result in search_client.upload_documents(documents=documents) if not result.succeeded]
     if failed:
         raise RuntimeError(f"Documents failed to upload: {failed}")
     print(f"Uploaded {len(documents)} products.")
 
-    # A new index can take a moment before its documents are searchable; wait instead of letting the agent search
-    # an empty index.
+    # A new index can take a moment before its documents are searchable; wait instead of
+    # letting the agent search an empty index.
     for _ in range(10):
         if len(list(search_client.search(search_text="*", top=10))) == len(documents):
             print("Index is searchable.")
@@ -210,7 +222,8 @@ def create_fitness_index(index_client, search_client):
 
 
 def make_find_items_under(search_client):
-    # Same logic as find_items_under in 5-agents-aisearch.py and the Semantic Kernel plugin.
+    # Same logic as find_items_under in 5-agents-aisearch.py and the Semantic Kernel
+    # plugin.
     def products(filter_expression, top=10):
         results = search_client.search(
             search_text="*",
@@ -252,7 +265,8 @@ def excerpt(value):
 
 
 def show_output(response, stats):
-    """Print one response's output items and add its tool calls and token usage to stats."""
+    """Print one response's output items and add its tool calls and token usage to
+    stats."""
     for item in response.output:
         if item.type == "function_call":
             print(f"  function_call  {item.name}({item.arguments})")
@@ -262,7 +276,8 @@ def show_output(response, stats):
         elif item.type == "reasoning":
             print("  reasoning (the model's thinking; its tokens are counted below)")
         else:
-            # azure_ai_search_call is the search; its result comes back as a separate azure_ai_search_call_output.
+            # azure_ai_search_call is the search; its result comes back as a separate
+            # azure_ai_search_call_output.
             if item.type.endswith("search_call"):
                 stats["searches"] += 1
             print(f"  {item.type}  status={getattr(item, 'status', None)}")
@@ -281,7 +296,8 @@ def show_output(response, stats):
 
 
 def ask(openai_client, agent_reference, question, find_items_under):
-    """One question: send it, run every function call the model asks for, and return the final answer and stats."""
+    """One question: send it, run every function call the model asks for, and return the
+    final answer and stats."""
     stats = {"searches": 0, "functions": [], "input": 0, "output": 0, "reasoning": 0}
     print(f"\nUser: {question}")
     started = time.monotonic()
@@ -313,7 +329,8 @@ def ask(openai_client, agent_reference, question, find_items_under):
 
 
 def run_model(project, openai_client, model, search_tool, find_items_under):
-    """Create an agent version on this model, ask every question, delete the version; return one stats per question."""
+    """Create an agent version on this model, ask every question, delete the version;
+    return one stats per question."""
     agent = project.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(
@@ -395,7 +412,8 @@ def load_settings(models):
 
 
 def make_search_tool(connection):
-    """The Azure AI Search tool on the index, reached through the project's Azure AI Search connection."""
+    """The Azure AI Search tool on the index, reached through the project's Azure AI
+    Search connection."""
     return AzureAISearchTool(
         azure_ai_search=AzureAISearchToolResource(
             indexes=[
@@ -411,12 +429,14 @@ def make_search_tool(connection):
 
 
 def run_models(project, models, search_tool, find_items_under):
-    """Step 2: run the questions on an agent version per model; return {model: stats per question}."""
+    """Step 2: run the questions on an agent version per model; return {model: stats per
+    question}."""
     openai_client = project.get_openai_client()
     all_results = {}
     for model in models:
         print_section(f"STEP 2: AGENT ON {model}")
-        # One model failing (for example a deployment that doesn't exist) shouldn't hide the others' results.
+        # One model failing (for example a deployment that doesn't exist) shouldn't hide
+        # the others' results.
         try:
             all_results[model] = run_model(project, openai_client, model, search_tool, find_items_under)
         except Exception as exc:

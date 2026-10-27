@@ -3,22 +3,24 @@
 Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/2-agent_service/1-basics.ipynb
 
-This script shows the building blocks of an AI agent in Azure AI Foundry's Agent Service: the agent (a model with
-instructions, here a health advisor), a conversation thread, the user's messages, and a run, in which the agent reads
-the thread and replies. Like Microsoft's notebook, it uses the classic agents API.
+This script shows the building blocks of an AI agent in Azure AI Foundry's Agent
+Service: the agent (a model with instructions, here a health advisor), a conversation
+thread, the user's messages, and a run, in which the agent reads the thread and replies.
+Like Microsoft's notebook, it uses the classic agents API.
 
 What it does:
 1. Creates a health advisor agent.
-2. Asks two questions on the same conversation thread, so the service keeps the conversation history instead of the
-   script resending it. It checks that each run really completed and exits with an error if one didn't.
+2. Asks two questions on the same conversation thread, so the service keeps the
+   conversation history instead of the script resending it. It checks that each run
+   really completed and exits with an error if one didn't.
 3. Prints the conversation.
 4. Deletes the thread and the agent.
 
 Connection method:
-- Client: AIProjectClient from azure-ai-projects, created with the Foundry project endpoint and an Entra ID token from
-  the Azure CLI login.
-- Agents are only reachable through the project client (project_client.agents); a plain AzureOpenAI client cannot use
-  them.
+- Client: AIProjectClient from azure-ai-projects, created with the Foundry project
+  endpoint and an Entra ID token from the Azure CLI login.
+- Agents are only reachable through the project client (project_client.agents); a plain
+  AzureOpenAI client cannot use them.
 
 Run from the project root:
     uv run python src/2-agents/1-basics.py
@@ -124,7 +126,8 @@ def main():
             for number, question in enumerate(QUESTIONS, start=1):
                 print_section(f"Question {number}")
                 run = ask(project_client, thread.id, agent.id, question)
-                # Azure reports a failed run as a status, not as a Python error, so check it here.
+                # Azure reports a failed run as a status, not as a Python error, so
+                # check it here.
                 if run.status != RunStatus.COMPLETED:
                     failed.append(number)
 
