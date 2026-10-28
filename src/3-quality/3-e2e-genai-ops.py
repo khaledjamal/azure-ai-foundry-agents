@@ -23,7 +23,8 @@ Sections (same numbers as the notebook; run all, or pick some with --sections):
 3. Security, attacking a test agent on the Agent Service with Microsoft-generated
    jailbreak prompts to see whether it refuses: DirectAttackSimulator
    (ADVERSARIAL_REWRITE, 2 results). The simulator runs every attack twice, as written
-   and with a jailbreak (UPIA) added.
+   and with a jailbreak (UPIA) added. It picks the jailbreaks at random, as in the
+   notebook; --seed N makes the pick repeatable (randomization_seed).
 4. Quality evaluation of evaluate_test_data.jsonl: relevance, coherence, fluency,
    groundedness (gpt-4o as a second model acting as judge), BLEU, F1, ROUGE-L, violence,
    hate/unfairness. Runs locally with evaluate(..., azure_ai_project=...) so the results
@@ -48,7 +49,7 @@ Outputs and cleanup:
 
 Run from the project root:
     uv run python src/3-quality/3-e2e-genai-ops.py [--output-dir DIR]
-        [--sections 1,2,...]
+        [--sections 1,2,...] [--seed N]
 """
 
 import argparse
@@ -398,6 +399,7 @@ def run_direct_attack(ctx, target):
             max_conversation_turns=SIMULATION_TURNS,
             max_simulation_results=SIMULATION_RESULTS,
             concurrent_async_task=1,
+            randomization_seed=ctx["seed"],
         )
     )
     return list(outputs["regular"]), list(outputs["jailbreak"])
@@ -723,6 +725,14 @@ def parse_args():
         "--sections", type=parse_sections, default=ALL_SECTIONS, help="comma-separated, e.g. 2,3 (default: all)"
     )
     parser.add_argument("--keep-index", action="store_true", help="keep the section 6 search index after the run")
+    # The indirect attack simulator (section 7) keeps the service's order without a
+    # seed, so the seed only goes to the direct attack one.
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="seed for the section 3 jailbreak pick (default: random, as the notebook)",
+    )
     return parser.parse_args()
 
 
@@ -742,6 +752,7 @@ def build_context(args):
         },
         "output_dir": args.output_dir,
         "keep_index": args.keep_index,
+        "seed": args.seed,
     }
     print(f"Project endpoint: {project_endpoint}")
     print(f"Chat/agent model: {ctx['model']}; judge model: {ctx['judge_config']['azure_deployment']}")
