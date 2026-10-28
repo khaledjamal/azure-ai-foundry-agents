@@ -43,15 +43,9 @@ Search tier it costs nothing).
 The "Workshop notebook" column links to Microsoft's original of each lab, pinned at upstream commit `273c24c`; each
 script's docstring has the same link.
 
-The sample outputs are the full console output of a recorded run of each script (the run date is in the file name).
-Runs recorded before the scripts moved to `src/` on 2026-10-23 show the old paths in their commands (for example
-`2-notebooks/2-agent_service/...`) and three old file names with underscores (`2-code_interpreter.py`,
-`4-bing_grounding.py`, `4-web_search.py`); the outputs are kept as recorded.
-All are passing runs except the GenAI Ops full run, kept as evidence of the two failures it hid (see the
-[findings](findings.md#red-teaming-an-agent-with-attack-simulators)) next to the rerun after the fix. My endpoints,
-resource names and GUIDs (subscription, tenant and other IDs) are replaced with placeholders such as `<resource-name>`
-and `<id>`; agent, thread and message IDs are left as they are, since the scripts delete those objects at the end of
-each run. Model answers differ from run to run.
+Each sample output is the full console output of a recorded run; its header gives the date, the exact command and,
+for a replay, when the answers were recorded. My endpoints, resource names and IDs are replaced with placeholders, and
+model answers differ from run to run.
 
 The image from the recorded image generation run: `gpt-image-2` at low quality, the notebook's prompt "A watercolor
 painting of fresh fruits and vegetables arranged in a heart shape" (a 512 px copy of the 1024 px original):
