@@ -195,15 +195,23 @@ HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/chat uv run python src/1-mode
 | Variable | Values |
 |---|---|
 | `HTTP_REPLAY` | `off` (default), `record`, `replay`; set in the shell or in `.env` (`HTTP_REPLAY=record` there saves every run) |
-| `HTTP_REPLAY_DIR` | folder of the recording: one JSON file per call, with the whole response; secrets redacted. Needed for `replay`; `record` without it saves to `runs/recordings/<script>-<timestamp>/`. Each recording has a `recording-info.txt` (date, command, git commit, package versions) |
+| `HTTP_REPLAY_DIR` | folder of the recording: one JSON file per call, with the whole response; secrets redacted. Needed for `replay`; `record` without it saves to `runs/recordings/<script>-<timestamp>/`. Each recording has a `recording-info.txt` (date, command, git commit, package versions, random seed) |
 | `HTTP_REPLAY_IGNORE_FIELDS` | JSON body fields left out when requests are matched, comma-separated (for values that change on every run) |
+| `HTTP_REPLAY_IGNORE_UUIDS` | `1`: any UUID in a request matches any UUID; for recordings made before the random seed, whose random IDs can't be made again |
 
 A replayed request must match a recorded one (method, URL, body); one that doesn't fails with `HttpReplayMiss`
 instead of calling the service, connections to other machines are refused, and the Azure CLI sign-in isn't needed.
 A replay shows that the code still handles the recorded answers, not that the service still answers the same way.
-Values that change between runs make a request new: the Web Search lab, for example, puts today's date in its
-instructions, so its recording replays only on the same day. HTTP only: requests, httpx and aiohttp; other protocols
-(Event Hubs' AMQP, for example) aren't covered.
+
+Values that change between runs would make a request new, so the recorder handles them:
+- Random values: each record run notes a random seed; replay reuses it for Python's `random` and `uuid.uuid4()`, so
+  the GenAI Ops lab's jailbreak pick and `evaluate()`'s run IDs come out the same.
+- Dates: the Bing grounding and Web Search labs put today's date in their instructions; `--today YYYY-MM-DD` replays
+  a recording made on another day.
+- Secrets the code parses: the Application Insights connection string is redacted in recordings and replaced on
+  replay by a fake one in the same format, so the tracing labs start; their trace uploads then fail quietly.
+
+HTTP only: requests, httpx and aiohttp; other protocols (Event Hubs' AMQP, for example) aren't covered.
 
 Unit tests against a local server (no Azure): `uv run python -m unittest discover -s tests -v`.
 

@@ -137,10 +137,12 @@ class ReplayTestCase(unittest.TestCase):
         finally:
             self.stop()
 
-    def replay(self, calls, ignore_fields=(), level="off"):
+    def replay(self, calls, ignore_fields=(), level="off", ignore_uuids=False):
         """Run calls() in replay mode and check that the server got no request."""
         hits = Handler.hits
-        http_replay.install(mode="replay", directory=self.folder, ignore_fields=ignore_fields)
+        http_replay.install(
+            mode="replay", directory=self.folder, ignore_fields=ignore_fields, ignore_uuids=ignore_uuids
+        )
         http_log.enable(level=level)
         try:
             return calls()
@@ -368,6 +370,18 @@ class ReplaySafetyTest(ReplayTestCase):
         info_path.write_text("\n".join(line for line in info_lines if not line.startswith(http_replay.SEED_LABEL)))
         replayed = self.replay(lambda: requests.get(f"{self.base}/reply", timeout=10).json())
         self.assertEqual(replayed["output_text"], "Hello")
+
+    def test_uuids_match_any_uuid_only_when_asked(self):
+        recorded_id = "88318f61-84a3-4be7-a20b-8eabd84d586d"
+        replayed_id = "0ac57b06-6e86-4d53-9500-cf6e7d403006"
+
+        def post_with(run_id):
+            return lambda: requests.post(f"{self.base}/results/{run_id}", json={"input": run_id}, timeout=10).json()
+
+        self.record(post_with(recorded_id))
+        self.assertEqual(self.replay(post_with(replayed_id), ignore_uuids=True)["echo"], recorded_id)
+        with self.assertRaises(http_replay.HttpReplayMiss):
+            self.replay(post_with(replayed_id))
 
     def test_replay_needs_a_recording(self):
         with self.assertRaises(FileNotFoundError):

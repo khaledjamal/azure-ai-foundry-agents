@@ -9,6 +9,10 @@ since the labs load .env only after enable()):
                                runs/recordings/<script>-<timestamp>/
     HTTP_REPLAY_IGNORE_FIELDS  JSON body fields left out when requests are matched
                                (comma-separated names, at any depth); default none
+    HTTP_REPLAY_IGNORE_UUIDS   1 = UUIDs anywhere in a request (path, query, body) match
+                               any UUID; default off. For recordings made before the
+                               random seed (see "Random values"), whose random IDs
+                               can't be made again.
 
 record: every call is made for real, and each finished call is saved as one JSON file in
 HTTP_REPLAY_DIR: the request (method, URL, headers, body) and the whole response
@@ -110,7 +114,8 @@ class HttpReplayNetworkBlocked(ConnectionRefusedError):
     """A connection to another machine attempted in replay mode."""
 
 
-_state = {"mode": "off", "dir": None, "ignore": frozenset()}
+_state = {"mode": "off", "dir": None, "ignore": frozenset(), "ignore_uuids": False}
+UUID_PATTERN = re.compile(r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b", re.IGNORECASE)
 _lock = threading.Lock()
 _recorded = {}  # replay: match key -> list of recording files, in recorded order
 _used = {}  # replay: match key -> how many of them have been replayed
@@ -121,7 +126,7 @@ def mode():
     return _state["mode"]
 
 
-def install(mode=None, directory=None, ignore_fields=None):
+def install(mode=None, directory=None, ignore_fields=None, ignore_uuids=None):
     """Start record or replay as HTTP_REPLAY (or the arguments) say; does nothing when
     the mode is off."""
     mode = (mode or _setting("HTTP_REPLAY") or "off").strip().lower() or "off"
@@ -140,7 +145,14 @@ def install(mode=None, directory=None, ignore_fields=None):
         raise ValueError(f"HTTP_REPLAY={mode} needs HTTP_REPLAY_DIR (the recording's folder)")
     if ignore_fields is None:
         ignore_fields = [f for f in (_setting("HTTP_REPLAY_IGNORE_FIELDS") or "").split(",") if f.strip()]
-    _state.update(mode=mode, dir=Path(directory), ignore=frozenset(f.strip() for f in ignore_fields))
+    if ignore_uuids is None:
+        ignore_uuids = (_setting("HTTP_REPLAY_IGNORE_UUIDS") or "").strip().lower() in ("1", "true", "yes")
+    _state.update(
+        mode=mode,
+        dir=Path(directory),
+        ignore=frozenset(f.strip() for f in ignore_fields),
+        ignore_uuids=ignore_uuids,
+    )
     if mode == "record":
         _state["dir"].mkdir(parents=True, exist_ok=True)
         random_seed = random.SystemRandom().randrange(2**32)
@@ -261,7 +273,7 @@ def uninstall():
     random.seed()  # back to an unpredictable state
     _recorded.clear()
     _used.clear()
-    _state.update(mode="off", dir=None, ignore=frozenset())
+    _state.update(mode="off", dir=None, ignore=frozenset(), ignore_uuids=False)
 
 
 # --------------------------------------------------------------------------------------
@@ -273,7 +285,10 @@ def match_key(method, url, body):
     string."""
     parts = urlsplit(http_log._redact_url(str(url)))
     query = urlencode(sorted(parse_qsl(parts.query, keep_blank_values=True)))
-    return f"{method.upper()} {parts.scheme}://{parts.netloc}{parts.path}?{query}\n{_canonical_body(body)}"
+    key = f"{method.upper()} {parts.scheme}://{parts.netloc}{parts.path}?{query}\n{_canonical_body(body)}"
+    if _state["ignore_uuids"]:
+        key = UUID_PATTERN.sub("<uuid>", key)
+    return key
 
 
 def _canonical_body(body):
