@@ -143,17 +143,17 @@ def load_settings(model):
     return project_endpoint, connection_name
 
 
-def create_agent(project, model, connection_name, today):
+def create_agent(project_client, model, connection_name, today):
     """Create an agent version with the Bing tool; the Bing key stays in the project
     connection."""
-    connection = project.connections.get(connection_name)
+    connection = project_client.connections.get(connection_name)
     print(f"Bing connection: {connection.name} ({connection.type})")
     tool = BingGroundingTool(
         bing_grounding=BingGroundingSearchToolParameters(
             search_configurations=[BingGroundingSearchConfiguration(project_connection_id=connection.id)]
         )
     )
-    agent = project.agents.create_version(
+    agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(model=model, instructions=build_instructions(today), tools=[tool]),
     )
@@ -199,8 +199,8 @@ def ask_questions(openai_client, agent):
     return results, totals
 
 
-def cleanup(project, agent):
-    project.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
+def cleanup(project_client, agent):
+    project_client.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
     print(f"\nAgent version deleted: {agent.name} v{agent.version}")
 
 
@@ -230,13 +230,16 @@ def main():
     args = parse_args()
     project_endpoint, connection_name = load_settings(args.model)
 
-    with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project:
-        openai_client = project.get_openai_client()
-        agent = create_agent(project, args.model, connection_name, args.today)
+    with (
+        DefaultAzureCredential() as credential,
+        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        project_client.get_openai_client() as openai_client,
+    ):
+        agent = create_agent(project_client, args.model, connection_name, args.today)
         try:
             results, totals = ask_questions(openai_client, agent)
         finally:
-            cleanup(project, agent)
+            cleanup(project_client, agent)
 
     print_totals(totals)
     passed = check_results(results)

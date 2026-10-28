@@ -250,10 +250,12 @@ def make_find_items_under(search_client):
     return find_items_under
 
 
-def find_search_connection(project):
+def find_search_connection(project_client):
     name = first_env("AZURE_AI_SEARCH_CONNECTION_NAME", "AI_SEARCH_CONNECTION_NAME")
     connection = (
-        project.connections.get(name) if name else project.connections.get_default(ConnectionType.AZURE_AI_SEARCH)
+        project_client.connections.get(name)
+        if name
+        else project_client.connections.get_default(ConnectionType.AZURE_AI_SEARCH)
     )
     print(f"Azure AI Search connection: {connection.name}")
     return connection
@@ -328,10 +330,10 @@ def ask(openai_client, agent_reference, question, find_items_under):
     return stats
 
 
-def run_model(project, openai_client, model, search_tool, find_items_under):
+def run_model(project_client, openai_client, model, search_tool, find_items_under):
     """Create an agent version on this model, ask every question, delete the version;
     return one stats per question."""
-    agent = project.agents.create_version(
+    agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(
             model=model, instructions=AGENT_INSTRUCTIONS, tools=[search_tool, FIND_ITEMS_UNDER_TOOL]
@@ -342,7 +344,7 @@ def run_model(project, openai_client, model, search_tool, find_items_under):
     try:
         return [ask(openai_client, agent_reference, question, find_items_under) for question in QUESTIONS]
     finally:
-        project.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
+        project_client.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
         print(f"\nAgent version deleted: {agent.name} v{agent.version}")
 
 
@@ -428,17 +430,16 @@ def make_search_tool(connection):
     )
 
 
-def run_models(project, models, search_tool, find_items_under):
+def run_models(project_client, openai_client, models, search_tool, find_items_under):
     """Step 2: run the questions on an agent version per model; return {model: stats per
     question}."""
-    openai_client = project.get_openai_client()
     all_results = {}
     for model in models:
         print_section(f"STEP 2: AGENT ON {model}")
         # One model failing (for example a deployment that doesn't exist) shouldn't hide
         # the others' results.
         try:
-            all_results[model] = run_model(project, openai_client, model, search_tool, find_items_under)
+            all_results[model] = run_model(project_client, openai_client, model, search_tool, find_items_under)
         except Exception as exc:
             print(f"Model {model} failed: {exc!r}")
             all_results[model] = []
@@ -477,10 +478,14 @@ def main():
         create_fitness_index(index_client, search_client)
         find_items_under = make_find_items_under(search_client)
 
-        with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project:
-            connection = find_search_connection(project)
+        with (
+            DefaultAzureCredential() as credential,
+            AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+            project_client.get_openai_client() as openai_client,
+        ):
+            connection = find_search_connection(project_client)
             search_tool = make_search_tool(connection)
-            all_results = run_models(project, args.models, search_tool, find_items_under)
+            all_results = run_models(project_client, openai_client, args.models, search_tool, find_items_under)
     finally:
         print_section("CLEANUP")
         cleanup(index_client)

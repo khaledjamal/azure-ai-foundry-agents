@@ -274,10 +274,9 @@ def section_model_selection(ctx):
             "  none: the models above are deployed in the Foundry resource itself, so no separate connection is needed"
         )
 
-    openai_client = project_client.get_openai_client(api_version=ctx["api_version"])
     print(f"\nChat call on {ctx['model']}")
     print(f"User: {CHAT_QUESTION}")
-    response = openai_client.chat.completions.create(
+    response = ctx["openai_client"].chat.completions.create(
         model=ctx["model"], messages=[{"role": "user", "content": CHAT_QUESTION}]
     )
     print(f"Assistant: {response.choices[0].message.content}")
@@ -638,7 +637,7 @@ def section_rag(ctx):
     search_endpoint = require_env("AZURE_AI_SEARCH_ENDPOINT")
     search_key = AzureKeyCredential(require_env("AZURE_AI_SEARCH_API_KEY"))
     embedding_model = require_env("EMBEDDING_MODEL_DEPLOYMENT_NAME")
-    openai_client = ctx["project_client"].get_openai_client(api_version=ctx["api_version"])
+    openai_client = ctx["openai_client"]
 
     index_client = SearchIndexClient(search_endpoint, search_key)
     vectors = embed(openai_client, embedding_model, [doc["content"] for doc in SAFETY_DOCS])
@@ -742,7 +741,6 @@ def build_context(args):
     project_endpoint = get_project_endpoint()
     ctx = {
         "project_endpoint": project_endpoint,
-        "credential": DefaultAzureCredential(),
         "model": require_env("MODEL_DEPLOYMENT_NAME"),
         "api_version": require_env("OPENAI_API_VERSION"),
         "judge_config": {
@@ -812,8 +810,12 @@ def main():
     load_environment()
     ctx = build_context(args)
 
-    with AIProjectClient(endpoint=ctx["project_endpoint"], credential=ctx["credential"]) as project_client:
-        ctx["project_client"] = project_client
+    with (
+        DefaultAzureCredential() as credential,
+        AIProjectClient(endpoint=ctx["project_endpoint"], credential=credential) as project_client,
+        project_client.get_openai_client(api_version=ctx["api_version"]) as openai_client,
+    ):
+        ctx.update(credential=credential, project_client=project_client, openai_client=openai_client)
         failures = run_sections(ctx, args.sections)
 
     passed = report(ctx, args.sections, failures)

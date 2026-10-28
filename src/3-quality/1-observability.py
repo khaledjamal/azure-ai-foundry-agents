@@ -217,8 +217,7 @@ def list_connections(project_client):
         print(f"  {connection.name}: {getattr(connection.type, 'value', connection.type)}")
 
 
-def chat_call(project_client, model, api_version):
-    openai_client = project_client.get_openai_client(api_version=api_version)
+def chat_call(openai_client, model):
     print(f"User: {CHAT_QUESTION}")
     response = openai_client.chat.completions.create(model=model, messages=[{"role": "user", "content": CHAT_QUESTION}])
     print(f"Assistant: {response.choices[0].message.content}")
@@ -292,7 +291,11 @@ def main():
     print(f"Project endpoint: {project_endpoint}")
     print(f"Model deployment: {model}")
 
-    with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project_client:
+    with (
+        DefaultAzureCredential() as credential,
+        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        project_client.get_openai_client(api_version=api_version) as openai_client,
+    ):
         provider, exporter = setup_tracing(args.destination, project_client, args.record_content)
         tracer = trace.get_tracer(SERVICE_NAME)
         session_id = uuid.uuid4().hex[:12]
@@ -307,7 +310,7 @@ def main():
 
             print_section("2. Chat call")
             with tracer.start_as_current_span("chat-call"):
-                chat_call(project_client, model, api_version)
+                chat_call(openai_client, model)
 
             print_section("3. File-search agent")
             failed_runs = run_agent(project_client, model, tracer)

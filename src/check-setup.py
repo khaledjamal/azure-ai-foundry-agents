@@ -95,11 +95,10 @@ def check_settings(checks):
         report(checks)
 
 
-def check_sign_in(checks):
-    """Step 2: get a token for Azure AI services; return the credential. Stops with the
-    summary if sign-in fails."""
+def check_sign_in(checks, credential):
+    """Step 2: get a token for Azure AI services. Stops with the summary if sign-in
+    fails."""
     print_section("2. Sign-in (DefaultAzureCredential)")
-    credential = DefaultAzureCredential()
     try:
         token = credential.get_token(COGNITIVE_SERVICES_SCOPE)
         expires = datetime.fromtimestamp(token.expires_on, tz=UTC)
@@ -109,7 +108,6 @@ def check_sign_in(checks):
         print(f"  Sign-in failed: {exc}\n  Run `az login` and try again.")
         checks.append(("FAIL", "sign-in"))
         report(checks)
-    return credential
 
 
 def check_project(checks, credential):
@@ -119,9 +117,9 @@ def check_project(checks, credential):
     endpoint = get_project_endpoint()
     print(f"  Project endpoint: {endpoint}")
     try:
-        with AIProjectClient(endpoint=endpoint, credential=credential) as project:
-            deployments = list(project.deployments.list())
-            connections = list(project.connections.list())
+        with AIProjectClient(endpoint=endpoint, credential=credential) as project_client:
+            deployments = list(project_client.deployments.list())
+            connections = list(project_client.connections.list())
     except Exception as exc:
         print(f"  Could not read the project: {exc}")
         checks.append(("FAIL", "project access"))
@@ -181,8 +179,11 @@ def check_search(checks):
 def main():
     checks = []  # (status, message) with status PASS, WARN or FAIL
     check_settings(checks)
-    credential = check_sign_in(checks)
-    deployments, connections = check_project(checks, credential)
+    # Made after check_settings(), which loads .env: the credential reads its settings
+    # from the environment when it is created.
+    with DefaultAzureCredential() as credential:
+        check_sign_in(checks, credential)
+        deployments, connections = check_project(checks, credential)
     check_named_deployments(checks, deployments, connections)
     check_search(checks)
     report(checks)

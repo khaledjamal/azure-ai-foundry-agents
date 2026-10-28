@@ -177,10 +177,10 @@ def load_settings(model):
     return server_url, project_endpoint
 
 
-def create_agent(project, model, server_url):
+def create_agent(project_client, model, server_url):
     """Create an agent version with the MCP tool; the function key comes from the
     project connection."""
-    connection = project.connections.get(CONNECTION_NAME)
+    connection = project_client.connections.get(CONNECTION_NAME)
     print(f"Key from project connection: {connection.name} ({connection.type})")
     tool = MCPTool(
         server_label=SERVER_LABEL,
@@ -189,7 +189,7 @@ def create_agent(project, model, server_url):
         require_approval="always",
         project_connection_id=connection.id,
     )
-    agent = project.agents.create_version(
+    agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(model=model, instructions=INSTRUCTIONS, tools=[tool]),
     )
@@ -211,8 +211,8 @@ def run_conversation(openai_client, agent):
     return turns, totals
 
 
-def cleanup(project, agent):
-    project.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
+def cleanup(project_client, agent):
+    project_client.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
     print(f"\nAgent version deleted: {agent.name} v{agent.version}")
 
 
@@ -243,13 +243,16 @@ def main():
     if not check_function_app(server_url):
         raise SystemExit(1)
 
-    with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project:
-        agent = create_agent(project, args.model, server_url)
-        openai_client = project.get_openai_client()
+    with (
+        DefaultAzureCredential() as credential,
+        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        project_client.get_openai_client() as openai_client,
+    ):
+        agent = create_agent(project_client, args.model, server_url)
         try:
             turns, totals = run_conversation(openai_client, agent)
         finally:
-            cleanup(project, agent)
+            cleanup(project_client, agent)
 
     print(f"Total tokens: input {totals['input']}, output {totals['output']}")
     passed = check_results(turns)
