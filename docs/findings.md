@@ -67,7 +67,10 @@ The service later changed how it reports a block (seen on 2026-10-26): a turn st
 end as a failed run with a content-filter error; it now ends as an `incomplete` run with `incomplete_details.reason`
 `content_filter` and no error. The script took these for real failures and failed the section, although the filter
 had done its job. It now counts both forms as blocked (azure-ai-agents 1.1.0 lists neither value, so it compares
-strings); an incomplete run for any other reason still fails the section.
+strings); an incomplete run for any other reason still fails the section. A
+[replay of the 2026-10-26 run's recorded answers](../sample-output/3-e2e-genai-ops.py-output-20261028-131803.txt)
+with the fixed code shows it: the turn that run reported as `agent run incomplete` now counts as blocked by the
+content filter, and all seven sections pass.
 
 The direct attacks go to the test agent. The indirect attack (XPIA) section, as in the notebook, only generates
 attacks against a fixed-reply target, so no model sees them: the lab shows nothing about the agent's resistance to
