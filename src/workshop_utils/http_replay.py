@@ -40,6 +40,15 @@ same format on replay, from FAKE_SECRETS:
 - The trace exports that follow find no recorded answer and fail inside the exporter;
   the lab's own calls still replay.
 
+Random values: a record run picks a fresh seed and notes it in recording-info.txt
+(`random seed: <n>`); replay reads it back. In both modes the seed:
+- seeds Python's global `random` (e.g. the attack simulators' prompt choice), and
+- drives `uuid.uuid4()` through its own generator (e.g. evaluate()'s run IDs),
+so the code makes the same choices and IDs on replay and its requests match. Each record
+run gets a new seed, so the IDs sent to the service stay unique. Not reached: os.urandom
+and `secrets`, numpy, values that depend on the order of concurrent tasks. A recording
+made before the seed existed replays without it (and says so).
+
 Covered: requests, httpx2 and httpx, and aiohttp (bodies read with `read()`, as
 azure-core does). Not covered: other protocols such as AMQP (Event Hubs) or gRPC, so a
 script that uses them must not run in record or replay mode.
@@ -59,12 +68,14 @@ import ipaddress
 import json
 import os
 import platform
+import random
 import re
 import shlex
 import socket
 import subprocess
 import sys
 import threading
+import uuid
 from datetime import datetime
 from importlib import metadata
 from pathlib import Path
@@ -81,6 +92,7 @@ REPLAY_HEADER = "x-http-replay"
 # body, so they are dropped.
 WIRE_HEADERS = {"content-length", "content-encoding", "transfer-encoding"}
 PLACEHOLDER_TOKEN = "http-replay-placeholder-token"
+SEED_LABEL = "random seed:"  # line in recording-info.txt
 KEPT_IN_SECRETS = {"type", "kind"}  # fields kept as they are inside a redacted object
 # Replay: connection type -> fake credentials.key in the format the client parses.
 FAKE_SECRETS = {
@@ -131,10 +143,17 @@ def install(mode=None, directory=None, ignore_fields=None):
     _state.update(mode=mode, dir=Path(directory), ignore=frozenset(f.strip() for f in ignore_fields))
     if mode == "record":
         _state["dir"].mkdir(parents=True, exist_ok=True)
-        _write_recording_info()
+        random_seed = random.SystemRandom().randrange(2**32)
+        _write_recording_info(random_seed)
+        _seed_random_values(random_seed)
         http_log.add_observer(_save)
     else:
         _load()
+        random_seed = _recorded_seed()
+        if random_seed is None:
+            print("[http_replay] no random seed in this recording: random values differ from the record run")
+        else:
+            _seed_random_values(random_seed)
         # The replay hooks go under the logging hooks, so a replayed call is logged like
         # a real one.
         logging_on = bool(http_log._originals)
@@ -188,9 +207,9 @@ def _git_commit():
     return f"{commit} (uncommitted changes)" if changes else commit
 
 
-def _write_recording_info():
+def _write_recording_info(random_seed):
     """recording-info.txt: when and how the recording was made, so a later replay can be
-    judged against it."""
+    judged against it, and the random seed that replay reuses."""
     packages = sorted(f"{dist.metadata['Name']}=={dist.version}" for dist in metadata.distributions())
     commit = _git_commit()
     lines = [
@@ -198,10 +217,37 @@ def _write_recording_info():
         f"command: {shlex.join(sys.argv)}",
         f"git commit: {commit}",
         f"python: {platform.python_version()}",
+        f"{SEED_LABEL} {random_seed}",
         "packages:",
         *(f"  {package}" for package in packages),
     ]
     (_state["dir"] / "recording-info.txt").write_text("\n".join(lines) + "\n")
+
+
+def _recorded_seed():
+    """The random seed in the recording's recording-info.txt, or None for a recording
+    made before seeds were noted."""
+    info_path = _state["dir"] / "recording-info.txt"
+    if not info_path.exists():
+        return None
+    for line in info_path.read_text().splitlines():
+        if line.startswith(SEED_LABEL):
+            return int(line.removeprefix(SEED_LABEL))
+    return None
+
+
+def _seed_random_values(random_seed):
+    """Seed the global `random` and give uuid.uuid4() its own generator from the same
+    seed, so a replay makes the same random choices and IDs as the record run."""
+    random.seed(random_seed)
+    uuid_random = random.Random(random_seed)
+
+    def seeded_uuid4():
+        with _lock:
+            bits = uuid_random.getrandbits(128)
+        return uuid.UUID(int=bits, version=4)
+
+    _patch(uuid, "uuid4", seeded_uuid4)
 
 
 def uninstall():
@@ -212,6 +258,7 @@ def uninstall():
     for (owner, name), original in _originals.items():
         setattr(owner, name, original)
     _originals.clear()
+    random.seed()  # back to an unpredictable state
     _recorded.clear()
     _used.clear()
     _state.update(mode="off", dir=None, ignore=frozenset())

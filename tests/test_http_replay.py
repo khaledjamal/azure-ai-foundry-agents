@@ -10,10 +10,12 @@ import asyncio
 import gzip
 import json
 import os
+import random
 import socket
 import tempfile
 import threading
 import unittest
+import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from unittest import mock
@@ -340,6 +342,32 @@ class ReplaySafetyTest(ReplayTestCase):
             return token, asyncio.run(get_async())
 
         self.assertEqual(self.replay(calls), (http_replay.PLACEHOLDER_TOKEN, http_replay.PLACEHOLDER_TOKEN))
+
+    def post_random_values(self):
+        """A request whose body holds a random choice and a uuid4, as the attack
+        simulators and evaluate() make them."""
+        random_input = f"{random.randint(0, 10**6)}-{uuid.uuid4()}"
+        return requests.post(f"{self.base}/reply", json={"input": random_input}, timeout=10).json()["echo"]
+
+    def test_random_choices_and_uuids_repeat_on_replay(self):
+        original_uuid4 = uuid.uuid4
+        recorded = self.record(self.post_random_values)
+        self.assertIn(http_replay.SEED_LABEL, (self.folder / "recording-info.txt").read_text())
+        self.assertEqual(self.replay(self.post_random_values), recorded)
+        self.assertIs(uuid.uuid4, original_uuid4)  # restored when replay stops
+
+    def test_each_record_run_gets_a_new_seed(self):
+        first = self.record(self.post_random_values)
+        self.folder = self.new_folder()
+        self.assertNotEqual(self.record(self.post_random_values), first)
+
+    def test_recording_without_a_seed_still_replays(self):
+        self.record(lambda: requests.get(f"{self.base}/reply", timeout=10))
+        info_path = self.folder / "recording-info.txt"
+        info_lines = info_path.read_text().splitlines()
+        info_path.write_text("\n".join(line for line in info_lines if not line.startswith(http_replay.SEED_LABEL)))
+        replayed = self.replay(lambda: requests.get(f"{self.base}/reply", timeout=10).json())
+        self.assertEqual(replayed["output_text"], "Hello")
 
     def test_replay_needs_a_recording(self):
         with self.assertRaises(FileNotFoundError):
