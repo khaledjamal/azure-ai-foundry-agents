@@ -348,7 +348,10 @@ def _fill_fake_secrets(value):
     if not isinstance(value, dict):
         return value
     filled = {k: _fill_fake_secrets(v) for k, v in value.items()}
-    fake_key = FAKE_SECRETS.get(filled.get("type"))
+    # A JSON Schema in an agent definition has `type` fields too, some of them lists
+    # such as ["string", "null"].
+    connection_type = filled.get("type")
+    fake_key = FAKE_SECRETS.get(connection_type) if isinstance(connection_type, str) else None
     credentials = filled.get("credentials")
     if fake_key and isinstance(credentials, dict) and credentials.get("key") == http_log.REDACTED:
         filled["credentials"] = {**credentials, "key": fake_key}

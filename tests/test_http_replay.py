@@ -193,6 +193,11 @@ class RequestsReplayTest(ReplayTestCase):
         self.assertEqual(replayed["credentials"]["key"], http_replay.FAKE_SECRETS["AppInsights"])
         self.assertEqual(replayed["name"], "appi")
 
+    def test_fake_secrets_skip_type_fields_that_are_not_names(self):
+        # An agent definition echoes its tools' JSON Schema, where `type` may be a list.
+        schema = {"type": "object", "properties": {"category": {"type": ["string", "null"]}}}
+        self.assertEqual(http_replay._fill_fake_secrets(schema), schema)
+
     def test_unrecorded_request_fails_and_never_reaches_the_server(self):
         self.record(lambda: requests.get(f"{self.base}/reply", timeout=10))
         with self.assertRaises(http_replay.HttpReplayMiss) as error:
