@@ -32,6 +32,14 @@ replay can't cost money. Also in replay: connections to anything but this machin
 so no sign-in or token request is needed. Replayed responses carry the header
 `x-http-replay: <file name>`.
 
+A redacted secret that the client parses (not only sends back) gets a fake value in the
+same format on replay, from FAKE_SECRETS:
+- Application Insights connection (`type: AppInsights`): `credentials.key` becomes a
+  connection string with a zero instrumentation key and an `.invalid` endpoint, so
+  configure_azure_monitor() starts.
+- The trace exports that follow find no recorded answer and fail inside the exporter;
+  the lab's own calls still replay.
+
 Covered: requests, httpx2 and httpx, and aiohttp (bodies read with `read()`, as
 azure-core does). Not covered: other protocols such as AMQP (Event Hubs) or gRPC, so a
 script that uses them must not run in record or replay mode.
@@ -74,6 +82,12 @@ REPLAY_HEADER = "x-http-replay"
 WIRE_HEADERS = {"content-length", "content-encoding", "transfer-encoding"}
 PLACEHOLDER_TOKEN = "http-replay-placeholder-token"
 KEPT_IN_SECRETS = {"type", "kind"}  # fields kept as they are inside a redacted object
+# Replay: connection type -> fake credentials.key in the format the client parses.
+FAKE_SECRETS = {
+    "AppInsights": (
+        "InstrumentationKey=00000000-0000-0000-0000-000000000000;IngestionEndpoint=https://http-replay.invalid/"
+    ),
+}
 
 
 class HttpReplayMiss(RuntimeError):
@@ -264,6 +278,21 @@ def _redact_secrets(value, inside_secret=False, key=None):
     return value
 
 
+def _fill_fake_secrets(value):
+    """Put a FAKE_SECRETS value in place of each redacted `credentials.key` of a
+    connection whose type the client parses; everything else stays as recorded."""
+    if isinstance(value, list):
+        return [_fill_fake_secrets(v) for v in value]
+    if not isinstance(value, dict):
+        return value
+    filled = {k: _fill_fake_secrets(v) for k, v in value.items()}
+    fake_key = FAKE_SECRETS.get(filled.get("type"))
+    credentials = filled.get("credentials")
+    if fake_key and isinstance(credentials, dict) and credentials.get("key") == http_log.REDACTED:
+        filled["credentials"] = {**credentials, "key": fake_key}
+    return filled
+
+
 # --------------------------------------------------------------------------------------
 # Record: http_log hands every finished call to _save.
 
@@ -362,6 +391,8 @@ def _answer(method, url, body):
         _used[digest] = count + 1
         path = files[count]
     response = json.loads(path.read_text())["response"]
+    if "body_json" in response:
+        response["body_json"] = _fill_fake_secrets(response["body_json"])
     body_bytes = _body_bytes(response)
     headers = [(n, v) for n, v in response["headers"]] + [
         ("Content-Length", str(len(body_bytes))),

@@ -51,6 +51,11 @@ def setUpModule():
 
 REPLY = {"output_text": "Hello", "access_token": "secret-token-value"}
 CONNECTION = {"name": "search", "credentials": {"type": "ApiKey", "key": "real-search-key"}}
+APP_INSIGHTS_CONNECTION = {
+    "name": "appi",
+    "type": "AppInsights",
+    "credentials": {"type": "ApiKey", "key": "InstrumentationKey=real-ikey;IngestionEndpoint=https://real.example/"},
+}
 SSE_BODY = 'data: {"delta": "Hel"}\n\ndata: {"delta": "lo"}\n\ndata: [DONE]\n\n'
 
 
@@ -74,6 +79,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/connection"):
             self.send_body(json.dumps(CONNECTION).encode(), "application/json")
+        elif self.path.startswith("/appinsights"):
+            self.send_body(json.dumps(APP_INSIGHTS_CONNECTION).encode(), "application/json")
         elif self.path.startswith("/run"):
             type(self).polls += 1
             status = "completed" if self.polls >= 3 else "in_progress"
@@ -174,6 +181,13 @@ class RequestsReplayTest(ReplayTestCase):
             self.assertNotIn(secret, text)
         replayed = self.replay(lambda: requests.get(f"{self.base}/connection?api-key=other", timeout=10).json())
         self.assertEqual(replayed["credentials"], {"type": "ApiKey", "key": "<redacted>"})
+
+    def test_parsed_secrets_get_a_fake_value_in_the_same_format(self):
+        self.record(lambda: requests.get(f"{self.base}/appinsights", timeout=10))
+        self.assertNotIn("real-ikey", self.recording_text())
+        replayed = self.replay(lambda: requests.get(f"{self.base}/appinsights", timeout=10).json())
+        self.assertEqual(replayed["credentials"]["key"], http_replay.FAKE_SECRETS["AppInsights"])
+        self.assertEqual(replayed["name"], "appi")
 
     def test_unrecorded_request_fails_and_never_reaches_the_server(self):
         self.record(lambda: requests.get(f"{self.base}/reply", timeout=10))
