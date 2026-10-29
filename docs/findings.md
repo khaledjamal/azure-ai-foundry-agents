@@ -9,6 +9,7 @@ showed. Each comes from a recorded run; the full outputs are in [`sample-output/
 - [Azure Functions as a remote MCP server](#azure-functions-as-a-remote-mcp-server)
 - [A web-grounded agent searched for 2023 news](#a-web-grounded-agent-searched-for-2023-news)
 - [Honest run status, no keys in code](#honest-run-status-no-keys-in-code)
+- [Re-running paid labs for free: record and replay](#re-running-paid-labs-for-free-record-and-replay)
 - [Sign-in waited 1 s for a managed identity that isn't there](#sign-in-waited-1-s-for-a-managed-identity-that-isnt-there)
 - [Search by meaning instead of keywords (AutoGen)](#search-by-meaning-instead-of-keywords-autogen)
 - [Model choice: gpt-4o vs gpt-4o-mini](#model-choice-gpt-4o-vs-gpt-4o-mini)
@@ -117,6 +118,44 @@ and error but doesn't exit with 1. Model and project calls sign in with Microsof
 via `az login`). The only keys are the Azure AI Search admin key and the Function app's MCP key; they come from `.env`
 or from project connections (the Semantic Kernel lab takes the search key from the project's Azure AI Search
 connection, and the MCP agent gets its key from a project connection), never from code.
+
+## Re-running paid labs for free: record and replay
+
+Every lab run costs money and the models answer a little differently each time, so checking a refactor by running
+the labs again would be paid, slow and hard to compare. [`http_replay.py`](../src/workshop_utils/http_replay.py)
+saves every HTTP call of a run (secrets redacted) and answers a later run from the saved files: no network, no Azure
+sign-in, no cost. I check each change to the labs or the shared code by replaying every recorded lab run (27 in
+October 2026) and comparing the output with the record run. How to use it is in
+[setup.md](setup.md#record-and-replay); the recordings themselves stay out of the repo, because they hold my
+endpoints and resource names.
+
+Why not vcrpy: it records HTTP well, but it is built around test functions wrapped in a cassette, while here the same
+lab command records or replays, switched on from `.env`. The labs also needed the parts below, which vcrpy would have
+needed as custom hooks anyway.
+
+What it took to make a replay send the same requests:
+- **Random values.** Code that makes random choices or random IDs sends new requests on every run (here, GenAI Ops
+  picks a random test prompt and `evaluate()` makes random run IDs). Each record run saves a random seed, and replay
+  reuses it for Python's `random` and `uuid.uuid4()`.
+- **Today's date.** The Bing grounding and Web Search labs put today's date in their instructions (see
+  [above](#a-web-grounded-agent-searched-for-2023-news)); `--today YYYY-MM-DD` replays a recording from another day.
+- **File uploads.** Each multipart upload gets a new random boundary, so bodies are matched without it.
+- **Secrets the code parses.** The Application Insights connection string is redacted in recordings, but the tracing
+  labs parse it before they start. Replay puts in a fake value in the same format
+  (`InstrumentationKey=00000000-...;IngestionEndpoint=https://http-replay.invalid/`).
+
+What the replays and their tests found:
+- **A crash in the recorder itself.** Replaying the second Azure AI Search agent raised
+  `TypeError: unhashable type: 'list'`. The agent definition echoes its tool's JSON Schema, where a field's `type` can
+  be a list (`["string", "null"]`), and the fake-secret code expected a name there. Fixed, with a unit test.
+- **A sign-in the network guard couldn't see.** On replay, connections to other machines are refused and the
+  azure-identity credentials get a placeholder token. A test that left `AzureCliCredential` unpatched got a real
+  token: it runs the `az` program as a separate process, which a guard inside Python doesn't see. Replay now patches
+  every public azure-identity credential, and a test checks each one.
+
+Limits: a replay shows that the code still handles the recorded answers, not that the service still answers the same
+way; a new prompt, model or SDK version needs a new, paid record run. Only HTTP is covered (requests, httpx and
+aiohttp).
 
 ## Sign-in waited 1 s for a managed identity that isn't there
 

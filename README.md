@@ -53,6 +53,15 @@ on the current agents API in its own repo: [Clinical Research Agents](https://gi
   come from `.env` or project connections, never from code.
   [Example code](src/2-agents/1-basics.py) ·
   [Full write-up](docs/findings.md#honest-run-status-no-keys-in-code)
+- **Every lab re-runs for free from its recorded answers.** A run can save its HTTP calls (secrets redacted) and
+  replay them with no network, no Azure sign-in and no cost; I check every refactor by replaying all recorded lab runs
+  instead of paying for new ones. It isn't tied to these labs: it works for any Python code that calls web services
+  through requests, httpx or aiohttp. A recorded random seed makes random choices and generated IDs repeat, a secret
+  the code parses gets a fake value in the same format, and Azure sign-in gets a placeholder token.
+  [Code](src/workshop_utils/http_replay.py) ·
+  [Tests](tests/test_http_replay.py) ·
+  [How to use it](docs/setup.md#record-and-replay) ·
+  [Full write-up](docs/findings.md#re-running-paid-labs-for-free-record-and-replay)
 
 The shopping agent in its [recorded run](sample-output/5-agents-aisearch.py-output-20261018-204747.txt):
 
@@ -174,12 +183,12 @@ src/                      all my code
   3-quality/              observability, evaluation, GenAI Ops
   4-frameworks/           Semantic Kernel and AutoGen
   functions-mcp-server/   the Azure Functions remote MCP server and how to deploy it
-  workshop_utils/         shared helpers: HTTP log (secrets redacted), .env loading
+  workshop_utils/         shared helpers: HTTP log (secrets redacted), record and replay of HTTP calls, .env loading
 docs/findings.md          issues found with cause and fix, model comparisons
 docs/setup.md             every lab's command, full setup, settings, troubleshooting
 sample-output/            redacted console output of a recorded run of each lab script, plus the generated image
 scripts/                  maintenance: delete leftover agents, raw MCP requests to debug the server
-tests/                    unit tests of the HTTP log against a local server (no Azure)
+tests/                    unit tests of the HTTP log and of record and replay against a local server (no Azure)
 requirements-*.txt        tested versions for the three Python environments (labs, agents-v2, semantic-kernel)
 .env.example              the settings, to copy to .env
 pyproject.toml            makes workshop_utils installable (the `-e .` line in the requirements files)
