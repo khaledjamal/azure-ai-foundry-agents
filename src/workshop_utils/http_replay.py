@@ -31,9 +31,11 @@ was made several times, the 1st replay gets the 1st recorded answer, the 2nd the
 and so on (an agent run polled until it ends, for example). A request with no recorded
 answer raises HttpReplayMiss naming it; there is no fall-back to the real service, so a
 replay can't cost money. Also in replay: connections to anything but this machine
-(loopback) are refused (HttpReplayNetworkBlocked), and the azure-identity credentials
-(DefaultAzureCredential, AzureCliCredential, sync and async) return a placeholder token,
-so no sign-in or token request is needed. Replayed responses carry the header
+(loopback) are refused (HttpReplayNetworkBlocked), and every public azure-identity
+credential (DefaultAzureCredential, AzureCliCredential, ManagedIdentityCredential, ...,
+sync and async) returns a placeholder token, so no sign-in or token request is needed.
+All of them matter: the network guard can't see the `az`, `azd` and PowerShell programs
+the CLI credentials run. Replayed responses carry the header
 `x-http-replay: <file name>`.
 
 A redacted secret that the client parses (not only sends back) gets a fake value in the
@@ -536,11 +538,30 @@ def _patch_credentials():
         (azure.identity, get_token, get_token_info),
         (azure.identity.aio, get_token_async, get_token_info_async),
     ):
-        for name in ("DefaultAzureCredential", "AzureCliCredential"):
-            cls = getattr(module, name)
-            _patch(cls, "get_token", token)
-            if AccessTokenInfo is not None and hasattr(cls, "get_token_info"):
-                _patch(cls, "get_token_info", info)
+        _patch_methods(_method_owners(module, "get_token"), "get_token", token)
+        if AccessTokenInfo is not None:
+            _patch_methods(_method_owners(module, "get_token_info"), "get_token_info", info)
+
+
+def _method_owners(module, name):
+    """The classes that define the method `name` for the public classes of module: the
+    class itself, or the base class it inherits the method from (several credentials
+    share one), so each method is patched once and restored where it was."""
+    owners = []
+    for public_name in module.__all__:
+        public_class = getattr(module, public_name)
+        if not isinstance(public_class, type) or not hasattr(public_class, name):
+            continue
+        owner = next(base for base in public_class.__mro__ if name in vars(base))
+        if owner not in owners:
+            owners.append(owner)
+    return owners
+
+
+def _patch_methods(owners, name, replacement):
+    for owner in owners:
+        if (owner, name) not in _originals:
+            _patch(owner, name, replacement)
 
 
 def _patch_requests():

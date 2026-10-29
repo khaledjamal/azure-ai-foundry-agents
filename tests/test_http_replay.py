@@ -37,6 +37,8 @@ try:
 except ImportError:
     aiohttp = None
 try:
+    import azure.identity
+    import azure.identity.aio
     from azure.identity import DefaultAzureCredential
     from azure.identity.aio import DefaultAzureCredential as AsyncDefaultAzureCredential
 except ImportError:
@@ -350,6 +352,51 @@ class ReplaySafetyTest(ReplayTestCase):
 
         self.assertEqual(self.replay(calls), (http_replay.PLACEHOLDER_TOKEN, http_replay.PLACEHOLDER_TOKEN))
 
+    @unittest.skipIf(DefaultAzureCredential is None, "azure-identity is not installed")
+    def test_every_public_credential_gives_the_placeholder_and_is_restored(self):
+        # Every public credential, not only the ones the labs use: AzureCliCredential
+        # and the other CLI credentials run a program the network guard can't see, so
+        # one left unpatched would quietly get a real token on a signed-in machine.
+        # Instances skip __init__ (most credentials need arguments); an unpatched
+        # method fails on the missing attributes.
+        scope = "https://ai.azure.com/.default"
+        sync_classes = _public_credential_classes(azure.identity)
+        async_classes = _public_credential_classes(azure.identity.aio)
+        self.assertGreater(len(sync_classes), 10)
+        self.assertGreater(len(async_classes), 10)
+        method_names = ["get_token"]
+        if all(hasattr(credential_class, "get_token_info") for credential_class in sync_classes + async_classes):
+            method_names.append("get_token_info")
+        original_methods = {
+            (credential_class, name): getattr(credential_class, name)
+            for credential_class in sync_classes + async_classes
+            for name in method_names
+        }
+        self.record(lambda: requests.get(f"{self.base}/reply", timeout=10))
+
+        def calls():
+            tokens = {}
+            for credential_class in sync_classes:
+                credential = credential_class.__new__(credential_class)
+                for name in method_names:
+                    tokens[credential_class, name] = getattr(credential, name)(scope).token
+
+            async def get_async_tokens():
+                for credential_class in async_classes:
+                    credential = credential_class.__new__(credential_class)
+                    for name in method_names:
+                        access_token = await getattr(credential, name)(scope)
+                        tokens[credential_class, name] = access_token.token
+
+            asyncio.run(get_async_tokens())
+            return tokens
+
+        tokens = self.replay(calls)
+        self.assertEqual(tokens, dict.fromkeys(original_methods, http_replay.PLACEHOLDER_TOKEN))
+        for (credential_class, name), original_method in original_methods.items():
+            with self.subTest(credential=credential_class.__module__ + "." + credential_class.__name__, method=name):
+                self.assertIs(getattr(credential_class, name), original_method)
+
     def post_random_values(self):
         """A request whose body holds a random choice and a uuid4, as the attack
         simulators and evaluate() make them."""
@@ -427,6 +474,12 @@ class ReplaySafetyTest(ReplayTestCase):
         self.record(lambda: requests.get(f"{self.base}/reply", timeout=10))
         self.assertTrue((self.folder / "recording-info.txt").exists())
         self.assertEqual(len(list(self.folder.glob("*.json"))), 1)
+
+
+def _public_credential_classes(module):
+    """The classes azure.identity or azure.identity.aio exports that have get_token."""
+    exported = [getattr(module, name) for name in module.__all__]
+    return [item for item in exported if isinstance(item, type) and hasattr(item, "get_token")]
 
 
 def _redacted(reply):
