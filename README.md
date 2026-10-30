@@ -57,7 +57,8 @@ on the current agents API in its own repo: [Clinical Research Agents](https://gi
   replay them with no network, no Azure sign-in and no cost; I check every refactor by replaying all recorded lab runs
   instead of paying for new ones. It isn't tied to these labs: it works for any Python code that calls web services
   through requests, httpx or aiohttp. A recorded random seed makes random choices and generated IDs repeat, a secret
-  the code parses gets a fake value in the same format, and Azure sign-in gets a placeholder token.
+  the code parses gets a fake value in the same format, and Azure sign-in gets a placeholder token. It has since
+  become a standalone library, [http-record-replay](https://github.com/khaledjamal/http-record-replay).
   [Code](src/workshop_utils/http_replay.py) ·
   [Tests](tests/test_http_replay.py) ·
   [How to use it](docs/setup.md#record-and-replay) ·
