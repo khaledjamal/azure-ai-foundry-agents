@@ -35,10 +35,46 @@ from workshop_utils.settings import load_env
 
 LOCAL_URL = "http://localhost:7071/runtime/webhooks/mcp"
 EXPECTED_TOOLS = {"list_workout_goals", "suggest_workout"}
+MCP_MESSAGE_DESCRIPTIONS = {
+    "initialize": "Start the MCP session with the workout MCP server.",
+    "notifications/initialized": "Tell the workout MCP server that this client has finished starting the MCP session. "
+    "A background task sends this, so it can appear after later lines of this lab.",
+    "tools/list": "Ask the workout MCP server which tools it has.",
+}
 
 
 def tool_text(result):
     return "\n".join(item.text for item in result.content if getattr(item, "type", "") == "text")
+
+
+def describe_mcp_call(request):
+    """The sentence for one call to the workout MCP server, from its HTTP method and
+    MCP message."""
+    if request.method == "GET":
+        return (
+            "Open the event stream on which the workout MCP server can send messages to this client. A background "
+            "task does this, so it can appear after later lines of this lab."
+        )
+    if request.method == "DELETE":
+        return "End the MCP session on the workout MCP server. Leaving the `async with` block does this."
+    message = json.loads(request.content)
+    message_method = message.get("method", "reply")
+    if message_method == "tools/call":
+        params = message["params"]
+        return f"Ask the workout MCP server to run its {params['name']} tool with: {params['arguments']}"
+    return MCP_MESSAGE_DESCRIPTIONS.get(
+        message_method, f"Send the MCP message {message_method} to the workout MCP server."
+    )
+
+
+async def print_call_description(request):
+    """httpx request hook: print the description of a call just before it is sent.
+
+    Every MCP message goes to the same URL and some are sent by background tasks, so
+    only the request itself says what it is; a print in check_server() could land
+    above another message's call.
+    """
+    print(f"\n>>> {describe_mcp_call(request)}")
 
 
 async def check_server(url, key):
@@ -49,6 +85,7 @@ async def check_server(url, key):
         streamable_http_client(url, http_client=http_client) as (read_stream, write_stream),
         ClientSession(read_stream, write_stream) as session,
     ):
+        http_client.event_hooks["request"].append(print_call_description)
         info = await session.initialize()
         print(f"Server: {info.server_info.name} {info.server_info.version}")
 

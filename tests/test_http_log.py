@@ -112,7 +112,13 @@ class LogTestCase(unittest.TestCase):
         http_log.disable()
 
     def setUp(self):
-        http_log.enable(level="full", metrics=False, max_body=http_log.DEFAULT_MAX_BODY, polls="short")
+        http_log.enable(
+            level="full",
+            metrics=False,
+            max_body=http_log.DEFAULT_MAX_BODY,
+            polls="short",
+            call_descriptions={},
+        )
 
     def tearDown(self):
         http_log.disable()
@@ -205,6 +211,44 @@ class RequestsLogTest(LogTestCase):
         text, _ = self.logged(lambda: [requests.get(f"{self.base}/run/run_1", timeout=10) for _ in range(2)])
         self.assertEqual(text.count("--- OUTBOUND REQUEST"), 2)
         self.assertNotIn(", status: in_progress", text)
+
+    def test_call_description_comes_before_a_matching_call_logged_in_full(self):
+        http_log.enable(call_descriptions={"GET */run/*": "Check the run."})
+
+        def poll_then_other_call():
+            for _ in range(3):
+                requests.get(f"{self.base}/run/run_2", timeout=10)
+            requests.get(f"{self.base}/chat", timeout=10)
+
+        text, _ = self.logged(poll_then_other_call)
+        self.assertRegex(text, r">>> Check the run\.\n\n--- OUTBOUND REQUEST #\d+ ---\n> GET .*/run/run_2")
+        self.assertEqual(text.count(">>> "), 1)  # not before status lines or the /chat call
+
+    def test_call_description_pattern_sees_method_and_query(self):
+        http_log.enable(call_descriptions={"POST */chat*": "Send.", "GET */chat?*after=*": "Next page."})
+        text, _ = self.logged(lambda: requests.get(f"{self.base}/chat?order=asc", timeout=10))
+        self.assertNotIn(">>> ", text)
+        text, _ = self.logged(lambda: requests.get(f"{self.base}/chat?order=asc&after=m1", timeout=10))
+        self.assertIn(">>> Next page.", text)
+        text, _ = self.logged(lambda: requests.post(f"{self.base}/chat", timeout=10))
+        self.assertIn(">>> Send.", text)
+
+    def test_first_matching_call_description_wins(self):
+        http_log.enable(call_descriptions={"GET */chat": "First.", "GET *": "Second."})
+        text, _ = self.logged(lambda: requests.get(f"{self.base}/chat", timeout=10))
+        self.assertIn(">>> First.", text)
+        self.assertNotIn(">>> Second.", text)
+
+    def test_call_descriptions_are_kept_when_enable_is_called_again(self):
+        http_log.enable(call_descriptions={"GET */chat": "Kept."})
+        http_log.enable(level="full")
+        text, _ = self.logged(lambda: requests.get(f"{self.base}/chat", timeout=10))
+        self.assertIn(">>> Kept.", text)
+
+    def test_summary_level_has_no_call_descriptions(self):
+        http_log.enable(level="summary", call_descriptions={"GET */chat": "Not shown."})
+        text, _ = self.logged(lambda: requests.get(f"{self.base}/chat", timeout=10))
+        self.assertNotIn(">>> ", text)
 
     def test_connection_error_is_logged(self):
         with self.assertLogs("http_log") as captured, self.assertRaises(requests.ConnectionError):
@@ -334,6 +378,17 @@ class AiohttpLogTest(LogTestCase):
         with self.assertLogs("http_log") as captured, self.assertRaises(aiohttp.ClientConnectionError):
             asyncio.run(main())
         self.assertIn("--- OUTBOUND ERROR #", "\n".join(captured.output))
+
+
+class DecodeTest(unittest.TestCase):
+    def test_identity_encoding_keeps_the_body(self):
+        # Content-Encoding: identity means not compressed, so the body bytes are the
+        # real body, not something to report as compressed.
+        self.assertEqual(http_log._decode(b"event: message", "identity"), b"event: message")
+        self.assertEqual(http_log._decode(b"event: message", "Identity"), b"event: message")
+
+    def test_unknown_encoding_is_reported_not_returned(self):
+        self.assertEqual(http_log._decode(b"abc", "br"), "<br-compressed body, 3 B>")
 
 
 if __name__ == "__main__":

@@ -113,6 +113,20 @@ Any health or fitness information you provide is for general educational purpose
 """.strip()
 
 
+# Calls made inside one SDK line or loop, where no print can go right before them;
+# http_log prints each description before a matching call that it logs in full. The
+# first matching pattern wins, so the steps and tool output patterns come before the run
+# status one.
+CALL_DESCRIPTIONS = {
+    "GET */steps*after=*": "Ask Foundry Agent Service for the next page of the agent run's steps.",
+    "GET */steps*": "Read the agent run's steps from Foundry Agent Service, to show which tools the agent called.",
+    "POST */submit_tool_outputs*": "Send the find_items_under function's result back to the agent run in Foundry "
+    "Agent Service; the run then continues.",
+    "GET */messages*after=*": "Ask Foundry Agent Service for the next page of the conversation thread's messages.",
+    "GET */runs/*": "Check the agent run's status in Foundry Agent Service; this first check is logged in full.",
+}
+
+
 def print_section(title):
     print("\n" + "=" * 80)
     print(title)
@@ -212,13 +226,16 @@ def create_fitness_index(index_client):
         ),
     ]
 
+    print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index already exists.")
     existing_names = {index.name for index in index_client.list_indexes()}
     if INDEX_NAME in existing_names:
+        print("\n>>> Delete the old fitness index from Azure AI Search.")
         index_client.delete_index(INDEX_NAME)
         print(f"Deleted existing index: {INDEX_NAME}")
         time.sleep(1)
 
     index = SearchIndex(name=INDEX_NAME, fields=fields)
+    print("\n>>> Create the fitness index in Azure AI Search.")
     created = index_client.create_index(index)
     print(f"Created index: {created.name}")
 
@@ -231,6 +248,7 @@ def with_price_text(document):
 
 
 def upload_fitness_documents(search_client):
+    print("\n>>> Upload the fitness product documents to the fitness index in Azure AI Search.")
     results = search_client.upload_documents(documents=[with_price_text(d) for d in SAMPLE_DOCUMENTS])
 
     failures = []
@@ -252,6 +270,7 @@ def make_find_items_under(search_client):
     # Same logic as the Semantic Kernel plugin in
     # src/4-frameworks/1-rag-sk-agents-aisearch.py.
     def products(filter_expression, top=10):
+        print("\n>>> Search the fitness index in Azure AI Search for products, for the find_items_under function.")
         results = search_client.search(
             search_text="*",
             filter=filter_expression,
@@ -293,6 +312,10 @@ def verify_search_index(search_client):
     last_error = None
     for attempt in range(1, 6):
         try:
+            print(
+                f"\n>>> Search the fitness index in Azure AI Search for 'Strength' (attempt {attempt}): new documents "
+                "can take a moment to become searchable, so this repeats until results come back."
+            )
             results = list(search_client.search(search_text="Strength", top=10))
             if results:
                 for doc in results:
@@ -334,6 +357,7 @@ def resolve_ai_search_connection(project_client):
     )
 
     if explicit_name:
+        print("\n>>> Read the Azure AI Search connection of the Foundry project, by the name set in .env.")
         try:
             connection = project_client.connections.get(connection_name=explicit_name)
         except TypeError:
@@ -343,6 +367,7 @@ def resolve_ai_search_connection(project_client):
         print(f"Azure AI Search connection ID:   {connection.id}")
         return connection
 
+    print("\n>>> Read the default Azure AI Search connection of the Foundry project.")
     try:
         connection = project_client.connections.get_default(connection_type=ConnectionType.AZURE_AI_SEARCH)
         print(f"Azure AI Search connection name: {connection.name}")
@@ -351,6 +376,7 @@ def resolve_ai_search_connection(project_client):
     except Exception as default_error:
         print(f"No default Azure AI Search connection was found: {default_error}")
 
+    print("\n>>> List all the connections of the Foundry project, to look for Azure AI Search.")
     connections = list(project_client.connections.list())
     print(f"Project currently has {len(connections)} connection(s).")
     for connection in connections:
@@ -389,6 +415,10 @@ def create_search_agent(project_client, search_connection, search_client):
     price_tool = FunctionTool({make_find_items_under(search_client)})
     project_client.agents.enable_auto_function_calls(price_tool)
 
+    print(
+        "\n>>> Create the fitness search agent, with the Azure AI Search tool and the find_items_under function "
+        "tool, in Foundry Agent Service."
+    )
     agent = project_client.agents.create_agent(
         model=model_name,
         name=AGENT_NAME,
@@ -414,6 +444,10 @@ def print_thread_messages(project_client, thread_id):
     print("\nConversation:")
     print("-" * 80)
 
+    print(
+        "\n>>> Read the conversation thread's messages from Foundry Agent Service. This `for` loop makes these calls, "
+        "not the list() line above it: one call per page, and the last page is empty."
+    )
     for message in data:
         role = getattr(message.role, "value", str(message.role)).upper()
         text_messages = getattr(message, "text_messages", None) or []
@@ -452,11 +486,13 @@ def print_tool_calls(project_client, thread_id, run):
 
 
 def run_agent_query(project_client, agent, question):
+    print("\n>>> Create a conversation thread for this question in Foundry Agent Service.")
     thread = project_client.agents.threads.create()
     print(f"Created thread: {thread.id}")
     print(f"Question: {question}")
 
     try:
+        print("\n>>> Add the user's question to the conversation thread in Foundry Agent Service.")
         message = project_client.agents.messages.create(
             thread_id=thread.id,
             role="user",
@@ -464,6 +500,11 @@ def run_agent_query(project_client, agent, question):
         )
         print(f"Created user message: {message.id}")
 
+        print(
+            "\n>>> Start a run, in which the fitness search agent reads the conversation thread, uses its tools and "
+            "answers, then check the run's status until it ends. The first check is logged in full, later ones as "
+            "one `HTTP #n GET` line."
+        )
         run = project_client.agents.runs.create_and_process(
             thread_id=thread.id,
             agent_id=agent.id,
@@ -484,6 +525,7 @@ def run_agent_query(project_client, agent, question):
         # Each question gets its own thread, so delete it here rather than in the final
         # cleanup.
         try:
+            print("\n>>> Delete this conversation thread from Foundry Agent Service.")
             project_client.agents.threads.delete(thread.id)
             print(f"Deleted thread: {thread.id}")
         except Exception as exc:
@@ -493,6 +535,7 @@ def run_agent_query(project_client, agent, question):
 def cleanup_agent(project_client, agent):
     if agent is None:
         return
+    print("\n>>> Delete the fitness search agent from Foundry Agent Service.")
     project_client.agents.delete_agent(agent.id)
     print(f"Deleted temporary agent: {agent.id}")
 
@@ -501,8 +544,10 @@ def cleanup_index(index_client):
     if index_client is None:
         return
 
+    print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index is there to delete.")
     existing_names = {index.name for index in index_client.list_indexes()}
     if INDEX_NAME in existing_names:
+        print("\n>>> Delete the fitness index from Azure AI Search.")
         index_client.delete_index(INDEX_NAME)
         print(f"Deleted temporary index: {INDEX_NAME}")
 
@@ -596,5 +641,5 @@ def main():
 
 
 if __name__ == "__main__":
-    http_log.enable()
+    http_log.enable(call_descriptions=CALL_DESCRIPTIONS)
     main()

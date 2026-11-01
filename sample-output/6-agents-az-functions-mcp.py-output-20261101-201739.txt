@@ -1,10 +1,15 @@
 Sample output of src/2-agents/6-agents-az-functions-mcp.py
-Run on 2026-10-25 22:01 with: ../../.venv-agents-v2/bin/python src/2-agents/6-agents-az-functions-mcp.py
+Replay on 2026-11-01 20:17 of answers recorded on 2026-10-26 20:30 (no service called), with:
+HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/6-agents-az-functions-mcp-20261026-203044 ../../.venv-agents-v2/bin/python src/2-agents/6-agents-az-functions-mcp.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
+[http_replay] no random seed in this recording: random values differ from the record run
+[http_replay] replay mode, folder runs/recordings/6-agents-az-functions-mcp-20261026-203044
 Project endpoint: https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
 Model deployment: gpt-4o-mini
 MCP server: workout_tools at https://<function-app>.azurewebsites.net/runtime/webhooks/mcp, allowed tools ['list_workout_goals', 'suggest_workout']
+
+>>> Check that the Azure Function app hosting the MCP workout tools is running: a call without its function key should get HTTP 401.
 
 --- OUTBOUND REQUEST #1 ---
 > POST https://<function-app>.azurewebsites.net/runtime/webhooks/mcp
@@ -19,11 +24,14 @@ MCP server: workout_tools at https://<function-app>.azurewebsites.net/runtime/we
 
 --- OUTBOUND RESPONSE #1 ---
 < 401 Unauthorized
-< Content-Length: 0
-< Date: Sun, 25 Oct 2026 18:01:46 GMT
+< Date: Mon, 26 Oct 2026 16:30:47 GMT
 < Server: Kestrel
 < WWW-Authenticate: Bearer
+< Content-Length: 0
+< x-http-replay: 0001-POST-runtime_webhooks_mcp.json
 Function app is running (HTTP 401 without a key, as expected)
+
+>>> Read the connection of the Foundry project that holds the Azure Function app's key.
 
 --- OUTBOUND REQUEST #2 ---
 > GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/connections/workout-mcp-key?api-version=v1
@@ -37,19 +45,19 @@ Function app is running (HTTP 401 without a key, as expected)
 --- OUTBOUND RESPONSE #2 ---
 < 200 OK
 < Content-Type: application/json; charset=utf-8
-< Date: Sun, 25 Oct 2026 18:01:47 GMT
+< Date: Mon, 26 Oct 2026 16:30:49 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < azureml-served-by-cluster: vienna-eastus2-01
-< x-request-time: 0.037
+< x-request-time: 0.041
 < apim-request-id: <id>
 < x-ms-region: East US 2
+< Content-Length: 437
+< x-http-replay: 0002-GET-api_projects_<project-name>_connections_workout-mcp-key.json
 <
 {
   "name": "workout-mcp-key",
@@ -61,6 +69,8 @@ Function app is running (HTTP 401 without a key, as expected)
   "metadata": {}
 }
 Key from project connection: workout-mcp-key (ConnectionType.CUSTOM)
+
+>>> Create a version of the workout MCP agent, with the MCP tool, in Foundry Agent Service.
 
 --- OUTBOUND REQUEST #3 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/agents/workout-mcp-agent/versions?api-version=v1
@@ -97,21 +107,21 @@ Key from project connection: workout-mcp-key (ConnectionType.CUSTOM)
 --- OUTBOUND RESPONSE #3 ---
 < 200 OK
 < Content-Type: application/json; charset=utf-8
-< Date: Sun, 25 Oct 2026 18:01:54 GMT
+< Date: Mon, 26 Oct 2026 16:30:56 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
-< x-request-id: 28b146e61439b6c3134ef74f91354221
+< x-request-id: d30345f965da2863a65333ad2f1bd2fa
 < api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
-< azureml-served-by-cluster: hyena-eastus2-02
+< azureml-served-by-cluster: hyena-eastus2-03
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 1660
+< x-http-replay: 0003-POST-api_projects_<project-name>_agents_workout-mcp-agent_versi.json
 <
 {
   "metadata": {},
@@ -120,7 +130,7 @@ Key from project connection: workout-mcp-key (ConnectionType.CUSTOM)
   "name": "workout-mcp-agent",
   "version": "1",
   "description": "",
-  "created_at": 1792951314,
+  "created_at": 1793032256,
   "definition": {
     "kind": "prompt",
     "model": "gpt-4o-mini",
@@ -153,7 +163,7 @@ Key from project connection: workout-mcp-key (ConnectionType.CUSTOM)
   },
   "blueprint_reference": {
     "type": "ManagedAgentIdentityBlueprint",
-    "blueprint_id": "workout-mcp-agent-91a94"
+    "blueprint_id": "workout-mcp-agent-b1f50"
   },
   "agent_guid": "<id>"
 }
@@ -161,6 +171,8 @@ Key from project connection: workout-mcp-key (ConnectionType.CUSTOM)
 Agent created: name=workout-mcp-agent version=1
 
 User: Which workout goals can you plan for?
+
+>>> Send the question to the workout MCP agent through the Foundry project's Responses API.
 
 --- OUTBOUND REQUEST #4 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
@@ -193,18 +205,16 @@ User: Which workout goals can you plan for?
 --- OUTBOUND RESPONSE #4 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 18:01:57 GMT
+< Date: Mon, 26 Oct 2026 16:30:58 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Origin,Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
 < x-request-id: <id>
 < x-ms-aoai-configured-data-retention-days: 30
 < skip-error-remapping: true
-< openai-client-partition-id: a64606f4de40420bae29a4242f28697764c8eb97-a0e5-451c-a734-ae083aea6948
+< openai-client-partition-id: a64606f4de40420bae29a4242f286977b1e9f925-0cec-43db-bf67-6c1257e3bf31
 < azureml-internal-forward-count: 1
 < x-ms-is-spilled-over: false
 < x-ratelimit-key: gpt-4o-mini
@@ -223,13 +233,15 @@ User: Which workout goals can you plan for?
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
 < openai-project: <id>
-< openai-processing-ms: 3478
-< azureml-served-by-cluster: hyena-eastus2-03,hyena-eastus2-01
+< openai-processing-ms: 4283
+< azureml-served-by-cluster: hyena-eastus2-01,hyena-eastus2-03
 < api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 3774
+< x-http-replay: 0004-POST-api_projects_<project-name>_openai_v1_responses.json
 <
 {
   "metadata": {},
@@ -267,23 +279,23 @@ User: Which workout goals can you plan for?
   ],
   "tool_choice": "auto",
   "truncation": "disabled",
-  "id": "resp_0d8aa2f0b126fe80006ade441597788194bc47ec3c75b33f72",
+  "id": "resp_07f1de1349c1d1d2006adf8042cfbc8195bd7827f3514ef254",
   "object": "response",
   "status": "completed",
-  "created_at": 1792951317,
-  "completed_at": 1792951320,
+  "created_at": 1793032258,
+  "completed_at": 1793032262,
   "error": null,
   "incomplete_details": null,
   "output": [
     {
       "type": "mcp_list_tools",
-      "id": "mcpl_0d8aa2f0b126fe80006ade4415a9ac8194b615c360a7c83d21",
+      "id": "mcpl_07f1de1349c1d1d2006adf8042fc1081959ac878e0b846ea7c",
       "agent_reference": {
         "type": "agent_reference",
         "name": "workout-mcp-agent",
         "version": "1"
       },
-      "response_id": "resp_0d8aa2f0b126fe80006ade441597788194bc47ec3c75b33f72",
+      "response_id": "resp_07f1de1349c1d1d2006adf8042cfbc8195bd7827f3514ef254",
       "server_label": "workout_tools",
       "tools": [
         {
@@ -326,13 +338,13 @@ User: Which workout goals can you plan for?
     },
     {
       "type": "mcp_approval_request",
-      "id": "mcpr_0d8aa2f0b126fe80006ade4418d69c8194a3fec6bbd138e6b4",
+      "id": "mcpr_07f1de1349c1d1d2006adf8046c3c08195a1c0a81d491a87dc",
       "agent_reference": {
         "type": "agent_reference",
         "name": "workout-mcp-agent",
         "version": "1"
       },
-      "response_id": "resp_0d8aa2f0b126fe80006ade441597788194bc47ec3c75b33f72",
+      "response_id": "resp_07f1de1349c1d1d2006adf8042cfbc8195bd7827f3514ef254",
       "server_label": "workout_tools",
       "name": "list_workout_goals",
       "arguments": "{}"
@@ -398,6 +410,8 @@ Response (status completed):
   (tokens: input 251, output 17)
   -> approve list_workout_goals
 
+>>> Send the MCP tool approvals to the workout MCP agent through the Foundry project's Responses API; the approved MCP tools run on the service side, inside this one call.
+
 --- OUTBOUND REQUEST #5 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
 > Host: <resource-name>.services.ai.azure.com
@@ -423,10 +437,10 @@ Response (status completed):
     {
       "type": "mcp_approval_response",
       "approve": true,
-      "approval_request_id": "mcpr_0d8aa2f0b126fe80006ade4418d69c8194a3fec6bbd138e6b4"
+      "approval_request_id": "mcpr_07f1de1349c1d1d2006adf8046c3c08195a1c0a81d491a87dc"
     }
   ],
-  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441597788194bc47ec3c75b33f72",
+  "previous_response_id": "resp_07f1de1349c1d1d2006adf8042cfbc8195bd7827f3514ef254",
   "agent_reference": {
     "name": "workout-mcp-agent",
     "type": "agent_reference"
@@ -436,18 +450,16 @@ Response (status completed):
 --- OUTBOUND RESPONSE #5 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 18:02:00 GMT
+< Date: Mon, 26 Oct 2026 16:31:02 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Origin,Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
 < x-request-id: <id>
 < x-ms-aoai-configured-data-retention-days: 30
 < skip-error-remapping: true
-< openai-client-partition-id: a64606f4de40420bae29a4242f2869776f34bc8e-dd8e-411d-a4ab-7bff701c2f58
+< openai-client-partition-id: a64606f4de40420bae29a4242f28697777a36bc6-4678-4a6a-ac1d-1aa093e8e966
 < azureml-internal-forward-count: 1
 < x-ms-is-spilled-over: false
 < x-ratelimit-key: gpt-4o-mini
@@ -466,13 +478,15 @@ Response (status completed):
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
 < openai-project: <id>
-< openai-processing-ms: 3149
-< azureml-served-by-cluster: hyena-eastus2-01,hyena-eastus2-01
+< openai-processing-ms: 3979
+< azureml-served-by-cluster: hyena-eastus2-01,hyena-eastus2-03
 < api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 4418
+< x-http-replay: 0005-POST-api_projects_<project-name>_openai_v1_responses.json
 <
 {
   "metadata": {},
@@ -481,7 +495,7 @@ Response (status completed):
   "top_p": 1,
   "service_tier": "default",
   "prompt_cache_retention": "in_memory",
-  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441597788194bc47ec3c75b33f72",
+  "previous_response_id": "resp_07f1de1349c1d1d2006adf8042cfbc8195bd7827f3514ef254",
   "model": "gpt-4o-mini",
   "reasoning": {
     "context": null
@@ -511,44 +525,44 @@ Response (status completed):
   ],
   "tool_choice": "auto",
   "truncation": "disabled",
-  "id": "resp_0d8aa2f0b126fe80006ade441981d48194be0fd5e2bad995f5",
+  "id": "resp_07f1de1349c1d1d2006adf8047740481959905cea9a3a99a8a",
   "object": "response",
   "status": "completed",
-  "created_at": 1792951321,
-  "completed_at": 1792951324,
+  "created_at": 1793032263,
+  "completed_at": 1793032267,
   "error": null,
   "incomplete_details": null,
   "output": [
     {
       "type": "mcp_call",
-      "id": "mcp_0d8aa2f0b126fe80006ade441accc4819482e13b890efd88e5",
+      "id": "mcp_07f1de1349c1d1d2006adf8048aa088195b785338277be1991",
       "agent_reference": {
         "type": "agent_reference",
         "name": "workout-mcp-agent",
         "version": "1"
       },
-      "response_id": "resp_0d8aa2f0b126fe80006ade441981d48194be0fd5e2bad995f5",
+      "response_id": "resp_07f1de1349c1d1d2006adf8047740481959905cea9a3a99a8a",
       "server_label": "workout_tools",
       "name": "list_workout_goals",
       "arguments": "{}",
       "output": "{\"goals\": [{\"goal\": \"cardio\", \"description\": \"Raise the heart rate for endurance.\"}, {\"goal\": \"strength\", \"description\": \"Build muscle with bodyweight moves.\"}, {\"goal\": \"mobility\", \"description\": \"Move joints through their range and stretch.\"}]}\n",
       "status": "completed",
-      "approval_request_id": "mcpr_0d8aa2f0b126fe80006ade4418d69c8194a3fec6bbd138e6b4"
+      "approval_request_id": "mcpr_07f1de1349c1d1d2006adf8046c3c08195a1c0a81d491a87dc"
     },
     {
       "type": "message",
-      "id": "msg_0d8aa2f0b126fe80006ade441ba8848194a7a66f071e07ebe6",
+      "id": "msg_07f1de1349c1d1d2006adf80499b448195b7c99f8b97fc5853",
       "agent_reference": {
         "type": "agent_reference",
         "name": "workout-mcp-agent",
         "version": "1"
       },
-      "response_id": "resp_0d8aa2f0b126fe80006ade441981d48194be0fd5e2bad995f5",
+      "response_id": "resp_07f1de1349c1d1d2006adf8047740481959905cea9a3a99a8a",
       "role": "assistant",
       "content": [
         {
           "type": "output_text",
-          "text": "I can help plan workouts for the following goals:\n\n1. **Cardio**: Raise the heart rate for endurance.\n2. **Strength**: Build muscle with bodyweight moves.\n3. **Mobility**: Move joints through their range and stretch.\n\nLet me know which goal you're interested in and the length of the workout! This is general fitness information, not medical advice.",
+          "text": "I can plan for the following workout goals:\n\n1. **Cardio**: Raise the heart rate for endurance.\n2. **Strength**: Build muscle with bodyweight moves.\n3. **Mobility**: Move joints through their range and stretch.\n\nIf you want to plan a workout, let me know your goal and the desired length in minutes! This information is general fitness information, not medical advice.",
           "annotations": [],
           "logprobs": []
         }
@@ -563,11 +577,11 @@ Response (status completed):
       "cached_tokens": 0,
       "cache_write_tokens": 0
     },
-    "output_tokens": 79,
+    "output_tokens": 84,
     "output_tokens_details": {
       "reasoning_tokens": 0
     },
-    "total_tokens": 424
+    "total_tokens": 429
   },
   "parallel_tool_calls": true,
   "agent_reference": {
@@ -640,7 +654,7 @@ Response (status completed):
       "content_filter_raw": [],
       "content_filter_offsets": {
         "start_offset": 0,
-        "end_offset": 349,
+        "end_offset": 368,
         "check_offset": 0
       }
     }
@@ -651,17 +665,19 @@ Response (status completed):
             output: {"goals": [{"goal": "cardio", "description": "Raise the heart rate for endurance."}, {"goal": "strength", "description": "Build muscle with bodyweight moves."}, {"goal": "mobility", "description": "Move joints through their range and stretch."}]}
   error=None
   message (answer, printed below)
-  (tokens: input 345, output 79)
+  (tokens: input 345, output 84)
 
-Agent: I can help plan workouts for the following goals:
+Agent: I can plan for the following workout goals:
 
 1. **Cardio**: Raise the heart rate for endurance.
 2. **Strength**: Build muscle with bodyweight moves.
 3. **Mobility**: Move joints through their range and stretch.
 
-Let me know which goal you're interested in and the length of the workout! This is general fitness information, not medical advice.
+If you want to plan a workout, let me know your goal and the desired length in minutes! This information is general fitness information, not medical advice.
 
 User: Plan a 30-minute strength workout for me.
+
+>>> Send the question to the workout MCP agent through the Foundry project's Responses API.
 
 --- OUTBOUND REQUEST #6 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
@@ -685,7 +701,7 @@ User: Plan a 30-minute strength workout for me.
 >
 {
   "input": "Plan a 30-minute strength workout for me.",
-  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441981d48194be0fd5e2bad995f5",
+  "previous_response_id": "resp_07f1de1349c1d1d2006adf8047740481959905cea9a3a99a8a",
   "agent_reference": {
     "name": "workout-mcp-agent",
     "type": "agent_reference"
@@ -695,18 +711,16 @@ User: Plan a 30-minute strength workout for me.
 --- OUTBOUND RESPONSE #6 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 18:02:04 GMT
+< Date: Mon, 26 Oct 2026 16:31:07 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Origin,Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
 < x-request-id: <id>
 < x-ms-aoai-configured-data-retention-days: 30
 < skip-error-remapping: true
-< openai-client-partition-id: a64606f4de40420bae29a4242f28697702631061-7b0e-435d-8b73-4d5036a9b35a
+< openai-client-partition-id: a64606f4de40420bae29a4242f28697773e3b7f3-892e-43df-aeac-1edc6fb465ce
 < azureml-internal-forward-count: 1
 < x-ms-is-spilled-over: false
 < x-ratelimit-key: gpt-4o-mini
@@ -715,7 +729,7 @@ User: Plan a 30-minute strength workout for me.
 < x-ratelimit-limit-requests: 2000
 < x-ratelimit-renewalperiod-requests: 60
 < x-ratelimit-abusepenalty-active: False
-< x-ratelimit-remaining-tokens: 199716
+< x-ratelimit-remaining-tokens: 199711
 < x-ratelimit-reset-tokens: 0
 < x-ratelimit-limit-tokens: 200000
 < x-ratelimit-renewalperiod-tokens: 60
@@ -725,13 +739,15 @@ User: Plan a 30-minute strength workout for me.
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
 < openai-project: <id>
-< openai-processing-ms: 939
-< azureml-served-by-cluster: hyena-eastus2-02,hyena-eastus2-03
+< openai-processing-ms: 1328
+< azureml-served-by-cluster: hyena-eastus2-01,hyena-eastus2-03
 < api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 2788
+< x-http-replay: 0006-POST-api_projects_<project-name>_openai_v1_responses.json
 <
 {
   "metadata": {},
@@ -740,7 +756,7 @@ User: Plan a 30-minute strength workout for me.
   "top_p": 1,
   "service_tier": "default",
   "prompt_cache_retention": "in_memory",
-  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441981d48194be0fd5e2bad995f5",
+  "previous_response_id": "resp_07f1de1349c1d1d2006adf8047740481959905cea9a3a99a8a",
   "model": "gpt-4o-mini",
   "reasoning": {
     "context": null
@@ -770,23 +786,23 @@ User: Plan a 30-minute strength workout for me.
   ],
   "tool_choice": "auto",
   "truncation": "disabled",
-  "id": "resp_0d8aa2f0b126fe80006ade441cfaf8819495a2508868a204a8",
+  "id": "resp_07f1de1349c1d1d2006adf804bd2948195869a0e22560a4be9",
   "object": "response",
   "status": "completed",
-  "created_at": 1792951325,
-  "completed_at": 1792951325,
+  "created_at": 1793032267,
+  "completed_at": 1793032268,
   "error": null,
   "incomplete_details": null,
   "output": [
     {
       "type": "mcp_approval_request",
-      "id": "mcpr_0d8aa2f0b126fe80006ade441dc0d08194a1c0da1f845464b8",
+      "id": "mcpr_07f1de1349c1d1d2006adf804cdabc819598dc4616b36bae91",
       "agent_reference": {
         "type": "agent_reference",
         "name": "workout-mcp-agent",
         "version": "1"
       },
-      "response_id": "resp_0d8aa2f0b126fe80006ade441cfaf8819495a2508868a204a8",
+      "response_id": "resp_07f1de1349c1d1d2006adf804bd2948195869a0e22560a4be9",
       "server_label": "workout_tools",
       "name": "suggest_workout",
       "arguments": "{\"goal\":\"strength\",\"minutes\":30}"
@@ -794,7 +810,7 @@ User: Plan a 30-minute strength workout for me.
   ],
   "instructions": "You help people plan simple home workouts. Use the workout tools for every answer: list_workout_goals to see which goals exist, suggest_workout to build a plan. Never invent a plan or a goal the tools didn't return. Show times, counts and exercises only as the tool gives them: don't split a block's minutes across its items or add numbers of your own. Present the plan clearly and end with one line saying it is general fitness information, not medical advice.",
   "usage": {
-    "input_tokens": 431,
+    "input_tokens": 436,
     "input_tokens_details": {
       "cached_tokens": 0,
       "cache_write_tokens": 0
@@ -803,7 +819,7 @@ User: Plan a 30-minute strength workout for me.
     "output_tokens_details": {
       "reasoning_tokens": 0
     },
-    "total_tokens": 455
+    "total_tokens": 460
   },
   "parallel_tool_calls": true,
   "agent_reference": {
@@ -840,7 +856,7 @@ User: Plan a 30-minute strength workout for me.
       "content_filter_raw": [],
       "content_filter_offsets": {
         "start_offset": 0,
-        "end_offset": 2024,
+        "end_offset": 2043,
         "check_offset": 0
       }
     }
@@ -848,8 +864,10 @@ User: Plan a 30-minute strength workout for me.
 }
 Response (status completed):
   mcp_approval_request  server=workout_tools  tool=suggest_workout  arguments={"goal":"strength","minutes":30}
-  (tokens: input 431, output 24)
+  (tokens: input 436, output 24)
   -> approve suggest_workout
+
+>>> Send the MCP tool approvals to the workout MCP agent through the Foundry project's Responses API; the approved MCP tools run on the service side, inside this one call.
 
 --- OUTBOUND REQUEST #7 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
@@ -876,10 +894,10 @@ Response (status completed):
     {
       "type": "mcp_approval_response",
       "approve": true,
-      "approval_request_id": "mcpr_0d8aa2f0b126fe80006ade441dc0d08194a1c0da1f845464b8"
+      "approval_request_id": "mcpr_07f1de1349c1d1d2006adf804cdabc819598dc4616b36bae91"
     }
   ],
-  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441cfaf8819495a2508868a204a8",
+  "previous_response_id": "resp_07f1de1349c1d1d2006adf804bd2948195869a0e22560a4be9",
   "agent_reference": {
     "name": "workout-mcp-agent",
     "type": "agent_reference"
@@ -889,18 +907,16 @@ Response (status completed):
 --- OUTBOUND RESPONSE #7 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 18:02:06 GMT
+< Date: Mon, 26 Oct 2026 16:31:08 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Origin,Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
 < x-request-id: <id>
 < x-ms-aoai-configured-data-retention-days: 30
 < skip-error-remapping: true
-< openai-client-partition-id: a64606f4de40420bae29a4242f28697707d03641-b260-4671-8693-8cda79172757
+< openai-client-partition-id: a64606f4de40420bae29a4242f286977d96c1866-94c8-4ed7-a997-04d96f55442b
 < azureml-internal-forward-count: 1
 < x-ms-is-spilled-over: false
 < x-ratelimit-key: gpt-4o-mini
@@ -909,7 +925,7 @@ Response (status completed):
 < x-ratelimit-limit-requests: 2000
 < x-ratelimit-renewalperiod-requests: 60
 < x-ratelimit-abusepenalty-active: False
-< x-ratelimit-remaining-tokens: 199708
+< x-ratelimit-remaining-tokens: 199703
 < x-ratelimit-reset-tokens: 0
 < x-ratelimit-limit-tokens: 200000
 < x-ratelimit-renewalperiod-tokens: 60
@@ -919,13 +935,15 @@ Response (status completed):
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
 < openai-project: <id>
-< openai-processing-ms: 3605
-< azureml-served-by-cluster: hyena-eastus2-03,hyena-eastus2-03
+< openai-processing-ms: 4184
+< azureml-served-by-cluster: hyena-eastus2-02,hyena-eastus2-03
 < api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 4808
+< x-http-replay: 0007-POST-api_projects_<project-name>_openai_v1_responses.json
 <
 {
   "metadata": {},
@@ -934,7 +952,7 @@ Response (status completed):
   "top_p": 1,
   "service_tier": "default",
   "prompt_cache_retention": "in_memory",
-  "previous_response_id": "resp_0d8aa2f0b126fe80006ade441cfaf8819495a2508868a204a8",
+  "previous_response_id": "resp_07f1de1349c1d1d2006adf804bd2948195869a0e22560a4be9",
   "model": "gpt-4o-mini",
   "reasoning": {
     "context": null
@@ -964,44 +982,44 @@ Response (status completed):
   ],
   "tool_choice": "auto",
   "truncation": "disabled",
-  "id": "resp_0d8aa2f0b126fe80006ade441e6c2481948bc922966a423a98",
+  "id": "resp_07f1de1349c1d1d2006adf804d79788195b2380265649f7a37",
   "object": "response",
   "status": "completed",
-  "created_at": 1792951326,
-  "completed_at": 1792951329,
+  "created_at": 1793032269,
+  "completed_at": 1793032273,
   "error": null,
   "incomplete_details": null,
   "output": [
     {
       "type": "mcp_call",
-      "id": "mcp_0d8aa2f0b126fe80006ade441fe1808194856ef933ed9905b9",
+      "id": "mcp_07f1de1349c1d1d2006adf804ed6208195904c149b492376a3",
       "agent_reference": {
         "type": "agent_reference",
         "name": "workout-mcp-agent",
         "version": "1"
       },
-      "response_id": "resp_0d8aa2f0b126fe80006ade441e6c2481948bc922966a423a98",
+      "response_id": "resp_07f1de1349c1d1d2006adf804d79788195b2380265649f7a37",
       "server_label": "workout_tools",
       "name": "suggest_workout",
       "arguments": "{\"goal\":\"strength\",\"minutes\":30}",
       "output": "{\"goal\": \"strength\", \"total_minutes\": 30, \"warm_up\": {\"minutes\": 4, \"do\": \"arm swings, hip circles, 10 easy squats\"}, \"main\": {\"minutes\": 23, \"rounds\": 2, \"seconds_per_exercise\": 172, \"exercises\": [\"squats\", \"push-ups (knees or wall if needed)\", \"glute bridges\", \"plank\"]}, \"cool_down\": {\"minutes\": 3, \"do\": \"chest, hip and hamstring stretches\"}, \"note\": \"General fitness ideas, not medical advice. Stop if anything hurts.\"}\n",
       "status": "completed",
-      "approval_request_id": "mcpr_0d8aa2f0b126fe80006ade441dc0d08194a1c0da1f845464b8"
+      "approval_request_id": "mcpr_07f1de1349c1d1d2006adf804cdabc819598dc4616b36bae91"
     },
     {
       "type": "message",
-      "id": "msg_0d8aa2f0b126fe80006ade44207cf081949313ab19786bc1c7",
+      "id": "msg_07f1de1349c1d1d2006adf804f8cb88195b95074542f8f777c",
       "agent_reference": {
         "type": "agent_reference",
         "name": "workout-mcp-agent",
         "version": "1"
       },
-      "response_id": "resp_0d8aa2f0b126fe80006ade441e6c2481948bc922966a423a98",
+      "response_id": "resp_07f1de1349c1d1d2006adf804d79788195b2380265649f7a37",
       "role": "assistant",
       "content": [
         {
           "type": "output_text",
-          "text": "Here's a 30-minute strength workout plan:\n\n### Warm-Up (4 minutes)\n- Arm swings\n- Hip circles\n- 10 easy squats\n\n### Main Workout (23 minutes)\n- **Rounds**: 2\n- **Exercises** (perform each for 172 seconds):\n  1. Squats\n  2. Push-ups (use knees or wall if needed)\n  3. Glute bridges\n  4. Plank\n\n### Cool Down (3 minutes)\n- Chest stretch\n- Hip stretch\n- Hamstring stretch\n\nFeel free to adjust as needed! This is general fitness information, not medical advice.",
+          "text": "Here's a 30-minute strength workout plan for you:\n\n### Warm-Up (4 minutes)\n- Arm swings\n- Hip circles\n- 10 easy squats\n\n### Main Workout (23 minutes)\n**Complete 2 rounds of the following exercises:**\n- Squats (172 seconds)\n- Push-ups (knees or wall if needed) (172 seconds)\n- Glute bridges (172 seconds)\n- Plank (172 seconds)\n\n### Cool Down (3 minutes)\n- Chest stretch\n- Hip stretch\n- Hamstring stretch\n\n**Note:** This is general fitness information, not medical advice. Stop if anything hurts. Enjoy your workout!",
           "annotations": [],
           "logprobs": []
         }
@@ -1011,16 +1029,16 @@ Response (status completed):
   ],
   "instructions": "You help people plan simple home workouts. Use the workout tools for every answer: list_workout_goals to see which goals exist, suggest_workout to build a plan. Never invent a plan or a goal the tools didn't return. Show times, counts and exercises only as the tool gives them: don't split a block's minutes across its items or add numbers of your own. Present the plan clearly and end with one line saying it is general fitness information, not medical advice.",
   "usage": {
-    "input_tokens": 604,
+    "input_tokens": 609,
     "input_tokens_details": {
       "cached_tokens": 0,
       "cache_write_tokens": 0
     },
-    "output_tokens": 133,
+    "output_tokens": 132,
     "output_tokens_details": {
       "reasoning_tokens": 0
     },
-    "total_tokens": 737
+    "total_tokens": 741
   },
   "parallel_tool_calls": true,
   "agent_reference": {
@@ -1057,7 +1075,7 @@ Response (status completed):
       "content_filter_raw": [],
       "content_filter_offsets": {
         "start_offset": 0,
-        "end_offset": 1340,
+        "end_offset": 1359,
         "check_offset": 0
       }
     },
@@ -1093,7 +1111,7 @@ Response (status completed):
       "content_filter_raw": [],
       "content_filter_offsets": {
         "start_offset": 0,
-        "end_offset": 457,
+        "end_offset": 514,
         "check_offset": 0
       }
     }
@@ -1104,9 +1122,9 @@ Response (status completed):
             output: {"goal": "strength", "total_minutes": 30, "warm_up": {"minutes": 4, "do": "arm swings, hip circles, 10 easy squats"}, "main": {"minutes": 23, "rounds": 2, "seconds_per_exercise": 172, "exercises": ["squats", "push-ups (knees or wall if needed)", "glute bridges", "plank"]}, "cool_down": {"minutes": 3, "do": "chest, hip and hamstring stretches"}, "note": "General fitness ideas, not medical advice. Stop if anything hurts."}
   error=None
   message (answer, printed below)
-  (tokens: input 604, output 133)
+  (tokens: input 609, output 132)
 
-Agent: Here's a 30-minute strength workout plan:
+Agent: Here's a 30-minute strength workout plan for you:
 
 ### Warm-Up (4 minutes)
 - Arm swings
@@ -1114,19 +1132,20 @@ Agent: Here's a 30-minute strength workout plan:
 - 10 easy squats
 
 ### Main Workout (23 minutes)
-- **Rounds**: 2
-- **Exercises** (perform each for 172 seconds):
-  1. Squats
-  2. Push-ups (use knees or wall if needed)
-  3. Glute bridges
-  4. Plank
+**Complete 2 rounds of the following exercises:**
+- Squats (172 seconds)
+- Push-ups (knees or wall if needed) (172 seconds)
+- Glute bridges (172 seconds)
+- Plank (172 seconds)
 
 ### Cool Down (3 minutes)
 - Chest stretch
 - Hip stretch
 - Hamstring stretch
 
-Feel free to adjust as needed! This is general fitness information, not medical advice.
+**Note:** This is general fitness information, not medical advice. Stop if anything hurts. Enjoy your workout!
+
+>>> Delete this version of the workout MCP agent from Foundry Agent Service.
 
 --- OUTBOUND REQUEST #8 ---
 > DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/agents/workout-mcp-agent/versions/1?api-version=v1
@@ -1141,21 +1160,21 @@ Feel free to adjust as needed! This is general fitness information, not medical 
 --- OUTBOUND RESPONSE #8 ---
 < 200 OK
 < Content-Type: application/json; charset=utf-8
-< Date: Sun, 25 Oct 2026 18:02:11 GMT
+< Date: Mon, 26 Oct 2026 16:31:13 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
-< x-request-id: f5a054162775f98ee1edfed48d4698c9
+< x-request-id: 0db69236df0aad234712b1a626f9396a
 < api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
-< azureml-served-by-cluster: hyena-eastus2-02
+< azureml-served-by-cluster: hyena-eastus2-01
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 97
+< x-http-replay: 0008-DELETE-api_projects_<project-name>_agents_workout-mcp-agent_versi.json
 <
 {
   "object": "agent.version.deleted",
@@ -1165,7 +1184,7 @@ Feel free to adjust as needed! This is general fitness information, not medical 
 }
 
 Agent version deleted: workout-mcp-agent v1
-Total tokens: input 1631, output 253
+Total tokens: input 1641, output 257
 Checks:
   PASS  turn 1 called list_workout_goals
   PASS  turn 2 called suggest_workout(strength, 30)

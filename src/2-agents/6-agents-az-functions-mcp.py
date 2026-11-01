@@ -84,6 +84,10 @@ def check_function_app(url):
     why not otherwise."""
     app_name = urlparse(url).hostname.split(".")[0]
     resource_group = os.getenv("AZURE_RESOURCE_GROUP") or "<resource-group>"
+    print(
+        "\n>>> Check that the Azure Function app hosting the MCP workout tools is running: "
+        "a call without its function key should get HTTP 401."
+    )
     try:
         response = requests.post(url, json={}, timeout=60)
     except requests.RequestException as error:
@@ -132,6 +136,7 @@ def ask(openai_client, agent_reference, question, previous_response_id, totals):
     and the successful calls."""
     print(f"\nUser: {question}")
     follow_up = {"previous_response_id": previous_response_id} if previous_response_id else {}
+    print("\n>>> Send the question to the workout MCP agent through the Foundry project's Responses API.")
     response = openai_client.responses.create(input=question, extra_body=agent_reference, **follow_up)
     print(f"Response (status {response.status}):")
     approvals, calls = show_output(response, totals)
@@ -143,6 +148,10 @@ def ask(openai_client, agent_reference, question, previous_response_id, totals):
             approve = request.server_label == SERVER_LABEL and request.name in ALLOWED_TOOLS
             print(f"  -> {'approve' if approve else 'deny'} {request.name}")
             replies.append({"type": "mcp_approval_response", "approve": approve, "approval_request_id": request.id})
+        print(
+            "\n>>> Send the MCP tool approvals to the workout MCP agent through the Foundry project's Responses API; "
+            "the approved MCP tools run on the service side, inside this one call."
+        )
         response = openai_client.responses.create(
             input=replies, previous_response_id=response.id, extra_body=agent_reference
         )
@@ -180,6 +189,7 @@ def load_settings(model):
 def create_agent(project_client, model, server_url):
     """Create an agent version with the MCP tool; the function key comes from the
     project connection."""
+    print("\n>>> Read the connection of the Foundry project that holds the Azure Function app's key.")
     connection = project_client.connections.get(CONNECTION_NAME)
     print(f"Key from project connection: {connection.name} ({connection.type})")
     tool = MCPTool(
@@ -189,6 +199,7 @@ def create_agent(project_client, model, server_url):
         require_approval="always",
         project_connection_id=connection.id,
     )
+    print("\n>>> Create a version of the workout MCP agent, with the MCP tool, in Foundry Agent Service.")
     agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(model=model, instructions=INSTRUCTIONS, tools=[tool]),
@@ -212,6 +223,7 @@ def run_conversation(openai_client, agent):
 
 
 def cleanup(project_client, agent):
+    print("\n>>> Delete this version of the workout MCP agent from Foundry Agent Service.")
     project_client.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
     print(f"\nAgent version deleted: {agent.name} v{agent.version}")
 

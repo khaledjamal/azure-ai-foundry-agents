@@ -71,6 +71,7 @@ def call_rest(endpoint, api_version, deployment, token, messages):
     url = f"{endpoint.rstrip('/')}/openai/deployments/{deployment}/chat/completions"
     params = {"api-version": api_version}
     body = {"messages": messages, **SETTINGS}
+    print(f"\n>>> Ask the Azure OpenAI chat model {deployment} for an answer, by hand with requests.post.")
     start = time.perf_counter()
     response = requests.post(url, params=params, json=body, headers={"Authorization": f"Bearer {token}"}, timeout=60)
     seconds = time.perf_counter() - start
@@ -84,6 +85,7 @@ def call_rest(endpoint, api_version, deployment, token, messages):
 def call_sdk(openai_client, deployment, messages):
     """Same request through the SDK; return (status, seconds, ChatCompletion). The HTTP
     log shows the request."""
+    print(f"\n>>> Ask the Azure OpenAI chat model {deployment} the same question, through the openai SDK.")
     start = time.perf_counter()
     raw = openai_client.chat.completions.with_raw_response.create(model=deployment, messages=messages, **SETTINGS)
     seconds = time.perf_counter() - start

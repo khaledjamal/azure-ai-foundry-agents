@@ -145,6 +145,7 @@ def load_settings(model):
 def create_agent(project_client, model, today):
     """Create an agent version with the built-in Web Search tool; it needs no project
     connection."""
+    print("\n>>> Create a version of the health web search agent, with the Web Search tool, in Foundry Agent Service.")
     agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(model=model, instructions=build_instructions(today), tools=[WebSearchTool()]),
@@ -157,6 +158,10 @@ def ask(openai_client, agent_reference, question, totals):
     """Send one question with a required search; return the response status, answer,
     sources and search queries."""
     print(f"\nUser: {question}")
+    print(
+        "\n>>> Send the question to the health web search agent through the Foundry project's Responses API; "
+        "the web searches run on the service side, inside this one call."
+    )
     response = openai_client.responses.create(input=question, tool_choice="required", extra_body=agent_reference)
     print(f"Response (status {response.status}):")
     answer, sources, queries = show_response(response)
@@ -192,6 +197,7 @@ def ask_questions(openai_client, agent):
 
 
 def cleanup(project_client, agent):
+    print("\n>>> Delete this version of the health web search agent from Foundry Agent Service.")
     project_client.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
     print(f"\nAgent version deleted: {agent.name} v{agent.version}")
 

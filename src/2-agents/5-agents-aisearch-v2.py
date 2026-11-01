@@ -133,6 +133,12 @@ If nothing matches, say so clearly and mention the closest option.
 Any health or fitness information you provide is for general educational purposes only and is not medical advice.
 """.strip()
 
+# A call made inside one SDK line, where no print can go right before it; http_log
+# prints the description before a matching call that it logs in full.
+CALL_DESCRIPTIONS = {
+    "GET */connections/*": "Read the details of that Azure AI Search connection from the Foundry project.",
+}
+
 FIND_ITEMS_UNDER_TOOL = FunctionTool(
     name="find_items_under",
     description=(
@@ -196,16 +202,20 @@ def create_fitness_index(index_client, search_client):
         SimpleField(name="Price", type=SearchFieldDataType.Double, filterable=True, sortable=True, facetable=True),
         SearchableField(name="Description", type=SearchFieldDataType.String),
     ]
+    print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index already exists.")
     if INDEX_NAME in {index.name for index in index_client.list_indexes()}:
+        print("\n>>> Delete the old fitness index from Azure AI Search.")
         index_client.delete_index(INDEX_NAME)
         print(f"Deleted existing index: {INDEX_NAME}")
         time.sleep(1)
+    print("\n>>> Create the fitness index in Azure AI Search.")
     index_client.create_index(SearchIndex(name=INDEX_NAME, fields=fields))
     print(f"Created index: {INDEX_NAME}")
 
     # The search tool passes only text fields to the model, so the price also goes into
     # the description.
     documents = [{**d, "Description": f"{d['Description']} Price: ${d['Price']:.2f}."} for d in SAMPLE_DOCUMENTS]
+    print("\n>>> Upload the fitness product documents to the fitness index in Azure AI Search.")
     failed = [result.key for result in search_client.upload_documents(documents=documents) if not result.succeeded]
     if failed:
         raise RuntimeError(f"Documents failed to upload: {failed}")
@@ -214,6 +224,10 @@ def create_fitness_index(index_client, search_client):
     # A new index can take a moment before its documents are searchable; wait instead of
     # letting the agent search an empty index.
     for _ in range(10):
+        print(
+            "\n>>> Search the fitness index in Azure AI Search for every document: new documents can take a moment "
+            "to become searchable, so this repeats until all of them come back."
+        )
         if len(list(search_client.search(search_text="*", top=10))) == len(documents):
             print("Index is searchable.")
             return
@@ -225,6 +239,7 @@ def make_find_items_under(search_client):
     # Same logic as find_items_under in 5-agents-aisearch.py and the Semantic Kernel
     # plugin.
     def products(filter_expression, top=10):
+        print("\n>>> Search the fitness index in Azure AI Search for products, for the find_items_under function.")
         results = search_client.search(
             search_text="*",
             filter=filter_expression,
@@ -252,6 +267,7 @@ def make_find_items_under(search_client):
 
 def find_search_connection(project_client):
     name = first_env("AZURE_AI_SEARCH_CONNECTION_NAME", "AI_SEARCH_CONNECTION_NAME")
+    print("\n>>> Find the Azure AI Search connection of the Foundry project.")
     connection = (
         project_client.connections.get(name)
         if name
@@ -303,6 +319,7 @@ def ask(openai_client, agent_reference, question, find_items_under):
     stats = {"searches": 0, "functions": [], "input": 0, "output": 0, "reasoning": 0}
     print(f"\nUser: {question}")
     started = time.monotonic()
+    print("\n>>> Send the question to the fitness search agent through the Foundry project's Responses API.")
     response = openai_client.responses.create(input=question, extra_body=agent_reference)
     print(f"Response (status {response.status}):")
     show_output(response, stats)
@@ -318,6 +335,7 @@ def ask(openai_client, agent_reference, question, find_items_under):
                 output = f"Unknown function: {call.name}"
             print(f"  -> ran {call.name} here: {output!r}")
             outputs.append({"type": "function_call_output", "call_id": call.call_id, "output": output})
+        print("\n>>> Send the find_items_under function's result back through the Foundry project's Responses API.")
         response = openai_client.responses.create(
             input=outputs, previous_response_id=response.id, extra_body=agent_reference
         )
@@ -333,6 +351,7 @@ def ask(openai_client, agent_reference, question, find_items_under):
 def run_model(project_client, openai_client, model, search_tool, find_items_under):
     """Create an agent version on this model, ask every question, delete the version;
     return one stats per question."""
+    print(f"\n>>> Create a version of the fitness search agent on the model {model} in Foundry Agent Service.")
     agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(
@@ -344,6 +363,7 @@ def run_model(project_client, openai_client, model, search_tool, find_items_unde
     try:
         return [ask(openai_client, agent_reference, question, find_items_under) for question in QUESTIONS]
     finally:
+        print("\n>>> Delete this version of the fitness search agent from Foundry Agent Service.")
         project_client.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
         print(f"\nAgent version deleted: {agent.name} v{agent.version}")
 
@@ -448,7 +468,9 @@ def run_models(project_client, openai_client, models, search_tool, find_items_un
 
 def cleanup(index_client):
     try:
+        print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index is there to delete.")
         if INDEX_NAME in {index.name for index in index_client.list_indexes()}:
+            print("\n>>> Delete the fitness index from Azure AI Search.")
             index_client.delete_index(INDEX_NAME)
             print(f"Deleted index: {INDEX_NAME}")
     except Exception as exc:
@@ -496,5 +518,5 @@ def main():
 
 
 if __name__ == "__main__":
-    http_log.enable()
+    http_log.enable(call_descriptions=CALL_DESCRIPTIONS)
     main()

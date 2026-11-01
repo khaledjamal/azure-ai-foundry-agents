@@ -1,7 +1,10 @@
 Sample output of src/1-models/1-basic-chat-completion-azure-openai.py
-Run on 2026-10-26 20:22 with: uv run python src/1-models/1-basic-chat-completion-azure-openai.py
+Replay on 2026-11-01 20:25 of answers recorded on 2026-10-26 20:22 (no service called), with:
+HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/1-basic-chat-completion-azure-openai-20261026-202253 uv run python src/1-models/1-basic-chat-completion-azure-openai.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
+[http_replay] no random seed in this recording: random values differ from the record run
+[http_replay] replay mode, folder runs/recordings/1-basic-chat-completion-azure-openai-20261026-202253
 
 ================================================================================
 BASIC CHAT COMPLETION - AzureOpenAI
@@ -16,6 +19,8 @@ API version:       2024-08-01-preview
 1. Chat with a system prompt
 ================================================================================
 User: How can I start a beginner workout routine at home?
+
+>>> Ask the Azure OpenAI chat model gpt-4o for an answer.
 
 --- OUTBOUND REQUEST #1 ---
 > POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview
@@ -55,7 +60,6 @@ User: How can I start a beginner workout routine at home?
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
-< Content-Length: 3208
 < Content-Type: application/json
 < Date: Mon, 26 Oct 2026 16:22:54 GMT
 < Server: istio-envoy
@@ -85,6 +89,8 @@ User: How can I start a beginner workout routine at home?
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 3335
+< x-http-replay: 0001-POST-openai_deployments_gpt-4o_chat_completions.json
 <
 {
   "choices": [
@@ -234,6 +240,8 @@ Don’t skip cooling down—it helps with recovery:
 ================================================================================
 User: What kind of home exercise do you recommend for a busy schedule?
 
+>>> Ask the Azure OpenAI chat model gpt-4o for an answer.
+
 --- OUTBOUND REQUEST #2 ---
 > POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview
 > Host: <resource-name>.openai.azure.com
@@ -272,7 +280,6 @@ User: What kind of home exercise do you recommend for a busy schedule?
 
 --- OUTBOUND RESPONSE #2 ---
 < 200 OK
-< Content-Length: 3184
 < Content-Type: application/json
 < Date: Mon, 26 Oct 2026 16:23:02 GMT
 < Server: istio-envoy
@@ -302,6 +309,8 @@ User: What kind of home exercise do you recommend for a busy schedule?
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 3311
+< x-http-replay: 0002-POST-openai_deployments_gpt-4o_chat_completions.json
 <
 {
   "choices": [

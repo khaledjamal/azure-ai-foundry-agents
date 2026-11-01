@@ -146,6 +146,7 @@ def load_settings(model):
 def create_agent(project_client, model, connection_name, today):
     """Create an agent version with the Bing tool; the Bing key stays in the project
     connection."""
+    print("\n>>> Read the Grounding with Bing Search connection of the Foundry project.")
     connection = project_client.connections.get(connection_name)
     print(f"Bing connection: {connection.name} ({connection.type})")
     tool = BingGroundingTool(
@@ -153,6 +154,7 @@ def create_agent(project_client, model, connection_name, today):
             search_configurations=[BingGroundingSearchConfiguration(project_connection_id=connection.id)]
         )
     )
+    print("\n>>> Create a version of the health Bing agent, with the Bing tool, in Foundry Agent Service.")
     agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(model=model, instructions=build_instructions(today), tools=[tool]),
@@ -165,6 +167,10 @@ def ask(openai_client, agent_reference, question, totals):
     """Send one question with a required search; return the response status, answer,
     sources and search URLs."""
     print(f"\nUser: {question}")
+    print(
+        "\n>>> Send the question to the health Bing agent through the Foundry project's Responses API; "
+        "the Bing searches run on the service side, inside this one call."
+    )
     response = openai_client.responses.create(input=question, tool_choice="required", extra_body=agent_reference)
     print(f"Response (status {response.status}):")
     answer, sources, search_urls = show_response(response)
@@ -200,6 +206,7 @@ def ask_questions(openai_client, agent):
 
 
 def cleanup(project_client, agent):
+    print("\n>>> Delete this version of the health Bing agent from Foundry Agent Service.")
     project_client.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
     print(f"\nAgent version deleted: {agent.name} v{agent.version}")
 

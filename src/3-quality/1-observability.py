@@ -130,6 +130,22 @@ SHOWN_ATTRIBUTES = {
     "gen_ai.thread.run.status": "status",
 }
 
+# Calls made inside one SDK line or loop, or by a background thread of the Azure Monitor
+# exporter, where no print can go right before them; http_log prints each description
+# before a matching call that it logs in full.
+CALL_DESCRIPTIONS = {
+    "POST */getConnectionWithCredentials*": "Read the credentials of the Application Insights connection from the "
+    "Foundry project.",
+    "POST */v2.1/track*": "Azure Monitor exporter uploads telemetry to Application Insights. A background thread does "
+    "this, not a line of this lab, so it can appear anywhere in the log.",
+    "POST */QuickPulseService.svc/*": "Azure Monitor live metrics checks in with Application Insights. A background "
+    "thread does this, not a line of this lab, so it can appear anywhere in the log.",
+    "GET */AzMonSDKDynamicConfiguration*": "Azure Monitor exporter reads its settings from Application Insights. A "
+    "background thread does this, not a line of this lab, so it can appear anywhere in the log.",
+    "GET */vector_stores/*": "Check whether Foundry Agent Service has finished adding the files to the vector store.",
+    "GET */runs/*": "Check the agent run's status in Foundry Agent Service; this first check is logged in full.",
+}
+
 
 class CompactConsoleExporter(SpanExporter):
     """Prints one line per GenAI or lab span; Azure SDK and HTTP spans are only
@@ -189,6 +205,7 @@ def setup_tracing(destination, project_client, record_content):
     if destination == "azure-monitor":
         from azure.monitor.opentelemetry import configure_azure_monitor
 
+        print("\n>>> Find the Application Insights connection among the connections of the Foundry project.")
         connection_string = project_client.telemetry.get_application_insights_connection_string()
         # sampling_ratio=1.0 keeps every span; the default rate-limited sampler drops
         # spans in bursts.
@@ -213,12 +230,14 @@ def setup_tracing(destination, project_client, record_content):
 
 
 def list_connections(project_client):
+    print("\n>>> List the connections of the Foundry project.")
     for connection in project_client.connections.list():
         print(f"  {connection.name}: {getattr(connection.type, 'value', connection.type)}")
 
 
 def chat_call(openai_client, model):
     print(f"User: {CHAT_QUESTION}")
+    print(f"\n>>> Ask the Azure OpenAI chat model {model} for an answer.")
     response = openai_client.chat.completions.create(model=model, messages=[{"role": "user", "content": CHAT_QUESTION}])
     print(f"Assistant: {response.choices[0].message.content}")
 
@@ -231,11 +250,14 @@ def run_agent(project_client, model, tracer):
             for name, content in SAMPLE_FILES.items():
                 path = Path(temp_dir) / name
                 path.write_text(content, encoding="utf-8")
+                print(f"\n>>> Upload the file {name} to the Foundry project through Foundry Agent Service.")
                 uploaded.append(
                     project_client.agents.files.upload_and_poll(file_path=str(path), purpose=FilePurpose.AGENTS).id
                 )
+        print("\n>>> Create the vector store with the uploaded files in Foundry Agent Service.")
         vector_store = project_client.agents.vector_stores.create_and_poll(file_ids=uploaded, name=VECTOR_STORE_NAME)
         file_search_tool = FileSearchTool(vector_store_ids=[vector_store.id])
+        print("\n>>> Create the health resource advisor agent, with the File Search tool, in Foundry Agent Service.")
         agent = project_client.agents.create_agent(
             model=model,
             name=AGENT_NAME,
@@ -243,6 +265,7 @@ def run_agent(project_client, model, tracer):
             tools=file_search_tool.definitions,
             tool_resources=file_search_tool.resources,
         )
+        print("\n>>> Create an empty conversation thread; Foundry Agent Service keeps the conversation history.")
         thread = project_client.agents.threads.create()
         print(f"Agent {agent.id}, vector store {vector_store.id}, thread {thread.id}")
 
@@ -250,11 +273,18 @@ def run_agent(project_client, model, tracer):
             with tracer.start_as_current_span("ask-agent") as span:
                 span.set_attribute("lab.question", question)
                 print(f"\nUser: {question}")
+                print("\n>>> Add the user's question to the conversation thread in Foundry Agent Service.")
                 project_client.agents.messages.create(thread_id=thread.id, role="user", content=question)
+                print(
+                    "\n>>> Start a run, in which the health resource advisor agent reads the conversation thread, "
+                    "searches the vector store and answers, then check the run's status until it ends. The first "
+                    "check is logged in full, later ones as one `HTTP #n GET` line."
+                )
                 run = project_client.agents.runs.create_and_process(thread_id=thread.id, agent_id=agent.id)
                 print(f"Run status: {run.status}")
                 if run.status != RunStatus.COMPLETED:
                     failed_runs.append((question, run.status, run.last_error))
+                print("\n>>> Read the agent's latest answer from the conversation thread in Foundry Agent Service.")
                 answer = project_client.agents.messages.get_last_message_text_by_role(
                     thread_id=thread.id, role=MessageRole.AGENT
                 )
@@ -263,15 +293,19 @@ def run_agent(project_client, model, tracer):
     finally:
         print("\nCleanup:")
         if thread:
+            print("\n>>> Delete the conversation thread from Foundry Agent Service.")
             project_client.agents.threads.delete(thread.id)
             print(f"  deleted thread {thread.id}")
         if agent:
+            print("\n>>> Delete the health resource advisor agent from Foundry Agent Service.")
             project_client.agents.delete_agent(agent.id)
             print(f"  deleted agent {agent.id}")
         if vector_store:
+            print("\n>>> Delete the vector store from Foundry Agent Service.")
             project_client.agents.vector_stores.delete(vector_store.id)
             print(f"  deleted vector store {vector_store.id}")
         for file_id in uploaded:
+            print("\n>>> Delete this uploaded file from the Foundry project.")
             project_client.agents.files.delete(file_id)
             print(f"  deleted file {file_id}")
     return failed_runs
@@ -333,5 +367,5 @@ def main():
 
 
 if __name__ == "__main__":
-    http_log.enable()
+    http_log.enable(call_descriptions=CALL_DESCRIPTIONS)
     main()

@@ -105,6 +105,14 @@ QUESTIONS = [
     "What guidelines do you have for someone with diabetes?",
 ]
 
+# Calls made inside one SDK line or loop, where no print can go right before them;
+# http_log prints each description before a matching call that it logs in full.
+CALL_DESCRIPTIONS = {
+    "GET */vector_stores/*": "Check whether Foundry Agent Service has finished adding the files to the vector store.",
+    "GET */messages*after=*": "Ask Foundry Agent Service for the next page of the conversation thread's messages.",
+    "GET */runs/*": "Check the agent run's status in Foundry Agent Service; this first check is logged in full.",
+}
+
 
 def print_section(title):
     print()
@@ -149,6 +157,7 @@ def upload_sample_files(project_client):
         for name, content in SAMPLE_FILES.items():
             path = Path(temp_dir) / name
             path.write_text(content, encoding="utf-8")
+            print(f"\n>>> Upload the file {name} to the Foundry project through Foundry Agent Service.")
             info = project_client.agents.files.upload_and_poll(file_path=str(path), purpose=FilePurpose.AGENTS)
             uploaded[info.id] = name
             print(f"Uploaded: {name} -> {info.id}")
@@ -158,6 +167,7 @@ def upload_sample_files(project_client):
 def build_vector_store(project_client, file_ids):
     """Step 1: put the uploaded files into a vector store, a search index the Agent
     Service manages; return it."""
+    print("\n>>> Create the vector store with the uploaded files in Foundry Agent Service.")
     vector_store = project_client.agents.vector_stores.create_and_poll(file_ids=file_ids, name=VECTOR_STORE_NAME)
     counts = vector_store.file_counts
     print(
@@ -170,6 +180,7 @@ def build_vector_store(project_client, file_ids):
 def create_agent(project_client, model, vector_store):
     """Step 2: create the agent with the File Search tool on the vector store."""
     file_search_tool = FileSearchTool(vector_store_ids=[vector_store.id])
+    print("\n>>> Create the health resource advisor agent, with the File Search tool, in Foundry Agent Service.")
     agent = project_client.agents.create_agent(
         model=model,
         name=AGENT_NAME,
@@ -182,6 +193,7 @@ def create_agent(project_client, model, vector_store):
 
 
 def create_thread(project_client):
+    print("\n>>> Create an empty conversation thread; Foundry Agent Service keeps the conversation history.")
     thread = project_client.agents.threads.create()
     print(f"Created thread: {thread.id}")
     return thread
@@ -203,7 +215,13 @@ def ask_questions(project_client, thread, agent):
 
 def ask(project_client, thread_id, agent_id, question):
     print(f"User: {question}")
+    print("\n>>> Add the user's question to the conversation thread in Foundry Agent Service.")
     project_client.agents.messages.create(thread_id=thread_id, role="user", content=question)
+    print(
+        "\n>>> Start a run, in which the health resource advisor agent reads the conversation thread, searches the "
+        "vector store and answers, then check the run's status until it ends. The first check is logged in full, "
+        "later ones as one `HTTP #n GET` line."
+    )
     run = project_client.agents.runs.create_and_process(thread_id=thread_id, agent_id=agent_id)
     print(f"Run status: {run.status}")
     if run.usage:
@@ -214,6 +232,10 @@ def ask(project_client, thread_id, agent_id, question):
 
 
 def print_conversation(project_client, thread_id, file_names):
+    print(
+        "\n>>> Read the conversation thread's messages from Foundry Agent Service. The `for` loop in "
+        "print_conversation() makes these calls, not its list() line: one call per page, and the last page is empty."
+    )
     messages = project_client.agents.messages.list(thread_id=thread_id, order=ListSortOrder.ASCENDING)
     for message in messages:
         for text_message in message.text_messages:
@@ -227,15 +249,19 @@ def cleanup(project_client, thread, agent, vector_store, uploaded):
     """Step 5: delete what the run created (whatever got created before an error):
     thread, agent, store, files."""
     if thread:
+        print("\n>>> Delete the conversation thread from Foundry Agent Service.")
         project_client.agents.threads.delete(thread.id)
         print(f"Deleted thread: {thread.id}")
     if agent:
+        print("\n>>> Delete the health resource advisor agent from Foundry Agent Service.")
         project_client.agents.delete_agent(agent.id)
         print(f"Deleted agent: {agent.id}")
     if vector_store:
+        print("\n>>> Delete the vector store from Foundry Agent Service.")
         project_client.agents.vector_stores.delete(vector_store.id)
         print(f"Deleted vector store: {vector_store.id}")
     for file_id, name in uploaded.items():
+        print(f"\n>>> Delete the file {name} from the Foundry project.")
         project_client.agents.files.delete(file_id)
         print(f"Deleted file from the project: {name} ({file_id})")
 
@@ -279,5 +305,5 @@ def main():
 
 
 if __name__ == "__main__":
-    http_log.enable()
+    http_log.enable(call_descriptions=CALL_DESCRIPTIONS)
     main()

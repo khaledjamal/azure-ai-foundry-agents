@@ -1,27 +1,31 @@
-Sample output of src/1-models/3-basic-rag-project-client.py
-Run on 2026-10-26 17:44 with: uv run python src/1-models/3-basic-rag-project-client.py
+Sample output of src/1-models/3-basic-rag-azure-openai.py
+Replay on 2026-11-01 20:25 of answers recorded on 2026-10-26 20:23 (no service called), with:
+HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/3-basic-rag-azure-openai-20261026-202317 uv run python src/1-models/3-basic-rag-azure-openai.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
+[http_replay] no random seed in this recording: random values differ from the record run
+[http_replay] replay mode, folder runs/recordings/3-basic-rag-azure-openai-20261026-202317
 
 ================================================================================
-BASIC RAG - AIProjectClient
+BASIC RAG - AzureOpenAI
 ================================================================================
 Loaded .env from: .env
 Chat model:        gpt-4o
 Embedding model:   text-embedding-3-small
 Search endpoint:   https://<search-service>.search.windows.net
-Connection method: AIProjectClient.get_openai_client()
-Project endpoint:  https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
-Model endpoint:    https://<resource-name>.services.ai.azure.com/openai/  (chosen by the project client)
+Connection method: AzureOpenAI (direct)
+Endpoint:          https://<resource-name>.openai.azure.com/
 API version:       2024-08-01-preview
 
 ================================================================================
 1. Build the vector index
 ================================================================================
 
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vector of this text: Daily 30-minute walks help maintain a healthy weight and red
+
 --- OUTBOUND REQUEST #1 ---
-> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
-> Host: <resource-name>.services.ai.azure.com
+> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -49,9 +53,8 @@ API version:       2024-08-01-preview
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
-< Content-Length: 8346
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:44:13 GMT
+< Date: Mon, 26 Oct 2026 16:23:19 GMT
 < Server: istio-envoy
 < Vary: Origin
 < apim-request-id: <id>
@@ -60,12 +63,14 @@ API version:       2024-08-01-preview
 < x-ms-region: East US 2
 < x-ratelimit-remaining-tokens: 149909
 < x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261013064008-a2778731
+< azureml-model-session: d20261024213707-99548d10
 < x-ms-served-model: text-embedding-3-small-1
 < x-request-id: <id>
-< x-http2-stream-id: 923
+< x-http2-stream-id: 755
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 8361
+< x-http-replay: 0001-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
@@ -83,9 +88,11 @@ API version:       2024-08-01-preview
   }
 }
 
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vector of this text: Stay hydrated by drinking 8-10 cups of water per day.
+
 --- OUTBOUND REQUEST #2 ---
-> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
-> Host: <resource-name>.services.ai.azure.com
+> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -113,9 +120,8 @@ API version:       2024-08-01-preview
 
 --- OUTBOUND RESPONSE #2 ---
 < 200 OK
-< Content-Length: 8346
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:44:14 GMT
+< Date: Mon, 26 Oct 2026 16:23:19 GMT
 < Server: istio-envoy
 < Vary: Origin
 < apim-request-id: <id>
@@ -124,12 +130,14 @@ API version:       2024-08-01-preview
 < x-ms-region: East US 2
 < x-ratelimit-remaining-tokens: 149895
 < x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261013064008-c32289de
+< azureml-model-session: d20261014070400-d5cab980
 < x-ms-served-model: text-embedding-3-small-1
 < x-request-id: <id>
-< x-http2-stream-id: 89
+< x-http2-stream-id: 675
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 8361
+< x-http-replay: 0002-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
@@ -147,9 +155,11 @@ API version:       2024-08-01-preview
   }
 }
 
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vector of this text: Consistent sleep patterns (7-9 hours) improve muscle recover
+
 --- OUTBOUND REQUEST #3 ---
-> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
-> Host: <resource-name>.services.ai.azure.com
+> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -177,9 +187,8 @@ API version:       2024-08-01-preview
 
 --- OUTBOUND RESPONSE #3 ---
 < 200 OK
-< Content-Length: 8346
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:44:14 GMT
+< Date: Mon, 26 Oct 2026 16:23:19 GMT
 < Server: istio-envoy
 < Vary: Origin
 < apim-request-id: <id>
@@ -188,12 +197,14 @@ API version:       2024-08-01-preview
 < x-ms-region: East US 2
 < x-ratelimit-remaining-tokens: 149879
 < x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261014070325-7db584b5
+< azureml-model-session: d20261023211206-7f1ae363
 < x-ms-served-model: text-embedding-3-small-1
 < x-request-id: <id>
-< x-http2-stream-id: 325
+< x-http2-stream-id: 679
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 8361
+< x-http-replay: 0003-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
@@ -211,9 +222,11 @@ API version:       2024-08-01-preview
   }
 }
 
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vector of this text: For cardio endurance, try interval training like HIIT.
+
 --- OUTBOUND REQUEST #4 ---
-> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
-> Host: <resource-name>.services.ai.azure.com
+> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -241,9 +254,8 @@ API version:       2024-08-01-preview
 
 --- OUTBOUND RESPONSE #4 ---
 < 200 OK
-< Content-Length: 8346
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:44:14 GMT
+< Date: Mon, 26 Oct 2026 16:23:19 GMT
 < Server: istio-envoy
 < Vary: Origin
 < apim-request-id: <id>
@@ -252,12 +264,14 @@ API version:       2024-08-01-preview
 < x-ms-region: East US 2
 < x-ratelimit-remaining-tokens: 149865
 < x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261014070420-98f828a9
+< azureml-model-session: d20261013064008-1bf40489
 < x-ms-served-model: text-embedding-3-small-1
 < x-request-id: <id>
-< x-http2-stream-id: 37
+< x-http2-stream-id: 683
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 8361
+< x-http-replay: 0004-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
@@ -275,9 +289,11 @@ API version:       2024-08-01-preview
   }
 }
 
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vector of this text: Warm up with dynamic stretches before running to reduce inju
+
 --- OUTBOUND REQUEST #5 ---
-> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
-> Host: <resource-name>.services.ai.azure.com
+> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -305,9 +321,8 @@ API version:       2024-08-01-preview
 
 --- OUTBOUND RESPONSE #5 ---
 < 200 OK
-< Content-Length: 8346
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:44:14 GMT
+< Date: Mon, 26 Oct 2026 16:23:20 GMT
 < Server: istio-envoy
 < Vary: Origin
 < apim-request-id: <id>
@@ -316,12 +331,14 @@ API version:       2024-08-01-preview
 < x-ms-region: East US 2
 < x-ratelimit-remaining-tokens: 149848
 < x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261014070325-2cffadc7
+< azureml-model-session: d20261024223913-6d6f19f1
 < x-ms-served-model: text-embedding-3-small-1
 < x-request-id: <id>
-< x-http2-stream-id: 41
+< x-http2-stream-id: 441
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 8361
+< x-http-replay: 0005-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
@@ -339,9 +356,11 @@ API version:       2024-08-01-preview
   }
 }
 
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vector of this text: Balanced diets typically include protein, whole grains, frui
+
 --- OUTBOUND REQUEST #6 ---
-> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
-> Host: <resource-name>.services.ai.azure.com
+> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -369,9 +388,8 @@ API version:       2024-08-01-preview
 
 --- OUTBOUND RESPONSE #6 ---
 < 200 OK
-< Content-Length: 8346
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:44:15 GMT
+< Date: Mon, 26 Oct 2026 16:23:20 GMT
 < Server: istio-envoy
 < Vary: Origin
 < apim-request-id: <id>
@@ -380,12 +398,14 @@ API version:       2024-08-01-preview
 < x-ms-region: East US 2
 < x-ratelimit-remaining-tokens: 149824
 < x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261024224344-c532321c
+< azureml-model-session: d20261023211206-46355147
 < x-ms-served-model: text-embedding-3-small-1
 < x-request-id: <id>
-< x-http2-stream-id: 331
+< x-http2-stream-id: 443
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 8361
+< x-http-replay: 0006-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
@@ -404,6 +424,8 @@ API version:       2024-08-01-preview
 }
 Embedded 6 tips, vector length 1536
 
+>>> Delete the health tips index from Azure AI Search, if an earlier run left it there.
+
 --- OUTBOUND REQUEST #7 ---
 > DELETE https://<search-service>.search.windows.net/indexes('healthtips-index')?api-version=2026-04-01
 > User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
@@ -419,9 +441,13 @@ Embedded 6 tips, vector length 1536
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < request-id: <id>
-< elapsed-time: 519
-< Date: Mon, 26 Oct 2026 13:44:17 GMT
+< elapsed-time: 412
+< Date: Mon, 26 Oct 2026 16:23:23 GMT
+< Content-Length: 0
+< x-http-replay: 0007-DELETE-indexes--healthtips-index--.json
 Deleted existing index: healthtips-index
+
+>>> Create the health tips index in Azure AI Search.
 
 --- OUTBOUND REQUEST #8 ---
 > POST https://<search-service>.search.windows.net/indexes?api-version=2026-04-01
@@ -498,20 +524,21 @@ Deleted existing index: healthtips-index
 
 --- OUTBOUND RESPONSE #8 ---
 < 201 Created
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=minimal; odata.streaming=true; charset=utf-8
-< ETag: "0x8DF33673B99DFE5"
+< ETag: "0x8DF337D7579910E"
 < Location: https://<search-service>.search.windows.net:443/indexes('healthtips-index')?api-version=2026-04-01
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 951
-< Date: Mon, 26 Oct 2026 13:44:18 GMT
+< elapsed-time: 1016
+< Date: Mon, 26 Oct 2026 16:23:24 GMT
+< Content-Length: 2290
+< x-http-replay: 0008-POST-indexes.json
 <
 {
   "@odata.context": "https://<search-service>.search.windows.net/$metadata#indexes/$entity",
-  "@odata.etag": "\"0x8DF33673B99DFE5\"",
+  "@odata.etag": "\"0x8DF337D7579910E\"",
   "name": "healthtips-index",
   "description": null,
   "defaultScoringProfile": null,
@@ -635,6 +662,8 @@ Deleted existing index: healthtips-index
   }
 }
 Created index: healthtips-index (vector dimension 1536)
+
+>>> Upload the health tips and their vectors to the health tips index in Azure AI Search.
 
 --- OUTBOUND REQUEST #9 ---
 > POST https://<search-service>.search.windows.net/indexes('healthtips-index')/docs/search.index?api-version=2026-04-01
@@ -943,16 +972,16 @@ Created index: healthtips-index (vector dimension 1536)
 
 --- OUTBOUND RESPONSE #9 ---
 < 200 OK
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
-< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 691
-< Date: Mon, 26 Oct 2026 13:44:20 GMT
+< elapsed-time: 703
+< Date: Mon, 26 Oct 2026 16:23:26 GMT
+< Content-Length: 455
+< x-http-replay: 0009-POST-indexes--healthtips-index--_docs_search.index.json
 <
 {
   "value": [
@@ -996,6 +1025,8 @@ Created index: healthtips-index (vector dimension 1536)
 }
 Uploaded 6/6 documents to 'healthtips-index'
 
+>>> Ask Azure AI Search how many documents the health tips index can search, until all of them can. The first check is logged in full, later ones as one `HTTP #n GET` line.
+
 --- OUTBOUND REQUEST #10 ---
 > GET https://<search-service>.search.windows.net/indexes('healthtips-index')/docs/$count?api-version=2026-04-01
 > User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
@@ -1007,16 +1038,16 @@ Uploaded 6/6 documents to 'healthtips-index'
 
 --- OUTBOUND RESPONSE #10 ---
 < 200 OK
-< Transfer-Encoding: chunked
 < Content-Type: text/plain; charset=utf-8
-< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 20
-< Date: Mon, 26 Oct 2026 13:44:20 GMT
+< elapsed-time: 5
+< Date: Mon, 26 Oct 2026 16:23:26 GMT
+< Content-Length: 1
+< x-http-replay: 0010-GET-indexes--healthtips-index--_docs_-count.json
 <
 0
 
@@ -1028,9 +1059,11 @@ Searchable documents: 6/6
 ================================================================================
 User: What's a good short cardio routine for me if I'm busy?
 
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vector of this text: What's a good short cardio routine for me if I'm busy?
+
 --- OUTBOUND REQUEST #12 ---
-> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
-> Host: <resource-name>.services.ai.azure.com
+> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -1058,9 +1091,8 @@ User: What's a good short cardio routine for me if I'm busy?
 
 --- OUTBOUND RESPONSE #12 ---
 < 200 OK
-< Content-Length: 8346
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:44:21 GMT
+< Date: Mon, 26 Oct 2026 16:23:27 GMT
 < Server: istio-envoy
 < Vary: Origin
 < apim-request-id: <id>
@@ -1069,19 +1101,21 @@ User: What's a good short cardio routine for me if I'm busy?
 < x-ms-region: East US 2
 < x-ratelimit-remaining-tokens: 149810
 < x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261023211130-1c277abc
+< azureml-model-session: d20261013064008-2b796657
 < x-ms-served-model: text-embedding-3-small-1
 < x-request-id: <id>
-< x-http2-stream-id: 259
+< x-http2-stream-id: 333
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 8361
+< x-http-replay: 0012-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
   "data": [
     {
       "object": "embedding",
-      "embedding": "AAAwvQDgIT0AAAS8AKA+vQDAl7wAoK08AGApvADgAj0AQI89AACouwDAA70AoO66AIBUuQDA/zwAYCM7...(8192 characters)",
+      "embedding": "AAAwvQDgIT0AIAS8AKA+vQCgl7wAoK08AKApvADAAj0AII89ACCnuwDAA70AwPO6AGBluQAAAD0AwCI7...(8192 characters)",
       "index": 0
     }
   ],
@@ -1092,6 +1126,8 @@ User: What's a good short cardio routine for me if I'm busy?
   }
 }
 
+>>> Search the health tips index in Azure AI Search with the question's vector.
+
 --- OUTBOUND REQUEST #13 ---
 > POST https://<search-service>.search.windows.net/indexes('healthtips-index')/docs/search.post.search?api-version=2026-04-01
 > User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
@@ -1099,7 +1135,7 @@ User: What's a good short cardio routine for me if I'm busy?
 > Accept: application/json;odata.metadata=none
 > Connection: keep-alive
 > Content-Type: application/json
-> Content-Length: 30982
+> Content-Length: 31009
 > x-ms-client-request-id: <id>
 > api-key: <redacted>
 >
@@ -1111,323 +1147,323 @@ User: What's a good short cardio routine for me if I'm busy?
       "vector": [
         -0.04296875,
         0.039520263671875,
-        -0.008056640625,
+        -0.00806427001953125,
         -0.046539306640625,
-        -0.018524169921875,
+        -0.0185089111328125,
         0.0211944580078125,
-        -0.01033782958984375,
-        0.031951904296875,
-        0.0699462890625,
-        -0.005126953125,
+        -0.01035308837890625,
+        0.03192138671875,
+        0.06988525390625,
+        -0.005100250244140625,
         -0.03216552734375,
-        -0.0018205642700195312,
-        -0.00020265579223632812,
-        0.031219482421875,
-        0.0024929046630859375,
-        -0.035308837890625,
-        -0.0164642333984375,
-        -0.0171356201171875,
-        0.00988006591796875,
+        -0.0018596649169921875,
+        -0.0002187490463256836,
+        0.03125,
+        0.002483367919921875,
+        -0.03533935546875,
+        -0.0164794921875,
+        -0.01708984375,
+        0.0098724365234375,
         0.031097412109375,
-        -0.004009246826171875,
+        -0.004001617431640625,
         0.03631591796875,
-        0.01052093505859375,
-        -0.00775909423828125,
+        0.01053619384765625,
+        -0.007755279541015625,
         0.049468994140625,
-        0.0011081695556640625,
-        -0.0206756591796875,
-        -0.0014057159423828125,
-        0.046478271484375,
-        -0.00579071044921875,
-        -0.0011968612670898438,
-        -0.025848388671875,
+        0.001102447509765625,
+        -0.0206298828125,
+        -0.00136566162109375,
+        0.04644775390625,
+        -0.00582122802734375,
+        -0.0011510848999023438,
+        -0.0258636474609375,
         -0.044525146484375,
-        -0.0032291412353515625,
-        0.044891357421875,
-        0.001453399658203125,
-        -0.01904296875,
-        0.007232666015625,
+        -0.003200531005859375,
+        0.044952392578125,
+        0.0014781951904296875,
+        -0.019012451171875,
+        0.0072174072265625,
         0.032989501953125,
         -0.050079345703125,
-        0.0243072509765625,
-        -0.037994384765625,
-        0.01157379150390625,
-        -0.0181732177734375,
-        -0.0020961761474609375,
-        -0.0281524658203125,
+        0.02435302734375,
+        -0.03802490234375,
+        0.0115814208984375,
+        -0.0181427001953125,
+        -0.0020999908447265625,
+        -0.0281829833984375,
         0.06842041015625,
-        0.0413818359375,
-        0.015716552734375,
-        0.017669677734375,
-        -0.03167724609375,
-        0.05712890625,
+        0.041351318359375,
+        0.0157012939453125,
+        0.0176849365234375,
+        -0.031646728515625,
+        0.05706787109375,
         -0.058929443359375,
-        0.058990478515625,
-        -0.020263671875,
-        0.022857666015625,
-        -0.0240020751953125,
-        -0.03582763671875,
-        -0.009246826171875,
-        0.036529541015625,
-        -0.003658294677734375,
-        -0.017059326171875,
-        0.038726806640625,
-        0.048828125,
-        -0.027862548828125,
-        0.0189666748046875,
+        0.058929443359375,
+        -0.020233154296875,
+        0.0228271484375,
+        -0.02398681640625,
+        -0.035858154296875,
+        -0.00922393798828125,
+        0.0364990234375,
+        -0.0036449432373046875,
+        -0.01708984375,
+        0.0386962890625,
+        0.048858642578125,
+        -0.0278472900390625,
+        0.01898193359375,
         0.04400634765625,
-        0.01482391357421875,
-        -0.018646240234375,
-        -0.040740966796875,
-        -0.0298004150390625,
-        0.00557708740234375,
+        0.01480865478515625,
+        -0.0186767578125,
+        -0.040679931640625,
+        -0.02978515625,
+        0.005580902099609375,
         0.048553466796875,
-        -0.0130157470703125,
-        -0.0016689300537109375,
+        -0.01300048828125,
+        -0.0016775131225585938,
         -0.0197601318359375,
-        -0.0377197265625,
-        -0.01100921630859375,
-        0.0369873046875,
-        0.031219482421875,
-        0.052947998046875,
-        -0.01251983642578125,
-        0.0380859375,
+        -0.037750244140625,
+        -0.0110015869140625,
+        0.036956787109375,
+        0.03125,
+        0.053009033203125,
+        -0.012542724609375,
+        0.038055419921875,
         0.0611572265625,
         -0.06500244140625,
         -0.04766845703125,
         -0.048614501953125,
-        0.0075531005859375,
+        0.007568359375,
         0.0277862548828125,
         -0.0302734375,
-        0.01342010498046875,
+        0.01338958740234375,
         0.0345458984375,
-        -0.0244598388671875,
+        -0.024444580078125,
         -0.038543701171875,
         0.0531005859375,
         0.0189208984375,
         0.0197296142578125,
         0.05712890625,
-        -0.0099639892578125,
+        -0.01000213623046875,
         0.030609130859375,
-        0.042755126953125,
-        -0.041900634765625,
-        0.0241546630859375,
-        -0.005733489990234375,
-        0.0252685546875,
-        0.0012302398681640625,
+        0.042724609375,
+        -0.04193115234375,
+        0.024139404296875,
+        -0.0057220458984375,
+        0.0252838134765625,
+        0.0012292861938476562,
         -0.0251617431640625,
         0.054962158203125,
         -0.0220947265625,
-        -0.00464630126953125,
+        -0.004673004150390625,
         -0.060577392578125,
         -0.051055908203125,
-        0.0007848739624023438,
-        -0.01947021484375,
-        -0.0085601806640625,
-        0.004909515380859375,
-        0.023529052734375,
-        -0.0018663406372070312,
-        -0.026275634765625,
-        -0.025390625,
+        0.0008211135864257812,
+        -0.019439697265625,
+        -0.00859832763671875,
+        0.00490570068359375,
+        0.0235137939453125,
+        -0.0019044876098632812,
+        -0.0262603759765625,
+        -0.0254364013671875,
         0.0178375244140625,
         0.029541015625,
-        0.0096282958984375,
-        -0.046478271484375,
-        -0.038543701171875,
-        -0.0141143798828125,
+        0.00960540771484375,
+        -0.0465087890625,
+        -0.03857421875,
+        -0.0141448974609375,
         0.0122222900390625,
-        -0.0068511962890625,
-        0.01806640625,
+        -0.00685882568359375,
+        0.018035888671875,
         -0.05096435546875,
         0.0321044921875,
-        -0.0179595947265625,
-        0.031402587890625,
-        -0.01259613037109375,
-        -0.0003859996795654297,
-        -0.006793975830078125,
-        -0.0164947509765625,
+        -0.0179443359375,
+        0.03143310546875,
+        -0.01261138916015625,
+        -0.0003714561462402344,
+        -0.006839752197265625,
+        -0.016510009765625,
         -0.03692626953125,
         -0.04193115234375,
-        0.0216827392578125,
-        0.016876220703125,
-        0.006435394287109375,
-        0.00830841064453125,
-        0.03094482421875,
-        0.007549285888671875,
-        0.0166473388671875,
-        0.0199432373046875,
-        -0.010162353515625,
+        0.0217132568359375,
+        0.01690673828125,
+        0.0064239501953125,
+        0.00829315185546875,
+        0.0309600830078125,
+        0.0075225830078125,
+        0.0166778564453125,
+        0.019927978515625,
+        -0.01016998291015625,
         -0.027618408203125,
-        0.01311492919921875,
-        0.031982421875,
-        0.003658294677734375,
+        0.01309967041015625,
+        0.032012939453125,
+        0.0036907196044921875,
         0.022430419921875,
-        0.0288238525390625,
-        0.01922607421875,
-        -0.017364501953125,
-        -0.03204345703125,
-        -0.0007061958312988281,
-        0.014801025390625,
-        -0.0097808837890625,
-        0.01418304443359375,
-        -0.03924560546875,
-        -0.006786346435546875,
-        -0.01116943359375,
-        -0.006587982177734375,
-        -0.0093536376953125,
-        0.006343841552734375,
-        -0.004840850830078125,
+        0.0288543701171875,
+        0.0192413330078125,
+        -0.0173797607421875,
+        -0.032073974609375,
+        -0.0006608963012695312,
+        0.01480865478515625,
+        -0.009796142578125,
+        0.01422119140625,
+        -0.039215087890625,
+        -0.0067596435546875,
+        -0.0111541748046875,
+        -0.006603240966796875,
+        -0.0093231201171875,
+        0.006317138671875,
+        -0.004856109619140625,
         -0.0491943359375,
-        0.0347900390625,
+        0.034820556640625,
         0.024169921875,
-        -0.021453857421875,
-        -0.0017642974853515625,
+        -0.0214691162109375,
+        -0.0017595291137695312,
         -0.0316162109375,
-        0.006191253662109375,
-        0.03509521484375,
-        -0.03009033203125,
-        0.01197052001953125,
-        -0.0201873779296875,
-        0.0097198486328125,
-        0.001194000244140625,
-        0.0228271484375,
-        0.0242462158203125,
-        0.0178375244140625,
-        -0.0123443603515625,
-        -0.00656890869140625,
-        0.01195526123046875,
-        0.0004210472106933594,
-        0.029541015625,
-        0.04461669921875,
-        0.00782012939453125,
+        0.006183624267578125,
+        0.035064697265625,
+        -0.0301361083984375,
+        0.01194000244140625,
+        -0.020172119140625,
+        0.009735107421875,
+        0.0011730194091796875,
+        0.0228118896484375,
+        0.024261474609375,
+        0.017822265625,
+        -0.01236724853515625,
+        -0.0065765380859375,
+        0.0119476318359375,
+        0.0004353523254394531,
+        0.029571533203125,
+        0.044586181640625,
+        0.007785797119140625,
         0.033660888671875,
         -0.035003662109375,
         0.0265045166015625,
         -0.03155517578125,
         -0.014129638671875,
-        0.0243072509765625,
-        -0.00045680999755859375,
-        0.0172119140625,
-        0.04156494140625,
-        0.004322052001953125,
+        0.024322509765625,
+        -0.0005064010620117188,
+        0.0172576904296875,
+        0.041534423828125,
+        0.004299163818359375,
         -0.01447296142578125,
-        -0.019134521484375,
-        -0.01006317138671875,
+        -0.0191192626953125,
+        -0.01007080078125,
         0.050537109375,
-        -0.02081298828125,
-        -0.03973388671875,
-        0.015045166015625,
-        0.01464080810546875,
-        -0.00789642333984375,
-        0.01422119140625,
-        0.01495361328125,
-        -0.03326416015625,
-        -0.009124755859375,
-        -0.0265350341796875,
+        -0.020843505859375,
+        -0.039764404296875,
+        0.01508331298828125,
+        0.0146331787109375,
+        -0.00792694091796875,
+        0.0142059326171875,
+        0.0149383544921875,
+        -0.033294677734375,
+        -0.00910186767578125,
+        -0.02655029296875,
         0.01296234130859375,
-        0.03253173828125,
+        0.032501220703125,
         0.0257720947265625,
-        0.04083251953125,
-        0.0014781951904296875,
-        0.005077362060546875,
-        -0.016143798828125,
-        0.06512451171875,
+        0.040863037109375,
+        0.0014696121215820312,
+        0.00510406494140625,
+        -0.01611328125,
+        0.0650634765625,
         0.028045654296875,
-        0.030914306640625,
-        0.00981903076171875,
-        0.0364990234375,
+        0.03094482421875,
+        0.00982666015625,
+        0.036468505859375,
         -0.024444580078125,
-        0.0211029052734375,
-        -0.0046844482421875,
-        0.018798828125,
-        0.04949951171875,
-        -0.0038700103759765625,
-        0.00579833984375,
-        0.0267333984375,
-        0.0094146728515625,
+        0.0210723876953125,
+        -0.004695892333984375,
+        0.0187835693359375,
+        0.049468994140625,
+        -0.0038928985595703125,
+        0.005802154541015625,
+        0.026702880859375,
+        0.009429931640625,
         0.0440673828125,
-        -0.043548583984375,
+        -0.04351806640625,
         0.01617431640625,
         -0.031768798828125,
-        -0.000850677490234375,
-        0.028045654296875,
-        -0.01146697998046875,
-        -0.03253173828125,
+        -0.0008611679077148438,
+        0.028076171875,
+        -0.0115203857421875,
+        -0.032501220703125,
         -0.02838134765625,
-        -0.0086517333984375,
+        -0.00865936279296875,
         -0.050750732421875,
-        -0.0478515625,
-        -0.02239990234375,
-        0.004627227783203125,
-        0.01241302490234375,
+        -0.047821044921875,
+        -0.022430419921875,
+        0.00464630126953125,
+        0.0124053955078125,
         -0.033050537109375,
-        -0.00970458984375,
-        0.004802703857421875,
-        -0.0217132568359375,
-        0.059356689453125,
-        0.009796142578125,
+        -0.00971221923828125,
+        0.004787445068359375,
+        -0.021759033203125,
+        0.059417724609375,
+        0.0098114013671875,
         -0.0161285400390625,
-        0.0157928466796875,
-        0.0026416778564453125,
+        0.0157470703125,
+        0.00264739990234375,
         -0.0491943359375,
-        0.001377105712890625,
-        0.0499267578125,
+        0.0014095306396484375,
+        0.049957275390625,
         -0.0301361083984375,
-        0.0172882080078125,
+        0.017242431640625,
         0.0233306884765625,
-        -0.037872314453125,
+        -0.03790283203125,
         -0.0472412109375,
         0.01541900634765625,
-        -0.0224151611328125,
-        -0.0286712646484375,
-        -0.00862884521484375,
+        -0.0223846435546875,
+        -0.0286407470703125,
+        -0.00864410400390625,
         0.032470703125,
         -0.044708251953125,
-        0.01287841796875,
-        0.0174102783203125,
-        0.0024700164794921875,
-        -0.00283050537109375,
-        -0.0196685791015625,
-        -0.020111083984375,
-        -0.0025844573974609375,
+        0.01288604736328125,
+        0.017425537109375,
+        0.0024738311767578125,
+        -0.0028247833251953125,
+        -0.019683837890625,
+        -0.0200958251953125,
+        -0.00261688232421875,
         0.04583740234375,
-        -0.003032684326171875,
-        -0.0120849609375,
-        0.007232666015625,
-        0.01160430908203125,
-        0.0030975341796875,
-        0.047088623046875,
-        0.01459503173828125,
+        -0.0030460357666015625,
+        -0.01207733154296875,
+        0.007251739501953125,
+        0.01155853271484375,
+        0.0030841827392578125,
+        0.047119140625,
+        0.01457977294921875,
         0.035675048828125,
-        -0.070...more...
+...more...
 
 --- OUTBOUND RESPONSE #13 ---
 < 200 OK
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
-< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 228
-< Date: Mon, 26 Oct 2026 13:44:22 GMT
+< elapsed-time: 224
+< Date: Mon, 26 Oct 2026 16:23:28 GMT
+< Content-Length: 426
+< x-http-replay: 0013-POST-indexes--healthtips-index--_docs_search.post.search.json
 <
 {
   "value": [
     {
-      "@search.score": 0.67002076,
+      "@search.score": 0.67000633,
       "content": "For cardio endurance, try interval training like HIIT.",
       "source": "Workout Advice"
     },
     {
-      "@search.score": 0.6119377,
+      "@search.score": 0.61192715,
       "content": "Daily 30-minute walks help maintain a healthy weight and reduce stress.",
       "source": "General Fitness"
     },
     {
-      "@search.score": 0.59268796,
+      "@search.score": 0.5926869,
       "content": "Warm up with dynamic stretches before running to reduce injury risk.",
       "source": "Workout Advice"
     }
@@ -1438,9 +1474,11 @@ Retrieved tips:
   Source: General Fitness => Daily 30-minute walks help maintain a healthy weight and reduce stress.
   Source: Workout Advice => Warm up with dynamic stretches before running to reduce injury risk.
 
+>>> Ask the Azure OpenAI chat model gpt-4o to answer from the retrieved tips.
+
 --- OUTBOUND REQUEST #14 ---
-> POST https://<resource-name>.services.ai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview
-> Host: <resource-name>.services.ai.azure.com
+> POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -1476,9 +1514,8 @@ Retrieved tips:
 
 --- OUTBOUND RESPONSE #14 ---
 < 200 OK
-< Content-Length: 1568
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:44:22 GMT
+< Date: Mon, 26 Oct 2026 16:23:29 GMT
 < Server: istio-envoy
 < Vary: Origin
 < azureai-fe-is-streaming: False
@@ -1501,11 +1538,13 @@ Retrieved tips:
 < x-ratelimit-reset-tokens: 0
 < x-request-id: <id>
 < apim-request-id: <id>
-< x-http2-stream-id: 613
+< x-http2-stream-id: 221
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 1694
+< x-http-replay: 0014-POST-openai_deployments_gpt-4o_chat_completions.json
 <
 {
   "choices": [
@@ -1547,8 +1586,8 @@ Retrieved tips:
       }
     }
   ],
-  "created": 1793022263,
-  "id": "chatcmpl-EdFHr4jy1VpRvJYrrChXlGk9JRZq6",
+  "created": 1793031809,
+  "id": "chatcmpl-EdHlpJ63AU0trEhIr3slVjTXay05O",
   "model": "gpt-4o-2024-11-20",
   "object": "chat.completion",
   "prompt_filter_results": [
@@ -1592,14 +1631,14 @@ Retrieved tips:
       "rejected_prediction_tokens": 0
     },
     "latency_checkpoint": {
-      "engine_tbt_ms": 17,
-      "engine_ttft_ms": 117,
-      "engine_ttlt_ms": 325,
-      "pre_inference_ms": 70,
-      "service_tbt_ms": 18,
-      "service_ttft_ms": 243,
-      "service_ttlt_ms": 437,
-      "user_visible_ttft_ms": 172
+      "engine_tbt_ms": 12,
+      "engine_ttft_ms": 67,
+      "engine_ttlt_ms": 205,
+      "pre_inference_ms": 190,
+      "service_tbt_ms": 8,
+      "service_ttft_ms": 543,
+      "service_ttlt_ms": 627,
+      "user_visible_ttft_ms": 354
     },
     "prompt_tokens": 105,
     "prompt_tokens_details": {
@@ -1617,9 +1656,11 @@ Assistant: For cardio endurance, try interval training like HIIT.
 ================================================================================
 User: How much water should I drink daily?
 
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vector of this text: How much water should I drink daily?
+
 --- OUTBOUND REQUEST #15 ---
-> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
-> Host: <resource-name>.services.ai.azure.com
+> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -1647,9 +1688,8 @@ User: How much water should I drink daily?
 
 --- OUTBOUND RESPONSE #15 ---
 < 200 OK
-< Content-Length: 8344
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:44:23 GMT
+< Date: Mon, 26 Oct 2026 16:23:30 GMT
 < Server: istio-envoy
 < Vary: Origin
 < apim-request-id: <id>
@@ -1658,12 +1698,14 @@ User: How much water should I drink daily?
 < x-ms-region: East US 2
 < x-ratelimit-remaining-tokens: 149801
 < x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261014070325-2cffadc7
+< azureml-model-session: d20261023211130-eb16fc5a
 < x-ms-served-model: text-embedding-3-small-1
 < x-request-id: <id>
-< x-http2-stream-id: 795
+< x-http2-stream-id: 673
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 8359
+< x-http-replay: 0015-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
@@ -1680,6 +1722,8 @@ User: How much water should I drink daily?
     "total_tokens": 8
   }
 }
+
+>>> Search the health tips index in Azure AI Search with the question's vector.
 
 --- OUTBOUND REQUEST #16 ---
 > POST https://<search-service>.search.windows.net/indexes('healthtips-index')/docs/search.post.search?api-version=2026-04-01
@@ -1990,16 +2034,16 @@ User: How much water should I drink daily?
 
 --- OUTBOUND RESPONSE #16 ---
 < 200 OK
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
-< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
 < elapsed-time: 215
-< Date: Mon, 26 Oct 2026 13:44:24 GMT
+< Date: Mon, 26 Oct 2026 16:23:30 GMT
+< Content-Length: 444
+< x-http-replay: 0016-POST-indexes--healthtips-index--_docs_search.post.search.json
 <
 {
   "value": [
@@ -2025,9 +2069,11 @@ Retrieved tips:
   Source: General Fitness => Daily 30-minute walks help maintain a healthy weight and reduce stress.
   Source: Nutrition => Balanced diets typically include protein, whole grains, fruits, vegetables, and healthy fats.
 
+>>> Ask the Azure OpenAI chat model gpt-4o to answer from the retrieved tips.
+
 --- OUTBOUND REQUEST #17 ---
-> POST https://<resource-name>.services.ai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview
-> Host: <resource-name>.services.ai.azure.com
+> POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -2063,9 +2109,8 @@ Retrieved tips:
 
 --- OUTBOUND RESPONSE #17 ---
 < 200 OK
-< Content-Length: 1576
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:44:24 GMT
+< Date: Mon, 26 Oct 2026 16:23:30 GMT
 < Server: istio-envoy
 < Vary: Origin
 < azureai-fe-is-streaming: False
@@ -2088,11 +2133,13 @@ Retrieved tips:
 < x-ratelimit-reset-tokens: 0
 < x-request-id: <id>
 < apim-request-id: <id>
-< x-http2-stream-id: 657
+< x-http2-stream-id: 913
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 1704
+< x-http-replay: 0017-POST-openai_deployments_gpt-4o_chat_completions.json
 <
 {
   "choices": [
@@ -2134,8 +2181,8 @@ Retrieved tips:
       }
     }
   ],
-  "created": 1793022264,
-  "id": "chatcmpl-EdFHsimT9d2xOvPolwjuLRvXLBlFx",
+  "created": 1793031811,
+  "id": "chatcmpl-EdHlrmg9kMp7IAdYoY5McDuol34Zm",
   "model": "gpt-4o-2024-11-20",
   "object": "chat.completion",
   "prompt_filter_results": [
@@ -2180,13 +2227,13 @@ Retrieved tips:
     },
     "latency_checkpoint": {
       "engine_tbt_ms": 6,
-      "engine_ttft_ms": 66,
-      "engine_ttlt_ms": 164,
-      "pre_inference_ms": 266,
-      "service_tbt_ms": 5,
-      "service_ttft_ms": 474,
-      "service_ttlt_ms": 554,
-      "user_visible_ttft_ms": 208
+      "engine_ttft_ms": 115,
+      "engine_ttlt_ms": 212,
+      "pre_inference_ms": 215,
+      "service_tbt_ms": 6,
+      "service_ttft_ms": 438,
+      "service_ttlt_ms": 531,
+      "user_visible_ttft_ms": 223
     },
     "prompt_tokens": 108,
     "prompt_tokens_details": {

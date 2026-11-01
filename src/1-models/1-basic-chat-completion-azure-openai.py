@@ -85,6 +85,7 @@ def create_openai_client():
 
 
 def chat(openai_client, model, system_prompt, user_input):
+    print(f"\n>>> Ask the Azure OpenAI chat model {model} for an answer.")
     response = openai_client.chat.completions.create(
         model=model,
         messages=[

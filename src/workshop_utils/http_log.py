@@ -46,6 +46,12 @@ ends, for example) is logged as one line with the reply's "status" field, `HTTP 
 <url> -> 200 OK, status: in_progress`. The first GET of a URL is logged in full, so the
 reply's shape is shown once.
 
+Call descriptions: one SDK line or loop can make several calls, so a script's print
+can't go right before each of them. `enable(call_descriptions={...})` takes a table of
+pattern -> description, and the first matching description is printed as `>>> <text>`
+before a call logged in full, not before the one-line status checks. Patterns are
+`fnmatch` patterns on "<method> <url>", such as `GET */threads/*/runs/*`.
+
 Secrets are redacted: authorization and key headers, cookies, key and signature query
 parameters (for example the Functions `?code=` key), and token, password and credential
 fields in JSON and form bodies. Long strings inside JSON (base64 images, for example)
@@ -62,6 +68,7 @@ starts them when HTTP_REPLAY is set to record or replay.
 """
 
 import atexit
+import fnmatch
 import itertools
 import json
 import logging
@@ -127,7 +134,13 @@ MAX_CAPTURE = 1024 * 1024  # bytes of a body kept for the log; the rest is count
 # fields after them still be shown.
 MAX_JSON_CAPTURE = 32 * 1024 * 1024
 
-_settings = {"level": "full", "metrics": False, "max_body": DEFAULT_MAX_BODY, "polls": "short"}
+_settings = {
+    "level": "full",
+    "metrics": False,
+    "max_body": DEFAULT_MAX_BODY,
+    "polls": "short",
+    "call_descriptions": {},
+}
 _originals = {}  # (class, method name) -> original function, to restore in disable()
 _call_numbers = itertools.count(1)
 _lock = threading.Lock()
@@ -137,12 +150,15 @@ _totals = {"calls": 0, "seconds": 0.0, "sent": 0, "received": 0, "input_tokens":
 _observers = []  # functions called with each finished call (http_replay's recorder)
 
 
-def enable(level=None, metrics=None, max_body=None, polls=None):
+def enable(level=None, metrics=None, max_body=None, polls=None, call_descriptions=None):
     """Start logging HTTP calls. Safe to call more than once; later calls only change
     the settings.
 
     Also starts record or replay when HTTP_REPLAY says so (http_replay.py), before the
     logging hooks, so a replayed call is logged like a real one.
+
+    call_descriptions: pattern -> text printed before matching calls (see the module
+    docstring).
     """
     from workshop_utils import http_replay
 
@@ -158,6 +174,8 @@ def enable(level=None, metrics=None, max_body=None, polls=None):
     if polls not in POLL_MODES:
         raise ValueError(f"HTTP_LOG_POLLS must be one of {', '.join(POLL_MODES)}, not {polls!r}")
     _settings.update(level=level, metrics=metrics, max_body=max_body, polls=polls)
+    if call_descriptions is not None:
+        _settings["call_descriptions"] = call_descriptions
     if level == "off" and not _observers:
         disable()
         return
@@ -228,7 +246,9 @@ class _Call:
             if method == "GET":
                 _seen_gets.add(self.url)
         if _settings["level"] == "full" and not self.poll:
-            lines = [f"--- OUTBOUND REQUEST #{self.number} ---", f"> {method} {self.url}"]
+            description = _call_description(method, self.url)
+            lines = [f">>> {description}", ""] if description else []
+            lines += [f"--- OUTBOUND REQUEST #{self.number} ---", f"> {method} {self.url}"]
             lines += [f"> {name}: {_redact_header(name, value)}" for name, value in headers]
             text = _format_body(body, content_type)
             if text:
@@ -306,6 +326,15 @@ class _Call:
 
 def _write(lines):
     logger.info("\n" + "\n".join(lines))
+
+
+def _call_description(method, url):
+    """The first description whose pattern matches this call, or None."""
+    call_text = f"{method} {url}"
+    for pattern, description in _settings["call_descriptions"].items():
+        if fnmatch.fnmatchcase(call_text, pattern):
+            return description
+    return None
 
 
 @atexit.register
@@ -606,6 +635,8 @@ def _decode(data, encoding):
     if not data or not encoding:
         return data
     encoding = encoding.lower()
+    if encoding == "identity":  # means not compressed; the MCP extension of Azure Functions sends it
+        return data
     # decompressobj also handles a body cut at its capture limit; deflate is
     # zlib-wrapped or raw, depending on the server.
     window_bits = {"gzip": [16 + zlib.MAX_WBITS], "deflate": [zlib.MAX_WBITS, -zlib.MAX_WBITS]}.get(encoding, [])

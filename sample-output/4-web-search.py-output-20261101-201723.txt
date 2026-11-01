@@ -1,9 +1,14 @@
 Sample output of src/2-agents/4-web-search.py
-Run on 2026-10-27 14:29 with: ../../.venv-agents-v2/bin/python src/2-agents/4-web-search.py
+Replay on 2026-11-01 20:17 of answers recorded on 2026-10-27 14:29 (no service called), with:
+HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/4-web-search-20261027-142906 ../../.venv-agents-v2/bin/python src/2-agents/4-web-search.py --today 2026-10-27
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
+[http_replay] no random seed in this recording: random values differ from the record run
+[http_replay] replay mode, folder runs/recordings/4-web-search-20261027-142906
 Project endpoint: https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
 Model deployment: gpt-4o-mini
+
+>>> Create a version of the health web search agent, with the Web Search tool, in Foundry Agent Service.
 
 --- OUTBOUND REQUEST #1 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/agents/health-web-search-agent/versions?api-version=v1
@@ -35,8 +40,6 @@ Model deployment: gpt-4o-mini
 < Date: Tue, 27 Oct 2026 10:29:11 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
@@ -47,6 +50,8 @@ Model deployment: gpt-4o-mini
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 1310
+< x-http-replay: 0001-POST-api_projects_<project-name>_agents_health-web-search-agent.json
 <
 {
   "metadata": {},
@@ -87,6 +92,8 @@ Agent created: name=health-web-search-agent version=1 (tool: web_search, no conn
 
 User: What are some new HIIT workout trends I should know about?
 
+>>> Send the question to the health web search agent through the Foundry project's Responses API; the web searches run on the service side, inside this one call.
+
 --- OUTBOUND REQUEST #2 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
 > Host: <resource-name>.services.ai.azure.com
@@ -122,8 +129,6 @@ User: What are some new HIIT workout trends I should know about?
 < Date: Tue, 27 Oct 2026 10:29:14 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Origin,Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
@@ -156,6 +161,8 @@ User: What are some new HIIT workout trends I should know about?
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 6031
+< x-http-replay: 0002-POST-api_projects_<project-name>_openai_v1_responses.json
 <
 {
   "metadata": {},
@@ -384,6 +391,8 @@ Bing search: https://www.bing.com/search?q=2026+HIIT+workout+trends
 
 User: What's the current WHO recommendation for sugar intake?
 
+>>> Send the question to the health web search agent through the Foundry project's Responses API; the web searches run on the service side, inside this one call.
+
 --- OUTBOUND REQUEST #3 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
 > Host: <resource-name>.services.ai.azure.com
@@ -419,8 +428,6 @@ User: What's the current WHO recommendation for sugar intake?
 < Date: Tue, 27 Oct 2026 10:29:20 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Origin,Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
@@ -453,6 +460,8 @@ User: What's the current WHO recommendation for sugar intake?
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 4479
+< x-http-replay: 0003-POST-api_projects_<project-name>_openai_v1_responses.json
 <
 {
   "metadata": {},
@@ -647,6 +656,8 @@ Bing search: https://www.bing.com/search?q=WHO+recommendations+sugar+intake+2026
 
 User: Any news on intermittent fasting for weight management?
 
+>>> Send the question to the health web search agent through the Foundry project's Responses API; the web searches run on the service side, inside this one call.
+
 --- OUTBOUND REQUEST #4 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
 > Host: <resource-name>.services.ai.azure.com
@@ -682,8 +693,6 @@ User: Any news on intermittent fasting for weight management?
 < Date: Tue, 27 Oct 2026 10:29:25 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Origin,Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
@@ -716,6 +725,8 @@ User: Any news on intermittent fasting for weight management?
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 6738
+< x-http-replay: 0004-POST-api_projects_<project-name>_openai_v1_responses.json
 <
 {
   "metadata": {},
@@ -940,6 +951,8 @@ Sources:
   [4] Scientists Tested Intermittent Fasting and Found a Surprising Fat-Loss ...: https://health.yahoo.com/your-body/weight-management/weight-loss/articles/scientists-tested-intermittent-fasting-found-004041815.html
 Bing search: https://www.bing.com/search?q=intermittent+fasting+weight+management+news+October+2026
 
+>>> Delete this version of the health web search agent from Foundry Agent Service.
+
 --- OUTBOUND REQUEST #5 ---
 > DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/agents/health-web-search-agent/versions/1?api-version=v1
 > User-Agent: azsdk-python-ai-projects/2.8.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
@@ -956,8 +969,6 @@ Bing search: https://www.bing.com/search?q=intermittent+fasting+weight+managemen
 < Date: Tue, 27 Oct 2026 10:29:33 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
@@ -968,6 +979,8 @@ Bing search: https://www.bing.com/search?q=intermittent+fasting+weight+managemen
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 103
+< x-http-replay: 0005-DELETE-api_projects_<project-name>_agents_health-web-search-agent.json
 <
 {
   "object": "agent.version.deleted",

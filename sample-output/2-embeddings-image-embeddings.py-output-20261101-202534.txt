@@ -1,12 +1,17 @@
 Sample output of src/1-models/2-embeddings-image-embeddings.py
-Run on 2026-10-25 17:01 with: uv run python src/1-models/2-embeddings-image-embeddings.py
+Replay on 2026-11-01 20:25 of answers recorded on 2026-10-25 11:20 (no service called), with:
+HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/2-embeddings-image-embeddings-20261025-112005 uv run python src/1-models/2-embeddings-image-embeddings.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
+[http_replay] no random seed in this recording: random values differ from the record run
+[http_replay] replay mode, folder runs/recordings/2-embeddings-image-embeddings-20261025-112005
 Endpoint: https://<resource-name>.services.ai.azure.com/models
 Model deployment: embed-v-4-0
 Image: hand-xray.png (51,881 bytes)
 
 1. Image embedding
+
+>>> Ask the embedding model embed-v-4-0 in Azure AI Foundry for the vector of the image.
 
 --- OUTBOUND REQUEST #1 ---
 > POST https://<resource-name>.services.ai.azure.com/models/images/embeddings?api-version=2024-05-01-preview
@@ -30,9 +35,8 @@ Image: hand-xray.png (51,881 bytes)
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
-< Content-Length: 19467
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 13:01:27 GMT,Sun, 25 Oct 2026 13:01:28 GMT
+< Date: Sun, 25 Oct 2026 07:20:11 GMT,Sun, 25 Oct 2026 07:20:11 GMT
 < Server: istio-envoy
 < Cache-Control: no-store, no-transform, must-revalidate, no-cache, max-age=0, private
 < Expires: Thu, 01 Jan 1970 00:00:00 GMT
@@ -52,7 +56,10 @@ Image: hand-xray.png (51,881 bytes)
 < x-ms-client-request-id: Not-Set
 < azureml-model-session: d20261015060515-97904557
 < x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
+< x-http2-stream-id: 65
 < x-ms-deployment-name: embed-v-4-0
+< Content-Length: 21021
+< x-http-replay: 0001-POST-models_images_embeddings.json
 <
 {
   "id": "<id>",
@@ -435,11 +442,13 @@ Image: hand-xray.png (51,881 bytes)
         -0.032958984,
         -0.029418945,
         0.00524...more...
-HTTP 200 in 1.87 s
+HTTP 200 in 0.00 s
   image: length 1536, [0.0186, -0.0143, ..., 0.0469, -0.0266]
   usage: {'prompt_tokens': 326, 'completion_tokens': 0, 'total_tokens': 326}
 
 2. Caption embeddings
+
+>>> Ask the embedding model embed-v-4-0 in Azure AI Foundry for the vectors of all the captions, in one call.
 
 --- OUTBOUND REQUEST #2 ---
 > POST https://<resource-name>.services.ai.azure.com/models/embeddings?api-version=2024-05-01-preview
@@ -463,9 +472,8 @@ HTTP 200 in 1.87 s
 
 --- OUTBOUND RESPONSE #2 ---
 < 200 OK
-< Content-Length: 58102
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 13:01:29 GMT,Sun, 25 Oct 2026 13:01:29 GMT
+< Date: Sun, 25 Oct 2026 07:20:13 GMT,Sun, 25 Oct 2026 07:20:13 GMT
 < Server: istio-envoy
 < Cache-Control: no-store, no-transform, must-revalidate, no-cache, max-age=0, private
 < Expires: Thu, 01 Jan 1970 00:00:00 GMT
@@ -487,13 +495,15 @@ HTTP 200 in 1.87 s
 < azureml-model-session: d20261015060515-97904557
 < azureml-model-group: aoai-balanced
 < x-ms-inference-retry-history: {"v":1,"entries":[{"service_id":"mir.frontdoor","layer":"regional","role":"direct","retries":0}]}
-< azureml-served-by-cluster: hyena-eastus2-01
+< azureml-served-by-cluster: hyena-eastus2-02
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < x-ratelimit-remaining-tokens: 9976
 < x-ratelimit-limit-tokens: 10000
+< Content-Length: 62738
+< x-http-replay: 0002-POST-models_embeddings.json
 <
 {
   "id": "<id>",
@@ -876,7 +886,7 @@ HTTP 200 in 1.87 s
         -0.037109375,
         -0.037353516,
         -0.0...more...
-HTTP 200 in 1.63 s
+HTTP 200 in 0.01 s
   'An X-ray image of a human hand': length 1536, [-0.0037, 0.0337, ..., -0.0138, -0.0025]
   'A bowl of fresh fruit and vegetables': length 1536, [-0.0007, 0.0272, ..., 0.0059, -0.0120]
   'A person jogging in a park': length 1536, [0.0090, 0.0126, ..., 0.0126, -0.0342]

@@ -194,6 +194,35 @@ RAG_QUESTIONS = [
     "What are key considerations for preventing harmful AI outputs?",
 ]
 
+# Calls made inside a library or one SDK line, or by a background thread of the Azure
+# Monitor exporter, where no print can go right before them; http_log prints each
+# description before a matching call that it logs in full. main() adds the judge model's
+# pattern, which needs the deployment name from .env.
+CALL_DESCRIPTIONS = {
+    "POST */getConnectionWithCredentials*": "Read the credentials of the Application Insights connection from the "
+    "Foundry project.",
+    "POST */v2.1/track*": "Azure Monitor exporter uploads telemetry to Application Insights. A background thread does "
+    "this, not a line of this lab, so it can appear anywhere in the log.",
+    "POST */QuickPulseService.svc/*": "Azure Monitor live metrics checks in with Application Insights. A background "
+    "thread does this, not a line of this lab, so it can appear anywhere in the log.",
+    "GET */AzMonSDKDynamicConfiguration*": "Azure Monitor exporter reads its settings from Application Insights. A "
+    "background thread does this, not a line of this lab, so it can appear anywhere in the log.",
+    "POST */sync_evals:run*": "A safety evaluator or an attack simulator sends one request to the Foundry safety "
+    "evaluation service.",
+    "GET */redTeams/simulation/template/parameters*": "The attack simulator reads its attack templates from the "
+    "Foundry safety evaluation service.",
+    "GET */redTeams/simulation/jailbreak/*": "The direct attack simulator reads the list of jailbreak prompts from "
+    "the Foundry safety evaluation service.",
+    "GET */runs/*": "Check the agent run's status in Foundry Agent Service; this first check is logged in full.",
+    "POST */evaluationResults/*": "evaluate(): ask the Foundry project where to upload the results file.",
+    "PUT *instance_results.jsonl*": "evaluate(): upload the results file to the Foundry project's Azure Storage.",
+    "PATCH */evaluationResults/*": "evaluate(): register the uploaded results file in the Foundry project.",
+    "POST */evaluations/runs:upload*": "evaluate(): create the evaluation run record in the Foundry project.",
+    "PATCH */evaluations/runs:updateUpload/*": "evaluate(): attach the results to the evaluation run record in the "
+    "Foundry project and mark it finished.",
+}
+JUDGE_CALL_DESCRIPTION = "An evaluator asks the Azure OpenAI judge model to score one answer."
+
 
 def print_section(title):
     print()
@@ -243,6 +272,7 @@ def setup_tracing(project_client):
     from azure.monitor.opentelemetry import configure_azure_monitor
     from opentelemetry.instrumentation.openai_v2 import OpenAIInstrumentor
 
+    print("\n>>> Find the Application Insights connection among the connections of the Foundry project.")
     connection_string = project_client.telemetry.get_application_insights_connection_string()
     # sampling_ratio=1.0 keeps every span; the default rate-limited sampler drops spans
     # in bursts.
@@ -263,9 +293,11 @@ def setup_tracing(project_client):
 def section_model_selection(ctx):
     project_client = ctx["project_client"]
     print("Model deployments in the project:")
+    print("\n>>> List the model deployments of the Foundry project.")
     for deployment in project_client.deployments.list():
         print(f"  {deployment.name}: {deployment.model_publisher} {deployment.model_name} {deployment.model_version}")
     print("Azure OpenAI connections:")
+    print("\n>>> List the Azure OpenAI connections of the Foundry project.")
     connections = list(project_client.connections.list(connection_type=ConnectionType.AZURE_OPEN_AI))
     for connection in connections:
         print(f"  {connection.name}: {connection.target}")
@@ -276,6 +308,7 @@ def section_model_selection(ctx):
 
     print(f"\nChat call on {ctx['model']}")
     print(f"User: {CHAT_QUESTION}")
+    print(f"\n>>> Ask the Azure OpenAI chat model {ctx['model']} for an answer.")
     response = ctx["openai_client"].chat.completions.create(
         model=ctx["model"], messages=[{"role": "user", "content": CHAT_QUESTION}]
     )
@@ -293,6 +326,7 @@ def section_safety(ctx):
     protected_material = ProtectedMaterialEvaluator(credential=credential, azure_ai_project=project_endpoint)
 
     print("Content safety on the self-harm story sample (query and response from the notebook):")
+    print("\n>>> Run the content safety evaluator, which sends several requests to the safety evaluation service.")
     safety_result = content_safety(query=SELF_HARM_QUERY, response=SELF_HARM_RESPONSE)
     for harm in ("violence", "sexual", "self_harm", "hate_unfairness"):
         print(
@@ -302,6 +336,7 @@ def section_safety(ctx):
         print(f"    reason: {excerpt(safety_result.get(f'{harm}_reason', ''))}")
 
     print("\nProtected material on the copyrighted book excerpt:")
+    print("\n>>> Run the protected material evaluator, which sends a request to the safety evaluation service.")
     protected_result = protected_material(query=COPYRIGHT_QUERY, response=COPYRIGHT_RESPONSE)
     print(f"  protected_material_label: {protected_result.get('protected_material_label')}")
     print(f"    reason: {excerpt(protected_result.get('protected_material_reason', ''))}")
@@ -339,13 +374,21 @@ def make_agent_target(project_client, agent_id, threads, stats):
         user_text = history[-1]["content"]
         thread_id = (session_state or {}).get("thread_id")
         if not thread_id:
+            print("\n>>> Create a conversation thread for this simulated conversation in Foundry Agent Service.")
             thread_id = project_client.agents.threads.create().id
             threads.append(thread_id)
         stats["turns"] += 1
         try:
+            print("\n>>> Add the simulated attack message to the conversation thread in Foundry Agent Service.")
             project_client.agents.messages.create(thread_id=thread_id, role="user", content=user_text)
+            print(
+                "\n>>> Start a run, in which the security test agent reads the conversation thread and answers, then "
+                "check the run's status until it ends. The first check is logged in full, later ones as one "
+                "`HTTP #n GET` line."
+            )
             run = project_client.agents.runs.create_and_process(thread_id=thread_id, agent_id=agent_id)
             if run.status == RunStatus.COMPLETED:
+                print("\n>>> Read the agent's latest answer from the conversation thread in Foundry Agent Service.")
                 answer = project_client.agents.messages.get_last_message_text_by_role(
                     thread_id=thread_id, role=MessageRole.AGENT
                 )
@@ -391,6 +434,10 @@ def run_direct_attack(ctx, target):
         f"Running DirectAttackSimulator: ADVERSARIAL_REWRITE, max {SIMULATION_RESULTS} results, "
         f"max {SIMULATION_TURNS} turns, as written and with a jailbreak added"
     )
+    print(
+        "\n>>> Run the direct attack simulator, which makes several web service calls of its own and calls the "
+        "security test agent: each is described just before it in this log."
+    )
     outputs = asyncio.run(
         simulator(
             scenario=AdversarialScenario.ADVERSARIAL_REWRITE,
@@ -419,6 +466,7 @@ def check_attack_results(stats, conversations):
 
 def section_direct_attack(ctx):
     project_client = ctx["project_client"]
+    print("\n>>> Create the security test agent in Foundry Agent Service.")
     agent = project_client.agents.create_agent(
         model=ctx["model"], name=SECURITY_AGENT_NAME, instructions=SECURITY_AGENT_INSTRUCTIONS
     )
@@ -442,7 +490,9 @@ def section_direct_attack(ctx):
         check_attack_results(stats, regular + jailbreak)
     finally:
         for thread_id in threads:
+            print("\n>>> Delete this conversation thread from Foundry Agent Service.")
             project_client.agents.threads.delete(thread_id)
+        print("\n>>> Delete the security test agent from Foundry Agent Service.")
         project_client.agents.delete_agent(agent.id)
         print(f"Cleanup: deleted agent {agent.id} and {len(threads)} thread(s)")
 
@@ -469,6 +519,10 @@ def run_evaluation(data_path, evaluators, project_endpoint, output_dir):
     """Score every row with every evaluator, log the results to the Foundry project and
     save them as JSON."""
     results_path = output_dir / "section4-quality-results.json"
+    print(
+        "\n>>> Run evaluate(), which makes several web service calls of its own, some at the same time: each is "
+        "described just before it in this log."
+    )
     result = evaluate(
         data=str(data_path),
         evaluators=evaluators,
@@ -528,7 +582,9 @@ def section_observability(ctx):
 # 6. RAG over an AI safety guidelines index, with evaluation
 # --------------------------------------------------------------------------------------
 def create_safety_index(index_client, dimensions):
+    print("\n>>> List the indexes in Azure AI Search, to see whether the AI safety index already exists.")
     if SAFETY_INDEX_NAME in index_client.list_index_names():
+        print("\n>>> Delete the old AI safety index from Azure AI Search.")
         index_client.delete_index(SAFETY_INDEX_NAME)
         print(f"Deleted the existing index {SAFETY_INDEX_NAME}")
     vector_search = VectorSearch(
@@ -554,12 +610,14 @@ def create_safety_index(index_client, dimensions):
             vector_search_profile_name="hnsw-profile",
         ),
     ]
+    print("\n>>> Create the AI safety index in Azure AI Search.")
     index_client.create_index(SearchIndex(name=SAFETY_INDEX_NAME, fields=fields, vector_search=vector_search))
     print(f"Created index {SAFETY_INDEX_NAME}")
 
 
 def embed(openai_client, model, texts):
     """Return the embedding vector of each text, in the order of the texts."""
+    print(f"\n>>> Ask the Azure OpenAI embedding model {model} for the vectors of {len(texts)} text(s), in one call.")
     response = openai_client.embeddings.create(model=model, input=texts)
     return [item.embedding for item in response.data]
 
@@ -567,11 +625,16 @@ def embed(openai_client, model, texts):
 def fill_safety_index(search_client, vectors, embedding_model):
     """Upload the documents with their vectors, then wait until the index can find all
     of them."""
+    print("\n>>> Upload the AI safety documents and their vectors to the AI safety index in Azure AI Search.")
     search_client.upload_documents(
         documents=[{**doc, "embedding": vector} for doc, vector in zip(SAFETY_DOCS, vectors, strict=True)]
     )
     print(f"Uploaded {len(SAFETY_DOCS)} documents ({embedding_model}, {len(vectors[0])} dimensions)")
     # A new index needs a moment before uploaded documents can be found.
+    print(
+        "\n>>> Ask Azure AI Search how many documents the AI safety index can search, until all of them can. "
+        "The first check is logged in full, later ones as one `HTTP #n GET` line."
+    )
     for _ in range(INDEX_WAIT_SECONDS):
         if search_client.get_document_count() == len(SAFETY_DOCS):
             break
@@ -595,9 +658,11 @@ def answer_from_index(openai_client, search_client, embedding_model, model, ques
     context, answer)."""
     question_vector = embed(openai_client, embedding_model, [question])[0]
     vector_query = VectorizedQuery(vector=question_vector, k_nearest_neighbors=3, fields="embedding")
+    print("\n>>> Search the AI safety index in Azure AI Search with the question's vector.")
     hits = list(search_client.search(search_text=None, vector_queries=[vector_query], select=["content", "source"]))
     context = "\n".join(f"From {hit['source']}: {hit['content']}" for hit in hits)
     print("Retrieved: " + (", ".join(hit["source"] for hit in hits) or "nothing"))
+    print(f"\n>>> Ask the Azure OpenAI chat model {model} to answer from the retrieved documents.")
     response = openai_client.chat.completions.create(
         model=model,
         messages=[
@@ -612,6 +677,7 @@ def answer_from_index(openai_client, search_client, embedding_model, model, ques
 
 def score_answer(evaluators, question, answer, context):
     """Score one answer with each evaluator and print the scores; return them."""
+    print("\n>>> Score the answer with four evaluators, each of which asks the Azure OpenAI judge model.")
     scores = {
         "relevance": evaluators["relevance"](query=question, response=answer),
         "coherence": evaluators["coherence"](query=question, response=answer),
@@ -627,6 +693,7 @@ def cleanup_safety_index(index_client, keep_index):
     if keep_index:
         print(f"Kept index {SAFETY_INDEX_NAME} (--keep-index)")
     else:
+        print("\n>>> Delete the AI safety index from Azure AI Search.")
         index_client.delete_index(SAFETY_INDEX_NAME)
         print(f"Cleanup: deleted index {SAFETY_INDEX_NAME}")
 
@@ -679,6 +746,10 @@ async def echo_target(messages, stream=False, session_state=None, context=None):
 def section_indirect_attack(ctx):
     simulator = IndirectAttackSimulator(azure_ai_project=ctx["project_endpoint"], credential=ctx["credential"])
     print(f"Running IndirectAttackSimulator (XPIA), max {SIMULATION_RESULTS} results, echo target")
+    print(
+        "\n>>> Run the indirect attack simulator, which makes several web service calls of its own: each is "
+        "described just before it in this log."
+    )
     outputs = list(
         asyncio.run(simulator(target=echo_target, max_simulation_results=SIMULATION_RESULTS, concurrent_async_task=1))
     )
@@ -809,6 +880,8 @@ def main():
     print(f"Based on: {UPSTREAM}")
     load_environment()
     ctx = build_context(args)
+    judge_pattern = f"POST */deployments/{ctx['judge_config']['azure_deployment']}/chat/completions*"
+    http_log.enable(call_descriptions={**CALL_DESCRIPTIONS, judge_pattern: JUDGE_CALL_DESCRIPTION})
 
     with (
         DefaultAzureCredential() as credential,

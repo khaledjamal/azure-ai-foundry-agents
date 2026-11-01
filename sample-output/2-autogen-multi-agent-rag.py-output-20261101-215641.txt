@@ -1,7 +1,10 @@
 Sample output of src/4-frameworks/2-autogen-multi-agent-rag.py
-Run on 2026-10-27 22:20 with: uv run python src/4-frameworks/2-autogen-multi-agent-rag.py
+Replay on 2026-11-01 21:56 of answers recorded on 2026-10-27 22:20 (no service called), with:
+HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/2-autogen-multi-agent-rag-20261027-222025 uv run python src/4-frameworks/2-autogen-multi-agent-rag.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
+[http_replay] no random seed in this recording: random values differ from the record run
+[http_replay] replay mode, folder runs/recordings/2-autogen-multi-agent-rag-20261027-222025
 
 ================================================================================
 AUTOGEN MULTI-AGENT RAG
@@ -10,6 +13,8 @@ Loaded .env from: .env
 Azure OpenAI endpoint: https://<resource-name>.openai.azure.com/
 Chat deployment:       gpt-4o-mini (API version 2024-08-01-preview)
 Embedding deployment:  text-embedding-3-small
+
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vectors of 5 text(s), starting with: Do a 10-minute HIIT workout to boost your metabolism.
 
 --- OUTBOUND REQUEST #1 ---
 > POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
@@ -45,7 +50,6 @@ Embedding deployment:  text-embedding-3-small
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
-< Content-Length: 41306
 < Content-Type: application/json
 < Date: Tue, 27 Oct 2026 18:20:27 GMT
 < Server: istio-envoy
@@ -62,6 +66,8 @@ Embedding deployment:  text-embedding-3-small
 < x-http2-stream-id: 959
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 41345
+< x-http-replay: 0001-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
@@ -104,6 +110,10 @@ Embedded 5 health tips.
 Query
 ================================================================================
 user: I'm very busy but want to stay fit. What quick exercises can I do?
+
+>>> Run team.run_stream(), in which AutoGen makes the Azure OpenAI chat model calls of both agents, and the retrieve_tips tool makes one embedding call: each is described just before it in this log.
+
+>>> team.run_stream(): AutoGen asks the Azure OpenAI chat model for the next agent's turn: RetrieverAgent chooses its tool call, then ResponderAgent writes the answer.
 
 --- OUTBOUND REQUEST #2 ---
 > POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-08-01-preview
@@ -168,7 +178,6 @@ user: I'm very busy but want to stay fit. What quick exercises can I do?
 
 --- OUTBOUND RESPONSE #2 ---
 < 200 OK
-< Content-Length: 1259
 < Content-Type: application/json
 < Date: Tue, 27 Oct 2026 18:20:27 GMT
 < Server: istio-envoy
@@ -198,6 +207,8 @@ user: I'm very busy but want to stay fit. What quick exercises can I do?
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 1349
+< x-http-replay: 0002-POST-openai_deployments_gpt-4o-mini_chat_completions.json
 <
 {
   "choices": [
@@ -274,6 +285,8 @@ user: I'm very busy but want to stay fit. What quick exercises can I do?
 
 RetrieverAgent -> tool call: retrieve_tips({"query":"quick exercises for busy people"})
 
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vectors of 1 text(s), starting with: quick exercises for busy people
+
 --- OUTBOUND REQUEST #3 ---
 > POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
 > Host: <resource-name>.openai.azure.com
@@ -304,7 +317,6 @@ RetrieverAgent -> tool call: retrieve_tips({"query":"quick exercises for busy pe
 
 --- OUTBOUND RESPONSE #3 ---
 < 200 OK
-< Content-Length: 8344
 < Content-Type: application/json
 < Date: Tue, 27 Oct 2026 18:20:29 GMT
 < Server: istio-envoy
@@ -321,6 +333,8 @@ RetrieverAgent -> tool call: retrieve_tips({"query":"quick exercises for busy pe
 < x-http2-stream-id: 979
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 8359
+< x-http-replay: 0003-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
@@ -347,6 +361,8 @@ RetrieverAgent:
 Source: Health Coach => Take a brisk 15-minute walk to clear your mind and improve circulation.
 Source: Wellness Expert => Stretch for 5 minutes every hour if you're sitting at a desk.
 Source: Fitness Guru => Do a 10-minute HIIT workout to boost your metabolism.
+
+>>> team.run_stream(): AutoGen asks the Azure OpenAI chat model for the next agent's turn: RetrieverAgent chooses its tool call, then ResponderAgent writes the answer.
 
 --- OUTBOUND REQUEST #4 ---
 > POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-08-01-preview
@@ -391,7 +407,6 @@ Source: Fitness Guru => Do a 10-minute HIIT workout to boost your metabolism.
 
 --- OUTBOUND RESPONSE #4 ---
 < 200 OK
-< Content-Length: 1839
 < Content-Type: application/json
 < Date: Tue, 27 Oct 2026 18:20:30 GMT
 < Server: istio-envoy
@@ -421,6 +436,8 @@ Source: Fitness Guru => Do a 10-minute HIIT workout to boost your metabolism.
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 1919
+< x-http-replay: 0004-POST-openai_deployments_gpt-4o-mini_chat_completions.json
 <
 {
   "choices": [

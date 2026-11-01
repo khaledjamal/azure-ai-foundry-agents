@@ -1,7 +1,10 @@
 Sample output of src/1-models/1-basic-chat-completion-rest-vs-sdk.py
-Run on 2026-10-25 21:58 with: uv run python src/1-models/1-basic-chat-completion-rest-vs-sdk.py
+Replay on 2026-11-01 20:25 of answers recorded on 2026-10-25 21:37 (no service called), with:
+HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/1-basic-chat-completion-rest-vs-sdk-20261025-213741 uv run python src/1-models/1-basic-chat-completion-rest-vs-sdk.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
+[http_replay] no random seed in this recording: random values differ from the record run
+[http_replay] replay mode, folder runs/recordings/1-basic-chat-completion-rest-vs-sdk-20261025-213741
 Endpoint: https://<resource-name>.openai.azure.com/
 API version: 2024-08-01-preview
 Model deployment: gpt-4o-mini
@@ -10,6 +13,8 @@ User: Give me three quick tips to stay active during a busy workday.
 ================================================================================
 1. REST: requests.post
 ================================================================================
+
+>>> Ask the Azure OpenAI chat model gpt-4o-mini for an answer, by hand with requests.post.
 
 --- OUTBOUND REQUEST #1 ---
 > POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-08-01-preview
@@ -38,9 +43,8 @@ User: Give me three quick tips to stay active during a busy workday.
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
-< Content-Length: 2447
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:58:23 GMT
+< Date: Sun, 25 Oct 2026 17:37:43 GMT
 < Server: istio-envoy
 < Vary: Origin
 < azureai-fe-is-streaming: False
@@ -63,11 +67,13 @@ User: Give me three quick tips to stay active during a busy workday.
 < x-ratelimit-reset-tokens: 0
 < x-request-id: <id>
 < apim-request-id: <id>
-< x-http2-stream-id: 253
+< x-http2-stream-id: 235
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 2500
+< x-http-replay: 0001-POST-openai_deployments_gpt-4o-mini_chat_completions.json
 <
 {
   "choices": [
@@ -103,14 +109,14 @@ User: Give me three quick tips to stay active during a busy workday.
       "logprobs": null,
       "message": {
         "annotations": [],
-        "content": "Absolutely! Here are three quick tips to help you stay active during a busy workday:\n\n1. **Take Short Breaks**: Set a timer to remind yourself to take a 5-minute break every hour. Use this time to stretch, walk around your office, or do a few quick exercises like squats or lunges to get your blood flowing.\n\n2. **Incorporate Movement into Your Tasks**: If possible, stand or walk while on phone calls, or opt for a walking meeting instead of sitting in a conference room. You can also use stairs instead of elevators whenever you can.\n\n3. **Desk Exercises**: Try some simple desk exercises, like seated leg raises, shoulder shrugs, or wrist stretches. These can help keep your muscles engaged without needing to leave your workspace.\n\nRemember, it's important to listen to your body and find what works best for you. And just a reminder, I'm not a medical professional—consult with one if you have any health concerns!",
+        "content": "Sure! Here are three quick tips to help you stay active during a busy workday:\n\n1. **Take Short Breaks**: Set a timer to remind yourself to stand up and stretch or walk around for a few minutes every hour. Even a quick 5-minute walk can boost your energy and focus.\n\n2. **Incorporate Movement into Your Routine**: Use stairs instead of elevators, or try walking meetings instead of sitting in a conference room. If possible, consider a standing desk or an exercise ball chair for added engagement.\n\n3. **Use Micro-Workouts**: Fit in short bursts of exercise throughout the day. Try doing a few bodyweight exercises like squats, lunges, or push-ups during breaks or while waiting for something to load on your computer.\n\nRemember, these tips are general advice and not a substitute for professional medical guidance. Stay active and enjoy your day!",
         "refusal": null,
         "role": "assistant"
       }
     }
   ],
-  "created": 1792951104,
-  "id": "chatcmpl-Ecwm8lXGeMK9pu46RlBQgExXbBIHE",
+  "created": 1792949864,
+  "id": "chatcmpl-EcwS8IV1efw8GiJU895SN1o6ZVq8A",
   "model": "gpt-4o-mini-2024-07-18",
   "object": "chat.completion",
   "prompt_filter_results": [
@@ -141,12 +147,12 @@ User: Give me three quick tips to stay active during a busy workday.
     }
   ],
   "routing": {
-    "serving_pipereplica": "d20261002183238-fc7a7ff8-default-r0-dp0-default"
+    "serving_pipereplica": "d20261002183238-fc7a7ff8-default-r5-dp0-default"
   },
   "service_tier": "default",
   "system_fingerprint": "fp_99f88af1c5",
   "usage": {
-    "completion_tokens": 199,
+    "completion_tokens": 181,
     "completion_tokens_details": {
       "accepted_prediction_tokens": 0,
       "audio_tokens": 0,
@@ -155,39 +161,41 @@ User: Give me three quick tips to stay active during a busy workday.
     },
     "latency_checkpoint": {
       "engine_tbt_ms": 8,
-      "engine_ttft_ms": 25,
-      "engine_ttlt_ms": 1578,
-      "pre_inference_ms": 90,
+      "engine_ttft_ms": 49,
+      "engine_ttlt_ms": 1577,
+      "pre_inference_ms": 71,
       "service_tbt_ms": 8,
-      "service_ttft_ms": 356,
-      "service_ttlt_ms": 1892,
-      "user_visible_ttft_ms": 266
+      "service_ttft_ms": 389,
+      "service_ttlt_ms": 1911,
+      "user_visible_ttft_ms": 319
     },
     "prompt_tokens": 45,
     "prompt_tokens_details": {
       "audio_tokens": 0,
       "cached_tokens": 0
     },
-    "total_tokens": 244
+    "total_tokens": 226
   }
 }
 
-HTTP 200 in 2.88 s
+HTTP 200 in 0.00 s
 Response JSON keys: ['choices', 'created', 'id', 'model', 'object', 'prompt_filter_results', 'routing', 'service_tier', 'system_fingerprint', 'usage']
 
-Assistant: Absolutely! Here are three quick tips to help you stay active during a busy workday:
+Assistant: Sure! Here are three quick tips to help you stay active during a busy workday:
 
-1. **Take Short Breaks**: Set a timer to remind yourself to take a 5-minute break every hour. Use this time to stretch, walk around your office, or do a few quick exercises like squats or lunges to get your blood flowing.
+1. **Take Short Breaks**: Set a timer to remind yourself to stand up and stretch or walk around for a few minutes every hour. Even a quick 5-minute walk can boost your energy and focus.
 
-2. **Incorporate Movement into Your Tasks**: If possible, stand or walk while on phone calls, or opt for a walking meeting instead of sitting in a conference room. You can also use stairs instead of elevators whenever you can.
+2. **Incorporate Movement into Your Routine**: Use stairs instead of elevators, or try walking meetings instead of sitting in a conference room. If possible, consider a standing desk or an exercise ball chair for added engagement.
 
-3. **Desk Exercises**: Try some simple desk exercises, like seated leg raises, shoulder shrugs, or wrist stretches. These can help keep your muscles engaged without needing to leave your workspace.
+3. **Use Micro-Workouts**: Fit in short bursts of exercise throughout the day. Try doing a few bodyweight exercises like squats, lunges, or push-ups during breaks or while waiting for something to load on your computer.
 
-Remember, it's important to listen to your body and find what works best for you. And just a reminder, I'm not a medical professional—consult with one if you have any health concerns!
+Remember, these tips are general advice and not a substitute for professional medical guidance. Stay active and enjoy your day!
 
 ================================================================================
 2. SDK: openai AzureOpenAI client
 ================================================================================
+
+>>> Ask the Azure OpenAI chat model gpt-4o-mini the same question, through the openai SDK.
 
 --- OUTBOUND REQUEST #2 ---
 > POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-08-01-preview
@@ -228,9 +236,8 @@ Remember, it's important to listen to your body and find what works best for you
 
 --- OUTBOUND RESPONSE #2 ---
 < 200 OK
-< Content-Length: 2435
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:58:26 GMT
+< Date: Sun, 25 Oct 2026 17:37:46 GMT
 < Server: istio-envoy
 < Vary: Origin
 < azureai-fe-is-streaming: False
@@ -253,11 +260,13 @@ Remember, it's important to listen to your body and find what works best for you
 < x-ratelimit-reset-tokens: 0
 < x-request-id: <id>
 < apim-request-id: <id>
-< x-http2-stream-id: 303
+< x-http2-stream-id: 43
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 2530
+< x-http-replay: 0002-POST-openai_deployments_gpt-4o-mini_chat_completions.json
 <
 {
   "choices": [
@@ -293,14 +302,14 @@ Remember, it's important to listen to your body and find what works best for you
       "logprobs": null,
       "message": {
         "annotations": [],
-        "content": "Absolutely! Here are three quick tips to help you stay active during a busy workday:\n\n1. **Take Short Breaks**: Set a timer to remind yourself to take a 5-minute break every hour. Use this time to stand up, stretch, or take a quick walk around your workspace. It can boost your energy and focus!\n\n2. **Desk Exercises**: Incorporate simple exercises at your desk, like seated leg lifts, desk push-ups, or shoulder shrugs. These can be done in just a few minutes and help keep your muscles engaged throughout the day.\n\n3. **Walk and Talk**: If you have phone calls or virtual meetings, try walking around while you talk. This not only keeps you moving but also can enhance your creativity and focus.\n\nRemember, these tips are just suggestions, and it's always good to listen to your body. I'm not a medical professional, so if you have any health concerns, consult with a qualified expert. Enjoy staying active!",
+        "content": "Absolutely! Here are three quick tips to help you stay active during a busy workday:\n\n1. **Take Short Breaks**: Set a timer to remind yourself to take a 5-minute break every hour. Use this time to stand up, stretch, or take a quick walk around the office or your home.\n\n2. **Incorporate Movement**: Try to integrate physical activity into your work routine. This could mean standing or walking during phone calls, using a standing desk, or doing a few simple exercises like squats or calf raises in your office.\n\n3. **Lunchtime Walks**: Instead of sitting at your desk during lunch, take a brisk walk outside or around your building. This not only gets you moving but can also help refresh your mind for the afternoon ahead.\n\nRemember, staying active is important, but if you have any specific health concerns or conditions, it's always best to consult a medical professional.",
         "refusal": null,
         "role": "assistant"
       }
     }
   ],
-  "created": 1792951106,
-  "id": "chatcmpl-EcwmAyQxaB2xvHfVzW9s9Cym49Cu5",
+  "created": 1792949867,
+  "id": "chatcmpl-EcwSBBfx5LmOwcOEzMllwhu35JytY",
   "model": "gpt-4o-mini-2024-07-18",
   "object": "chat.completion",
   "prompt_filter_results": [
@@ -331,12 +340,12 @@ Remember, it's important to listen to your body and find what works best for you
     }
   ],
   "routing": {
-    "serving_pipereplica": "d20261002183238-fc7a7ff8-default-r6-dp0-default"
+    "serving_pipereplica": "d20261002183238-fc7a7ff8-default-r7-dp0-default"
   },
   "service_tier": "default",
   "system_fingerprint": "fp_99f88af1c5",
   "usage": {
-    "completion_tokens": 198,
+    "completion_tokens": 188,
     "completion_tokens_details": {
       "accepted_prediction_tokens": 0,
       "audio_tokens": 0,
@@ -345,45 +354,45 @@ Remember, it's important to listen to your body and find what works best for you
     },
     "latency_checkpoint": {
       "engine_tbt_ms": 8,
-      "engine_ttft_ms": 28,
-      "engine_ttlt_ms": 1680,
-      "pre_inference_ms": 79,
-      "service_tbt_ms": 8,
-      "service_ttft_ms": 374,
-      "service_ttlt_ms": 1984,
-      "user_visible_ttft_ms": 295
+      "engine_ttft_ms": 23,
+      "engine_ttlt_ms": 1481,
+      "pre_inference_ms": 275,
+      "service_tbt_ms": 7,
+      "service_ttft_ms": 690,
+      "service_ttlt_ms": 2099,
+      "user_visible_ttft_ms": 415
     },
     "prompt_tokens": 45,
     "prompt_tokens_details": {
       "audio_tokens": 0,
       "cached_tokens": 0
     },
-    "total_tokens": 243
+    "total_tokens": 233
   }
 }
 
-HTTP 200 in 2.98 s
+HTTP 200 in 0.03 s
 Parsed into: openai.types.chat.chat_completion.ChatCompletion
 
 Assistant: Absolutely! Here are three quick tips to help you stay active during a busy workday:
 
-1. **Take Short Breaks**: Set a timer to remind yourself to take a 5-minute break every hour. Use this time to stand up, stretch, or take a quick walk around your workspace. It can boost your energy and focus!
+1. **Take Short Breaks**: Set a timer to remind yourself to take a 5-minute break every hour. Use this time to stand up, stretch, or take a quick walk around the office or your home.
 
-2. **Desk Exercises**: Incorporate simple exercises at your desk, like seated leg lifts, desk push-ups, or shoulder shrugs. These can be done in just a few minutes and help keep your muscles engaged throughout the day.
+2. **Incorporate Movement**: Try to integrate physical activity into your work routine. This could mean standing or walking during phone calls, using a standing desk, or doing a few simple exercises like squats or calf raises in your office.
 
-3. **Walk and Talk**: If you have phone calls or virtual meetings, try walking around while you talk. This not only keeps you moving but also can enhance your creativity and focus.
+3. **Lunchtime Walks**: Instead of sitting at your desk during lunch, take a brisk walk outside or around your building. This not only gets you moving but can also help refresh your mind for the afternoon ahead.
 
-Remember, these tips are just suggestions, and it's always good to listen to your body. I'm not a medical professional, so if you have any health concerns, consult with a qualified expert. Enjoy staying active!
+Remember, staying active is important, but if you have any specific health concerns or conditions, it's always best to consult a medical professional.
 
 ================================================================================
 Side by side
 ================================================================================
                                 REST         SDK
 HTTP status                      200         200
-latency (s)                     2.88        2.98
+latency (s)                     0.00        0.03
 prompt tokens                     45          45
-completion tokens                199         198
-answer length (chars)            919         909
+completion tokens                181         188
+answer length (chars)            847         876
 Same prompt tokens show both sides sent the same request; the answers differ because temperature > 0.
 
 Check: PASS  both calls returned an answer

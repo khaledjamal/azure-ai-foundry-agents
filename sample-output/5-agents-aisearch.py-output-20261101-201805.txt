@@ -1,7 +1,10 @@
 Sample output of src/2-agents/5-agents-aisearch.py
-Run on 2026-10-25 21:54 with: uv run python src/2-agents/5-agents-aisearch.py
+Replay on 2026-11-01 20:18 of answers recorded on 2026-10-26 20:30 (no service called), with:
+HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/5-agents-aisearch-20261026-203010 uv run python src/2-agents/5-agents-aisearch.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
+[http_replay] no random seed in this recording: random values differ from the record run
+[http_replay] replay mode, folder runs/recordings/5-agents-aisearch-20261026-203010
 ================================================================================
 AZURE AI SEARCH + FOUNDRY AGENT FITNESS DEMO
 ================================================================================
@@ -14,6 +17,8 @@ STEP 1: CREATE AND POPULATE AZURE AI SEARCH INDEX
 Azure AI Search endpoint: https://<search-service>.search.windows.net
 SearchIndexClient created successfully.
 
+>>> List the indexes in Azure AI Search, to see whether the fitness index already exists.
+
 --- OUTBOUND REQUEST #1 ---
 > GET https://<search-service>.search.windows.net/indexes?api-version=2026-04-01
 > User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
@@ -25,22 +30,22 @@ SearchIndexClient created successfully.
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=minimal; odata.streaming=true; charset=utf-8
-< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 84
-< Date: Sun, 25 Oct 2026 17:54:59 GMT
+< elapsed-time: 77
+< Date: Mon, 26 Oct 2026 16:30:12 GMT
+< Content-Length: 4869
+< x-http-replay: 0001-GET-indexes.json
 <
 {
   "@odata.context": "https://<search-service>.search.windows.net/$metadata#indexes",
   "value": [
     {
-      "@odata.etag": "\"0x8DF29B5F1807B8D\"",
+      "@odata.etag": "\"0x8DF337D7579910E\"",
       "name": "healthtips-index",
       "description": null,
       "defaultScoringProfile": null,
@@ -304,6 +309,8 @@ SearchIndexClient created successfully.
   ]
 }
 
+>>> Create the fitness index in Azure AI Search.
+
 --- OUTBOUND REQUEST #2 ---
 > POST https://<search-service>.search.windows.net/indexes?api-version=2026-04-01
 > User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
@@ -373,20 +380,21 @@ SearchIndexClient created successfully.
 
 --- OUTBOUND RESPONSE #2 ---
 < 201 Created
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=minimal; odata.streaming=true; charset=utf-8
-< ETag: "0x8DF32C1170DBDE7"
+< ETag: "0x8DF337E691C0740"
 < Location: https://<search-service>.search.windows.net:443/indexes('myfitnessindex')?api-version=2026-04-01
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 1166
-< Date: Sun, 25 Oct 2026 17:55:00 GMT
+< elapsed-time: 867
+< Date: Mon, 26 Oct 2026 16:30:13 GMT
+< Content-Length: 2305
+< x-http-replay: 0002-POST-indexes.json
 <
 {
   "@odata.context": "https://<search-service>.search.windows.net/$metadata#indexes/$entity",
-  "@odata.etag": "\"0x8DF32C1170DBDE7\"",
+  "@odata.etag": "\"0x8DF337E691C0740\"",
   "name": "myfitnessindex",
   "description": null,
   "defaultScoringProfile": null,
@@ -506,6 +514,8 @@ SearchIndexClient created successfully.
 }
 Created index: myfitnessindex
 
+>>> Upload the fitness product documents to the fitness index in Azure AI Search.
+
 --- OUTBOUND REQUEST #3 ---
 > POST https://<search-service>.search.windows.net/indexes('myfitnessindex')/docs/search.index?api-version=2026-04-01
 > User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
@@ -556,16 +566,16 @@ Created index: myfitnessindex
 
 --- OUTBOUND RESPONSE #3 ---
 < 200 OK
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
-< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 95
-< Date: Sun, 25 Oct 2026 17:55:01 GMT
+< elapsed-time: 181
+< Date: Mon, 26 Oct 2026 16:30:13 GMT
+< Content-Length: 295
+< x-http-replay: 0003-POST-indexes--myfitnessindex--_docs_search.index.json
 <
 {
   "value": [
@@ -604,6 +614,8 @@ Uploaded 4 fitness documents.
 Direct Azure AI Search check for 'Strength':
 --------------------------------------------------------------------------------
 
+>>> Search the fitness index in Azure AI Search for 'Strength' (attempt 1): new documents can take a moment to become searchable, so this repeats until results come back.
+
 --- OUTBOUND REQUEST #4 ---
 > POST https://<search-service>.search.windows.net/indexes('myfitnessindex')/docs/search.post.search?api-version=2026-04-01
 > User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
@@ -622,20 +634,22 @@ Direct Azure AI Search check for 'Strength':
 
 --- OUTBOUND RESPONSE #4 ---
 < 200 OK
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
-< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
 < elapsed-time: 12
-< Date: Sun, 25 Oct 2026 17:55:01 GMT
+< Date: Mon, 26 Oct 2026 16:30:14 GMT
+< Content-Length: 13
+< x-http-replay: 0004-POST-indexes--myfitnessindex--_docs_search.post.search.json
 <
 {
   "value": []
 }
+
+>>> Search the fitness index in Azure AI Search for 'Strength' (attempt 2): new documents can take a moment to become searchable, so this repeats until results come back.
 
 --- OUTBOUND REQUEST #5 ---
 > POST https://<search-service>.search.windows.net/indexes('myfitnessindex')/docs/search.post.search?api-version=2026-04-01
@@ -655,16 +669,16 @@ Direct Azure AI Search check for 'Strength':
 
 --- OUTBOUND RESPONSE #5 ---
 < 200 OK
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
-< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 12
-< Date: Sun, 25 Oct 2026 17:55:03 GMT
+< elapsed-time: 11
+< Date: Mon, 26 Oct 2026 16:30:16 GMT
+< Content-Length: 443
+< x-http-replay: 0005-POST-indexes--myfitnessindex--_docs_search.post.search.json
 <
 {
   "value": [
@@ -696,6 +710,8 @@ STEP 2: CREATE FOUNDRY AGENT WITH AZURE AI SEARCH TOOL AND PRICE FUNCTION
 Foundry project endpoint: https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
 AIProjectClient created successfully.
 
+>>> Read the default Azure AI Search connection of the Foundry project.
+
 --- OUTBOUND REQUEST #6 ---
 > GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/connections?api-version=v1&connectionType=CognitiveSearch&defaultConnection=true
 > User-Agent: azsdk-python-ai-projects/1.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
@@ -708,19 +724,19 @@ AIProjectClient created successfully.
 --- OUTBOUND RESPONSE #6 ---
 < 200 OK
 < Content-Type: application/json; charset=utf-8
-< Date: Sun, 25 Oct 2026 17:55:05 GMT
+< Date: Mon, 26 Oct 2026 16:30:17 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < azureml-served-by-cluster: vienna-eastus2-01
-< x-request-time: 0.041
+< x-request-time: 0.050
 < apim-request-id: <id>
 < x-ms-region: East US 2
+< Content-Length: 810
+< x-http-replay: 0006-GET-api_projects_<project-name>_connections.json
 <
 {
   "value": [
@@ -744,6 +760,8 @@ AIProjectClient created successfully.
 }
 Azure AI Search connection name: <search-service>
 Azure AI Search connection ID:   /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/<search-service>
+
+>>> Create the fitness search agent, with the Azure AI Search tool and the find_items_under function tool, in Foundry Agent Service.
 
 --- OUTBOUND REQUEST #7 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/assistants?api-version=v1
@@ -807,30 +825,30 @@ Azure AI Search connection ID:   /subscriptions/<subscription-id>/resourceGroups
 --- OUTBOUND RESPONSE #7 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:06 GMT
+< Date: Mon, 26 Oct 2026 16:30:19 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 8de384f0b3b4da7b905b6f3627148faf
-< openai-processing-ms: 107
+< X-Request-ID: 7fda539c8fcb58324516b60a3abc25b7
+< openai-processing-ms: 120
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < x-http2-stream-id: 3
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< azureml-served-by-cluster: vienna-eastus2-01
-< x-request-time: 0.377
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.277
+< Content-Length: 1948
+< x-http-replay: 0007-POST-api_projects_<project-name>_assistants.json
 <
 {
-  "id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
+  "id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
   "object": "assistant",
-  "created_at": 1792950906,
+  "created_at": 1793032219,
   "name": "fitness-agent-search",
   "description": null,
   "model": "gpt-4o-mini",
@@ -883,7 +901,7 @@ Azure AI Search connection ID:   /subscriptions/<subscription-id>/resourceGroups
   "metadata": {},
   "response_format": "auto"
 }
-Created Azure AI Search agent: asst_RYHlJUmuwAEiv8ScHtbeQ8vA
+Created Azure AI Search agent: asst_qYJ96CoUxrEyWCa18quxDTSz
 Model: gpt-4o-mini
 Tools: ['azure_ai_search', 'function'] (function: find_items_under)
 
@@ -894,6 +912,8 @@ STEP 3: RUN AGENT QUERIES
 ================================================================================
 QUESTION 1 OF 2
 ================================================================================
+
+>>> Create a conversation thread for this question in Foundry Agent Service.
 
 --- OUTBOUND REQUEST #8 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads?api-version=v1
@@ -910,37 +930,40 @@ QUESTION 1 OF 2
 
 --- OUTBOUND RESPONSE #8 ---
 < 200 OK
-< Content-Length: 137
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:07 GMT
+< Date: Mon, 26 Oct 2026 16:30:19 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 0390d5d80490c4fe792aa0401f5f95d8
-< openai-processing-ms: 74
+< X-Request-ID: a930783dc7cf52c5b419ae8b7d1b51ee
+< openai-processing-ms: 76
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 143
+< x-http2-stream-id: 163
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.280
+< x-request-time: 0.235
+< Content-Length: 125
+< x-http-replay: 0008-POST-api_projects_<project-name>_threads.json
 <
 {
-  "id": "thread_utJBnGIoFNbpVmtPWlj5aphq",
+  "id": "thread_EDvqDVzSNTzcvKC3c7Iz5vHH",
   "object": "thread",
-  "created_at": 1792950907,
+  "created_at": 1793032219,
   "metadata": {},
   "tool_resources": {}
 }
-Created thread: thread_utJBnGIoFNbpVmtPWlj5aphq
+Created thread: thread_EDvqDVzSNTzcvKC3c7Iz5vHH
 Question: Which items are good for strength training?
 
+>>> Add the user's question to the conversation thread in Foundry Agent Service.
+
 --- OUTBOUND REQUEST #9 ---
-> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_utJBnGIoFNbpVmtPWlj5aphq/messages?api-version=v1
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_EDvqDVzSNTzcvKC3c7Iz5vHH/messages?api-version=v1
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -958,32 +981,32 @@ Question: Which items are good for strength training?
 --- OUTBOUND RESPONSE #9 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:07 GMT
+< Date: Mon, 26 Oct 2026 16:30:20 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 30c1ea948ba16f67ee1308c207993441
-< openai-processing-ms: 96
+< X-Request-ID: 88b4133fff61f32f2b2263c526e2517c
+< openai-processing-ms: 102
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 15
+< x-http2-stream-id: 7
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.273
+< x-request-time: 0.237
+< Content-Length: 345
+< x-http-replay: 0009-POST-api_projects_<project-name>_threads_thread_EDvqDVzSNTzcvKC.json
 <
 {
-  "id": "msg_3LPaIVHzncggO29BR9ow19Mr",
+  "id": "msg_XPMdbSBE8n3j2cs8dMmF0RyE",
   "object": "thread.message",
-  "created_at": 1792950907,
+  "created_at": 1793032220,
   "assistant_id": null,
-  "thread_id": "thread_utJBnGIoFNbpVmtPWlj5aphq",
+  "thread_id": "thread_EDvqDVzSNTzcvKC3c7Iz5vHH",
   "run_id": null,
   "role": "user",
   "content": [
@@ -998,10 +1021,12 @@ Question: Which items are good for strength training?
   "attachments": [],
   "metadata": {}
 }
-Created user message: msg_3LPaIVHzncggO29BR9ow19Mr
+Created user message: msg_XPMdbSBE8n3j2cs8dMmF0RyE
+
+>>> Start a run, in which the fitness search agent reads the conversation thread, uses its tools and answers, then check the run's status until it ends. The first check is logged in full, later ones as one `HTTP #n GET` line.
 
 --- OUTBOUND REQUEST #10 ---
-> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_utJBnGIoFNbpVmtPWlj5aphq/runs?api-version=v1
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_EDvqDVzSNTzcvKC3c7Iz5vHH/runs?api-version=v1
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -1012,42 +1037,42 @@ Created user message: msg_3LPaIVHzncggO29BR9ow19Mr
 > Authorization: Bearer <redacted>
 >
 {
-  "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
+  "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
   "stream": false
 }
 
 --- OUTBOUND RESPONSE #10 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:08 GMT
+< Date: Mon, 26 Oct 2026 16:30:21 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 4ed85fca1ace927664e22e7eb7e7486d
-< openai-processing-ms: 285
+< X-Request-ID: 5bc0b41612c65f610ac31a0dede5649a
+< openai-processing-ms: 234
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 3
+< x-http2-stream-id: 17
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.537
+< x-request-time: 0.615
+< Content-Length: 1988
+< x-http-replay: 0010-POST-api_projects_<project-name>_threads_thread_EDvqDVzSNTzcvKC.json
 <
 {
-  "id": "run_RujrjKxjKv4ZYwd3p8Xj8fDm",
+  "id": "run_ldkXUnrtcOU0SMwjihowzkcO",
   "object": "thread.run",
-  "created_at": 1792950908,
-  "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
-  "thread_id": "thread_utJBnGIoFNbpVmtPWlj5aphq",
+  "created_at": 1793032221,
+  "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
+  "thread_id": "thread_EDvqDVzSNTzcvKC3c7Iz5vHH",
   "status": "queued",
   "started_at": null,
-  "expires_at": 1792952708,
+  "expires_at": 1793034021,
   "cancelled_at": null,
   "failed_at": null,
   "completed_at": null,
@@ -1101,8 +1126,10 @@ Created user message: msg_3LPaIVHzncggO29BR9ow19Mr
   "parallel_tool_calls": true
 }
 
+>>> Check the agent run's status in Foundry Agent Service; this first check is logged in full.
+
 --- OUTBOUND REQUEST #11 ---
-> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_utJBnGIoFNbpVmtPWlj5aphq/runs/run_RujrjKxjKv4ZYwd3p8Xj8fDm?api-version=v1
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_EDvqDVzSNTzcvKC3c7Iz5vHH/runs/run_ldkXUnrtcOU0SMwjihowzkcO?api-version=v1
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -1113,35 +1140,35 @@ Created user message: msg_3LPaIVHzncggO29BR9ow19Mr
 --- OUTBOUND RESPONSE #11 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:10 GMT
+< Date: Mon, 26 Oct 2026 16:30:22 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: e136ba73a28e3583cbb8698e78b9b282
-< openai-processing-ms: 129
+< X-Request-ID: e60144e6afb9451298d3f78ab15fb051
+< openai-processing-ms: 109
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 3
+< x-http2-stream-id: 3579
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.276
+< x-request-time: 0.217
+< Content-Length: 1999
+< x-http-replay: 0011-GET-api_projects_<project-name>_threads_thread_EDvqDVzSNTzcvKC.json
 <
 {
-  "id": "run_RujrjKxjKv4ZYwd3p8Xj8fDm",
+  "id": "run_ldkXUnrtcOU0SMwjihowzkcO",
   "object": "thread.run",
-  "created_at": 1792950908,
-  "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
-  "thread_id": "thread_utJBnGIoFNbpVmtPWlj5aphq",
+  "created_at": 1793032221,
+  "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
+  "thread_id": "thread_EDvqDVzSNTzcvKC3c7Iz5vHH",
   "status": "in_progress",
-  "started_at": 1792950908,
-  "expires_at": 1792952708,
+  "started_at": 1793032221,
+  "expires_at": 1793034021,
   "cancelled_at": null,
   "failed_at": null,
   "completed_at": null,
@@ -1195,12 +1222,14 @@ Created user message: msg_3LPaIVHzncggO29BR9ow19Mr
   "parallel_tool_calls": true
 }
 
-HTTP #12 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_utJBnGIoFNbpVmtPWlj5aphq/runs/run_RujrjKxjKv4ZYwd3p8Xj8fDm?api-version=v1 -> 200 OK, status: completed
+HTTP #12 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_EDvqDVzSNTzcvKC3c7Iz5vHH/runs/run_ldkXUnrtcOU0SMwjihowzkcO?api-version=v1 -> 200 OK, status: completed
 Run status: RunStatus.COMPLETED
 Tool calls:
 
+>>> Read the agent run's steps from Foundry Agent Service, to show which tools the agent called.
+
 --- OUTBOUND REQUEST #13 ---
-> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_utJBnGIoFNbpVmtPWlj5aphq/runs/run_RujrjKxjKv4ZYwd3p8Xj8fDm/steps?api-version=v1&order=asc
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_EDvqDVzSNTzcvKC3c7Iz5vHH/runs/run_ldkXUnrtcOU0SMwjihowzkcO/steps?api-version=v1&order=asc
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -1211,40 +1240,40 @@ Tool calls:
 --- OUTBOUND RESPONSE #13 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:11 GMT
+< Date: Mon, 26 Oct 2026 16:30:24 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 3cf828142aac29f8c96fefa5cf0fa20f
-< openai-processing-ms: 117
+< X-Request-ID: b954401704bdb09b2f80079f01eac54d
+< openai-processing-ms: 101
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 3
+< x-http2-stream-id: 67
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.266
+< x-request-time: 0.267
+< Content-Length: 2026
+< x-http-replay: 0013-GET-api_projects_<project-name>_threads_thread_EDvqDVzSNTzcvKC.json
 <
 {
   "object": "list",
   "data": [
     {
-      "id": "step_Pv5fEF1bVNrOI8hIAZJLs2NS",
+      "id": "step_bsBkDctbYB5fdBFLAsy619qx",
       "object": "thread.run.step",
-      "created_at": 1792950909,
-      "run_id": "run_RujrjKxjKv4ZYwd3p8Xj8fDm",
-      "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
-      "thread_id": "thread_utJBnGIoFNbpVmtPWlj5aphq",
+      "created_at": 1793032222,
+      "run_id": "run_ldkXUnrtcOU0SMwjihowzkcO",
+      "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
+      "thread_id": "thread_EDvqDVzSNTzcvKC3c7Iz5vHH",
       "type": "tool_calls",
       "status": "completed",
       "cancelled_at": null,
-      "completed_at": 1792950910,
+      "completed_at": 1793032223,
       "expires_at": null,
       "failed_at": null,
       "last_error": null,
@@ -1252,10 +1281,10 @@ Tool calls:
         "type": "tool_calls",
         "tool_calls": [
           {
-            "id": "call_RmtrbgDvKNHCasH5QwcQNVfj",
+            "id": "call_XDZDoc0nK5OAuijuD35hpYwN",
             "type": "azure_ai_search",
             "azure_ai_search": {
-              "input": "search(\"strength training fitness equipment\")",
+              "input": "strength training equipment",
               "output": "{'summary': 'Retrieved 2 documents.', 'metadata': {'urls': ['doc_0', 'doc_1'], 'titles': ['doc_0', 'doc_1'], 'get_urls': ['https://<search-service>.search.windows.net/indexes/myfitnessindex/docs/1?api-version=2024-07-01&$select=FitnessItemID,Name,Category,Description', 'https://<search-service>.search.windows.net/indexes/myfitnessindex/docs/4?api-version=2024-07-01&$select=FitnessItemID,Name,Category,Description'], 'ids': ['1', '4'], 'command': 'search', 'query_type': 'simple', 'top_k': 5, 'filter': True}}"
             }
           }
@@ -1263,52 +1292,54 @@ Tool calls:
       },
       "usage": {
         "prompt_tokens": 760,
-        "completion_tokens": 14,
-        "total_tokens": 774,
+        "completion_tokens": 10,
+        "total_tokens": 770,
         "prompt_token_details": {
           "cached_tokens": 0
         }
       }
     },
     {
-      "id": "step_DWnOQYVxQEEB8OfndkzkhhAb",
+      "id": "step_n2dcl3I9jhpi8jdWjV0m1DGn",
       "object": "thread.run.step",
-      "created_at": 1792950910,
-      "run_id": "run_RujrjKxjKv4ZYwd3p8Xj8fDm",
-      "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
-      "thread_id": "thread_utJBnGIoFNbpVmtPWlj5aphq",
+      "created_at": 1793032223,
+      "run_id": "run_ldkXUnrtcOU0SMwjihowzkcO",
+      "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
+      "thread_id": "thread_EDvqDVzSNTzcvKC3c7Iz5vHH",
       "type": "message_creation",
       "status": "completed",
       "cancelled_at": null,
-      "completed_at": 1792950911,
+      "completed_at": 1793032224,
       "expires_at": null,
       "failed_at": null,
       "last_error": null,
       "step_details": {
         "type": "message_creation",
         "message_creation": {
-          "message_id": "msg_LmHxpZ7gZEKnulqyggX6A9mX"
+          "message_id": "msg_ZjoaCAVzjPcuZZQjPxqXDl68"
         }
       },
       "usage": {
-        "prompt_tokens": 1115,
-        "completion_tokens": 85,
-        "total_tokens": 1200,
+        "prompt_tokens": 1111,
+        "completion_tokens": 84,
+        "total_tokens": 1195,
         "prompt_token_details": {
           "cached_tokens": 0
         }
       }
     }
   ],
-  "first_id": "step_Pv5fEF1bVNrOI8hIAZJLs2NS",
-  "last_id": "step_DWnOQYVxQEEB8OfndkzkhhAb",
+  "first_id": "step_bsBkDctbYB5fdBFLAsy619qx",
+  "last_id": "step_n2dcl3I9jhpi8jdWjV0m1DGn",
   "has_more": false
 }
-  - azure_ai_search input: search("strength training fitness equipment")
+  - azure_ai_search input: strength training equipment
     azure_ai_search output: {'summary': 'Retrieved 2 documents.', 'metadata': {'urls': ['doc_0', 'doc_1'], 'titles': ['doc_0', 'doc_1'], 'get_urls': ['https://<search-service>.search.windows.net/indexes/myfitnessindex/docs/1?api-version=2024-07-01&$select=FitnessItemID,Name,Category,Description', 'https://<search-service>.search.windows.net/indexes/myfitnessindex/docs/4?api-version=2024-07-01&$select=FitnessItemID,Name,Category,Description'], 'ids': ['1', '4'], 'command': 'search', 'query_type': 'simple', 'top_k': 5, 'filter': True}}
 
+>>> Ask Foundry Agent Service for the next page of the agent run's steps.
+
 --- OUTBOUND REQUEST #14 ---
-> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_utJBnGIoFNbpVmtPWlj5aphq/runs/run_RujrjKxjKv4ZYwd3p8Xj8fDm/steps?api-version=v1&order=asc&after=step_DWnOQYVxQEEB8OfndkzkhhAb
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_EDvqDVzSNTzcvKC3c7Iz5vHH/runs/run_ldkXUnrtcOU0SMwjihowzkcO/steps?api-version=v1&order=asc&after=step_n2dcl3I9jhpi8jdWjV0m1DGn
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -1318,24 +1349,25 @@ Tool calls:
 
 --- OUTBOUND RESPONSE #14 ---
 < 200 OK
-< Content-Length: 96
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:12 GMT
+< Date: Mon, 26 Oct 2026 16:30:25 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: ccc05232a74997c6ed90693afa81684d
-< openai-processing-ms: 99
+< X-Request-ID: bddfe91d88951abbc2022f60a18259fe
+< openai-processing-ms: 91
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 3
+< x-http2-stream-id: 7
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.269
+< x-request-time: 0.289
+< Content-Length: 84
+< x-http-replay: 0014-GET-api_projects_<project-name>_threads_thread_EDvqDVzSNTzcvKC.json
 <
 {
   "object": "list",
@@ -1348,8 +1380,10 @@ Tool calls:
 Conversation:
 --------------------------------------------------------------------------------
 
+>>> Read the conversation thread's messages from Foundry Agent Service. This `for` loop makes these calls, not the list() line above it: one call per page, and the last page is empty.
+
 --- OUTBOUND REQUEST #15 ---
-> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_utJBnGIoFNbpVmtPWlj5aphq/messages?api-version=v1&order=asc
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_EDvqDVzSNTzcvKC3c7Iz5vHH/messages?api-version=v1&order=asc
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -1360,35 +1394,35 @@ Conversation:
 --- OUTBOUND RESPONSE #15 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:12 GMT
+< Date: Mon, 26 Oct 2026 16:30:25 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: e5e879d912d59c407535debadf76d706
+< X-Request-ID: 4d037566f0f97b6d4edc2811d6f1fe87
 < openai-processing-ms: 84
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 139
+< x-http2-stream-id: 1019
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.279
+< x-request-time: 0.231
+< Content-Length: 1224
+< x-http-replay: 0015-GET-api_projects_<project-name>_threads_thread_EDvqDVzSNTzcvKC.json
 <
 {
   "object": "list",
   "data": [
     {
-      "id": "msg_3LPaIVHzncggO29BR9ow19Mr",
+      "id": "msg_XPMdbSBE8n3j2cs8dMmF0RyE",
       "object": "thread.message",
-      "created_at": 1792950907,
+      "created_at": 1793032220,
       "assistant_id": null,
-      "thread_id": "thread_utJBnGIoFNbpVmtPWlj5aphq",
+      "thread_id": "thread_EDvqDVzSNTzcvKC3c7Iz5vHH",
       "run_id": null,
       "role": "user",
       "content": [
@@ -1404,18 +1438,18 @@ Conversation:
       "metadata": {}
     },
     {
-      "id": "msg_LmHxpZ7gZEKnulqyggX6A9mX",
+      "id": "msg_ZjoaCAVzjPcuZZQjPxqXDl68",
       "object": "thread.message",
-      "created_at": 1792950910,
-      "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
-      "thread_id": "thread_utJBnGIoFNbpVmtPWlj5aphq",
-      "run_id": "run_RujrjKxjKv4ZYwd3p8Xj8fDm",
+      "created_at": 1793032223,
+      "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
+      "thread_id": "thread_EDvqDVzSNTzcvKC3c7Iz5vHH",
+      "run_id": "run_ldkXUnrtcOU0SMwjihowzkcO",
       "role": "assistant",
       "content": [
         {
           "type": "text",
           "text": {
-            "value": "Here are some good items for strength training:\n\n1. **Adjustable Dumbbell**\n   - Description: A compact, adjustable weight for targeted muscle workouts.\n   - Price: $59.99.\n\n2. **Resistance Bands**\n   - Description: A set of colorful bands for light to moderate resistance workouts.\n   - Price: $15.00.\n\nThese options can accommodate different workout intensities and space requirements.",
+            "value": "Here are some great items for strength training:\n\n1. **Adjustable Dumbbell** - A compact, adjustable weight for targeted muscle workouts. **Price:** $59.99.\n   \n2. **Resistance Bands** - A set of colorful bands suitable for light to moderate resistance workouts. **Price:** $15.00.\n\nThese options provide versatility and are ideal for building strength at home or in the gym.",
             "annotations": []
           }
         }
@@ -1424,8 +1458,8 @@ Conversation:
       "metadata": {}
     }
   ],
-  "first_id": "msg_3LPaIVHzncggO29BR9ow19Mr",
-  "last_id": "msg_LmHxpZ7gZEKnulqyggX6A9mX",
+  "first_id": "msg_XPMdbSBE8n3j2cs8dMmF0RyE",
+  "last_id": "msg_ZjoaCAVzjPcuZZQjPxqXDl68",
   "has_more": false
 }
 
@@ -1433,20 +1467,18 @@ USER:
 Which items are good for strength training?
 
 ASSISTANT:
-Here are some good items for strength training:
+Here are some great items for strength training:
 
-1. **Adjustable Dumbbell**
-   - Description: A compact, adjustable weight for targeted muscle workouts.
-   - Price: $59.99.
+1. **Adjustable Dumbbell** - A compact, adjustable weight for targeted muscle workouts. **Price:** $59.99.
+   
+2. **Resistance Bands** - A set of colorful bands suitable for light to moderate resistance workouts. **Price:** $15.00.
 
-2. **Resistance Bands**
-   - Description: A set of colorful bands for light to moderate resistance workouts.
-   - Price: $15.00.
+These options provide versatility and are ideal for building strength at home or in the gym.
 
-These options can accommodate different workout intensities and space requirements.
+>>> Ask Foundry Agent Service for the next page of the conversation thread's messages.
 
 --- OUTBOUND REQUEST #16 ---
-> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_utJBnGIoFNbpVmtPWlj5aphq/messages?api-version=v1&order=asc&after=msg_LmHxpZ7gZEKnulqyggX6A9mX
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_EDvqDVzSNTzcvKC3c7Iz5vHH/messages?api-version=v1&order=asc&after=msg_ZjoaCAVzjPcuZZQjPxqXDl68
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -1456,24 +1488,25 @@ These options can accommodate different workout intensities and space requiremen
 
 --- OUTBOUND RESPONSE #16 ---
 < 200 OK
-< Content-Length: 96
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:13 GMT
+< Date: Mon, 26 Oct 2026 16:30:26 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 080dab400be63e01e6e239e8d0198fb0
-< openai-processing-ms: 97
+< X-Request-ID: d01aefe1186f04490e029c87794fd96c
+< openai-processing-ms: 98
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 5
+< x-http2-stream-id: 2231
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.313
+< x-request-time: 0.254
+< Content-Length: 84
+< x-http-replay: 0016-GET-api_projects_<project-name>_threads_thread_EDvqDVzSNTzcvKC.json
 <
 {
   "object": "list",
@@ -1484,8 +1517,10 @@ These options can accommodate different workout intensities and space requiremen
 }
 --------------------------------------------------------------------------------
 
+>>> Delete this conversation thread from Foundry Agent Service.
+
 --- OUTBOUND REQUEST #17 ---
-> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_utJBnGIoFNbpVmtPWlj5aphq?api-version=v1
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_EDvqDVzSNTzcvKC3c7Iz5vHH?api-version=v1
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -1496,35 +1531,38 @@ These options can accommodate different workout intensities and space requiremen
 
 --- OUTBOUND RESPONSE #17 ---
 < 200 OK
-< Content-Length: 94
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:13 GMT
+< Date: Mon, 26 Oct 2026 16:30:26 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 2f8827819536c524a00fc147102089ab
-< openai-processing-ms: 84
+< X-Request-ID: 2cb44e8742b096afa2d559d654421f3b
+< openai-processing-ms: 108
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 121
+< x-http2-stream-id: 25
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.314
+< x-request-time: 0.271
+< Content-Length: 86
+< x-http-replay: 0017-DELETE-api_projects_<project-name>_threads_thread_EDvqDVzSNTzcvKC.json
 <
 {
-  "id": "thread_utJBnGIoFNbpVmtPWlj5aphq",
+  "id": "thread_EDvqDVzSNTzcvKC3c7Iz5vHH",
   "object": "thread.deleted",
   "deleted": true
 }
-Deleted thread: thread_utJBnGIoFNbpVmtPWlj5aphq
+Deleted thread: thread_EDvqDVzSNTzcvKC3c7Iz5vHH
 
 ================================================================================
 QUESTION 2 OF 2
 ================================================================================
+
+>>> Create a conversation thread for this question in Foundry Agent Service.
 
 --- OUTBOUND REQUEST #18 ---
 > POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads?api-version=v1
@@ -1541,37 +1579,40 @@ QUESTION 2 OF 2
 
 --- OUTBOUND RESPONSE #18 ---
 < 200 OK
-< Content-Length: 137
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:14 GMT
+< Date: Mon, 26 Oct 2026 16:30:27 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 76c328544a5073ba2b9695b2e223b878
-< openai-processing-ms: 90
+< X-Request-ID: 1850139c1eae6bdacb633964aac93e6f
+< openai-processing-ms: 76
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 11
+< x-http2-stream-id: 3
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.422
+< x-request-time: 0.223
+< Content-Length: 125
+< x-http-replay: 0018-POST-api_projects_<project-name>_threads.json
 <
 {
-  "id": "thread_WNJQkPQ77Pur9igArrf0aM0X",
+  "id": "thread_rLDAOUX0xaecrcgJ9FdaKXif",
   "object": "thread",
-  "created_at": 1792950914,
+  "created_at": 1793032227,
   "metadata": {},
   "tool_resources": {}
 }
-Created thread: thread_WNJQkPQ77Pur9igArrf0aM0X
+Created thread: thread_rLDAOUX0xaecrcgJ9FdaKXif
 Question: I need something for cardio under $300, any suggestions?
 
+>>> Add the user's question to the conversation thread in Foundry Agent Service.
+
 --- OUTBOUND REQUEST #19 ---
-> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_WNJQkPQ77Pur9igArrf0aM0X/messages?api-version=v1
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/messages?api-version=v1
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -1589,32 +1630,32 @@ Question: I need something for cardio under $300, any suggestions?
 --- OUTBOUND RESPONSE #19 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:14 GMT
+< Date: Mon, 26 Oct 2026 16:30:27 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 81e0267214e1a9f22573bfcb23ae608b
-< openai-processing-ms: 104
+< X-Request-ID: 8856c6bcc10dded3eeadc79b0650ac4f
+< openai-processing-ms: 100
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 7
+< x-http2-stream-id: 217
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.232
+< x-request-time: 0.239
+< Content-Length: 358
+< x-http-replay: 0019-POST-api_projects_<project-name>_threads_thread_rLDAOUX0xaecrcg.json
 <
 {
-  "id": "msg_CRz7NVaoXGuCZxQcvgM2uatJ",
+  "id": "msg_mzbtgZAIst176kfnxYA39kVH",
   "object": "thread.message",
-  "created_at": 1792950914,
+  "created_at": 1793032227,
   "assistant_id": null,
-  "thread_id": "thread_WNJQkPQ77Pur9igArrf0aM0X",
+  "thread_id": "thread_rLDAOUX0xaecrcgJ9FdaKXif",
   "run_id": null,
   "role": "user",
   "content": [
@@ -1629,10 +1670,12 @@ Question: I need something for cardio under $300, any suggestions?
   "attachments": [],
   "metadata": {}
 }
-Created user message: msg_CRz7NVaoXGuCZxQcvgM2uatJ
+Created user message: msg_mzbtgZAIst176kfnxYA39kVH
+
+>>> Start a run, in which the fitness search agent reads the conversation thread, uses its tools and answers, then check the run's status until it ends. The first check is logged in full, later ones as one `HTTP #n GET` line.
 
 --- OUTBOUND REQUEST #20 ---
-> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_WNJQkPQ77Pur9igArrf0aM0X/runs?api-version=v1
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/runs?api-version=v1
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -1643,42 +1686,42 @@ Created user message: msg_CRz7NVaoXGuCZxQcvgM2uatJ
 > Authorization: Bearer <redacted>
 >
 {
-  "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
+  "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
   "stream": false
 }
 
 --- OUTBOUND RESPONSE #20 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:15 GMT
+< Date: Mon, 26 Oct 2026 16:30:28 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 7ab5ffd5dc679dee538efd6b15ad3b59
-< openai-processing-ms: 269
+< X-Request-ID: 01286d4cde863b58cf2d4ac582db5363
+< openai-processing-ms: 285
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 7
+< x-http2-stream-id: 2031
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.480
+< x-request-time: 0.490
+< Content-Length: 1988
+< x-http-replay: 0020-POST-api_projects_<project-name>_threads_thread_rLDAOUX0xaecrcg.json
 <
 {
-  "id": "run_IvbJD0P1dvgShy58Ju0CRhh9",
+  "id": "run_0t9A5nEWw5jUQd671UUPv06M",
   "object": "thread.run",
-  "created_at": 1792950915,
-  "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
-  "thread_id": "thread_WNJQkPQ77Pur9igArrf0aM0X",
+  "created_at": 1793032228,
+  "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
+  "thread_id": "thread_rLDAOUX0xaecrcgJ9FdaKXif",
   "status": "queued",
   "started_at": null,
-  "expires_at": 1792952715,
+  "expires_at": 1793034028,
   "cancelled_at": null,
   "failed_at": null,
   "completed_at": null,
@@ -1732,8 +1775,10 @@ Created user message: msg_CRz7NVaoXGuCZxQcvgM2uatJ
   "parallel_tool_calls": true
 }
 
+>>> Check the agent run's status in Foundry Agent Service; this first check is logged in full.
+
 --- OUTBOUND REQUEST #21 ---
-> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_WNJQkPQ77Pur9igArrf0aM0X/runs/run_IvbJD0P1dvgShy58Ju0CRhh9?api-version=v1
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/runs/run_0t9A5nEWw5jUQd671UUPv06M?api-version=v1
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -1744,35 +1789,35 @@ Created user message: msg_CRz7NVaoXGuCZxQcvgM2uatJ
 --- OUTBOUND RESPONSE #21 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:17 GMT
+< Date: Mon, 26 Oct 2026 16:30:29 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 4e176ffc96180bee4a5946f0bc2ddf13
-< openai-processing-ms: 128
+< X-Request-ID: de5ced90b2d4e43a586a9321a417bb8f
+< openai-processing-ms: 114
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 5
+< x-http2-stream-id: 3479
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
 < x-request-time: 0.254
+< Content-Length: 1999
+< x-http-replay: 0021-GET-api_projects_<project-name>_threads_thread_rLDAOUX0xaecrcg.json
 <
 {
-  "id": "run_IvbJD0P1dvgShy58Ju0CRhh9",
+  "id": "run_0t9A5nEWw5jUQd671UUPv06M",
   "object": "thread.run",
-  "created_at": 1792950915,
-  "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
-  "thread_id": "thread_WNJQkPQ77Pur9igArrf0aM0X",
+  "created_at": 1793032228,
+  "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
+  "thread_id": "thread_rLDAOUX0xaecrcgJ9FdaKXif",
   "status": "in_progress",
-  "started_at": 1792950915,
-  "expires_at": 1792952715,
+  "started_at": 1793032228,
+  "expires_at": 1793034028,
   "cancelled_at": null,
   "failed_at": null,
   "completed_at": null,
@@ -1826,7 +1871,9 @@ Created user message: msg_CRz7NVaoXGuCZxQcvgM2uatJ
   "parallel_tool_calls": true
 }
 
-HTTP #22 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_WNJQkPQ77Pur9igArrf0aM0X/runs/run_IvbJD0P1dvgShy58Ju0CRhh9?api-version=v1 -> 200 OK, status: requires_action
+HTTP #22 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/runs/run_0t9A5nEWw5jUQd671UUPv06M?api-version=v1 -> 200 OK, status: requires_action
+
+>>> Search the fitness index in Azure AI Search for products, for the find_items_under function.
 
 --- OUTBOUND REQUEST #23 ---
 > POST https://<search-service>.search.windows.net/indexes('myfitnessindex')/docs/search.post.search?api-version=2026-04-01
@@ -1849,21 +1896,23 @@ HTTP #22 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 
 --- OUTBOUND RESPONSE #23 ---
 < 200 OK
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
-< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 54
-< Date: Sun, 25 Oct 2026 17:55:18 GMT
+< elapsed-time: 64
+< Date: Mon, 26 Oct 2026 16:30:31 GMT
+< Content-Length: 13
+< x-http-replay: 0023-POST-indexes--myfitnessindex--_docs_search.post.search.json
 <
 {
   "value": []
 }
   [function] find_items_under(max_price=300, category=Cardio) -> 0 item(s)
+
+>>> Search the fitness index in Azure AI Search for products, for the find_items_under function.
 
 --- OUTBOUND REQUEST #24 ---
 > POST https://<search-service>.search.windows.net/indexes('myfitnessindex')/docs/search.post.search?api-version=2026-04-01
@@ -1886,16 +1935,16 @@ HTTP #22 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 
 --- OUTBOUND RESPONSE #24 ---
 < 200 OK
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
-< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 55
-< Date: Sun, 25 Oct 2026 17:55:18 GMT
+< elapsed-time: 12
+< Date: Mon, 26 Oct 2026 16:30:31 GMT
+< Content-Length: 94
+< x-http-replay: 0024-POST-indexes--myfitnessindex--_docs_search.post.search.json
 <
 {
   "value": [
@@ -1908,8 +1957,10 @@ HTTP #22 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
   ]
 }
 
+>>> Send the find_items_under function's result back to the agent run in Foundry Agent Service; the run then continues.
+
 --- OUTBOUND REQUEST #25 ---
-> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_WNJQkPQ77Pur9igArrf0aM0X/runs/run_IvbJD0P1dvgShy58Ju0CRhh9/submit_tool_outputs?api-version=v1
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/runs/run_0t9A5nEWw5jUQd671UUPv06M/submit_tool_outputs?api-version=v1
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -1923,7 +1974,7 @@ HTTP #22 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
   "stream": false,
   "tool_outputs": [
     {
-      "tool_call_id": "call_GPk6QH62RoQci85A44dGFz2O",
+      "tool_call_id": "call_1t5ymuGgusaiZYFTOV9MiQeS",
       "output": "No products cost $300.00 or less in category Cardio. Cheapest product in Cardio: Treadmill (Cardio): $499.00"
     }
   ]
@@ -1932,35 +1983,35 @@ HTTP #22 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 --- OUTBOUND RESPONSE #25 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:19 GMT
+< Date: Mon, 26 Oct 2026 16:30:32 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: e0a3f8af7bb3944aeb848cdbfb1ffe2e
-< openai-processing-ms: 263
+< X-Request-ID: 95055876046c2ff1a8dd9bc83c5ae5e3
+< openai-processing-ms: 243
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 5
+< x-http2-stream-id: 149
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.493
+< x-request-time: 0.518
+< Content-Length: 1994
+< x-http-replay: 0025-POST-api_projects_<project-name>_threads_thread_rLDAOUX0xaecrcg.json
 <
 {
-  "id": "run_IvbJD0P1dvgShy58Ju0CRhh9",
+  "id": "run_0t9A5nEWw5jUQd671UUPv06M",
   "object": "thread.run",
-  "created_at": 1792950915,
-  "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
-  "thread_id": "thread_WNJQkPQ77Pur9igArrf0aM0X",
+  "created_at": 1793032228,
+  "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
+  "thread_id": "thread_rLDAOUX0xaecrcgJ9FdaKXif",
   "status": "queued",
-  "started_at": 1792950915,
-  "expires_at": 1792986915,
+  "started_at": 1793032228,
+  "expires_at": 1793068228,
   "cancelled_at": null,
   "failed_at": null,
   "completed_at": null,
@@ -2014,12 +2065,18 @@ HTTP #22 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
   "parallel_tool_calls": true
 }
 
-HTTP #26 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_WNJQkPQ77Pur9igArrf0aM0X/runs/run_IvbJD0P1dvgShy58Ju0CRhh9?api-version=v1 -> 200 OK, status: completed
+HTTP #26 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/runs/run_0t9A5nEWw5jUQd671UUPv06M?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #27 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/runs/run_0t9A5nEWw5jUQd671UUPv06M?api-version=v1 -> 200 OK, status: in_progress
+
+HTTP #28 GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/runs/run_0t9A5nEWw5jUQd671UUPv06M?api-version=v1 -> 200 OK, status: completed
 Run status: RunStatus.COMPLETED
 Tool calls:
 
---- OUTBOUND REQUEST #27 ---
-> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_WNJQkPQ77Pur9igArrf0aM0X/runs/run_IvbJD0P1dvgShy58Ju0CRhh9/steps?api-version=v1&order=asc
+>>> Read the agent run's steps from Foundry Agent Service, to show which tools the agent called.
+
+--- OUTBOUND REQUEST #29 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/runs/run_0t9A5nEWw5jUQd671UUPv06M/steps?api-version=v1&order=asc
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -2027,43 +2084,43 @@ Tool calls:
 > x-ms-client-request-id: <id>
 > Authorization: Bearer <redacted>
 
---- OUTBOUND RESPONSE #27 ---
+--- OUTBOUND RESPONSE #29 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:21 GMT
+< Date: Mon, 26 Oct 2026 16:30:37 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 030000772d10a40ec2e64790e69d1f45
-< openai-processing-ms: 118
+< X-Request-ID: bb8b5a9018cc6eb35b0e8b45a9699cde
+< openai-processing-ms: 113
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 141
+< x-http2-stream-id: 19
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.247
+< x-request-time: 0.333
+< Content-Length: 1625
+< x-http-replay: 0029-GET-api_projects_<project-name>_threads_thread_rLDAOUX0xaecrcg.json
 <
 {
   "object": "list",
   "data": [
     {
-      "id": "step_wPiO65ETqi7Jbca0QSIm2fPI",
+      "id": "step_hVzrBcPVr5HoftmO2OxIawT3",
       "object": "thread.run.step",
-      "created_at": 1792950917,
-      "run_id": "run_IvbJD0P1dvgShy58Ju0CRhh9",
-      "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
-      "thread_id": "thread_WNJQkPQ77Pur9igArrf0aM0X",
+      "created_at": 1793032229,
+      "run_id": "run_0t9A5nEWw5jUQd671UUPv06M",
+      "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
+      "thread_id": "thread_rLDAOUX0xaecrcgJ9FdaKXif",
       "type": "tool_calls",
       "status": "completed",
       "cancelled_at": null,
-      "completed_at": 1792950919,
+      "completed_at": 1793032232,
       "expires_at": null,
       "failed_at": null,
       "last_error": null,
@@ -2071,7 +2128,7 @@ Tool calls:
         "type": "tool_calls",
         "tool_calls": [
           {
-            "id": "call_GPk6QH62RoQci85A44dGFz2O",
+            "id": "call_1t5ymuGgusaiZYFTOV9MiQeS",
             "type": "function",
             "function": {
               "name": "find_items_under",
@@ -2091,44 +2148,46 @@ Tool calls:
       }
     },
     {
-      "id": "step_fIsqYOPTUJZEUSW0xotdya8A",
+      "id": "step_KUBPmunzrnMozHRhdpAebm1P",
       "object": "thread.run.step",
-      "created_at": 1792950920,
-      "run_id": "run_IvbJD0P1dvgShy58Ju0CRhh9",
-      "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
-      "thread_id": "thread_WNJQkPQ77Pur9igArrf0aM0X",
+      "created_at": 1793032233,
+      "run_id": "run_0t9A5nEWw5jUQd671UUPv06M",
+      "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
+      "thread_id": "thread_rLDAOUX0xaecrcgJ9FdaKXif",
       "type": "message_creation",
       "status": "completed",
       "cancelled_at": null,
-      "completed_at": 1792950921,
+      "completed_at": 1793032235,
       "expires_at": null,
       "failed_at": null,
       "last_error": null,
       "step_details": {
         "type": "message_creation",
         "message_creation": {
-          "message_id": "msg_HMbWgT1St8v6oQBkCnnGnfFB"
+          "message_id": "msg_hKnOI97RkEgSCbfZKqfRJbgA"
         }
       },
       "usage": {
         "prompt_tokens": 826,
-        "completion_tokens": 39,
-        "total_tokens": 865,
+        "completion_tokens": 46,
+        "total_tokens": 872,
         "prompt_token_details": {
           "cached_tokens": 0
         }
       }
     }
   ],
-  "first_id": "step_wPiO65ETqi7Jbca0QSIm2fPI",
-  "last_id": "step_fIsqYOPTUJZEUSW0xotdya8A",
+  "first_id": "step_hVzrBcPVr5HoftmO2OxIawT3",
+  "last_id": "step_KUBPmunzrnMozHRhdpAebm1P",
   "has_more": false
 }
   - function find_items_under({"max_price":300,"category":"Cardio"})
     output: No products cost $300.00 or less in category Cardio. Cheapest product in Cardio: Treadmill (Cardio): $499.00
 
---- OUTBOUND REQUEST #28 ---
-> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_WNJQkPQ77Pur9igArrf0aM0X/runs/run_IvbJD0P1dvgShy58Ju0CRhh9/steps?api-version=v1&order=asc&after=step_fIsqYOPTUJZEUSW0xotdya8A
+>>> Ask Foundry Agent Service for the next page of the agent run's steps.
+
+--- OUTBOUND REQUEST #30 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/runs/run_0t9A5nEWw5jUQd671UUPv06M/steps?api-version=v1&order=asc&after=step_KUBPmunzrnMozHRhdpAebm1P
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -2136,26 +2195,27 @@ Tool calls:
 > x-ms-client-request-id: <id>
 > Authorization: Bearer <redacted>
 
---- OUTBOUND RESPONSE #28 ---
+--- OUTBOUND RESPONSE #30 ---
 < 200 OK
-< Content-Length: 96
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:22 GMT
+< Date: Mon, 26 Oct 2026 16:30:37 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 9bec5371c1976ff7f5c55fb5cd522af2
-< openai-processing-ms: 106
+< X-Request-ID: f5f792e6d3d011415708db04e3cdc21c
+< openai-processing-ms: 100
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 5
+< x-http2-stream-id: 9
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.230
+< x-request-time: 0.242
+< Content-Length: 84
+< x-http-replay: 0030-GET-api_projects_<project-name>_threads_thread_rLDAOUX0xaecrcg.json
 <
 {
   "object": "list",
@@ -2168,8 +2228,10 @@ Tool calls:
 Conversation:
 --------------------------------------------------------------------------------
 
---- OUTBOUND REQUEST #29 ---
-> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_WNJQkPQ77Pur9igArrf0aM0X/messages?api-version=v1&order=asc
+>>> Read the conversation thread's messages from Foundry Agent Service. This `for` loop makes these calls, not the list() line above it: one call per page, and the last page is empty.
+
+--- OUTBOUND REQUEST #31 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/messages?api-version=v1&order=asc
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -2177,38 +2239,38 @@ Conversation:
 > x-ms-client-request-id: <id>
 > Authorization: Bearer <redacted>
 
---- OUTBOUND RESPONSE #29 ---
+--- OUTBOUND RESPONSE #31 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:41 GMT
+< Date: Mon, 26 Oct 2026 16:30:38 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: e99e18b1b55d61c320743cae2966599b
-< openai-processing-ms: 114
+< X-Request-ID: 84c5ff58fac664635ad138577576315d
+< openai-processing-ms: 98
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 3
+< x-http2-stream-id: 35
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
 < azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 19.259
+< x-request-time: 0.267
+< Content-Length: 1064
+< x-http-replay: 0031-GET-api_projects_<project-name>_threads_thread_rLDAOUX0xaecrcg.json
 <
 {
   "object": "list",
   "data": [
     {
-      "id": "msg_CRz7NVaoXGuCZxQcvgM2uatJ",
+      "id": "msg_mzbtgZAIst176kfnxYA39kVH",
       "object": "thread.message",
-      "created_at": 1792950914,
+      "created_at": 1793032227,
       "assistant_id": null,
-      "thread_id": "thread_WNJQkPQ77Pur9igArrf0aM0X",
+      "thread_id": "thread_rLDAOUX0xaecrcgJ9FdaKXif",
       "run_id": null,
       "role": "user",
       "content": [
@@ -2224,18 +2286,18 @@ Conversation:
       "metadata": {}
     },
     {
-      "id": "msg_HMbWgT1St8v6oQBkCnnGnfFB",
+      "id": "msg_hKnOI97RkEgSCbfZKqfRJbgA",
       "object": "thread.message",
-      "created_at": 1792950920,
-      "assistant_id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
-      "thread_id": "thread_WNJQkPQ77Pur9igArrf0aM0X",
-      "run_id": "run_IvbJD0P1dvgShy58Ju0CRhh9",
+      "created_at": 1793032233,
+      "assistant_id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
+      "thread_id": "thread_rLDAOUX0xaecrcgJ9FdaKXif",
+      "run_id": "run_0t9A5nEWw5jUQd671UUPv06M",
       "role": "assistant",
       "content": [
         {
           "type": "text",
           "text": {
-            "value": "I couldn't find any cardio products under $300. The closest option available is a treadmill priced at $499. If you'd like to explore alternatives or other categories, please let me know!",
+            "value": "I'm sorry, but there are no cardio products available under $300. The cheapest option in the cardio category is a treadmill priced at $499. If you're open to products over your budget, I could help with that.",
             "annotations": []
           }
         }
@@ -2244,8 +2306,8 @@ Conversation:
       "metadata": {}
     }
   ],
-  "first_id": "msg_CRz7NVaoXGuCZxQcvgM2uatJ",
-  "last_id": "msg_HMbWgT1St8v6oQBkCnnGnfFB",
+  "first_id": "msg_mzbtgZAIst176kfnxYA39kVH",
+  "last_id": "msg_hKnOI97RkEgSCbfZKqfRJbgA",
   "has_more": false
 }
 
@@ -2253,10 +2315,12 @@ USER:
 I need something for cardio under $300, any suggestions?
 
 ASSISTANT:
-I couldn't find any cardio products under $300. The closest option available is a treadmill priced at $499. If you'd like to explore alternatives or other categories, please let me know!
+I'm sorry, but there are no cardio products available under $300. The cheapest option in the cardio category is a treadmill priced at $499. If you're open to products over your budget, I could help with that.
 
---- OUTBOUND REQUEST #30 ---
-> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_WNJQkPQ77Pur9igArrf0aM0X/messages?api-version=v1&order=asc&after=msg_HMbWgT1St8v6oQBkCnnGnfFB
+>>> Ask Foundry Agent Service for the next page of the conversation thread's messages.
+
+--- OUTBOUND REQUEST #32 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif/messages?api-version=v1&order=asc&after=msg_hKnOI97RkEgSCbfZKqfRJbgA
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -2264,26 +2328,27 @@ I couldn't find any cardio products under $300. The closest option available is 
 > x-ms-client-request-id: <id>
 > Authorization: Bearer <redacted>
 
---- OUTBOUND RESPONSE #30 ---
+--- OUTBOUND RESPONSE #32 ---
 < 200 OK
-< Content-Length: 96
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:41 GMT
+< Date: Mon, 26 Oct 2026 16:30:39 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 098677b051034df1b9c091255cb16fbb
-< openai-processing-ms: 93
+< X-Request-ID: 66e4d353e58aed260ffb731537166b42
+< openai-processing-ms: 444
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 5
+< x-http2-stream-id: 129
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< azureml-served-by-cluster: vienna-eastus2-01
-< x-request-time: 0.297
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.612
+< Content-Length: 84
+< x-http-replay: 0032-GET-api_projects_<project-name>_threads_thread_rLDAOUX0xaecrcg.json
 <
 {
   "object": "list",
@@ -2294,8 +2359,10 @@ I couldn't find any cardio products under $300. The closest option available is 
 }
 --------------------------------------------------------------------------------
 
---- OUTBOUND REQUEST #31 ---
-> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_WNJQkPQ77Pur9igArrf0aM0X?api-version=v1
+>>> Delete this conversation thread from Foundry Agent Service.
+
+--- OUTBOUND REQUEST #33 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/threads/thread_rLDAOUX0xaecrcgJ9FdaKXif?api-version=v1
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -2304,33 +2371,34 @@ I couldn't find any cardio products under $300. The closest option available is 
 > Authorization: Bearer <redacted>
 > Content-Length: 0
 
---- OUTBOUND RESPONSE #31 ---
+--- OUTBOUND RESPONSE #33 ---
 < 200 OK
-< Content-Length: 94
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:42 GMT
+< Date: Mon, 26 Oct 2026 16:30:39 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: 6245bc871cfca6e3416992ac6024e29e
+< X-Request-ID: a658883ef1e8d80c4552513efca91a4e
 < openai-processing-ms: 82
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 3
+< x-http2-stream-id: 11
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< azureml-served-by-cluster: vienna-eastus2-01
-< x-request-time: 0.233
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.226
+< Content-Length: 86
+< x-http-replay: 0033-DELETE-api_projects_<project-name>_threads_thread_rLDAOUX0xaecrcg.json
 <
 {
-  "id": "thread_WNJQkPQ77Pur9igArrf0aM0X",
+  "id": "thread_rLDAOUX0xaecrcgJ9FdaKXif",
   "object": "thread.deleted",
   "deleted": true
 }
-Deleted thread: thread_WNJQkPQ77Pur9igArrf0aM0X
+Deleted thread: thread_rLDAOUX0xaecrcgJ9FdaKXif
 
 ================================================================================
 COMPLETED: all 2 agent runs finished with status COMPLETED
@@ -2340,8 +2408,10 @@ COMPLETED: all 2 agent runs finished with status COMPLETED
 CLEANUP
 ================================================================================
 
---- OUTBOUND REQUEST #32 ---
-> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/assistants/asst_RYHlJUmuwAEiv8ScHtbeQ8vA?api-version=v1
+>>> Delete the fitness search agent from Foundry Agent Service.
+
+--- OUTBOUND REQUEST #34 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/assistants/asst_qYJ96CoUxrEyWCa18quxDTSz?api-version=v1
 > User-Agent: AIProjectClient azsdk-python-ai-agents/1.1.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
 > Accept: application/json
@@ -2350,37 +2420,42 @@ CLEANUP
 > Authorization: Bearer <redacted>
 > Content-Length: 0
 
---- OUTBOUND RESPONSE #32 ---
+--- OUTBOUND RESPONSE #34 ---
 < 200 OK
-< Content-Length: 95
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:55:42 GMT
+< Date: Mon, 26 Oct 2026 16:30:40 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
 < openai-organization: a64606f4de40420bae29a4242f286977
-< X-Request-ID: ae2bc5855477dc468ce6d3845e7cc26f
-< openai-processing-ms: 92
+< X-Request-ID: 18cda2743bc519ca3d26bbc2c4a39141
+< openai-processing-ms: 415
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-http2-stream-id: 57
+< x-http2-stream-id: 437
 < apim-request-id: <id>
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< azureml-served-by-cluster: vienna-eastus2-01
-< x-request-time: 0.419
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.575
+< Content-Length: 87
+< x-http-replay: 0034-DELETE-api_projects_<project-name>_assistants_asst_qYJ96CoUxrEyWC.json
 <
 {
-  "id": "asst_RYHlJUmuwAEiv8ScHtbeQ8vA",
+  "id": "asst_qYJ96CoUxrEyWCa18quxDTSz",
   "object": "assistant.deleted",
   "deleted": true
 }
-Deleted temporary agent: asst_RYHlJUmuwAEiv8ScHtbeQ8vA
+Deleted temporary agent: asst_qYJ96CoUxrEyWCa18quxDTSz
 
-HTTP #33 GET https://<search-service>.search.windows.net/indexes?api-version=2026-04-01 -> 200 OK
+>>> List the indexes in Azure AI Search, to see whether the fitness index is there to delete.
 
---- OUTBOUND REQUEST #34 ---
+HTTP #35 GET https://<search-service>.search.windows.net/indexes?api-version=2026-04-01 -> 200 OK
+
+>>> Delete the fitness index from Azure AI Search.
+
+--- OUTBOUND REQUEST #36 ---
 > DELETE https://<search-service>.search.windows.net/indexes('myfitnessindex')?api-version=2026-04-01
 > User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
 > Accept-Encoding: gzip, deflate
@@ -2390,11 +2465,13 @@ HTTP #33 GET https://<search-service>.search.windows.net/indexes?api-version=202
 > api-key: <redacted>
 > Content-Length: 0
 
---- OUTBOUND RESPONSE #34 ---
+--- OUTBOUND RESPONSE #36 ---
 < 204 No Content
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < request-id: <id>
-< elapsed-time: 468
-< Date: Sun, 25 Oct 2026 17:55:43 GMT
+< elapsed-time: 654
+< Date: Mon, 26 Oct 2026 16:30:40 GMT
+< Content-Length: 0
+< x-http-replay: 0036-DELETE-indexes--myfitnessindex--.json
 Deleted temporary index: myfitnessindex

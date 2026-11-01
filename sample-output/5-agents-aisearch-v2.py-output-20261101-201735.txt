@@ -1,0 +1,1961 @@
+Sample output of src/2-agents/5-agents-aisearch-v2.py
+Replay on 2026-11-01 20:17 of answers recorded on 2026-10-25 21:33 (no service called), with:
+HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/5-agents-aisearch-v2-20261025-213339 ../../.venv-agents-v2/bin/python src/2-agents/5-agents-aisearch-v2.py
+Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
+--------------------------------------------------------------------------------
+[http_replay] no random seed in this recording: random values differ from the record run
+[http_replay] replay mode, folder runs/recordings/5-agents-aisearch-v2-20261025-213339
+Project endpoint: https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
+Models: gpt-4o-mini
+Disclaimer: This program is a technical demonstration and does not provide professional medical advice.
+
+================================================================================
+STEP 1: CREATE AND FILL THE AZURE AI SEARCH INDEX
+================================================================================
+Azure AI Search endpoint: https://<search-service>.search.windows.net
+
+>>> List the indexes in Azure AI Search, to see whether the fitness index already exists.
+
+--- OUTBOUND REQUEST #1 ---
+> GET https://<search-service>.search.windows.net/indexes?api-version=2026-04-01
+> User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json;odata.metadata=minimal
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> api-key: <redacted>
+
+--- OUTBOUND RESPONSE #1 ---
+< 200 OK
+< Content-Type: application/json; odata.metadata=minimal; odata.streaming=true; charset=utf-8
+< Vary: Accept-Encoding
+< Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
+< Preference-Applied: odata.include-annotations="*"
+< OData-Version: 4.0
+< request-id: <id>
+< elapsed-time: 137
+< Date: Sun, 25 Oct 2026 17:33:41 GMT
+< Content-Length: 4869
+< x-http-replay: 0001-GET-indexes.json
+<
+{
+  "@odata.context": "https://<search-service>.search.windows.net/$metadata#indexes",
+  "value": [
+    {
+      "@odata.etag": "\"0x8DF29B5F1807B8D\"",
+      "name": "healthtips-index",
+      "description": null,
+      "defaultScoringProfile": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "Edm.String",
+          "searchable": false,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": true,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "content",
+          "type": "Edm.String",
+          "searchable": true,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "source",
+          "type": "Edm.String",
+          "searchable": false,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "embedding",
+          "type": "Collection(Edm.Single)",
+          "searchable": true,
+          "filterable": false,
+          "retrievable": false,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": 1536,
+          "vectorSearchProfile": "myHnswProfile",
+          "vectorEncoding": null,
+          "synonymMaps": []
+        }
+      ],
+      "scoringProfiles": [],
+      "corsOptions": null,
+      "suggesters": [],
+      "analyzers": [],
+      "normalizers": [],
+      "tokenizers": [],
+      "tokenFilters": [],
+      "charFilters": [],
+      "encryptionKey": null,
+      "similarity": {
+        "@odata.type": "#Microsoft.Azure.Search.BM25Similarity",
+        "k1": null,
+        "b": null
+      },
+      "semantic": null,
+      "vectorSearch": {
+        "algorithms": [
+          {
+            "name": "myHnsw",
+            "kind": "hnsw",
+            "hnswParameters": {
+              "metric": "cosine",
+              "m": 4,
+              "efConstruction": 400,
+              "efSearch": 500
+            },
+            "exhaustiveKnnParameters": null
+          }
+        ],
+        "profiles": [
+          {
+            "name": "myHnswProfile",
+            "algorithm": "myHnsw",
+            "vectorizer": null,
+            "compression": null
+          }
+        ],
+        "vectorizers": [],
+        "compressions": []
+      }
+    },
+    {
+      "@odata.etag": "\"0x8DF31335BA06445\"",
+      "name": "literature-index",
+      "description": null,
+      "defaultScoringProfile": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "Edm.String",
+          "searchable": false,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": true,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "title",
+          "type": "Edm.String",
+          "searchable": true,
+          "filterable": true,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "abstract",
+          "type": "Edm.String",
+          "searchable": true,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "content",
+          "type": "Edm.String",
+          "searchable": true,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "authors",
+          "type": "Collection(Edm.String)",
+          "searchable": true,
+          "filterable": false,
+          "retrievable": true,
+          "stored": true,
+          "sortable": false,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        },
+        {
+          "name": "publicationDate",
+          "type": "Edm.DateTimeOffset",
+          "searchable": false,
+          "filterable": true,
+          "retrievable": true,
+          "stored": true,
+          "sortable": true,
+          "facetable": false,
+          "key": false,
+          "indexAnalyzer": null,
+          "searchAnalyzer": null,
+          "analyzer": null,
+          "normalizer": null,
+          "dimensions": null,
+          "vectorSearchProfile": null,
+          "vectorEncoding": null,
+          "synonymMaps": []
+        }
+      ],
+      "scoringProfiles": [],
+      "corsOptions": null,
+      "suggesters": [],
+      "analyzers": [],
+      "normalizers": [],
+      "tokenizers": [],
+      "tokenFilters": [],
+      "charFilters": [],
+      "encryptionKey": null,
+      "similarity": {
+        "@odata.type": "#Microsoft.Azure.Search.BM25Similarity",
+        "k1": null,
+        "b": null
+      },
+      "semantic": null,
+      "vectorSearch": null
+    }
+  ]
+}
+
+>>> Create the fitness index in Azure AI Search.
+
+--- OUTBOUND REQUEST #2 ---
+> POST https://<search-service>.search.windows.net/indexes?api-version=2026-04-01
+> User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json;odata.metadata=minimal
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 831
+> x-ms-client-request-id: <id>
+> api-key: <redacted>
+>
+{
+  "name": "myfitnessindex-v2",
+  "fields": [
+    {
+      "name": "FitnessItemID",
+      "type": "Edm.String",
+      "key": true,
+      "searchable": false,
+      "filterable": true,
+      "facetable": false,
+      "sortable": false,
+      "retrievable": true
+    },
+    {
+      "name": "Name",
+      "type": "Edm.String",
+      "key": false,
+      "searchable": true,
+      "filterable": true,
+      "facetable": false,
+      "sortable": false,
+      "retrievable": true
+    },
+    {
+      "name": "Category",
+      "type": "Edm.String",
+      "key": false,
+      "searchable": true,
+      "filterable": true,
+      "facetable": true,
+      "sortable": false,
+      "retrievable": true
+    },
+    {
+      "name": "Price",
+      "type": "Edm.Double",
+      "key": false,
+      "searchable": false,
+      "filterable": true,
+      "facetable": true,
+      "sortable": true,
+      "retrievable": true
+    },
+    {
+      "name": "Description",
+      "type": "Edm.String",
+      "key": false,
+      "searchable": true,
+      "filterable": false,
+      "facetable": false,
+      "sortable": false,
+      "retrievable": true
+    }
+  ]
+}
+
+--- OUTBOUND RESPONSE #2 ---
+< 201 Created
+< Content-Type: application/json; odata.metadata=minimal; odata.streaming=true; charset=utf-8
+< ETag: "0x8DF32BE1D4EFD96"
+< Location: https://<search-service>.search.windows.net:443/indexes('myfitnessindex-v2')?api-version=2026-04-01
+< Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
+< Preference-Applied: odata.include-annotations="*"
+< OData-Version: 4.0
+< request-id: <id>
+< elapsed-time: 948
+< Date: Sun, 25 Oct 2026 17:33:42 GMT
+< Content-Length: 2308
+< x-http-replay: 0002-POST-indexes.json
+<
+{
+  "@odata.context": "https://<search-service>.search.windows.net/$metadata#indexes/$entity",
+  "@odata.etag": "\"0x8DF32BE1D4EFD96\"",
+  "name": "myfitnessindex-v2",
+  "description": null,
+  "defaultScoringProfile": null,
+  "fields": [
+    {
+      "name": "FitnessItemID",
+      "type": "Edm.String",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": false,
+      "key": true,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "Name",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "Category",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": true,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "Price",
+      "type": "Edm.Double",
+      "searchable": false,
+      "filterable": true,
+      "retrievable": true,
+      "stored": true,
+      "sortable": true,
+      "facetable": true,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    },
+    {
+      "name": "Description",
+      "type": "Edm.String",
+      "searchable": true,
+      "filterable": false,
+      "retrievable": true,
+      "stored": true,
+      "sortable": false,
+      "facetable": false,
+      "key": false,
+      "indexAnalyzer": null,
+      "searchAnalyzer": null,
+      "analyzer": null,
+      "normalizer": null,
+      "dimensions": null,
+      "vectorSearchProfile": null,
+      "vectorEncoding": null,
+      "synonymMaps": []
+    }
+  ],
+  "scoringProfiles": [],
+  "corsOptions": null,
+  "suggesters": [],
+  "analyzers": [],
+  "normalizers": [],
+  "tokenizers": [],
+  "tokenFilters": [],
+  "charFilters": [],
+  "encryptionKey": null,
+  "similarity": {
+    "@odata.type": "#Microsoft.Azure.Search.BM25Similarity",
+    "k1": null,
+    "b": null
+  },
+  "semantic": null,
+  "vectorSearch": null
+}
+Created index: myfitnessindex-v2
+
+>>> Upload the fitness product documents to the fitness index in Azure AI Search.
+
+--- OUTBOUND REQUEST #3 ---
+> POST https://<search-service>.search.windows.net/indexes('myfitnessindex-v2')/docs/search.index?api-version=2026-04-01
+> User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json;odata.metadata=none
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 860
+> x-ms-client-request-id: <id>
+> api-key: <redacted>
+>
+{
+  "value": [
+    {
+      "@search.action": "upload",
+      "FitnessItemID": "1",
+      "Name": "Adjustable Dumbbell",
+      "Category": "Strength",
+      "Price": 59.99,
+      "Description": "A compact, adjustable weight for targeted muscle workouts. Price: $59.99."
+    },
+    {
+      "@search.action": "upload",
+      "FitnessItemID": "2",
+      "Name": "Yoga Mat",
+      "Category": "Flexibility",
+      "Price": 25.0,
+      "Description": "Non-slip mat designed for yoga, Pilates, and other exercises. Price: $25.00."
+    },
+    {
+      "@search.action": "upload",
+      "FitnessItemID": "3",
+      "Name": "Treadmill",
+      "Category": "Cardio",
+      "Price": 499.0,
+      "Description": "A sturdy treadmill with adjustable speed and incline settings. Price: $499.00."
+    },
+    {
+      "@search.action": "upload",
+      "FitnessItemID": "4",
+      "Name": "Resistance Bands",
+      "Category": "Strength",
+      "Price": 15.0,
+      "Description": "Set of colorful bands for light to moderate resistance workouts. Price: $15.00."
+    }
+  ]
+}
+
+--- OUTBOUND RESPONSE #3 ---
+< 200 OK
+< Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
+< Vary: Accept-Encoding
+< Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
+< Preference-Applied: odata.include-annotations="*"
+< OData-Version: 4.0
+< request-id: <id>
+< elapsed-time: 98
+< Date: Sun, 25 Oct 2026 17:33:43 GMT
+< Content-Length: 295
+< x-http-replay: 0003-POST-indexes--myfitnessindex-v2--_docs_search.index.json
+<
+{
+  "value": [
+    {
+      "key": "1",
+      "status": true,
+      "errorMessage": null,
+      "statusCode": 201
+    },
+    {
+      "key": "2",
+      "status": true,
+      "errorMessage": null,
+      "statusCode": 201
+    },
+    {
+      "key": "3",
+      "status": true,
+      "errorMessage": null,
+      "statusCode": 201
+    },
+    {
+      "key": "4",
+      "status": true,
+      "errorMessage": null,
+      "statusCode": 201
+    }
+  ]
+}
+Uploaded 4 products.
+
+>>> Search the fitness index in Azure AI Search for every document: new documents can take a moment to become searchable, so this repeats until all of them come back.
+
+--- OUTBOUND REQUEST #4 ---
+> POST https://<search-service>.search.windows.net/indexes('myfitnessindex-v2')/docs/search.post.search?api-version=2026-04-01
+> User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json;odata.metadata=none
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 26
+> x-ms-client-request-id: <id>
+> api-key: <redacted>
+>
+{
+  "search": "*",
+  "top": 10
+}
+
+--- OUTBOUND RESPONSE #4 ---
+< 200 OK
+< Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
+< Vary: Accept-Encoding
+< Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
+< Preference-Applied: odata.include-annotations="*"
+< OData-Version: 4.0
+< request-id: <id>
+< elapsed-time: 12
+< Date: Sun, 25 Oct 2026 17:33:43 GMT
+< Content-Length: 13
+< x-http-replay: 0004-POST-indexes--myfitnessindex-v2--_docs_search.post.search.json
+<
+{
+  "value": []
+}
+
+>>> Search the fitness index in Azure AI Search for every document: new documents can take a moment to become searchable, so this repeats until all of them come back.
+
+--- OUTBOUND REQUEST #5 ---
+> POST https://<search-service>.search.windows.net/indexes('myfitnessindex-v2')/docs/search.post.search?api-version=2026-04-01
+> User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json;odata.metadata=none
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 26
+> x-ms-client-request-id: <id>
+> api-key: <redacted>
+>
+{
+  "search": "*",
+  "top": 10
+}
+
+--- OUTBOUND RESPONSE #5 ---
+< 200 OK
+< Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
+< Vary: Accept-Encoding
+< Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
+< Preference-Applied: odata.include-annotations="*"
+< OData-Version: 4.0
+< request-id: <id>
+< elapsed-time: 11
+< Date: Sun, 25 Oct 2026 17:33:46 GMT
+< Content-Length: 836
+< x-http-replay: 0005-POST-indexes--myfitnessindex-v2--_docs_search.post.search.json
+<
+{
+  "value": [
+    {
+      "@search.score": 1.0,
+      "FitnessItemID": "1",
+      "Name": "Adjustable Dumbbell",
+      "Category": "Strength",
+      "Price": 59.99,
+      "Description": "A compact, adjustable weight for targeted muscle workouts. Price: $59.99."
+    },
+    {
+      "@search.score": 1.0,
+      "FitnessItemID": "2",
+      "Name": "Yoga Mat",
+      "Category": "Flexibility",
+      "Price": 25.0,
+      "Description": "Non-slip mat designed for yoga, Pilates, and other exercises. Price: $25.00."
+    },
+    {
+      "@search.score": 1.0,
+      "FitnessItemID": "3",
+      "Name": "Treadmill",
+      "Category": "Cardio",
+      "Price": 499.0,
+      "Description": "A sturdy treadmill with adjustable speed and incline settings. Price: $499.00."
+    },
+    {
+      "@search.score": 1.0,
+      "FitnessItemID": "4",
+      "Name": "Resistance Bands",
+      "Category": "Strength",
+      "Price": 15.0,
+      "Description": "Set of colorful bands for light to moderate resistance workouts. Price: $15.00."
+    }
+  ]
+}
+Index is searchable.
+
+>>> Find the Azure AI Search connection of the Foundry project.
+
+--- OUTBOUND REQUEST #6 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/connections?api-version=v1&connectionType=CognitiveSearch&defaultConnection=true
+> User-Agent: azsdk-python-ai-projects/2.8.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #6 ---
+< 200 OK
+< Content-Type: application/json; charset=utf-8
+< Date: Sun, 25 Oct 2026 17:33:47 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.037
+< apim-request-id: <id>
+< x-ms-region: East US 2
+< Content-Length: 810
+< x-http-replay: 0006-GET-api_projects_<project-name>_connections.json
+<
+{
+  "value": [
+    {
+      "name": "<search-service>",
+      "id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/<search-service>",
+      "type": "CognitiveSearch",
+      "target": "https://<search-service>.search.windows.net",
+      "isDefault": true,
+      "credentials": "<redacted>",
+      "metadata": {
+        "ApiType": "Azure",
+        "ResourceId": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Search/searchServices/<search-service>",
+        "location": "centralus",
+        "displayName": "<search-service>",
+        "ApiVersion": "2024-05-01-preview",
+        "DeploymentApiVersion": "2023-11-01"
+      }
+    }
+  ]
+}
+
+>>> Read the details of that Azure AI Search connection from the Foundry project.
+
+--- OUTBOUND REQUEST #7 ---
+> GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/connections/<search-service>?api-version=v1
+> User-Agent: azsdk-python-ai-projects/2.8.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+
+--- OUTBOUND RESPONSE #7 ---
+< 200 OK
+< Content-Type: application/json; charset=utf-8
+< Date: Sun, 25 Oct 2026 17:33:47 GMT
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Vary: Accept-Encoding
+< Request-Context: appId=cid-v1:<id>
+< x-ms-response-type: standard
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< azureml-served-by-cluster: vienna-eastus2-02
+< x-request-time: 0.025
+< apim-request-id: <id>
+< x-ms-region: East US 2
+< Content-Length: 797
+< x-http-replay: 0007-GET-api_projects_<project-name>_connections_ai-search-workshop.json
+<
+{
+  "name": "<search-service>",
+  "id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/<search-service>",
+  "type": "CognitiveSearch",
+  "target": "https://<search-service>.search.windows.net",
+  "isDefault": true,
+  "credentials": "<redacted>",
+  "metadata": {
+    "ApiType": "Azure",
+    "ResourceId": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Search/searchServices/<search-service>",
+    "location": "centralus",
+    "displayName": "<search-service>",
+    "ApiVersion": "2024-05-01-preview",
+    "DeploymentApiVersion": "2023-11-01"
+  }
+}
+Azure AI Search connection: <search-service>
+
+================================================================================
+STEP 2: AGENT ON gpt-4o-mini
+================================================================================
+
+>>> Create a version of the fitness search agent on the model gpt-4o-mini in Foundry Agent Service.
+
+--- OUTBOUND REQUEST #8 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/agents/fitness-agent-search-v2/versions?api-version=v1
+> User-Agent: azsdk-python-ai-projects/2.8.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 1784
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+>
+{
+  "definition": {
+    "model": "gpt-4o-mini",
+    "instructions": "You are a Fitness Shopping Assistant. You help users find fitness equipment in the store's catalog.\n\nAlways look products up with the Azure AI Search tool before answering.\nWhen the user gives a budget or price limit, call find_items_under to get the exact products within that price;\ndo not compare prices yourself.\nRecommend only products returned by the search or by find_items_under, and state the price of each one.\nDo not invent products, prices, categories, or product details that are not in the search index.\nIf nothing matches, say so clearly and mention the closest option.\nAny health or fitness information you provide is for general educational purposes only and is not medical advice.",
+    "tools": [
+      {
+        "azure_ai_search": {
+          "indexes": [
+            {
+              "project_connection_id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/<search-service>",
+              "index_name": "myfitnessindex-v2",
+              "query_type": "simple",
+              "top_k": 5
+            }
+          ]
+        },
+        "type": "azure_ai_search"
+      },
+      {
+        "name": "find_items_under",
+        "description": "Find fitness products priced at or below max_price, optionally in one category (Strength, Flexibility or Cardio); use it whenever the user gives a budget or price limit.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "max_price": {
+              "type": "number",
+              "description": "Maximum price in US dollars."
+            },
+            "category": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Product category (Strength, Flexibility or Cardio), or null for all categories."
+            }
+          },
+          "required": [
+            "max_price",
+            "category"
+          ],
+          "additionalProperties": false
+        },
+        "strict": true,
+        "type": "function"
+      }
+    ],
+    "kind": "prompt"
+  }
+}
+
+--- OUTBOUND RESPONSE #8 ---
+< 200 OK
+< Content-Type: application/json; charset=utf-8
+< Date: Sun, 25 Oct 2026 17:33:53 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-request-id: 2aa251cdc41ffdf5b58173956e047d25
+< api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
+< azureml-served-by-cluster: hyena-eastus2-01
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< Content-Length: 2419
+< x-http-replay: 0008-POST-api_projects_<project-name>_agents_fitness-agent-search-v2.json
+<
+{
+  "metadata": {},
+  "object": "agent.version",
+  "id": "fitness-agent-search-v2:1",
+  "name": "fitness-agent-search-v2",
+  "version": "1",
+  "description": "",
+  "created_at": 1792949634,
+  "definition": {
+    "kind": "prompt",
+    "model": "gpt-4o-mini",
+    "instructions": "You are a Fitness Shopping Assistant. You help users find fitness equipment in the store's catalog.\n\nAlways look products up with the Azure AI Search tool before answering.\nWhen the user gives a budget or price limit, call find_items_under to get the exact products within that price;\ndo not compare prices yourself.\nRecommend only products returned by the search or by find_items_under, and state the price of each one.\nDo not invent products, prices, categories, or product details that are not in the search index.\nIf nothing matches, say so clearly and mention the closest option.\nAny health or fitness information you provide is for general educational purposes only and is not medical advice.",
+    "tools": [
+      {
+        "type": "azure_ai_search",
+        "azure_ai_search": {
+          "indexes": [
+            {
+              "project_connection_id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/<search-service>",
+              "index_name": "myfitnessindex-v2",
+              "query_type": "simple",
+              "top_k": 5
+            }
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "find_items_under",
+        "description": "Find fitness products priced at or below max_price, optionally in one category (Strength, Flexibility or Cardio); use it whenever the user gives a budget or price limit.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "max_price": {
+              "type": "number",
+              "description": "Maximum price in US dollars."
+            },
+            "category": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Product category (Strength, Flexibility or Cardio), or null for all categories."
+            }
+          },
+          "required": [
+            "max_price",
+            "category"
+          ],
+          "additionalProperties": false
+        },
+        "strict": true
+      }
+    ]
+  },
+  "draft": false,
+  "status": "active",
+  "instance_identity": {
+    "principal_id": "<id>",
+    "client_id": "<id>"
+  },
+  "blueprint": {
+    "principal_id": "<id>",
+    "client_id": "<id>"
+  },
+  "blueprint_reference": {
+    "type": "ManagedAgentIdentityBlueprint",
+    "blueprint_id": "fitness-agent-search-v2-b896f"
+  },
+  "agent_guid": "<id>"
+}
+Agent created: name=fitness-agent-search-v2 version=1 model=gpt-4o-mini
+
+User: Which items are good for strength training?
+
+>>> Send the question to the fitness search agent through the Foundry project's Responses API.
+
+--- OUTBOUND REQUEST #9 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: AIProjectClient OpenAI/Python 3.33.0
+> x-stainless-lang: python
+> x-stainless-package-version: 3.33.0
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 133
+>
+{
+  "input": "Which items are good for strength training?",
+  "agent_reference": {
+    "name": "fitness-agent-search-v2",
+    "type": "agent_reference"
+  }
+}
+
+--- OUTBOUND RESPONSE #9 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:33:56 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Vary: Origin,Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-request-id: <id>
+< x-ms-aoai-configured-data-retention-days: 30
+< skip-error-remapping: true
+< openai-client-partition-id: a64606f4de40420bae29a4242f286977741f1575-f854-43f4-8a32-013a1b62458a
+< azureml-internal-forward-count: 1
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 198843
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: True
+< azureai-fe-offer-type: paygo
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-project: <id>
+< openai-processing-ms: 2389
+< azureml-served-by-cluster: hyena-eastus2-02,hyena-eastus2-03
+< api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< Content-Length: 6422
+< x-http-replay: 0009-POST-api_projects_<project-name>_openai_v1_responses.json
+<
+{
+  "metadata": {},
+  "top_logprobs": 0,
+  "temperature": 1,
+  "top_p": 1,
+  "service_tier": "default",
+  "prompt_cache_retention": "in_memory",
+  "model": "gpt-4o-mini",
+  "reasoning": {
+    "context": null
+  },
+  "background": false,
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "tools": [
+    {
+      "type": "azure_ai_search",
+      "azure_ai_search": {
+        "indexes": [
+          {
+            "project_connection_id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/<search-service>",
+            "index_name": "myfitnessindex-v2",
+            "query_type": "simple",
+            "top_k": 5
+          }
+        ]
+      }
+    },
+    {
+      "type": "function",
+      "output_schema": null,
+      "name": "find_items_under",
+      "description": "Find fitness products priced at or below max_price, optionally in one category (Strength, Flexibility or Cardio); use it whenever the user gives a budget or price limit.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "max_price": {
+            "type": "number",
+            "description": "Maximum price in US dollars."
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Product category (Strength, Flexibility or Cardio), or null for all categories."
+          }
+        },
+        "required": [
+          "max_price",
+          "category"
+        ],
+        "additionalProperties": false
+      },
+      "strict": true
+    }
+  ],
+  "tool_choice": "auto",
+  "truncation": "disabled",
+  "id": "resp_03a8f1045c83b5fe006ade3d854d7481938931802338e5bcc7",
+  "object": "response",
+  "status": "completed",
+  "created_at": 1792949637,
+  "completed_at": 1792949639,
+  "error": null,
+  "incomplete_details": null,
+  "output": [
+    {
+      "type": "azure_ai_search_call",
+      "id": "fc_03a8f1045c83b5fe006ade3d85d3c481938e67098be28c0804",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "fitness-agent-search-v2",
+        "version": "1"
+      },
+      "response_id": "resp_03a8f1045c83b5fe006ade3d854d7481938931802338e5bcc7",
+      "call_id": "call_a3ca8c67bd6d4d30be6caeafef834a69",
+      "arguments": "{\"query\":\"strength training equipment\"}",
+      "status": "completed"
+    },
+    {
+      "type": "azure_ai_search_call_output",
+      "id": "fco_03a8f1045c83b5fe006ade3d8663308193951281f206cc9bcf",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "fitness-agent-search-v2",
+        "version": "1"
+      },
+      "response_id": "resp_03a8f1045c83b5fe006ade3d854d7481938931802338e5bcc7",
+      "call_id": "call_a3ca8c67bd6d4d30be6caeafef834a69",
+      "output": "{\n        \"documents\": [\n          {\n            \"id\": \"1\",\n            \"content...(1200 characters)",
+      "status": "completed"
+    },
+    {
+      "type": "message",
+      "id": "msg_03a8f1045c83b5fe006ade3d86a74c8193a5c42ca2ebb1e671",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "fitness-agent-search-v2",
+        "version": "1"
+      },
+      "response_id": "resp_03a8f1045c83b5fe006ade3d854d7481938931802338e5bcc7",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "Here are some good items for strength training:\n\n1. **Adjustable Dumbbell**\n   - Price: $59.99\n   - A compact, adjustable weight ideal for targeted muscle workouts.\n\n2. **Resistance Bands**\n   - Price: $15.00\n   - A set of colorful bands for light to moderate resistance workouts.\n\nIf you're looking for something specific or have a budget in mind, let me know!",
+          "annotations": [],
+          "logprobs": []
+        }
+      ],
+      "status": "completed"
+    }
+  ],
+  "instructions": "You are a Fitness Shopping Assistant. You help users find fitness equipment in the store's catalog.\n\nAlways look products up with the Azure AI Search tool before answering.\nWhen the user gives a budget or price limit, call find_items_under to get the exact products within that price;\ndo not compare prices yourself.\nRecommend only products returned by the search or by find_items_under, and state the price of each one.\nDo not invent products, prices, categories, or product details that are not in the search index.\nIf nothing matches, say so clearly and mention the closest option.\nAny health or fitness information you provide is for general educational purposes only and is not medical advice.",
+  "usage": {
+    "input_tokens": 941,
+    "input_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0
+    },
+    "output_tokens": 106,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 1047
+  },
+  "parallel_tool_calls": true,
+  "agent_reference": {
+    "type": "agent_reference",
+    "name": "fitness-agent-search-v2",
+    "version": "1"
+  },
+  "content_filters": [
+    {
+      "blocked": false,
+      "source_type": "prompt",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 817,
+        "check_offset": 0
+      }
+    },
+    {
+      "blocked": false,
+      "source_type": "completion",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_text": {
+          "filtered": false,
+          "detected": false
+        },
+        "protected_material_code": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 361,
+        "check_offset": 0
+      }
+    }
+  ]
+}
+Response (status completed):
+  azure_ai_search_call  status=completed
+    arguments: {"query":"strength training equipment"}
+  azure_ai_search_call_output  status=completed
+    output: {
+        "documents": [
+          {
+            "id": "1",
+            "content": "Adjustable Dumbbell\nStrength\nA compact, adjustable weight for targeted muscle workouts. Price: $59.99.\n",
+            "filepath": "",
+            "title": "",
+            "url": "https://<search-service>.search.windows.net/",
+            "score": 0.6931472,
+            "knowledgeSourceIndex": 0
+   ...
+  message (answer, printed below)
+  (tokens: input 941, output 106, of which reasoning 0)
+
+Agent: Here are some good items for strength training:
+
+1. **Adjustable Dumbbell**
+   - Price: $59.99
+   - A compact, adjustable weight ideal for targeted muscle workouts.
+
+2. **Resistance Bands**
+   - Price: $15.00
+   - A set of colorful bands for light to moderate resistance workouts.
+
+If you're looking for something specific or have a budget in mind, let me know!
+
+User: I need something for cardio under $300, any suggestions?
+
+>>> Send the question to the fitness search agent through the Foundry project's Responses API.
+
+--- OUTBOUND REQUEST #10 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: AIProjectClient OpenAI/Python 3.33.0
+> x-stainless-lang: python
+> x-stainless-package-version: 3.33.0
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 146
+>
+{
+  "input": "I need something for cardio under $300, any suggestions?",
+  "agent_reference": {
+    "name": "fitness-agent-search-v2",
+    "type": "agent_reference"
+  }
+}
+
+--- OUTBOUND RESPONSE #10 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:33:59 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Vary: Origin,Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-request-id: <id>
+< x-ms-aoai-configured-data-retention-days: 30
+< skip-error-remapping: true
+< openai-client-partition-id: a64606f4de40420bae29a4242f2869775589ca09-6f5c-4c82-a1a2-a03383af10c5
+< azureml-internal-forward-count: 1
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 199812
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-project: <id>
+< openai-processing-ms: 1026
+< azureml-served-by-cluster: hyena-eastus2-02,hyena-eastus2-03
+< api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< Content-Length: 4020
+< x-http-replay: 0010-POST-api_projects_<project-name>_openai_v1_responses.json
+<
+{
+  "metadata": {},
+  "top_logprobs": 0,
+  "temperature": 1,
+  "top_p": 1,
+  "service_tier": "default",
+  "prompt_cache_retention": "in_memory",
+  "model": "gpt-4o-mini",
+  "reasoning": {
+    "context": null
+  },
+  "background": false,
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "tools": [
+    {
+      "type": "azure_ai_search",
+      "azure_ai_search": {
+        "indexes": [
+          {
+            "project_connection_id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/<search-service>",
+            "index_name": "myfitnessindex-v2",
+            "query_type": "simple",
+            "top_k": 5
+          }
+        ]
+      }
+    },
+    {
+      "type": "function",
+      "output_schema": null,
+      "name": "find_items_under",
+      "description": "Find fitness products priced at or below max_price, optionally in one category (Strength, Flexibility or Cardio); use it whenever the user gives a budget or price limit.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "max_price": {
+            "type": "number",
+            "description": "Maximum price in US dollars."
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Product category (Strength, Flexibility or Cardio), or null for all categories."
+          }
+        },
+        "required": [
+          "max_price",
+          "category"
+        ],
+        "additionalProperties": false
+      },
+      "strict": true
+    }
+  ],
+  "tool_choice": "auto",
+  "truncation": "disabled",
+  "id": "resp_049a2ed7106f7850006ade3d884ab0819490fc6bc1ba1dd21c",
+  "object": "response",
+  "status": "completed",
+  "created_at": 1792949640,
+  "completed_at": 1792949641,
+  "error": null,
+  "incomplete_details": null,
+  "output": [
+    {
+      "type": "function_call",
+      "id": "fc_049a2ed7106f7850006ade3d88ce7c8194aa20d2af26bf5c29",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "fitness-agent-search-v2",
+        "version": "1"
+      },
+      "response_id": "resp_049a2ed7106f7850006ade3d884ab0819490fc6bc1ba1dd21c",
+      "call_id": "call_mQPWXazcSLj0oW05jUjowlcE",
+      "name": "find_items_under",
+      "arguments": "{\"max_price\":300,\"category\":\"Cardio\"}",
+      "status": "completed"
+    }
+  ],
+  "instructions": "You are a Fitness Shopping Assistant. You help users find fitness equipment in the store's catalog.\n\nAlways look products up with the Azure AI Search tool before answering.\nWhen the user gives a budget or price limit, call find_items_under to get the exact products within that price;\ndo not compare prices yourself.\nRecommend only products returned by the search or by find_items_under, and state the price of each one.\nDo not invent products, prices, categories, or product details that are not in the search index.\nIf nothing matches, say so clearly and mention the closest option.\nAny health or fitness information you provide is for general educational purposes only and is not medical advice.",
+  "usage": {
+    "input_tokens": 806,
+    "input_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0
+    },
+    "output_tokens": 22,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 828
+  },
+  "parallel_tool_calls": true,
+  "agent_reference": {
+    "type": "agent_reference",
+    "name": "fitness-agent-search-v2",
+    "version": "1"
+  },
+  "content_filters": [
+    {
+      "blocked": false,
+      "source_type": "prompt",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 830,
+        "check_offset": 0
+      }
+    },
+    {
+      "blocked": false,
+      "source_type": "completion",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_text": {
+          "filtered": false,
+          "detected": false
+        },
+        "protected_material_code": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 37,
+        "check_offset": 0
+      }
+    }
+  ]
+}
+Response (status completed):
+  function_call  find_items_under({"max_price":300,"category":"Cardio"})
+  (tokens: input 806, output 22, of which reasoning 0)
+
+>>> Search the fitness index in Azure AI Search for products, for the find_items_under function.
+
+--- OUTBOUND REQUEST #11 ---
+> POST https://<search-service>.search.windows.net/indexes('myfitnessindex-v2')/docs/search.post.search?api-version=2026-04-01
+> User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json;odata.metadata=none
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 134
+> x-ms-client-request-id: <id>
+> api-key: <redacted>
+>
+{
+  "search": "*",
+  "filter": "Price le 300 and Category eq 'Cardio'",
+  "orderby": "Price asc",
+  "select": "Name,Category,Price",
+  "top": 10
+}
+
+--- OUTBOUND RESPONSE #11 ---
+< 200 OK
+< Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
+< Vary: Accept-Encoding
+< Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
+< Preference-Applied: odata.include-annotations="*"
+< OData-Version: 4.0
+< request-id: <id>
+< elapsed-time: 44
+< Date: Sun, 25 Oct 2026 17:34:00 GMT
+< Content-Length: 13
+< x-http-replay: 0011-POST-indexes--myfitnessindex-v2--_docs_search.post.search.json
+<
+{
+  "value": []
+}
+
+>>> Search the fitness index in Azure AI Search for products, for the find_items_under function.
+
+--- OUTBOUND REQUEST #12 ---
+> POST https://<search-service>.search.windows.net/indexes('myfitnessindex-v2')/docs/search.post.search?api-version=2026-04-01
+> User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json;odata.metadata=none
+> Connection: keep-alive
+> Content-Type: application/json
+> Content-Length: 116
+> x-ms-client-request-id: <id>
+> api-key: <redacted>
+>
+{
+  "search": "*",
+  "filter": "Category eq 'Cardio'",
+  "orderby": "Price asc",
+  "select": "Name,Category,Price",
+  "top": 1
+}
+
+--- OUTBOUND RESPONSE #12 ---
+< 200 OK
+< Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
+< Vary: Accept-Encoding
+< Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
+< Preference-Applied: odata.include-annotations="*"
+< OData-Version: 4.0
+< request-id: <id>
+< elapsed-time: 9
+< Date: Sun, 25 Oct 2026 17:34:00 GMT
+< Content-Length: 94
+< x-http-replay: 0012-POST-indexes--myfitnessindex-v2--_docs_search.post.search.json
+<
+{
+  "value": [
+    {
+      "@search.score": 1.0,
+      "Name": "Treadmill",
+      "Category": "Cardio",
+      "Price": 499.0
+    }
+  ]
+}
+  -> ran find_items_under here: 'No products cost $300.00 or less in category Cardio. Cheapest product in Cardio: Treadmill (Cardio): $499.00'
+
+>>> Send the find_items_under function's result back through the Foundry project's Responses API.
+
+--- OUTBOUND REQUEST #13 ---
+> POST https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/openai/v1/responses
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> authorization: Bearer <redacted>
+> accept: application/json
+> content-type: application/json
+> user-agent: AIProjectClient OpenAI/Python 3.33.0
+> x-stainless-lang: python
+> x-stainless-package-version: 3.33.0
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 364
+>
+{
+  "input": [
+    {
+      "type": "function_call_output",
+      "call_id": "call_mQPWXazcSLj0oW05jUjowlcE",
+      "output": "No products cost $300.00 or less in category Cardio. Cheapest product in Cardio: Treadmill (Cardio): $499.00"
+    }
+  ],
+  "previous_response_id": "resp_049a2ed7106f7850006ade3d884ab0819490fc6bc1ba1dd21c",
+  "agent_reference": {
+    "name": "fitness-agent-search-v2",
+    "type": "agent_reference"
+  }
+}
+
+--- OUTBOUND RESPONSE #13 ---
+< 200 OK
+< Content-Type: application/json
+< Date: Sun, 25 Oct 2026 17:34:01 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Vary: Origin,Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-request-id: <id>
+< x-ms-aoai-configured-data-retention-days: 30
+< skip-error-remapping: true
+< openai-client-partition-id: a64606f4de40420bae29a4242f286977ff48e881-c3b8-4480-b1f7-6499f3286f5b
+< azureml-internal-forward-count: 1
+< x-ms-is-spilled-over: false
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-remaining-tokens: 199776
+< x-ratelimit-reset-tokens: 0
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-renewalperiod-tokens: 60
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< openai-version: 2020-10-01
+< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-project: <id>
+< openai-processing-ms: 1056
+< azureml-served-by-cluster: hyena-eastus2-01,hyena-eastus2-03
+< api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< Content-Length: 4258
+< x-http-replay: 0013-POST-api_projects_<project-name>_openai_v1_responses.json
+<
+{
+  "metadata": {},
+  "top_logprobs": 0,
+  "temperature": 1,
+  "top_p": 1,
+  "service_tier": "default",
+  "prompt_cache_retention": "in_memory",
+  "previous_response_id": "resp_049a2ed7106f7850006ade3d884ab0819490fc6bc1ba1dd21c",
+  "model": "gpt-4o-mini",
+  "reasoning": {
+    "context": null
+  },
+  "background": false,
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "tools": [
+    {
+      "type": "azure_ai_search",
+      "azure_ai_search": {
+        "indexes": [
+          {
+            "project_connection_id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.CognitiveServices/accounts/<resource-name>/projects/<project-name>/connections/<search-service>",
+            "index_name": "myfitnessindex-v2",
+            "query_type": "simple",
+            "top_k": 5
+          }
+        ]
+      }
+    },
+    {
+      "type": "function",
+      "output_schema": null,
+      "name": "find_items_under",
+      "description": "Find fitness products priced at or below max_price, optionally in one category (Strength, Flexibility or Cardio); use it whenever the user gives a budget or price limit.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "max_price": {
+            "type": "number",
+            "description": "Maximum price in US dollars."
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Product category (Strength, Flexibility or Cardio), or null for all categories."
+          }
+        },
+        "required": [
+          "max_price",
+          "category"
+        ],
+        "additionalProperties": false
+      },
+      "strict": true
+    }
+  ],
+  "tool_choice": "auto",
+  "truncation": "disabled",
+  "id": "resp_049a2ed7106f7850006ade3d8a1f1081948aabe5aa6f30347e",
+  "object": "response",
+  "status": "completed",
+  "created_at": 1792949642,
+  "completed_at": 1792949642,
+  "error": null,
+  "incomplete_details": null,
+  "output": [
+    {
+      "type": "message",
+      "id": "msg_049a2ed7106f7850006ade3d8aa05881949a697f8bdd7f28a3",
+      "agent_reference": {
+        "type": "agent_reference",
+        "name": "fitness-agent-search-v2",
+        "version": "1"
+      },
+      "response_id": "resp_049a2ed7106f7850006ade3d8a1f1081948aabe5aa6f30347e",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "There are no cardio products available for $300 or less. The cheapest option in the cardio category is a treadmill priced at $499. If you're open to increasing your budget, let me know!",
+          "annotations": [],
+          "logprobs": []
+        }
+      ],
+      "status": "completed"
+    }
+  ],
+  "instructions": "You are a Fitness Shopping Assistant. You help users find fitness equipment in the store's catalog.\n\nAlways look products up with the Azure AI Search tool before answering.\nWhen the user gives a budget or price limit, call find_items_under to get the exact products within that price;\ndo not compare prices yourself.\nRecommend only products returned by the search or by find_items_under, and state the price of each one.\nDo not invent products, prices, categories, or product details that are not in the search index.\nIf nothing matches, say so clearly and mention the closest option.\nAny health or fitness information you provide is for general educational purposes only and is not medical advice.",
+  "usage": {
+    "input_tokens": 868,
+    "input_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0
+    },
+    "output_tokens": 41,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 909
+  },
+  "parallel_tool_calls": true,
+  "agent_reference": {
+    "type": "agent_reference",
+    "name": "fitness-agent-search-v2",
+    "version": "1"
+  },
+  "content_filters": [
+    {
+      "blocked": false,
+      "source_type": "prompt",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 971,
+        "check_offset": 0
+      }
+    },
+    {
+      "blocked": false,
+      "source_type": "completion",
+      "content_filter_results": {
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_text": {
+          "filtered": false,
+          "detected": false
+        },
+        "protected_material_code": {
+          "filtered": false,
+          "detected": false
+        }
+      },
+      "content_filter_raw": [],
+      "content_filter_offsets": {
+        "start_offset": 0,
+        "end_offset": 185,
+        "check_offset": 0
+      }
+    }
+  ]
+}
+Response (status completed):
+  message (answer, printed below)
+  (tokens: input 868, output 41, of which reasoning 0)
+
+Agent: There are no cardio products available for $300 or less. The cheapest option in the cardio category is a treadmill priced at $499. If you're open to increasing your budget, let me know!
+
+>>> Delete this version of the fitness search agent from Foundry Agent Service.
+
+--- OUTBOUND REQUEST #14 ---
+> DELETE https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/agents/fitness-agent-search-v2/versions/1?api-version=v1
+> User-Agent: azsdk-python-ai-projects/2.8.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> Authorization: Bearer <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #14 ---
+< 200 OK
+< Content-Type: application/json; charset=utf-8
+< Date: Sun, 25 Oct 2026 17:34:05 GMT
+< Server: istio-envoy
+< Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Vary: Accept-Encoding
+< request-context: appId=
+< x-ms-response-type: standard
+< x-request-id: baa83ecfe29a89d132f2a0a3ff1e7b21
+< api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
+< azureml-served-by-cluster: hyena-eastus2-01
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< Content-Length: 103
+< x-http-replay: 0014-DELETE-api_projects_<project-name>_agents_fitness-agent-search-v2.json
+<
+{
+  "object": "agent.version.deleted",
+  "name": "fitness-agent-search-v2",
+  "version": "1",
+  "deleted": true
+}
+
+Agent version deleted: fitness-agent-search-v2 v1
+
+================================================================================
+CLEANUP
+================================================================================
+
+>>> List the indexes in Azure AI Search, to see whether the fitness index is there to delete.
+
+HTTP #15 GET https://<search-service>.search.windows.net/indexes?api-version=2026-04-01 -> 200 OK
+
+>>> Delete the fitness index from Azure AI Search.
+
+--- OUTBOUND REQUEST #16 ---
+> DELETE https://<search-service>.search.windows.net/indexes('myfitnessindex-v2')?api-version=2026-04-01
+> User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
+> Accept-Encoding: gzip, deflate
+> Accept: application/json;odata.metadata=minimal
+> Connection: keep-alive
+> x-ms-client-request-id: <id>
+> api-key: <redacted>
+> Content-Length: 0
+
+--- OUTBOUND RESPONSE #16 ---
+< 204 No Content
+< Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
+< Preference-Applied: odata.include-annotations="*"
+< request-id: <id>
+< elapsed-time: 507
+< Date: Sun, 25 Oct 2026 17:34:05 GMT
+< Content-Length: 0
+< x-http-replay: 0016-DELETE-indexes--myfitnessindex-v2--.json
+Deleted index: myfitnessindex-v2
+
+================================================================================
+COMPARISON (both questions per model)
+================================================================================
+model          searches functions   input  output reasoning    time      cost
+-----------------------------------------------------------------------------
+gpt-4o-mini           1         1    2615     169         0    0.3s   $0.0005
+Prices: list prices per 1M tokens (see PRICES), Global deployment in East US 2, checked 2026-10-23.
+Checks:
+  PASS  gpt-4o-mini: both questions answered
+  PASS  gpt-4o-mini: question 1 used the search tool
+  PASS  gpt-4o-mini: question 2 called find_items_under(max_price=300)

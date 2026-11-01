@@ -122,6 +122,7 @@ def embed_image(endpoint, api_version, token, model, image_bytes):
     return its vector."""
     data_url = f"data:image/png;base64,{base64.b64encode(image_bytes).decode()}"
     body = {"model": model, "input": [{"image": data_url}], "input_type": "document"}
+    print(f"\n>>> Ask the embedding model {model} in Azure AI Foundry for the vector of the image.")
     result = post_embeddings(f"{endpoint}/models/images/embeddings", api_version, token, body)
     image_vector = result["data"][0]["embedding"]
     show_vector("image", image_vector)
@@ -133,6 +134,9 @@ def embed_captions(endpoint, api_version, token, model):
     """Step 2: embed the captions with input_type query; return their vectors in the
     order of CAPTIONS."""
     body = {"model": model, "input": CAPTIONS, "input_type": "query"}
+    print(
+        f"\n>>> Ask the embedding model {model} in Azure AI Foundry for the vectors of all the captions, in one call."
+    )
     result = post_embeddings(f"{endpoint}/models/embeddings", api_version, token, body)
     # Each item carries the index of its input; sorting by it lines the vectors up with
     # CAPTIONS.

@@ -73,6 +73,22 @@ EVALUATOR_CONFIG = {
     "resp_len": {"column_mapping": {"response": "${data.response}"}},
 }
 
+# evaluate() makes all its calls inside the library, some of them at the same time, so
+# no print can go right before them; http_log prints each description before a matching
+# call that it logs in full.
+CALL_DESCRIPTIONS = {
+    "POST */sync_evals:run*": "evaluate(): the violence evaluator sends one row to the Foundry safety evaluation "
+    "service.",
+    "POST */chat/completions*": "evaluate(): the relevance or groundedness evaluator asks the Azure OpenAI judge "
+    "model to score one row.",
+    "POST */evaluationResults/*": "evaluate(): ask the Foundry project where to upload the results file.",
+    "PUT *instance_results.jsonl*": "evaluate(): upload the results file to the Foundry project's Azure Storage.",
+    "PATCH */evaluationResults/*": "evaluate(): register the uploaded results file in the Foundry project.",
+    "POST */evaluations/runs:upload*": "evaluate(): create the evaluation run record in the Foundry project.",
+    "PATCH */evaluations/runs:updateUpload/*": "evaluate(): attach the results to the evaluation run record in the "
+    "Foundry project and mark it finished.",
+}
+
 
 def print_section(title):
     print()
@@ -166,6 +182,10 @@ def run_evaluation(data_path, evaluators, project_endpoint, output_dir):
     """Score every row with every evaluator, log the results to the Foundry project and
     save them as JSON."""
     results_path = output_dir / "evaluation_results.json"
+    print(
+        "\n>>> Run evaluate(), which makes several web service calls of its own, some at the same time: each is "
+        "described just before it in this log."
+    )
     result = evaluate(
         data=str(data_path),
         evaluators=evaluators,
@@ -214,5 +234,5 @@ def main():
 
 
 if __name__ == "__main__":
-    http_log.enable()
+    http_log.enable(call_descriptions=CALL_DESCRIPTIONS)
     main()

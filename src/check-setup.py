@@ -118,7 +118,9 @@ def check_project(checks, credential):
     print(f"  Project endpoint: {endpoint}")
     try:
         with AIProjectClient(endpoint=endpoint, credential=credential) as project_client:
+            print("\n>>> List the model deployments of the Foundry project.")
             deployments = list(project_client.deployments.list())
+            print("\n>>> List the connections of the Foundry project.")
             connections = list(project_client.connections.list())
     except Exception as exc:
         print(f"  Could not read the project: {exc}")
@@ -166,6 +168,7 @@ def check_search(checks):
     search_endpoint, search_key = os.getenv("AZURE_AI_SEARCH_ENDPOINT"), os.getenv("AZURE_AI_SEARCH_API_KEY")
     if search_endpoint and search_key:
         try:
+            print("\n>>> List the index names in Azure AI Search, which shows whether it accepts the key.")
             names = list(SearchIndexClient(search_endpoint, AzureKeyCredential(search_key)).list_index_names())
             print(f"  Key works; {len(names)} index(es): {', '.join(names) or '(none)'}")
             checks.append(("PASS", "Azure AI Search"))

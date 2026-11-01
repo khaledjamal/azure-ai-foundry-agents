@@ -84,6 +84,7 @@ def print_connection(project_endpoint, openai_client, api_version):
 
 
 def chat(openai_client, model, system_prompt, user_input):
+    print(f"\n>>> Ask the Azure OpenAI chat model {model} for an answer, with the client the Foundry project gave us.")
     response = openai_client.chat.completions.create(
         model=model,
         messages=[

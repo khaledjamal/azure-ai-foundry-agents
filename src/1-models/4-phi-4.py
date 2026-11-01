@@ -117,6 +117,7 @@ def cost(model, prompt_tokens, completion_tokens):
 def ask(openai_client, model, system_prompt, question, reasoning):
     if reasoning:
         system_prompt = f"{REASONING_SYSTEM_PROMPT}\n\n{system_prompt}"
+    print(f"\n>>> Ask the model {model} in Azure AI Foundry to answer this prompt.")
     start = time.perf_counter()
     response = openai_client.chat.completions.create(
         model=model,

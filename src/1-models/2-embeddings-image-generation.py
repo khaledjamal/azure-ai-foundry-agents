@@ -96,6 +96,7 @@ def generate_image(openai_client, args):
     print(f"Model deployment: {args.model}")
     print(f"Prompt: {args.prompt}")
     print(f"Size: {args.size}, quality: {args.quality}")
+    print(f"\n>>> Ask the image model {args.model} in Azure AI Foundry to generate the image from the prompt.")
     start = time.perf_counter()
     result = openai_client.images.generate(
         model=args.model, prompt=args.prompt, size=args.size, quality=args.quality, output_format="png", n=1

@@ -101,6 +101,7 @@ def pace_is_correct(answer):
 def ask(openai_client, model, system_prompt, question, reasoning_effort):
     messages = [{"role": "system", "content": system_prompt}] if system_prompt else []
     messages.append({"role": "user", "content": question})
+    print(f"\n>>> Ask the model {model} in Azure AI Foundry to answer this prompt (reasoning: {reasoning_effort}).")
     start = time.perf_counter()
     response = openai_client.chat.completions.create(
         model=model,

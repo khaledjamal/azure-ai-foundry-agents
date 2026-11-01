@@ -10,9 +10,9 @@ Like Microsoft's notebook, it uses the classic agents API.
 
 What it does:
 1. Creates a health advisor agent.
-2. Asks two questions on the same conversation thread, so the service keeps the
-   conversation history instead of the script resending it. It checks that each run
-   really completed and exits with an error if one didn't.
+2. Asks two questions on the same conversation thread, so Foundry Agent Service keeps
+   the conversation history instead of the script resending it. It checks that each
+   run really completed and exits with an error if one didn't.
 3. Prints the conversation.
 4. Deletes the thread and the agent.
 
@@ -52,6 +52,13 @@ QUESTIONS = [
     "Can you give me a balanced meal plan for someone who exercises 3x a week?",
 ]
 
+# Calls made inside one SDK line or loop, where no print can go right before them;
+# http_log prints each description before a matching call that it logs in full.
+CALL_DESCRIPTIONS = {
+    "GET */threads/*/runs/*": "Check the agent run's status in Foundry Agent Service; this first check is logged in full.",
+    "GET */messages?*after=*": "Ask Foundry Agent Service for the next page of the conversation thread's messages.",
+}
+
 
 def print_section(title):
     print()
@@ -83,7 +90,12 @@ def get_project_endpoint():
 
 def ask(project_client, thread_id, agent_id, question):
     print(f"User: {question}")
+    print("\n>>> Add the user's question to the conversation thread in Foundry Agent Service.")
     project_client.agents.messages.create(thread_id=thread_id, role="user", content=question)
+    print(
+        "\n>>> Start a run, in which the health advisor agent reads the conversation thread and answers, then check "
+        "the run's status until it ends. The first check is logged in full, later ones as one `HTTP #n GET` line."
+    )
     run = project_client.agents.runs.create_and_process(thread_id=thread_id, agent_id=agent_id)
     print(f"Run status: {run.status}")
     if run.usage:
@@ -94,6 +106,10 @@ def ask(project_client, thread_id, agent_id, question):
 
 
 def print_conversation(project_client, thread_id):
+    print(
+        "\n>>> Read the conversation thread's messages from Foundry Agent Service. The `for` loop in "
+        "print_conversation() makes these calls, not its list() line: one call per page, and the last page is empty."
+    )
     messages = project_client.agents.messages.list(thread_id=thread_id, order=ListSortOrder.ASCENDING)
     for message in messages:
         for text_message in message.text_messages:
@@ -110,6 +126,7 @@ def main():
     print(f"Model deployment:  {model}")
 
     with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project_client:
+        print("\n>>> Create the health advisor agent in Foundry Agent Service.")
         agent = project_client.agents.create_agent(
             model=model,
             name=AGENT_NAME,
@@ -120,6 +137,7 @@ def main():
         thread = None
         failed = []
         try:
+            print("\n>>> Create an empty conversation thread; Foundry Agent Service keeps the conversation history.")
             thread = project_client.agents.threads.create()
             print(f"Created thread: {thread.id}")
 
@@ -136,8 +154,10 @@ def main():
         finally:
             print_section("Cleanup")
             if thread:
+                print("\n>>> Delete the conversation thread from Foundry Agent Service.")
                 project_client.agents.threads.delete(thread.id)
                 print(f"Deleted thread: {thread.id}")
+            print("\n>>> Delete the health advisor agent from Foundry Agent Service.")
             project_client.agents.delete_agent(agent.id)
             print(f"Deleted agent: {agent.id}")
 
@@ -148,5 +168,5 @@ def main():
 
 
 if __name__ == "__main__":
-    http_log.enable()
+    http_log.enable(call_descriptions=CALL_DESCRIPTIONS)
     main()

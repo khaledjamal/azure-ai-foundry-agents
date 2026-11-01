@@ -115,29 +115,29 @@ Microsoft's original notebook, what each script cleans up and the generated imag
 
 | Lab | What it shows | Sample output |
 |---|---|---|
-| [Setup check](src/check-setup.py) | read-only check of settings, sign-in, deployments and connections; no model call | [output](sample-output/check-setup.py-output-20261026-202245.txt) |
-| [Chat completion](src/1-models/1-basic-chat-completion-azure-openai.py) | the same calls through `openai.AzureOpenAI` and through the Foundry project client | [output](sample-output/1-basic-chat-completion-azure-openai.py-output-20261026-202252.txt) |
-| [Chat: REST vs SDK](src/1-models/1-basic-chat-completion-rest-vs-sdk.py) (new) | one chat request sent by hand with `requests` and through the `openai` SDK, side by side | [output](sample-output/1-basic-chat-completion-rest-vs-sdk.py-output-20261025-215820.txt) |
-| [Embeddings](src/1-models/2-embeddings-azure-openai.py) | text embeddings with `text-embedding-3-small` | [output](sample-output/2-embeddings-azure-openai.py-output-20261026-202311.txt) |
-| [Image embeddings](src/1-models/2-embeddings-image-embeddings.py) | Cohere `embed-v-4-0`: an X-ray image and text captions in one vector space | [output](sample-output/2-embeddings-image-embeddings.py-output-20261025-170122.txt) |
-| [Image generation](src/1-models/2-embeddings-image-generation.py) | `gpt-image-2` through the Azure OpenAI v1 endpoint with an Entra ID token | [output](sample-output/2-embeddings-image-generation.py-output-20261025-221237.txt) |
-| [Basic RAG](src/1-models/3-basic-rag-azure-openai.py) | vector index in Azure AI Search, answers grounded in the top matches | [output](sample-output/3-basic-rag-azure-openai.py-output-20261026-202316.txt) |
-| [Phi-4 vs gpt-4o-mini](src/1-models/4-phi-4.py) | Phi-4, Phi-4-reasoning and gpt-4o-mini on the same prompts: answers, tokens, time and cost | [output](sample-output/4-phi-4.py-output-20261025-215829.txt) |
-| [DeepSeek thinking off vs on](src/1-models/5-deep-seek-v4-flash.py) | DeepSeek-V4-Flash with and without thinking (`reasoning_effort`) | [output](sample-output/5-deep-seek-v4-flash.py-output-20261025-220051.txt) |
-| [Agent basics](src/2-agents/1-basics.py) | Foundry Agent Service: agent, thread, messages, run | [output](sample-output/1-basics.py-output-20261028-103511.txt) |
-| [Code Interpreter](src/2-agents/2-code-interpreter.py) | agent analyzes a CSV and returns a chart file | [output](sample-output/2-code-interpreter.py-output-20261025-215724.txt) |
-| [File Search](src/2-agents/3-file-search.py) | vector store over Markdown files, answers with file citations | [output](sample-output/3-file-search.py-output-20261025-215612.txt) |
-| [Grounding with Bing](src/2-agents/4-bing-grounding.py) | new agents API agent with Bing grounding and numbered web citations | [output](sample-output/4-bing-grounding.py-output-20261027-142721.txt) |
-| [Web Search](src/2-agents/4-web-search.py) (new) | the same questions with the built-in `WebSearchTool`, no extra resource | [output](sample-output/4-web-search.py-output-20261027-142905.txt) |
-| [Agent + Azure AI Search](src/2-agents/5-agents-aisearch.py) | product search tool plus a local price function tool | [output](sample-output/5-agents-aisearch.py-output-20261025-215457.txt) |
-| [Agent + Azure AI Search, new API](src/2-agents/5-agents-aisearch-v2.py) | the same agent on the new agents API, compared on gpt-4o-mini, gpt-5.4-mini and gpt-5.4-nano | [output](sample-output/5-agents-aisearch-v2.py-output-20261023-172117.txt) |
-| [Agent + Azure Functions MCP server](src/2-agents/6-agents-az-functions-mcp.py) (new) | MCP tool to a Function app, key from a project connection, each call approved | [output](sample-output/6-agents-az-functions-mcp.py-output-20261025-220142.txt) |
-| [Observability](src/3-quality/1-observability.py) | OpenTelemetry traces to the console or to Application Insights | [output](sample-output/1-observability.py-output-20261028-103618.txt) |
-| [Evaluation](src/3-quality/2-evaluation.py) | `azure-ai-evaluation`: F1, plus relevance and groundedness judged by a model | [output](sample-output/2-evaluation.py-output-20261025-220212.txt) |
-| [GenAI Ops](src/3-quality/3-e2e-genai-ops.py) | safety evaluators, direct attacks against a test agent, indirect attack generation, quality and RAG evaluation, all traced | [output](sample-output/3-e2e-genai-ops.py-output-20261028-131803.txt) (replay of 2026-10-26 answers) |
-| [Semantic Kernel agent](src/4-frameworks/1-rag-sk-agents-aisearch.py) | `AzureAIAgent` with a `@kernel_function` price plugin | [output](sample-output/1-rag-sk-agents-aisearch.py-output-20261025-215423.txt) |
-| [AutoGen multi-agent RAG](src/4-frameworks/2-autogen-multi-agent-rag.py) | retriever and responder agents, embedding search over tips | [output](sample-output/2-autogen-multi-agent-rag.py-output-20261027-222023.txt) |
-| [AutoGen wellness agents](src/4-frameworks/3-autogen-personalized-heart-rate.py) | heart-rate summary from sample wearable data, then two agents plan workouts; not medical advice | [output](sample-output/3-autogen-personalized-heart-rate.py-output-20261027-222033.txt) |
+| [Setup check](src/check-setup.py) | read-only check of settings, sign-in, deployments and connections; no model call | [output](sample-output/check-setup.py-output-20261101-215646.txt) |
+| [Chat completion](src/1-models/1-basic-chat-completion-azure-openai.py) | the same calls through `openai.AzureOpenAI` and through the Foundry project client | [output](sample-output/1-basic-chat-completion-azure-openai.py-output-20261101-202528.txt) |
+| [Chat: REST vs SDK](src/1-models/1-basic-chat-completion-rest-vs-sdk.py) (new) | one chat request sent by hand with `requests` and through the `openai` SDK, side by side | [output](sample-output/1-basic-chat-completion-rest-vs-sdk.py-output-20261101-202531.txt) |
+| [Embeddings](src/1-models/2-embeddings-azure-openai.py) | text embeddings with `text-embedding-3-small` | [output](sample-output/2-embeddings-azure-openai.py-output-20261101-202532.txt) |
+| [Image embeddings](src/1-models/2-embeddings-image-embeddings.py) | Cohere `embed-v-4-0`: an X-ray image and text captions in one vector space | [output](sample-output/2-embeddings-image-embeddings.py-output-20261101-202534.txt) |
+| [Image generation](src/1-models/2-embeddings-image-generation.py) | `gpt-image-2` through the Azure OpenAI v1 endpoint with an Entra ID token | [output](sample-output/2-embeddings-image-generation.py-output-20261101-202535.txt) |
+| [Basic RAG](src/1-models/3-basic-rag-azure-openai.py) | vector index in Azure AI Search, answers grounded in the top matches | [output](sample-output/3-basic-rag-azure-openai.py-output-20261101-202537.txt) |
+| [Phi-4 vs gpt-4o-mini](src/1-models/4-phi-4.py) | Phi-4, Phi-4-reasoning and gpt-4o-mini on the same prompts: answers, tokens, time and cost | [output](sample-output/4-phi-4.py-output-20261101-202543.txt) |
+| [DeepSeek thinking off vs on](src/1-models/5-deep-seek-v4-flash.py) | DeepSeek-V4-Flash with and without thinking (`reasoning_effort`) | [output](sample-output/5-deep-seek-v4-flash.py-output-20261101-202544.txt) |
+| [Agent basics](src/2-agents/1-basics.py) | Foundry Agent Service: agent, thread, messages, run | [output](sample-output/1-basics.py-output-20261101-200218.txt) |
+| [Code Interpreter](src/2-agents/2-code-interpreter.py) | agent analyzes a CSV and returns a chart file | [output](sample-output/2-code-interpreter.py-output-20261101-201651.txt) |
+| [File Search](src/2-agents/3-file-search.py) | vector store over Markdown files, answers with file citations | [output](sample-output/3-file-search.py-output-20261101-201710.txt) |
+| [Grounding with Bing](src/2-agents/4-bing-grounding.py) | new agents API agent with Bing grounding and numbered web citations | [output](sample-output/4-bing-grounding.py-output-20261101-201721.txt) |
+| [Web Search](src/2-agents/4-web-search.py) (new) | the same questions with the built-in `WebSearchTool`, no extra resource | [output](sample-output/4-web-search.py-output-20261101-201723.txt) |
+| [Agent + Azure AI Search](src/2-agents/5-agents-aisearch.py) | product search tool plus a local price function tool | [output](sample-output/5-agents-aisearch.py-output-20261101-201805.txt) |
+| [Agent + Azure AI Search, new API](src/2-agents/5-agents-aisearch-v2.py) | the same agent on the new agents API, compared on gpt-4o-mini, gpt-5.4-mini and gpt-5.4-nano | [output](sample-output/5-agents-aisearch-v2.py-output-20261101-201735.txt) |
+| [Agent + Azure Functions MCP server](src/2-agents/6-agents-az-functions-mcp.py) (new) | MCP tool to a Function app, key from a project connection, each call approved | [output](sample-output/6-agents-az-functions-mcp.py-output-20261101-201739.txt) |
+| [Observability](src/3-quality/1-observability.py) | OpenTelemetry traces to the console or to Application Insights | [output](sample-output/1-observability.py-output-20261101-204436.txt) |
+| [Evaluation](src/3-quality/2-evaluation.py) | `azure-ai-evaluation`: F1, plus relevance and groundedness judged by a model | [output](sample-output/2-evaluation.py-output-20261101-204453.txt) |
+| [GenAI Ops](src/3-quality/3-e2e-genai-ops.py) | safety evaluators, direct attacks against a test agent, indirect attack generation, quality and RAG evaluation, all traced | [output](sample-output/3-e2e-genai-ops.py-output-20261101-204457.txt) (replay of 2026-10-26 answers) |
+| [Semantic Kernel agent](src/4-frameworks/1-rag-sk-agents-aisearch.py) | `AzureAIAgent` with a `@kernel_function` price plugin | [output](sample-output/1-rag-sk-agents-aisearch.py-output-20261101-215631.txt) |
+| [AutoGen multi-agent RAG](src/4-frameworks/2-autogen-multi-agent-rag.py) | retriever and responder agents, embedding search over tips | [output](sample-output/2-autogen-multi-agent-rag.py-output-20261101-215641.txt) |
+| [AutoGen wellness agents](src/4-frameworks/3-autogen-personalized-heart-rate.py) | heart-rate summary from sample wearable data, then two agents plan workouts; not medical advice | [output](sample-output/3-autogen-personalized-heart-rate.py-output-20261101-215643.txt) |
 
 ## Model choice
 

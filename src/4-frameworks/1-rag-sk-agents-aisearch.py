@@ -108,6 +108,37 @@ If nothing matches, say so clearly and mention the closest option.
 Always include a disclaimer that you are not providing medical advice.
 """.strip()
 
+# These calls happen inside one line of this lab (get_default(), get_response() or a
+# lazy `async for`), so no print can go right before each one; http_log prints each
+# description before a matching call that it logs in full. The first match wins, and
+# [?] is a literal question mark.
+CALL_DESCRIPTIONS = {
+    "GET */connections[?]*": "get_default(): list the connections of the Foundry project, to find the default Azure "
+    "AI Search connection.",
+    "POST */getConnectionWithCredentials*": "get_default(): read the key of the default Azure AI Search connection "
+    "from the Foundry project.",
+    "POST */threads[?]*": "get_response(): Semantic Kernel creates the conversation thread in Foundry Agent Service, "
+    "for the first question.",
+    "POST */threads/*/messages[?]*": "get_response(): Semantic Kernel adds the user's question to the conversation "
+    "thread in Foundry Agent Service.",
+    "POST */submit_tool_outputs*": "get_response(): Semantic Kernel sends the find_items_under function's result back "
+    "to the agent run in Foundry Agent Service; the run then continues.",
+    "POST */threads/*/runs[?]*": "get_response(): Semantic Kernel starts a run in Foundry Agent Service, in which the "
+    "fitness shopping agent reads the conversation thread, uses its tools and answers.",
+    "GET */steps*order=asc*after=*": "print_tool_calls(): ask Foundry Agent Service for the next page of the agent "
+    "run's steps.",
+    "GET */steps*order=asc*": "print_tool_calls(): read the agent run's steps from Foundry Agent Service, to show "
+    "which tools the fitness shopping agent called and what they returned.",
+    "GET */steps*after=*": "get_response(): Semantic Kernel asks Foundry Agent Service for the next page of the agent "
+    "run's steps.",
+    "GET */steps*": "get_response(): Semantic Kernel reads the agent run's steps from Foundry Agent Service, to find "
+    "the fitness shopping agent's answer.",
+    "GET */threads/*/messages/*": "get_response(): Semantic Kernel reads the fitness shopping agent's answer message "
+    "from Foundry Agent Service.",
+    "GET */threads/*/runs/*": "get_response(): Semantic Kernel checks the agent run's status in Foundry Agent Service. "
+    "The first check is logged in full, later ones as one `HTTP #n GET` line.",
+}
+
 
 class FitnessCatalogPlugin:
     """Local tool for the agent: exact price filtering on the search index (runs in this
@@ -144,6 +175,10 @@ class FitnessCatalogPlugin:
         return answer
 
     async def _products(self, filter_expression, top=10):
+        print(
+            "\n>>> find_items_under function: search the fitness index in Azure AI Search with this filter: "
+            f"{filter_expression}"
+        )
         results = await self._search_client.search(
             search_text="*",
             filter=filter_expression,
@@ -194,15 +229,19 @@ async def create_fitness_index(index_client):
         SimpleField(name="Price", type=SearchFieldDataType.Double, filterable=True, sortable=True, facetable=True),
         SearchableField(name="Description", type=SearchFieldDataType.String),
     ]
+    print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index already exists.")
     existing = [name async for name in index_client.list_index_names()]
     if INDEX_NAME in existing:
+        print("\n>>> Delete the old fitness index from Azure AI Search.")
         await index_client.delete_index(INDEX_NAME)
         print(f"Deleted existing index: {INDEX_NAME}")
+    print("\n>>> Create the fitness index in Azure AI Search.")
     created = await index_client.create_index(SearchIndex(name=INDEX_NAME, fields=fields))
     print(f"Created index: {created.name}")
 
 
 async def upload_documents(search_client):
+    print("\n>>> Upload the fitness product documents to the fitness index in Azure AI Search.")
     results = await search_client.upload_documents(documents=[with_price_text(d) for d in SAMPLE_DOCUMENTS])
     failed = [r for r in results if not r.succeeded]
     if failed:
@@ -213,6 +252,10 @@ async def upload_documents(search_client):
 async def wait_for_documents(search_client, expected, timeout_seconds=30):
     # Uploaded documents become searchable after a short indexing delay.
     deadline = asyncio.get_running_loop().time() + timeout_seconds
+    print(
+        "\n>>> Ask Azure AI Search how many documents the fitness index can search, until all of them can. "
+        "The first check is logged in full, later ones as one `HTTP #n GET` line."
+    )
     while True:
         count = await search_client.get_document_count()
         if count >= expected or asyncio.get_running_loop().time() > deadline:
@@ -223,6 +266,7 @@ async def wait_for_documents(search_client, expected, timeout_seconds=30):
 
 async def print_direct_search(search_client, text):
     print(f"\nDirect Azure AI Search check for '{text}':")
+    print(f"\n>>> Search the fitness index in Azure AI Search for '{text}', without the agent.")
     results = await search_client.search(search_text=text, top=10)
     async for doc in results:
         print(f"  {doc['Name']} | {doc['Category']} | ${doc['Price']:.2f} | {doc['Description']}")
@@ -232,6 +276,7 @@ async def print_tool_calls(project_client, thread_id):
     # Shows what each tool returned to the model in the latest run (e.g. which fields
     # the search tool passed on).
     runs = project_client.agents.runs.list(thread_id=thread_id, order=ListSortOrder.DESCENDING, limit=1)
+    print("\n>>> Read the conversation thread's latest agent run from Foundry Agent Service, to show the tools it had.")
     run = await anext(aiter(runs))
     offered = [t.function.name if t.type == "function" else t.type for t in run.tools or []]
     print(f"  Tools offered in run {run.id} ({run.status}): {offered}")
@@ -275,6 +320,7 @@ async def create_agent(project_client, model, connection):
         query_type=AzureAISearchQueryType.SIMPLE,
         top_k=5,
     )
+    print("\n>>> Create the fitness shopping agent, with the Azure AI Search tool, in Foundry Agent Service.")
     definition = await project_client.agents.create_agent(
         model=model,
         name=AGENT_NAME,
@@ -290,6 +336,10 @@ async def ask(project_client, agent, thread, question):
     """Step 3: ask one question on the thread, print the answer and the tool calls;
     return the thread."""
     print(f"\n# User: {question}")
+    print(
+        "\n>>> Run get_response(), in which Semantic Kernel makes several web service calls of its own: each is "
+        "described just before it in this log."
+    )
     response = await agent.get_response(messages=question, thread=thread)
     thread = response.thread
     print(f"# Agent: {response.message.content}")
@@ -305,18 +355,21 @@ async def cleanup(project_client, index_client, search_client, thread, definitio
     clients."""
     if thread is not None and thread.id is not None:
         try:
+            print("\n>>> Delete the conversation thread from Foundry Agent Service.")
             await thread.delete()
             print("Deleted thread")
         except Exception as exc:
             print(f"Could not delete thread: {exc}")
     if definition is not None:
         try:
+            print("\n>>> Delete the fitness shopping agent from Foundry Agent Service.")
             await project_client.agents.delete_agent(definition.id)
             print(f"Deleted agent: {definition.id}")
         except Exception as exc:
             print(f"Could not delete agent: {exc}")
     if index_created:
         try:
+            print("\n>>> Delete the fitness index from Azure AI Search.")
             await index_client.delete_index(INDEX_NAME)
             print(f"Deleted index: {INDEX_NAME}")
         except Exception as exc:
@@ -364,5 +417,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    http_log.enable()
+    http_log.enable(call_descriptions=CALL_DESCRIPTIONS)
     asyncio.run(main())

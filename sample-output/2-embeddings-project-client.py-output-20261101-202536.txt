@@ -1,24 +1,30 @@
-Sample output of src/1-models/2-embeddings-azure-openai.py
-Run on 2026-10-26 20:23 with: uv run python src/1-models/2-embeddings-azure-openai.py
+Sample output of src/1-models/2-embeddings-project-client.py
+Replay on 2026-11-01 20:25 of answers recorded on 2026-10-26 17:44 (no service called), with:
+HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/2-embeddings-project-client-20261026-174406 uv run python src/1-models/2-embeddings-project-client.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
+[http_replay] no random seed in this recording: random values differ from the record run
+[http_replay] replay mode, folder runs/recordings/2-embeddings-project-client-20261026-174406
 
 ================================================================================
-TEXT EMBEDDINGS - AzureOpenAI
+TEXT EMBEDDINGS - AIProjectClient
 ================================================================================
 Loaded .env from: .env
 Model deployment:  text-embedding-3-small
-Connection method: AzureOpenAI (direct)
-Endpoint:          https://<resource-name>.openai.azure.com/
+Connection method: AIProjectClient.get_openai_client()
+Project endpoint:  https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
+Model endpoint:    https://<resource-name>.services.ai.azure.com/openai/  (chosen by the project client)
 API version:       2024-08-01-preview
 
 ================================================================================
 1. Embed health-themed phrases
 ================================================================================
 
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vectors of all the phrases, in one call.
+
 --- OUTBOUND REQUEST #1 ---
-> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
-> Host: <resource-name>.openai.azure.com
+> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.services.ai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -48,9 +54,8 @@ API version:       2024-08-01-preview
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
-< Content-Length: 24826
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 16:23:14 GMT
+< Date: Mon, 26 Oct 2026 13:44:08 GMT
 < Server: istio-envoy
 < Vary: Origin
 < apim-request-id: <id>
@@ -59,12 +64,14 @@ API version:       2024-08-01-preview
 < x-ms-region: East US 2
 < x-ratelimit-remaining-tokens: 149972
 < x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261013063958-a70f7c8b
+< azureml-model-session: d20261013063958-ec0511f2
 < x-ms-served-model: text-embedding-3-small-1
 < x-request-id: <id>
-< x-http2-stream-id: 237
+< x-http2-stream-id: 613
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 24853
+< x-http-replay: 0001-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
@@ -106,9 +113,11 @@ Sentence 2: 'Mindful breathing exercises 🧘'
 2. Embed user text with a prompt template in front
 ================================================================================
 
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vector of the user text with the template.
+
 --- OUTBOUND REQUEST #2 ---
-> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
-> Host: <resource-name>.openai.azure.com
+> POST https://<resource-name>.services.ai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.services.ai.azure.com
 > Accept-Encoding: gzip, deflate
 > Connection: keep-alive
 > accept: application/json
@@ -136,9 +145,8 @@ Sentence 2: 'Mindful breathing exercises 🧘'
 
 --- OUTBOUND RESPONSE #2 ---
 < 200 OK
-< Content-Length: 8346
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 16:23:15 GMT
+< Date: Mon, 26 Oct 2026 13:44:09 GMT
 < Server: istio-envoy
 < Vary: Origin
 < apim-request-id: <id>
@@ -147,12 +155,14 @@ Sentence 2: 'Mindful breathing exercises 🧘'
 < x-ms-region: East US 2
 < x-ratelimit-remaining-tokens: 149927
 < x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261023211206-46355147
+< azureml-model-session: d20261024225244-6bf6d8bf
 < x-ms-served-model: text-embedding-3-small-1
 < x-request-id: <id>
-< x-http2-stream-id: 123
+< x-http2-stream-id: 867
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
+< Content-Length: 8361
+< x-http-replay: 0002-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",

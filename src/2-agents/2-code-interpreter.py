@@ -82,6 +82,16 @@ NUTRITION_REQUEST = (
 # (section title, request); each request gets its own thread.
 REQUESTS = [("BMI calculation", BMI_REQUEST), ("Nutrition analysis", NUTRITION_REQUEST)]
 
+# Calls made inside one SDK line or loop, where no print can go right before them;
+# http_log prints each description before a matching call that it logs in full. The
+# first matching pattern wins, so the steps patterns come before the run status one.
+CALL_DESCRIPTIONS = {
+    "GET */steps*after=*": "Ask Foundry Agent Service for the next page of the agent run's steps.",
+    "GET */steps*": "Read the agent run's steps from Foundry Agent Service, to find the code it ran and any chart.",
+    "GET */messages*after=*": "Ask Foundry Agent Service for the next page of the conversation thread's messages.",
+    "GET */runs/*": "Check the agent run's status in Foundry Agent Service; this first check is logged in full.",
+}
+
 
 def print_section(title):
     print()
@@ -120,10 +130,17 @@ def write_sample_csv(folder):
 
 
 def ask(project_client, agent_id, request):
+    print("\n>>> Create a conversation thread for this request in Foundry Agent Service.")
     thread = project_client.agents.threads.create()
     print(f"Created thread: {thread.id}")
     print(f"User: {request.strip()}")
+    print("\n>>> Add the user's request to the conversation thread in Foundry Agent Service.")
     project_client.agents.messages.create(thread_id=thread.id, role="user", content=request)
+    print(
+        "\n>>> Start a run, in which the health calculator agent reads the conversation thread, runs code and answers, "
+        "then check the run's status until it ends. The first check is logged in full, later ones as one "
+        "`HTTP #n GET` line."
+    )
     run = project_client.agents.runs.create_and_process(thread_id=thread.id, agent_id=agent_id)
     print(f"Run status: {run.status}")
     if run.usage:
@@ -157,6 +174,10 @@ def code_interpreter_images(project_client, thread_id, run_id):
 
 def show_results(project_client, thread_id, run_id, output_dir, generated_file_ids):
     image_ids = code_interpreter_images(project_client, thread_id, run_id)
+    print(
+        "\n>>> Read the conversation thread's messages from Foundry Agent Service. The `for` loop in show_results() "
+        "makes these calls, not its list() line: one call per page, and the last page is empty."
+    )
     messages = project_client.agents.messages.list(thread_id=thread_id, order=ListSortOrder.ASCENDING)
     for message in messages:
         if message.role != MessageRole.AGENT:
@@ -173,6 +194,7 @@ def show_results(project_client, thread_id, run_id, output_dir, generated_file_i
 
     for file_id in dict.fromkeys(image_ids):
         file_name = f"chart_{file_id}.png"
+        print("\n>>> Download the chart file the health calculator agent drew from Foundry Agent Service.")
         project_client.agents.files.save(file_id=file_id, file_name=file_name, target_dir=str(output_dir))
         generated_file_ids.append(file_id)
         print(f"\nSaved chart: {Path(output_dir) / file_name}")
@@ -202,6 +224,7 @@ def upload_sample_data(project_client):
     project; return the file."""
     with tempfile.TemporaryDirectory() as temp_dir:
         csv_path = write_sample_csv(temp_dir)
+        print("\n>>> Upload the nutrition CSV file to the Foundry project through Foundry Agent Service.")
         uploaded_file = project_client.agents.files.upload_and_poll(
             file_path=str(csv_path),
             purpose=FilePurpose.AGENTS,
@@ -214,6 +237,7 @@ def create_agent(project_client, model, uploaded_file):
     """Step 2: create the agent with the Code Interpreter tool, which can read the
     uploaded file."""
     code_tool = CodeInterpreterTool(file_ids=[uploaded_file.id])
+    print("\n>>> Create the health calculator agent, with the Code Interpreter tool, in Foundry Agent Service.")
     agent = project_client.agents.create_agent(
         model=model,
         name=AGENT_NAME,
@@ -229,12 +253,15 @@ def cleanup(project_client, threads, agent, uploaded_file, generated_file_ids):
     """Step 5: delete what the run created: threads, the agent, and the uploaded and
     generated files."""
     for thread in threads:
+        print("\n>>> Delete this conversation thread from Foundry Agent Service.")
         project_client.agents.threads.delete(thread.id)
         print(f"Deleted thread: {thread.id}")
     if agent:
+        print("\n>>> Delete the health calculator agent from Foundry Agent Service.")
         project_client.agents.delete_agent(agent.id)
         print(f"Deleted agent: {agent.id}")
     for file_id in ([uploaded_file.id] if uploaded_file else []) + generated_file_ids:
+        print("\n>>> Delete this file (uploaded CSV or generated chart) from the Foundry project.")
         project_client.agents.files.delete(file_id)
         print(f"Deleted file from the project: {file_id}")
 
@@ -270,5 +297,5 @@ def main():
 
 
 if __name__ == "__main__":
-    http_log.enable()
+    http_log.enable(call_descriptions=CALL_DESCRIPTIONS)
     main()

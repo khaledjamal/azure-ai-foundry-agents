@@ -16,6 +16,12 @@ from azure.identity import DefaultAzureCredential
 from workshop_utils import http_log
 from workshop_utils.settings import load_env
 
+# list_agents() fetches its next pages by itself, so no print can go right before them;
+# http_log prints the description before a matching call that it logs in full.
+CALL_DESCRIPTIONS = {
+    "GET */assistants*after=*": "list_agents(): ask Foundry Agent Service for the next page of agents.",
+}
+
 
 def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
@@ -37,6 +43,7 @@ def main():
     print(f"Project endpoint: {project_endpoint}")
 
     with AIProjectClient(endpoint=project_endpoint, credential=DefaultAzureCredential()) as project_client:
+        print("\n>>> List the agents in Foundry Agent Service, one call per page.")
         agents = sorted(project_client.agents.list_agents(), key=lambda a: a.created_at)
         print(f"\nAgents in the project: {len(agents)}")
         for agent in agents:
@@ -52,9 +59,11 @@ def main():
             return
 
         for agent in targets:
+            print(f"\n>>> Delete the agent {agent.id} from Foundry Agent Service.")
             project_client.agents.delete_agent(agent.id)
             print(f"Deleted agent: {agent.id}")
 
+        print("\n>>> List the agents left in Foundry Agent Service, one call per page.")
         remaining = list(project_client.agents.list_agents())
         print(f"\nAgents left in the project: {len(remaining)}")
         for agent in remaining:
@@ -62,5 +71,5 @@ def main():
 
 
 if __name__ == "__main__":
-    http_log.enable()
+    http_log.enable(call_descriptions=CALL_DESCRIPTIONS)
     main()

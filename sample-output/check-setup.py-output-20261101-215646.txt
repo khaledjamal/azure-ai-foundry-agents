@@ -1,7 +1,10 @@
 Sample output of src/check-setup.py
-Run on 2026-10-26 20:22 with: uv run python src/check-setup.py
+Replay on 2026-11-01 21:56 of answers recorded on 2026-10-26 20:22 (no service called), with:
+HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/check-setup-20261026-202246 uv run python src/check-setup.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
+[http_replay] no random seed in this recording: random values differ from the record run
+[http_replay] replay mode, folder runs/recordings/check-setup-20261026-202246
 
 ================================================================================
 1. Settings in .env
@@ -19,12 +22,14 @@ Real endpoints, resource names and GUIDs are replaced with placeholders such as 
 ================================================================================
 2. Sign-in (DefaultAzureCredential)
 ================================================================================
-  Token for Azure AI services received, valid until 2026-10-26 17:27 UTC
+  Token for Azure AI services received, valid until 2100-01-01 00:00 UTC
 
 ================================================================================
 3. Foundry project
 ================================================================================
   Project endpoint: https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
+
+>>> List the model deployments of the Foundry project.
 
 --- OUTBOUND REQUEST #1 ---
 > GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/deployments?api-version=v1
@@ -37,7 +42,6 @@ Real endpoints, resource names and GUIDs are replaced with placeholders such as 
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
-< Content-Length: 2117
 < Content-Type: application/json
 < Date: Mon, 26 Oct 2026 16:22:50 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
@@ -45,6 +49,8 @@ Real endpoints, resource names and GUIDs are replaced with placeholders such as 
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
+< Content-Length: 2295
+< x-http-replay: 0001-GET-api_projects_<project-name>_deployments.json
 <
 {
   "value": [
@@ -187,6 +193,8 @@ Real endpoints, resource names and GUIDs are replaced with placeholders such as 
   ]
 }
 
+>>> List the connections of the Foundry project.
+
 --- OUTBOUND REQUEST #2 ---
 > GET https://<resource-name>.services.ai.azure.com/api/projects/<project-name>/connections?api-version=v1
 > User-Agent: azsdk-python-ai-projects/1.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
@@ -201,8 +209,6 @@ Real endpoints, resource names and GUIDs are replaced with placeholders such as 
 < Content-Type: application/json; charset=utf-8
 < Date: Mon, 26 Oct 2026 16:22:50 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
-< Content-Encoding: gzip
-< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
@@ -212,6 +218,8 @@ Real endpoints, resource names and GUIDs are replaced with placeholders such as 
 < x-request-time: 0.029
 < apim-request-id: <id>
 < x-ms-region: East US 2
+< Content-Length: 2656
+< x-http-replay: 0002-GET-api_projects_<project-name>_connections.json
 <
 {
   "value": [
@@ -302,6 +310,8 @@ Real endpoints, resource names and GUIDs are replaced with placeholders such as 
 5. Azure AI Search
 ================================================================================
 
+>>> List the index names in Azure AI Search, which shows whether it accepts the key.
+
 --- OUTBOUND REQUEST #3 ---
 > GET https://<search-service>.search.windows.net/indexes?api-version=2026-04-01
 > User-Agent: azsdk-python-search-documents/12.0.0 Python/3.13.16 (Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43)
@@ -313,9 +323,7 @@ Real endpoints, resource names and GUIDs are replaced with placeholders such as 
 
 --- OUTBOUND RESPONSE #3 ---
 < 200 OK
-< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=minimal; odata.streaming=true; charset=utf-8
-< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
@@ -323,6 +331,8 @@ Real endpoints, resource names and GUIDs are replaced with placeholders such as 
 < request-id: <id>
 < elapsed-time: 133
 < Date: Mon, 26 Oct 2026 16:22:51 GMT
+< Content-Length: 4869
+< x-http-replay: 0003-GET-indexes.json
 <
 {
   "@odata.context": "https://<search-service>.search.windows.net/$metadata#indexes",
