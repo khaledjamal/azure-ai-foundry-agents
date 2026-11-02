@@ -152,7 +152,7 @@ Uploaded: guidelines.md -> assistant-JShrgUmsTxy5uqZwRMxL9C
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < x-request-id: <id>
 < openai-processing-ms: 391
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -206,7 +206,7 @@ Uploaded: guidelines.md -> assistant-JShrgUmsTxy5uqZwRMxL9C
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < x-request-id: <id>
 < openai-processing-ms: 98
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -284,7 +284,7 @@ Created vector store 'health_resources_example': vs_YL7mbR7tawC8zqsdP9VbCnbW (fi
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 5f53defee9f7182a1d972ad8946fbd6a
 < openai-processing-ms: 100
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -348,7 +348,7 @@ Created agent: health-search-agent (asst_GucfQ7XsGJkY5jTCqKBo5YG4)
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 3551c1b6e42ac892b30e054cd88e0e6f
 < openai-processing-ms: 72
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -403,7 +403,7 @@ User: Could you suggest a gluten-free lunch recipe?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: b9b864d96097e74acb95d8df442b0199
 < openai-processing-ms: 98
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -465,7 +465,7 @@ User: Could you suggest a gluten-free lunch recipe?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: b1ea4556b7bc02dc1b605ac1397babe4
 < openai-processing-ms: 368
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -537,7 +537,7 @@ User: Could you suggest a gluten-free lunch recipe?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: e97d0ed00caaaf9f8fd4bfb44287b520
 < openai-processing-ms: 493
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -627,7 +627,7 @@ User: Show me some heart-healthy meal ideas.
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 61a6703053249b2e88a1e0ca4ab61e9a
 < openai-processing-ms: 130
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -689,7 +689,7 @@ User: Show me some heart-healthy meal ideas.
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 6236a78c13511f778753b1fc946a2634
 < openai-processing-ms: 379
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -761,7 +761,7 @@ User: Show me some heart-healthy meal ideas.
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: d5ce18ba9975e88462172212bd3e5e79
 < openai-processing-ms: 139
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -851,7 +851,7 @@ User: What guidelines do you have for someone with diabetes?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: d0d594ae66802d03b436c5a227a0a5c4
 < openai-processing-ms: 110
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -913,7 +913,7 @@ User: What guidelines do you have for someone with diabetes?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 81a735f915c918bc7226a8febad817ff
 < openai-processing-ms: 553
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -985,7 +985,7 @@ User: What guidelines do you have for someone with diabetes?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: cbaf4ba9668e128942f29eeb939da750
 < openai-processing-ms: 132
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1067,7 +1067,7 @@ Conversation with citations (oldest to newest)
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: e9b3196020ca38f6d4c0c39ad7a95506
 < openai-processing-ms: 93
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1333,7 +1333,7 @@ As always, it's best to consult with a healthcare professional or a dietitian fo
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 57c2b0f84199e91d26d7739a61357d2c
 < openai-processing-ms: 93
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1379,7 +1379,7 @@ Cleanup
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 94f970b52ab9532ab7032c36a0a42fd0
 < openai-processing-ms: 91
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1420,7 +1420,7 @@ Deleted thread: thread_fBXUVwKS3RWynDy6LM1eEyvJ
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: effff2d036c6ac09813d313c14fcfe38
 < openai-processing-ms: 84
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1463,7 +1463,7 @@ Deleted agent: asst_GucfQ7XsGJkY5jTCqKBo5YG4
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < x-request-id: <id>
 < openai-processing-ms: 717
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload

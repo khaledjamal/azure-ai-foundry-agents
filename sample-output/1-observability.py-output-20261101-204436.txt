@@ -523,7 +523,7 @@ This quick routine will help increase blood flow to your muscles and improve fle
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < x-request-id: <id>
 < openai-processing-ms: 997
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -665,7 +665,7 @@ This quick routine will help increase blood flow to your muscles and improve fle
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < x-request-id: <id>
 < openai-processing-ms: 99
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -739,7 +739,7 @@ This quick routine will help increase blood flow to your muscles and improve fle
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: c21551be1121d3af7287484bc05cc690
 < openai-processing-ms: 115
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -804,7 +804,7 @@ This quick routine will help increase blood flow to your muscles and improve fle
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 93a2b9c401385cc0ab65a510c9a01334
 < openai-processing-ms: 76
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -858,7 +858,7 @@ User: Could you suggest a gluten-free lunch recipe?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 4dd706b550a2ee6af60d2257325b55dd
 < openai-processing-ms: 142
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -922,7 +922,7 @@ User: Could you suggest a gluten-free lunch recipe?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 9f1bcaeeaed9a7f201cc08048d186838
 < openai-processing-ms: 2516
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1050,7 +1050,7 @@ User: Could you suggest a gluten-free lunch recipe?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 8d7111594f5a763d4c158f275b733644
 < openai-processing-ms: 154
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1685,7 +1685,7 @@ Run status: RunStatus.COMPLETED
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 4f0ff2216889ffb3eb48a09e0870f441
 < openai-processing-ms: 87
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1812,7 +1812,7 @@ User: Show me some heart-healthy meal ideas.
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: b568d8780c16b9e2564b098a34dad570
 < openai-processing-ms: 129
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1876,7 +1876,7 @@ User: Show me some heart-healthy meal ideas.
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: bf869b4e0374df2d71eea0eb8cfde0e6
 < openai-processing-ms: 3261
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2004,7 +2004,7 @@ User: Show me some heart-healthy meal ideas.
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 4d77aa70cd4ef39b387c4a76e6fd5e87
 < openai-processing-ms: 178
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2532,7 +2532,7 @@ User: What guidelines do you have for someone with diabetes?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 227e07b1ba451e2d393eb628bd4d950f
 < openai-processing-ms: 120
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2596,7 +2596,7 @@ User: What guidelines do you have for someone with diabetes?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 645ed608b9f97408a09e113a877927e5
 < openai-processing-ms: 3341
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2792,7 +2792,7 @@ User: What guidelines do you have for someone with diabetes?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 45f5185ac42da025f065bf59e251e988
 < openai-processing-ms: 113
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -3059,7 +3059,7 @@ Cleanup:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 5e33f5a4cb57033f0a8c9662dc1ee8cb
 < openai-processing-ms: 92
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -3101,7 +3101,7 @@ Cleanup:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: ff45ae210010ef7e1a061feef456590d
 < openai-processing-ms: 322
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -3145,7 +3145,7 @@ Cleanup:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < x-request-id: <id>
 < openai-processing-ms: 3324
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload

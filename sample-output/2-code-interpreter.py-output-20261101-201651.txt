@@ -111,7 +111,7 @@ Uploaded CSV file: assistant-WPVjsd5punU4arF3dubRcQ
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 5aa62d392ddb039531d4618fa6748b4c
 < openai-processing-ms: 316
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -179,7 +179,7 @@ Created agent: health-calculator-agent (asst_7IPbJ8QEQVwKmjhPlNFkQDpW)
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 52d04e9202c80f31fb971f35826bef08
 < openai-processing-ms: 73
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -236,7 +236,7 @@ Please:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 959e9ced2644b830aef0c3826254882d
 < openai-processing-ms: 120
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -298,7 +298,7 @@ Please:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 02718f68feff6a08283027e0cf555de7
 < openai-processing-ms: 322
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -370,7 +370,7 @@ Please:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 9321995a1811251312f1b6533453313d
 < openai-processing-ms: 145
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -452,7 +452,7 @@ Run status: RunStatus.COMPLETED
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 7003bd7d415f0c3cb5612c0bd8e95f9d
 < openai-processing-ms: 125
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -571,7 +571,7 @@ Code interpreter call: 11 lines of code, outputs []
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 67a4337bc08c99cbfefe823c78768232
 < openai-processing-ms: 107
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -613,7 +613,7 @@ Code interpreter call: 11 lines of code, outputs []
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: ce34d6674c9a321d0b47d1e864e291be
 < openai-processing-ms: 106
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -728,7 +728,7 @@ Please note that BMI is a general guideline and does not account for factors suc
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: a56f1e3dab6b946d7f9e619e3a7cda10
 < openai-processing-ms: 85
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -779,7 +779,7 @@ No chart image was returned for this request.
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 2b3173b8cb5859cb035ca5bbfa8a3120
 < openai-processing-ms: 82
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -835,7 +835,7 @@ User: Analyze the CSV file with daily nutrition data.
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: daef47d80b54848bc31f55254ee7a33d
 < openai-processing-ms: 126
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -897,7 +897,7 @@ User: Analyze the CSV file with daily nutrition data.
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: b07e87775e8221cc6d579dc79230c3da
 < openai-processing-ms: 321
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -969,7 +969,7 @@ User: Analyze the CSV file with daily nutrition data.
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: fcaadf065a2fb6d10a9e393bfb868bd1
 < openai-processing-ms: 107
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1067,7 +1067,7 @@ Run status: RunStatus.COMPLETED
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 42127742575f5939239fe1f34b684b2c
 < openai-processing-ms: 178
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1291,7 +1291,7 @@ Code interpreter call: 31 lines of code, outputs []
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: b6a7c4dc6e00017f9c8688a03b4d08dd
 < openai-processing-ms: 101
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1333,7 +1333,7 @@ Code interpreter call: 31 lines of code, outputs []
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: b6d9ea11b1b5c4f3972254b3803fbcf5
 < openai-processing-ms: 123
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1459,7 +1459,7 @@ You can download the chart from the link below:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 37a4308e9ec75246cd59184df5b9f117
 < openai-processing-ms: 84
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1543,7 +1543,7 @@ Cleanup
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: a0e791c4a88fa990dc22cf80a2e02edf
 < openai-processing-ms: 103
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1584,7 +1584,7 @@ Deleted thread: thread_OfVXmiRTSFpisroPTzjG64hE
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 1310e78b1c9a43fd7acb547df8a6825a
 < openai-processing-ms: 87
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1625,7 +1625,7 @@ Deleted thread: thread_AKwzlmDrplszm0cdu2hbYcAa
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 28817e1a3f46abd1d3d868565df36007
 < openai-processing-ms: 94
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload

@@ -1065,7 +1065,7 @@ Saved: runs/20261101-204457-3-e2e-genai-ops/section2-safety.json
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: c75e48688db8aba6ce8735c6898b2f28
 < openai-processing-ms: 99
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1508,7 +1508,7 @@ generating simulations:   0%|                                        | 0/2 [00:0
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 5586b37baed9e1addfd6cfbfaac71daa
 < openai-processing-ms: 75
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1558,7 +1558,7 @@ generating simulations:   0%|                                        | 0/2 [00:0
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: cebb8723278a255ea90cd7fd54c90dd9
 < openai-processing-ms: 120
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1621,7 +1621,7 @@ generating simulations:   0%|                                        | 0/2 [00:0
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: eb129127ecac088d7c9e95a03ddeb683
 < openai-processing-ms: 347
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1807,7 +1807,7 @@ generating simulations:   0%|                                        | 0/2 [00:0
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 04e8014a37ddaebc2e7dabbb1b589d14
 < openai-processing-ms: 139
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1932,7 +1932,7 @@ HTTP #21 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 107d7b84d3deceb6d16d5c84229f5841
 < openai-processing-ms: 120
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2019,7 +2019,7 @@ HTTP #21 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: d4c3f0fd9b8aed0b2e9bd14b6f63ca49
 < openai-processing-ms: 74
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2069,7 +2069,7 @@ HTTP #21 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 361078cfcc49599d92d1e2719efa1876
 < openai-processing-ms: 98
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2132,7 +2132,7 @@ HTTP #21 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: a3c7dad8faccd9d0d05472dfd11b3af8
 < openai-processing-ms: 301
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2525,7 +2525,7 @@ HTTP #21 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: aa5299fce02f694d33f83de5001a2e2f
 < openai-processing-ms: 127
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2718,7 +2718,7 @@ HTTP #31 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: a37633d0c40e17c3d4b8be89c615cb47
 < openai-processing-ms: 94
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2923,7 +2923,7 @@ generating jailbreak simulations:   0%|                              | 0/2 [00:0
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 9ffe7e29dce18976093f54eed395c657
 < openai-processing-ms: 72
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2973,7 +2973,7 @@ generating jailbreak simulations:   0%|                              | 0/2 [00:0
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 4c7f9d0bb7790c015f787e61fb724010
 < openai-processing-ms: 104
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -3036,7 +3036,7 @@ generating jailbreak simulations:   0%|                              | 0/2 [00:0
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 386724a5275d73b4d2a417f206fb11a0
 < openai-processing-ms: 341
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -3262,7 +3262,7 @@ generating jailbreak simulations:   0%|                              | 0/2 [00:0
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 691cbf53255340bc70d5941f64dc0bd8
 < openai-processing-ms: 150
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -3642,7 +3642,7 @@ HTTP #45 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: d023616c4fc5ec079b7e2e5afa75b90f
 < openai-processing-ms: 95
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -3729,7 +3729,7 @@ HTTP #45 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 77bae89dc2b3a7efe0dda929ff57e1c5
 < openai-processing-ms: 76
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -3779,7 +3779,7 @@ HTTP #45 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 3250ee5d9a7ad7bc289a1c79f25a7b57
 < openai-processing-ms: 108
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -3842,7 +3842,7 @@ HTTP #45 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 1a42809d95335dbec6403ea01acaf356
 < openai-processing-ms: 333
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -4033,7 +4033,7 @@ HTTP #45 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: f12a897711b9870ab7e10e8a3860fe17
 < openai-processing-ms: 109
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -4133,7 +4133,7 @@ Saved: runs/20261101-204457-3-e2e-genai-ops/section3-direct-attack.json
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 91d22cad16fe83f27c058377cf3a8b7e
 < openai-processing-ms: 87
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -4174,7 +4174,7 @@ Saved: runs/20261101-204457-3-e2e-genai-ops/section3-direct-attack.json
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 056e608f2badff28a5e68e39fa7b33d0
 < openai-processing-ms: 87
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -4215,7 +4215,7 @@ Saved: runs/20261101-204457-3-e2e-genai-ops/section3-direct-attack.json
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 00198cb48a1c568c1e1cdd3482189d4c
 < openai-processing-ms: 84
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -4256,7 +4256,7 @@ Saved: runs/20261101-204457-3-e2e-genai-ops/section3-direct-attack.json
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 0b8c015f5ce981a175e301f47e65059f
 < openai-processing-ms: 89
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -4297,7 +4297,7 @@ Saved: runs/20261101-204457-3-e2e-genai-ops/section3-direct-attack.json
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: e0d93ed518f6d31d0d03a587f5ea1b62
 < openai-processing-ms: 88
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload

@@ -43,7 +43,7 @@ Model deployment:  gpt-4o-mini
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 786ec41251937935ffe962e9efd8270c
 < openai-processing-ms: 103
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -97,7 +97,7 @@ Created agent: fun-fit-health-advisor (asst_s8TGc4YIPVmXmCBpdz5b4dUq)
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: a562bbac4919750873384a069f4e8af2
 < openai-processing-ms: 83
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -152,7 +152,7 @@ User: How do I calculate my BMI, and what does it mean?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: bcd84160036808697de863a269e47f7c
 < openai-processing-ms: 337
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -214,7 +214,7 @@ User: How do I calculate my BMI, and what does it mean?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 081e8ec23b670c256d31c4b96fd25ca0
 < openai-processing-ms: 1063
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -282,7 +282,7 @@ User: How do I calculate my BMI, and what does it mean?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 71115ee40067113415cf4a052541af14
 < openai-processing-ms: 152
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -376,7 +376,7 @@ User: Can you give me a balanced meal plan for someone who exercises 3x a week?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 59c97a95dc23cc49f8a91cc097e44cad
 < openai-processing-ms: 227
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -438,7 +438,7 @@ User: Can you give me a balanced meal plan for someone who exercises 3x a week?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 6aeae59fddf4d54d30dcdf9b46f513ab
 < openai-processing-ms: 2638
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -506,7 +506,7 @@ User: Can you give me a balanced meal plan for someone who exercises 3x a week?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 2bc125fe72fff4db2e92f7a5ba3fa9e4
 < openai-processing-ms: 132
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -592,7 +592,7 @@ Conversation (oldest to newest)
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 04a647f8d1ac3fe777ef22a0d95432a8
 < openai-processing-ms: 110
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -820,7 +820,7 @@ Focusing on a balanced and varied diet, along with regular physical activity, ca
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 105cafd472845d17c1dee896ae4ab15a
 < openai-processing-ms: 131
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -866,7 +866,7 @@ Cleanup
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 7bf795c1dd55a8d7874c589c8966da6c
 < openai-processing-ms: 105
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -907,7 +907,7 @@ Deleted thread: thread_u0F1Vs90bbP8x21ciGCUAv10
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: c8ea7aa0cd2e943252759333ffc43d6e
 < openai-processing-ms: 106
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload

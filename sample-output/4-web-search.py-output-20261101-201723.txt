@@ -135,7 +135,7 @@ User: What are some new HIIT workout trends I should know about?
 < x-request-id: <id>
 < x-ms-aoai-configured-data-retention-days: 30
 < skip-error-remapping: true
-< openai-client-partition-id: a64606f4de40420bae29a4242f286977be53705a-c5b4-4a06-a74e-7d076d600698
+< openai-client-partition-id: <id>
 < azureml-internal-forward-count: 1
 < x-ms-is-spilled-over: false
 < x-ratelimit-key: gpt-4o-mini
@@ -152,7 +152,7 @@ User: What are some new HIIT workout trends I should know about?
 < azureai-fe-offer-type: paygo
 < x-ms-served-model: gpt-4o-mini-2024-07-18
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < openai-project: <id>
 < openai-processing-ms: 5425
 < azureml-served-by-cluster: hyena-eastus2-01,hyena-eastus2-02
@@ -434,7 +434,7 @@ User: What's the current WHO recommendation for sugar intake?
 < x-request-id: <id>
 < x-ms-aoai-configured-data-retention-days: 30
 < skip-error-remapping: true
-< openai-client-partition-id: a64606f4de40420bae29a4242f2869777cb77005-7d33-4b27-8d77-87fa99b26ad9
+< openai-client-partition-id: <id>
 < azureml-internal-forward-count: 1
 < x-ms-is-spilled-over: false
 < x-ratelimit-key: gpt-4o-mini
@@ -451,7 +451,7 @@ User: What's the current WHO recommendation for sugar intake?
 < azureai-fe-offer-type: paygo
 < x-ms-served-model: gpt-4o-mini-2024-07-18
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < openai-project: <id>
 < openai-processing-ms: 3719
 < azureml-served-by-cluster: hyena-eastus2-01,hyena-eastus2-02
@@ -699,7 +699,7 @@ User: Any news on intermittent fasting for weight management?
 < x-request-id: <id>
 < x-ms-aoai-configured-data-retention-days: 30
 < skip-error-remapping: true
-< openai-client-partition-id: a64606f4de40420bae29a4242f2869774be024ce-696f-4aa8-b7ec-fbf0be1efe1d
+< openai-client-partition-id: <id>
 < azureml-internal-forward-count: 1
 < x-ms-is-spilled-over: false
 < x-ratelimit-key: gpt-4o-mini
@@ -716,7 +716,7 @@ User: Any news on intermittent fasting for weight management?
 < azureai-fe-offer-type: paygo
 < x-ms-served-model: gpt-4o-mini-2024-07-18
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < openai-project: <id>
 < openai-processing-ms: 7007
 < azureml-served-by-cluster: hyena-eastus2-03,hyena-eastus2-02

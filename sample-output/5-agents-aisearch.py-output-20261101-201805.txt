@@ -832,7 +832,7 @@ Azure AI Search connection ID:   /subscriptions/<subscription-id>/resourceGroups
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 7fda539c8fcb58324516b60a3abc25b7
 < openai-processing-ms: 120
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -937,7 +937,7 @@ QUESTION 1 OF 2
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: a930783dc7cf52c5b419ae8b7d1b51ee
 < openai-processing-ms: 76
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -988,7 +988,7 @@ Question: Which items are good for strength training?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 88b4133fff61f32f2b2263c526e2517c
 < openai-processing-ms: 102
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1051,7 +1051,7 @@ Created user message: msg_XPMdbSBE8n3j2cs8dMmF0RyE
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 5bc0b41612c65f610ac31a0dede5649a
 < openai-processing-ms: 234
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1147,7 +1147,7 @@ Created user message: msg_XPMdbSBE8n3j2cs8dMmF0RyE
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: e60144e6afb9451298d3f78ab15fb051
 < openai-processing-ms: 109
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1247,7 +1247,7 @@ Tool calls:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: b954401704bdb09b2f80079f01eac54d
 < openai-processing-ms: 101
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1356,7 +1356,7 @@ Tool calls:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: bddfe91d88951abbc2022f60a18259fe
 < openai-processing-ms: 91
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1401,7 +1401,7 @@ Conversation:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 4d037566f0f97b6d4edc2811d6f1fe87
 < openai-processing-ms: 84
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1495,7 +1495,7 @@ These options provide versatility and are ideal for building strength at home or
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: d01aefe1186f04490e029c87794fd96c
 < openai-processing-ms: 98
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1538,7 +1538,7 @@ These options provide versatility and are ideal for building strength at home or
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 2cb44e8742b096afa2d559d654421f3b
 < openai-processing-ms: 108
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1586,7 +1586,7 @@ QUESTION 2 OF 2
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 1850139c1eae6bdacb633964aac93e6f
 < openai-processing-ms: 76
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1637,7 +1637,7 @@ Question: I need something for cardio under $300, any suggestions?
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 8856c6bcc10dded3eeadc79b0650ac4f
 < openai-processing-ms: 100
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1700,7 +1700,7 @@ Created user message: msg_mzbtgZAIst176kfnxYA39kVH
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 01286d4cde863b58cf2d4ac582db5363
 < openai-processing-ms: 285
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1796,7 +1796,7 @@ Created user message: msg_mzbtgZAIst176kfnxYA39kVH
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: de5ced90b2d4e43a586a9321a417bb8f
 < openai-processing-ms: 114
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -1990,7 +1990,7 @@ HTTP #22 GET https://<resource-name>.services.ai.azure.com/api/projects/<project
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 95055876046c2ff1a8dd9bc83c5ae5e3
 < openai-processing-ms: 243
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2094,7 +2094,7 @@ Tool calls:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: bb8b5a9018cc6eb35b0e8b45a9699cde
 < openai-processing-ms: 113
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2204,7 +2204,7 @@ Tool calls:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: f5f792e6d3d011415708db04e3cdc21c
 < openai-processing-ms: 100
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2249,7 +2249,7 @@ Conversation:
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 84c5ff58fac664635ad138577576315d
 < openai-processing-ms: 98
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2337,7 +2337,7 @@ I'm sorry, but there are no cardio products available under $300. The cheapest o
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 66e4d353e58aed260ffb731537166b42
 < openai-processing-ms: 444
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2380,7 +2380,7 @@ I'm sorry, but there are no cardio products available under $300. The cheapest o
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: a658883ef1e8d80c4552513efca91a4e
 < openai-processing-ms: 82
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -2429,7 +2429,7 @@ CLEANUP
 < x-ms-response-type: standard
 < x-ms-middleware-request-id: <id>
 < openai-version: 2020-10-01
-< openai-organization: a64606f4de40420bae29a4242f286977
+< openai-organization: <id>
 < X-Request-ID: 18cda2743bc519ca3d26bbc2c4a39141
 < openai-processing-ms: 415
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
