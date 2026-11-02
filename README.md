@@ -100,7 +100,7 @@ flowchart LR
 | Agent SDKs | `azure-ai-projects` 1.x with `azure-ai-agents` (classic agents API); `azure-ai-projects` 2.x (new agents API, Responses API) |
 | Models and search | `openai` (Azure OpenAI v1 endpoint), `azure-search-documents`, Cohere `embed-v-4-0` over REST |
 | Quality | `azure-ai-evaluation` (evaluators, attack simulators), OpenTelemetry with `azure-monitor-opentelemetry` |
-| Frameworks | Semantic Kernel, AutoGen |
+| Frameworks | Semantic Kernel, AutoGen, as in Microsoft's workshop. Microsoft now names [Agent Framework](https://learn.microsoft.com/agent-framework/overview/) as the successor to both (checked November 2026); these labs don't use it. |
 | MCP | the Azure Functions MCP extension (`azure-functions`, `@app.mcp_tool()`) for the server; the `mcp` Python SDK for the test client |
 | Sign-in and tooling | `azure-identity` (Microsoft Entra ID), uv, ruff |
 
