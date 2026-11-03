@@ -5,9 +5,13 @@ Workshop notebook:
 https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_completion/5-deep-seek-r1.ipynb
 
 This script runs DeepSeek-V4-Flash on the same three prompts twice, with thinking off
-and on, to show what step-by-step reasoning adds and what it costs. In the recorded run
-both modes got the calculation right; with thinking, that answer took 4.8 s instead of
-1.4 s, and the three prompts cost $0.003 instead of $0.002.
+and on, to show what step-by-step reasoning adds and what it costs. In a real run
+against Azure on 2026-10-18
+(sample-output/5-deep-seek-v4-flash.py-output-20261018-170548.txt), both modes got the
+calculation right; with thinking, that answer took 4.8 s instead of 1.4 s, and the three
+prompts cost $0.0026 instead of $0.0022. The newer sample replays saved answers from a
+later real run: it calls no service and costs nothing, its times show 0.0 s, and its
+cost column is what that real run cost.
 
 Each prompt runs twice, thinking off and on:
   1. the notebook's travel planning question (5 cultural days in Kyoto),
