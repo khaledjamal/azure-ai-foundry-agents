@@ -12,7 +12,8 @@ and response.
 What it does:
 1. A system message sets the assistant's role (a fitness assistant that reminds users it
    isn't a medical professional), a user question goes in, and the model's answer comes
-   out, with its token counts.
+   out, with its token counts and a note when the answer was cut off at the token
+   limit.
 2. A second call fills a prompt template with a user's name and goal.
 
 Connection method:
@@ -34,6 +35,10 @@ from azure.identity import DefaultAzureCredential
 
 from workshop_utils import http_log
 from workshop_utils.settings import load_env
+
+# Microsoft's notebook used 400, which cut gpt-4o's answers off; 1500 lets them finish.
+# An answer that still reaches it stops with finish_reason "length".
+MAX_ANSWER_TOKENS = 1500
 
 FITNESS_SYSTEM_PROMPT = (
     "You are FitChat GPT, a friendly fitness assistant.\n"
@@ -91,12 +96,15 @@ def chat(openai_client, model, system_prompt, user_input):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_input},
         ],
-        max_tokens=400,
+        max_tokens=MAX_ANSWER_TOKENS,
         temperature=0.7,
     )
     usage = response.usage
     print(f"(tokens: prompt {usage.prompt_tokens}, completion {usage.completion_tokens})")
-    return response.choices[0].message.content
+    choice = response.choices[0]
+    if choice.finish_reason == "length":
+        print(f"(answer cut off: {model} reached max_tokens={MAX_ANSWER_TOKENS}, finish_reason=length)")
+    return choice.message.content
 
 
 def main():

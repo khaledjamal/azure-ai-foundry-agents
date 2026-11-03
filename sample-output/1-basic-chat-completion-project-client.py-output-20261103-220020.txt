@@ -1,10 +1,8 @@
 Sample output of src/1-models/1-basic-chat-completion-project-client.py
-Replay on 2026-11-01 20:25 of answers recorded on 2026-10-26 17:43 (no service called), with:
-HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/1-basic-chat-completion-project-client-20261026-174346 uv run python src/1-models/1-basic-chat-completion-project-client.py
+Run on 2026-11-03 22:00 with: uv run python src/1-models/1-basic-chat-completion-project-client.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
-[http_replay] no random seed in this recording: random values differ from the record run
-[http_replay] replay mode, folder runs/recordings/1-basic-chat-completion-project-client-20261026-174346
+$ uv run python src/1-models/1-basic-chat-completion-project-client.py
 
 ================================================================================
 BASIC CHAT COMPLETION - AIProjectClient
@@ -41,7 +39,7 @@ User: How can I start a beginner workout routine at home?
 > authorization: Bearer <redacted>
 > x-stainless-retry-count: 0
 > x-stainless-read-timeout: 600
-> Content-Length: 319
+> Content-Length: 320
 >
 {
   "model": "gpt-4o",
@@ -55,19 +53,20 @@ User: How can I start a beginner workout routine at home?
       "content": "How can I start a beginner workout routine at home?"
     }
   ],
-  "max_tokens": 400,
+  "max_tokens": 1500,
   "temperature": 0.7
 }
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
+< Content-Length: 4039
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:43:50 GMT
+< Date: Tue, 03 Nov 2026 18:00:23 GMT
 < Server: istio-envoy
 < Vary: Origin
 < azureai-fe-is-streaming: False
 < azureai-fe-offer-type: paygo
-< azureml-model-session: d20261021053257-836f2454
+< azureml-model-session: d20261026043005-f8ef57fd
 < skip-error-remapping: true
 < x-accel-buffering: no
 < x-ms-is-spilled-over: false
@@ -85,13 +84,11 @@ User: How can I start a beginner workout routine at home?
 < x-ratelimit-reset-tokens: 0
 < x-request-id: <id>
 < apim-request-id: <id>
-< x-http2-stream-id: 211
+< x-http2-stream-id: 921
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< Content-Length: 3503
-< x-http-replay: 0001-POST-openai_deployments_gpt-4o_chat_completions.json
 <
 {
   "choices": [
@@ -122,19 +119,264 @@ User: How can I start a beginner workout routine at home?
           "severity": "safe"
         }
       },
-      "finish_reason": "length",
+      "finish_reason": "stop",
       "index": 0,
       "logprobs": null,
       "message": {
         "annotations": [],
-        "content": "Starting a beginner workout routine at home is a fantastic choice—it's convenien...(1803 characters)",
+        "content": "Starting a workout routine at home is a fantastic idea! It's convenient, cost-ef...(2433 characters)",
         "refusal": null,
         "role": "assistant"
       }
     }
   ],
-  "created": 1793022231,
-  "id": "chatcmpl-EdFHLxmSUIvv4pfvNEXRSjdqafyDr",
+  "created": 1793728824,
+  "id": "chatcmpl-EgD60neMWn4eLyV5yO3rWirZ6gqgE",
+  "model": "gpt-4o-2024-11-20",
+  "object": "chat.completion",
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20261026043005-f8ef57fd-default-r2-dp0-default"
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_eef51934d2",
+  "usage": {
+    "completion_tokens": 575,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 9,
+      "engine_ttft_ms": 46,
+      "engine_ttlt_ms": 5132,
+      "pre_inference_ms": 94,
+      "service_tbt_ms": 9,
+      "service_ttft_ms": 285,
+      "service_ttlt_ms": 5594,
+      "user_visible_ttft_ms": 191
+    },
+    "prompt_tokens": 50,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 625
+  }
+}
+(tokens: prompt 50, completion 575)
+Assistant: Starting a workout routine at home is a fantastic idea! It's convenient, cost-effective, and allows you to move at your own pace. Here are some steps to help you get started:
+
+---
+
+### 1. **Set Clear Goals**  
+Decide why you want to start working out. Is it to improve strength, lose weight, boost energy, or just feel better overall? Having a goal will keep you motivated.
+
+---
+
+### 2. **Start Small and Keep It Simple**  
+As a beginner, focus on short, manageable workouts to avoid burnout or injury. A routine as short as 15–20 minutes can be effective when done consistently.
+
+---
+
+### 3. **Choose Exercises That Fit Your Level**  
+Begin with low-impact, bodyweight exercises that don’t require equipment. Here’s a sample beginner routine:  
+**Warm-Up (5 minutes)**  
+- March in place  
+- Arm circles  
+- Gentle squats  
+
+**Workout (10–15 minutes)**  
+- **Squats**: 10 reps  
+- **Modified Push-Ups** (knees on the ground): 8–10 reps  
+- **Glute Bridges**: 10 reps  
+- **Plank Hold**: 15–20 seconds  
+Repeat 1–2 rounds depending on how you feel.  
+
+**Cool Down (5 minutes)**  
+- Stretch your hamstrings, quads, shoulders, and back  
+- Focus on slow, deep breaths  
+
+---
+
+### 4. **Create a Schedule**  
+Consistency is key! Aim for 2–3 days a week to start, and gradually increase to 4–5 days as you build stamina.
+
+---
+
+### 5. **Listen to Your Body**  
+It’s normal to feel some muscle soreness, but stop immediately if you feel sharp pain. Rest is important, so give your muscles time to recover.
+
+---
+
+### 6. **Stay Hydrated and Fuel Your Body**  
+Drink water before, during, and after your workout. A balanced diet will help you recover and stay energized.
+
+---
+
+### 7. **Consider Adding Equipment Later**  
+Once you feel comfortable, you can include light dumbbells, resistance bands, or a yoga mat for more variety.
+
+---
+
+### 8. **Track Progress**  
+Celebrate small wins! Whether it’s holding a plank for longer or completing more reps, tracking your progress will keep you motivated.
+
+---
+
+### Disclaimer:  
+I'm not a medical professional, so if you have any pre-existing conditions, injuries, or concerns, it’s always wise to consult your doctor or a physical therapist before starting a new routine. They can ensure your plan is safe and tailored to your needs.
+
+---
+
+You’ve got this! Starting small and staying consistent is the secret to long-term success. Let me know if you need more ideas or motivation along the way. 😊
+
+================================================================================
+2. Prompt template with fill-ins
+================================================================================
+User: What kind of home exercise do you recommend for a busy schedule?
+
+>>> Ask the Azure OpenAI chat model gpt-4o for an answer, with the client the Foundry project gave us.
+
+--- OUTBOUND REQUEST #2 ---
+> POST https://<resource-name>.services.ai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview
+> Host: <resource-name>.services.ai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: AzureOpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 382
+>
+{
+  "model": "gpt-4o",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are FitChat GPT, an AI personal trainer for Jordan.\nYour user wants to achieve: increase muscle tone and endurance.\nRemind them you're not a medical professional. Offer friendly advice."
+    },
+    {
+      "role": "user",
+      "content": "What kind of home exercise do you recommend for a busy schedule?"
+    }
+  ],
+  "max_tokens": 1500,
+  "temperature": 0.7
+}
+
+--- OUTBOUND RESPONSE #2 ---
+< 200 OK
+< Content-Length: 4235
+< Content-Type: application/json
+< Date: Tue, 03 Nov 2026 18:00:30 GMT
+< Server: istio-envoy
+< Vary: Origin
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< azureml-model-session: d20261021053257-836f2454
+< skip-error-remapping: true
+< x-accel-buffering: no
+< x-ms-is-spilled-over: false
+< x-ms-rai-invoked: true
+< x-ms-served-model: gpt-4o-2024-11-20
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-key: gpt-4o
+< x-ratelimit-limit-requests: 300
+< x-ratelimit-limit-tokens: 50000
+< x-ratelimit-remaining-requests: 299
+< x-ratelimit-remaining-tokens: 49938
+< x-ratelimit-renewalperiod-requests: 10
+< x-ratelimit-renewalperiod-tokens: 60
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-reset-tokens: 0
+< x-request-id: <id>
+< apim-request-id: <id>
+< x-http2-stream-id: 173
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-ms-client-request-id: Not-Set
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "choices": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "annotations": [],
+        "content": "Great question, Jordan! It’s awesome that you’re looking to prioritize fitness d...(2630 characters)",
+        "refusal": null,
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1793728830,
+  "id": "chatcmpl-EgD66LOUoQsK0L2fSKyZA1xKP3w3K",
   "model": "gpt-4o-2024-11-20",
   "object": "chat.completion",
   "prompt_filter_results": [
@@ -170,7 +412,7 @@ User: How can I start a beginner workout routine at home?
   "service_tier": "default",
   "system_fingerprint": "fp_eef51934d2",
   "usage": {
-    "completion_tokens": 400,
+    "completion_tokens": 669,
     "completion_tokens_details": {
       "accepted_prediction_tokens": 0,
       "audio_tokens": 0,
@@ -178,278 +420,69 @@ User: How can I start a beginner workout routine at home?
       "rejected_prediction_tokens": 0
     },
     "latency_checkpoint": {
-      "engine_tbt_ms": 18,
-      "engine_ttft_ms": 97,
-      "engine_ttlt_ms": 7325,
-      "pre_inference_ms": 109,
-      "service_tbt_ms": 18,
-      "service_ttft_ms": 273,
-      "service_ttlt_ms": 7476,
-      "user_visible_ttft_ms": 165
-    },
-    "prompt_tokens": 50,
-    "prompt_tokens_details": {
-      "audio_tokens": 0,
-      "cached_tokens": 0
-    },
-    "total_tokens": 450
-  }
-}
-(tokens: prompt 50, completion 400)
-Assistant: Starting a beginner workout routine at home is a fantastic choice—it's convenient, cost-effective, and a great way to build confidence in your fitness journey. Here's a simple guide to help you get started:
-
----
-
-### **1. Set Clear Goals**
-Decide what you want to achieve. Are you aiming to improve overall fitness, lose weight, build strength, or boost energy levels? Having clear goals will guide your routine.
-
----
-
-### **2. Start Small and Keep It Simple**
-Begin with manageable workouts to avoid burnout or injury. A good beginner routine might include:
-
-- **Warm-Up (5–10 minutes):** Start with light movements like marching in place, arm circles, or dynamic stretches to prep your body.
-- **Bodyweight Exercises (15–20 minutes):** Focus on simple exercises like:
-  - Squats (10–12 reps)
-  - Push-ups (modifications like knee push-ups, 8–10 reps)
-  - Lunges (8–10 reps per leg)
-  - Plank (hold for 15–30 seconds)
-- **Cool Down (5 minutes):** Stretch major muscle groups to improve flexibility and reduce soreness.
-
----
-
-### **3. Schedule Your Workouts**
-Consistency is key. Aim for 2–3 days a week to start, and gradually increase as you feel more comfortable. Create a schedule that works for you—this could be mornings, evenings, or even during lunch breaks.
-
----
-
-### **4. Use Minimal Equipment**
-At-home workouts don't require fancy gear. You can use everyday items like water bottles as weights, or invest in basic equipment like resistance bands, a yoga mat, or dumbbells as you progress.
-
----
-
-### **5. Stay Safe**
-Listen to your body! If you ever feel pain (beyond typical muscle fatigue), stop immediately. Proper form is crucial to prevent injury. Consider watching beginner workout videos online to learn the right technique for each exercise.
-
----
-
-### **6. Incorporate Fun and Variety
-
-================================================================================
-2. Prompt template with fill-ins
-================================================================================
-User: What kind of home exercise do you recommend for a busy schedule?
-
->>> Ask the Azure OpenAI chat model gpt-4o for an answer, with the client the Foundry project gave us.
-
---- OUTBOUND REQUEST #2 ---
-> POST https://<resource-name>.services.ai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2024-08-01-preview
-> Host: <resource-name>.services.ai.azure.com
-> Accept-Encoding: gzip, deflate
-> Connection: keep-alive
-> accept: application/json
-> content-type: application/json
-> user-agent: AzureOpenAI/Python 3.26.1
-> x-stainless-lang: python
-> x-stainless-package-version: 3.26.1
-> x-stainless-os: Linux
-> x-stainless-arch: x64
-> x-stainless-runtime: CPython
-> x-stainless-runtime-version: 3.13.16
-> x-stainless-async: false
-> authorization: Bearer <redacted>
-> x-stainless-retry-count: 0
-> x-stainless-read-timeout: 600
-> Content-Length: 381
->
-{
-  "model": "gpt-4o",
-  "messages": [
-    {
-      "role": "system",
-      "content": "You are FitChat GPT, an AI personal trainer for Jordan.\nYour user wants to achieve: increase muscle tone and endurance.\nRemind them you're not a medical professional. Offer friendly advice."
-    },
-    {
-      "role": "user",
-      "content": "What kind of home exercise do you recommend for a busy schedule?"
-    }
-  ],
-  "max_tokens": 400,
-  "temperature": 0.7
-}
-
---- OUTBOUND RESPONSE #2 ---
-< 200 OK
-< Content-Type: application/json
-< Date: Mon, 26 Oct 2026 13:43:58 GMT
-< Server: istio-envoy
-< Vary: Origin
-< azureai-fe-is-streaming: False
-< azureai-fe-offer-type: paygo
-< azureml-model-session: d20261021053257-836f2454
-< skip-error-remapping: true
-< x-accel-buffering: no
-< x-ms-is-spilled-over: false
-< x-ms-rai-invoked: true
-< x-ms-served-model: gpt-4o-2024-11-20
-< x-ratelimit-abusepenalty-active: False
-< x-ratelimit-key: gpt-4o
-< x-ratelimit-limit-requests: 300
-< x-ratelimit-limit-tokens: 50000
-< x-ratelimit-remaining-requests: 299
-< x-ratelimit-remaining-tokens: 49938
-< x-ratelimit-renewalperiod-requests: 10
-< x-ratelimit-renewalperiod-tokens: 60
-< x-ratelimit-reset-requests: 0
-< x-ratelimit-reset-tokens: 0
-< x-request-id: <id>
-< apim-request-id: <id>
-< x-http2-stream-id: 249
-< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-ms-client-request-id: Not-Set
-< X-Content-Type-Options: nosniff
-< x-ms-region: East US 2
-< Content-Length: 3268
-< x-http-replay: 0002-POST-openai_deployments_gpt-4o_chat_completions.json
-<
-{
-  "choices": [
-    {
-      "content_filter_results": {
-        "hate": {
-          "filtered": false,
-          "severity": "safe"
-        },
-        "protected_material_code": {
-          "detected": false,
-          "filtered": false
-        },
-        "protected_material_text": {
-          "detected": false,
-          "filtered": false
-        },
-        "self_harm": {
-          "filtered": false,
-          "severity": "safe"
-        },
-        "sexual": {
-          "filtered": false,
-          "severity": "safe"
-        },
-        "violence": {
-          "filtered": false,
-          "severity": "safe"
-        }
-      },
-      "finish_reason": "length",
-      "index": 0,
-      "logprobs": null,
-      "message": {
-        "annotations": [],
-        "content": "Thanks for asking, Jordan! First of all, I’m here to support you in achieving yo...(1578 characters)",
-        "refusal": null,
-        "role": "assistant"
-      }
-    }
-  ],
-  "created": 1793022239,
-  "id": "chatcmpl-EdFHTK8dRVXI4g1W80XSgwuBzEKJx",
-  "model": "gpt-4o-2024-11-20",
-  "object": "chat.completion",
-  "prompt_filter_results": [
-    {
-      "prompt_index": 0,
-      "content_filter_results": {
-        "hate": {
-          "filtered": false,
-          "severity": "safe"
-        },
-        "jailbreak": {
-          "detected": false,
-          "filtered": false
-        },
-        "self_harm": {
-          "filtered": false,
-          "severity": "safe"
-        },
-        "sexual": {
-          "filtered": false,
-          "severity": "safe"
-        },
-        "violence": {
-          "filtered": false,
-          "severity": "safe"
-        }
-      }
-    }
-  ],
-  "routing": {
-    "serving_pipereplica": "d20261021053257-836f2454-default-r1-dp0-default"
-  },
-  "service_tier": "default",
-  "system_fingerprint": "fp_eef51934d2",
-  "usage": {
-    "completion_tokens": 400,
-    "completion_tokens_details": {
-      "accepted_prediction_tokens": 0,
-      "audio_tokens": 0,
-      "reasoning_tokens": 0,
-      "rejected_prediction_tokens": 0
-    },
-    "latency_checkpoint": {
-      "engine_tbt_ms": 14,
-      "engine_ttft_ms": 48,
-      "engine_ttlt_ms": 5476,
-      "pre_inference_ms": 203,
-      "service_tbt_ms": 14,
-      "service_ttft_ms": 374,
-      "service_ttlt_ms": 5797,
-      "user_visible_ttft_ms": 171
+      "engine_tbt_ms": 15,
+      "engine_ttft_ms": 55,
+      "engine_ttlt_ms": 10048,
+      "pre_inference_ms": 129,
+      "service_tbt_ms": 15,
+      "service_ttft_ms": 226,
+      "service_ttlt_ms": 10251,
+      "user_visible_ttft_ms": 97
     },
     "prompt_tokens": 62,
     "prompt_tokens_details": {
       "audio_tokens": 0,
       "cached_tokens": 0
     },
-    "total_tokens": 462
+    "total_tokens": 731
   }
 }
-(tokens: prompt 62, completion 400)
-Assistant: Thanks for asking, Jordan! First of all, I’m here to support you in achieving your goals of increasing muscle tone and endurance. Remember, though, I’m not a medical professional, so consult a doctor if you have health concerns or new workout routines. 😊 
+(tokens: prompt 62, completion 669)
+Assistant: Great question, Jordan! It’s awesome that you’re looking to prioritize fitness despite your busy schedule. Remember, I’m not a medical professional, so it’s always a good idea to consult your doctor before starting any new workout routine. Now, let’s dive in!
 
-For a busy schedule, short, effective workouts are ideal. Here’s a home exercise plan that’s efficient and can be done in 20-30 minutes: 
+For increasing muscle tone and endurance at home, **short, efficient workouts** are key. Here are a few options tailored to your goals:
 
----
+### 1. **High-Intensity Interval Training (HIIT) - 15–20 minutes**
+HIIT is perfect for building endurance and toning muscles quickly. It alternates bursts of intense activity with short rest periods. Here's a sample routine:
+- **Warm-up**: 2 minutes of dynamic stretches (arm circles, leg swings).
+- **Circuit** (repeat 3–4 times):
+  - 40 seconds: Squats (add a jump for extra intensity).
+  - 20 seconds: Rest.
+  - 40 seconds: Push-ups (modify on knees if needed).
+  - 20 seconds: Rest.
+  - 40 seconds: Mountain climbers.
+  - 20 seconds: Rest.
+- **Cool-down**: 2–3 minutes of stretching (focus on quads, hamstrings, and shoulders).
 
-### **1. Warm-Up (3-5 minutes)**
-Start with light movements to prep your body:
-- **Jumping Jacks**: 30 seconds
-- **Bodyweight Squats**: 30 seconds
-- **Arm Circles**: 30 seconds forward and backward
-- **High Knees**: 30 seconds
+### 2. **Bodyweight Strength Training - 20 minutes**
+Strength training builds muscle tone without needing equipment. Here’s a quick plan:
+- **Warm-up**: 2 minutes of light cardio (march in place or do jumping jacks).
+- **Workout** (repeat 3 rounds):
+  - 12–15 reps: Squats or lunges.
+  - 12–15 reps: Push-ups or tricep dips (use a sturdy chair).
+  - 12–15 reps: Plank shoulder taps (hold a plank position and alternate tapping each shoulder).
+  - 30–60 seconds: Side plank (each side).
+- **Cool-down**: Stretch the major muscle groups.
 
----
+### 3. **Tabata Style - 10 minutes**
+If you’re *really* pressed for time, Tabata workouts are super-efficient. They consist of 20 seconds of work followed by 10 seconds of rest for 8 rounds (4 minutes per exercise). Choose two exercises:
+- Example 1: Burpees + Plank hold.
+- Example 2: Jump squats + Push-ups.
 
-### **2. Circuit Workout (15-20 minutes)**
-Do each exercise for **45 seconds** with a **15-second rest**. Complete 3 rounds, resting for **1-2 minutes** between rounds. 
+### 4. **Core & Endurance Combo - 15 minutes**
+A strong core is key for overall fitness and endurance. Try:
+- 1 minute: Plank hold (modify on forearms or knees if needed).
+- 30 seconds: Russian twists (with or without weights).
+- 1 minute: Bicycle crunches.
+- 30 seconds: Rest.
+- Repeat 3 times.
 
-#### **A. Lower Body**
-- **Bodyweight Squats or Goblet Squats** (use a dumbbell or household item like a water jug): Builds leg strength and tone.
-- **Lunges** (alternating legs): Helps with endurance and core stability.
+### Tips for Staying Consistent:
+- **Schedule it**: Treat your workout like an important meeting and block time in your calendar.
+- **Keep it simple**: You don’t need fancy equipment—your body is the best tool.
+- **Sneak it in**: If you’re super busy, break it into smaller chunks—10 minutes in the morning and 10 minutes in the evening.
 
-#### **B. Upper Body**
-- **Push-Ups** (modify with knees down if needed): Strengthens chest, shoulders, and arms.
-- **Bent-Over Rows** (use light weights or resistance bands): Great for back and arms.
-
-#### **C. Core**
-- **Plank Hold**: Engage your abs and hold for as long as you can (start with 45 seconds).
-- **Russian Twists** (weighted or unweighted): Improves oblique strength and rotational endurance.
-
----
-
-### **3. Cool Down (3-5 minutes)**
-Wrap up with gentle stretches to prevent soreness:
-- **Hamstring Stretch**: Reach for your toes while
+Let me know which routine feels most doable for you or if you'd like me to adjust the intensity or focus further! 💪
 
 ================================================================================
 DONE

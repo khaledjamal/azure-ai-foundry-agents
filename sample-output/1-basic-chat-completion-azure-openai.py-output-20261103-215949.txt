@@ -1,10 +1,8 @@
 Sample output of src/1-models/1-basic-chat-completion-azure-openai.py
-Replay on 2026-11-01 20:25 of answers recorded on 2026-10-26 20:22 (no service called), with:
-HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/1-basic-chat-completion-azure-openai-20261026-202253 uv run python src/1-models/1-basic-chat-completion-azure-openai.py
+Run on 2026-11-03 21:59 with: uv run python src/1-models/1-basic-chat-completion-azure-openai.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
-[http_replay] no random seed in this recording: random values differ from the record run
-[http_replay] replay mode, folder runs/recordings/1-basic-chat-completion-azure-openai-20261026-202253
+$ uv run python src/1-models/1-basic-chat-completion-azure-openai.py
 
 ================================================================================
 BASIC CHAT COMPLETION - AzureOpenAI
@@ -40,7 +38,7 @@ User: How can I start a beginner workout routine at home?
 > authorization: Bearer <redacted>
 > x-stainless-retry-count: 0
 > x-stainless-read-timeout: 600
-> Content-Length: 319
+> Content-Length: 320
 >
 {
   "model": "gpt-4o",
@@ -54,14 +52,15 @@ User: How can I start a beginner workout routine at home?
       "content": "How can I start a beginner workout routine at home?"
     }
   ],
-  "max_tokens": 400,
+  "max_tokens": 1500,
   "temperature": 0.7
 }
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
+< Content-Length: 4110
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 16:22:54 GMT
+< Date: Tue, 03 Nov 2026 17:59:54 GMT
 < Server: istio-envoy
 < Vary: Origin
 < azureai-fe-is-streaming: False
@@ -84,13 +83,11 @@ User: How can I start a beginner workout routine at home?
 < x-ratelimit-reset-tokens: 0
 < x-request-id: <id>
 < apim-request-id: <id>
-< x-http2-stream-id: 219
+< x-http2-stream-id: 901
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< Content-Length: 3335
-< x-http-replay: 0001-POST-openai_deployments_gpt-4o_chat_completions.json
 <
 {
   "choices": [
@@ -121,19 +118,19 @@ User: How can I start a beginner workout routine at home?
           "severity": "safe"
         }
       },
-      "finish_reason": "length",
+      "finish_reason": "stop",
       "index": 0,
       "logprobs": null,
       "message": {
         "annotations": [],
-        "content": "Starting a workout routine at home is a fantastic idea! It’s convenient, cost-ef...(1624 characters)",
+        "content": "Starting a workout routine at home is a great choice! It can be convenient, cost...(2495 characters)",
         "refusal": null,
         "role": "assistant"
       }
     }
   ],
-  "created": 1793031775,
-  "id": "chatcmpl-EdHlHBrTjxYPHKzeNMMssxx99oHBa",
+  "created": 1793728794,
+  "id": "chatcmpl-EgD5WyJf0zH3GX9QlqpR14eBkeDY7",
   "model": "gpt-4o-2024-11-20",
   "object": "chat.completion",
   "prompt_filter_results": [
@@ -169,7 +166,7 @@ User: How can I start a beginner workout routine at home?
   "service_tier": "default",
   "system_fingerprint": "fp_eef51934d2",
   "usage": {
-    "completion_tokens": 400,
+    "completion_tokens": 598,
     "completion_tokens_details": {
       "accepted_prediction_tokens": 0,
       "audio_tokens": 0,
@@ -177,63 +174,86 @@ User: How can I start a beginner workout routine at home?
       "rejected_prediction_tokens": 0
     },
     "latency_checkpoint": {
-      "engine_tbt_ms": 16,
-      "engine_ttft_ms": 86,
-      "engine_ttlt_ms": 6612,
-      "pre_inference_ms": 196,
-      "service_tbt_ms": 16,
-      "service_ttft_ms": 473,
-      "service_ttlt_ms": 6978,
-      "user_visible_ttft_ms": 277
+      "engine_tbt_ms": 15,
+      "engine_ttft_ms": 57,
+      "engine_ttlt_ms": 8768,
+      "pre_inference_ms": 94,
+      "service_tbt_ms": 15,
+      "service_ttft_ms": 194,
+      "service_ttlt_ms": 8895,
+      "user_visible_ttft_ms": 100
     },
     "prompt_tokens": 50,
     "prompt_tokens_details": {
       "audio_tokens": 0,
       "cached_tokens": 0
     },
-    "total_tokens": 450
+    "total_tokens": 648
   }
 }
-(tokens: prompt 50, completion 400)
-Assistant: Starting a workout routine at home is a fantastic idea! It’s convenient, cost-effective, and can be tailored to your fitness level and goals. Here’s a simple guide to help you get started. Remember, **I'm not a medical professional**, so if you have any underlying health concerns, consult with a doctor or fitness expert before beginning.
+(tokens: prompt 50, completion 598)
+Assistant: Starting a workout routine at home is a great choice! It can be convenient, cost-effective, and tailored to your needs. Here’s a step-by-step guide to get you started:
 
 ---
 
-### **Step 1: Define Your Goals**
-Ask yourself:
-- Do you want to lose weight, build strength, improve endurance, or just stay active?
-Your goals will guide your workout choices.
+### **1. Define Your Goals**
+Think about what you want to achieve: Are you aiming to get stronger, lose weight, improve endurance, or just stay active? Your goals will help shape your routine.
 
 ---
 
-### **Step 2: Set a Schedule**
-Consistency is key. Start small, aiming for 2–4 workouts per week. Gradually increase as you progress. Even 20–30 minutes is enough for beginners.
+### **2. Start Small**
+As a beginner, it’s important to ease into exercise to avoid injury or burnout. Start with just 15–30 minutes per session, 3–4 times a week, and gradually increase the duration as you feel more comfortable.
 
 ---
 
-### **Step 3: Warm-Up**
-Always warm up to prepare your body and prevent injury:
-- **5–10 minutes** of light cardio (e.g., marching in place, jumping jacks)
-- Dynamic stretches (e.g., arm circles, leg swings)
+### **3. Choose Basic Exercises**
+Here’s a simple routine you can follow that doesn’t require equipment:
+
+1. **Warm-Up (5–10 minutes)**  
+   - Jumping jacks or marching in place  
+   - Arm circles and gentle stretches  
+
+2. **Strength Exercises (10–15 minutes)**  
+   - **Bodyweight Squats**: 10–15 reps  
+   - **Push-Ups** (or modified kneeling push-ups): 10 reps  
+   - **Plank**: Hold for 20–30 seconds  
+   - **Glute Bridges**: 10–15 reps  
+
+3. **Cardio (5–10 minutes)**  
+   - High knees, jogging in place, or dancing to your favorite song!  
+
+4. **Cool-Down (5 minutes)**  
+   - Stretch major muscle groups (hamstrings, quads, arms, etc.)  
+   - Deep breathing to relax  
 
 ---
 
-### **Step 4: Choose Beginner-Friendly Exercises**
-Focus on **bodyweight exercises** that work multiple muscle groups and don’t require equipment. Here's a simple circuit to try:
-
-1. **Squats** (lower body strength): 10–15 reps  
-2. **Push-ups** (upper body strength): Modify by doing them on your knees if needed, 8–12 reps  
-3. **Plank** (core strength): Hold for 15–30 seconds  
-4. **Glute Bridges** (lower body/hips): 10–15 reps  
-5. **March in Place or High Knees** (cardio): 30 seconds  
-
-- Perform this circuit 2–3 times, resting 1–2 minutes between rounds.
+### **4. Build Consistency**
+Make exercise a part of your routine by picking a time of day that works best for you. Start with 2–3 times per week and gradually work up to 4–5 times.
 
 ---
 
-### **Step 5: Cool Down**
-Don’t skip cooling down—it helps with recovery:
-- Stretch major muscle groups (e.g., hamstrings, qu
+### **5. Use Online Resources**
+There are tons of free workout videos on platforms like YouTube that cater to beginners. Look for low-impact workouts, yoga, or guided strength training.
+
+---
+
+### **6. Track Your Progress**
+Keep a journal to note how you feel after each workout, and celebrate small wins—like completing all your reps or holding a plank longer!
+
+---
+
+### **7. Listen to Your Body**
+Rest when you need to, and don’t push through pain. Soreness is normal, but sharp pain is a sign to stop. If you’re unsure about anything, consult a doctor or certified trainer.
+
+---
+
+### **8. Optional: Add Equipment**
+Over time, you might want to incorporate resistance bands, dumbbells, or a yoga mat to enhance your workouts.
+
+---
+
+Remember: Progress takes time, and consistency is key. Be patient and kind to yourself as you build this new habit. And as always, I’m not a medical professional, so if you have any health concerns, check with your doctor before beginning a new exercise routine. You've got this! 😊
 
 ================================================================================
 2. Prompt template with fill-ins
@@ -260,7 +280,7 @@ User: What kind of home exercise do you recommend for a busy schedule?
 > authorization: Bearer <redacted>
 > x-stainless-retry-count: 0
 > x-stainless-read-timeout: 600
-> Content-Length: 381
+> Content-Length: 382
 >
 {
   "model": "gpt-4o",
@@ -274,19 +294,20 @@ User: What kind of home exercise do you recommend for a busy schedule?
       "content": "What kind of home exercise do you recommend for a busy schedule?"
     }
   ],
-  "max_tokens": 400,
+  "max_tokens": 1500,
   "temperature": 0.7
 }
 
 --- OUTBOUND RESPONSE #2 ---
 < 200 OK
+< Content-Length: 5423
 < Content-Type: application/json
-< Date: Mon, 26 Oct 2026 16:23:02 GMT
+< Date: Tue, 03 Nov 2026 18:00:03 GMT
 < Server: istio-envoy
 < Vary: Origin
 < azureai-fe-is-streaming: False
 < azureai-fe-offer-type: paygo
-< azureml-model-session: d20261021053257-836f2454
+< azureml-model-session: d20261026043005-f8ef57fd
 < skip-error-remapping: true
 < x-accel-buffering: no
 < x-ms-is-spilled-over: false
@@ -304,13 +325,11 @@ User: What kind of home exercise do you recommend for a busy schedule?
 < x-ratelimit-reset-tokens: 0
 < x-request-id: <id>
 < apim-request-id: <id>
-< x-http2-stream-id: 637
+< x-http2-stream-id: 373
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< Content-Length: 3311
-< x-http-replay: 0002-POST-openai_deployments_gpt-4o_chat_completions.json
 <
 {
   "choices": [
@@ -341,19 +360,19 @@ User: What kind of home exercise do you recommend for a busy schedule?
           "severity": "safe"
         }
       },
-      "finish_reason": "length",
+      "finish_reason": "stop",
       "index": 0,
       "logprobs": null,
       "message": {
         "annotations": [],
-        "content": "Absolutely, Jordan! I’m here to help you fit in effective exercises that target ...(1620 characters)",
+        "content": "Great question, Jordan! Finding time to exercise with a busy schedule can be cha...(3796 characters)",
         "refusal": null,
         "role": "assistant"
       }
     }
   ],
-  "created": 1793031783,
-  "id": "chatcmpl-EdHlPHphb90el6Ba88ScjsaiR6EPL",
+  "created": 1793728804,
+  "id": "chatcmpl-EgD5gnXLm13G5mFz1yBqbMAiRBDYr",
   "model": "gpt-4o-2024-11-20",
   "object": "chat.completion",
   "prompt_filter_results": [
@@ -384,12 +403,12 @@ User: What kind of home exercise do you recommend for a busy schedule?
     }
   ],
   "routing": {
-    "serving_pipereplica": "d20261021053257-836f2454-default-r1-dp0-default"
+    "serving_pipereplica": "d20261026043005-f8ef57fd-default-r0-dp0-default"
   },
   "service_tier": "default",
   "system_fingerprint": "fp_eef51934d2",
   "usage": {
-    "completion_tokens": 400,
+    "completion_tokens": 962,
     "completion_tokens_details": {
       "accepted_prediction_tokens": 0,
       "audio_tokens": 0,
@@ -397,57 +416,101 @@ User: What kind of home exercise do you recommend for a busy schedule?
       "rejected_prediction_tokens": 0
     },
     "latency_checkpoint": {
-      "engine_tbt_ms": 17,
-      "engine_ttft_ms": 84,
-      "engine_ttlt_ms": 6941,
-      "pre_inference_ms": 293,
-      "service_tbt_ms": 17,
-      "service_ttft_ms": 534,
-      "service_ttlt_ms": 7360,
-      "user_visible_ttft_ms": 241
+      "engine_tbt_ms": 11,
+      "engine_ttft_ms": 48,
+      "engine_ttlt_ms": 10360,
+      "pre_inference_ms": 143,
+      "service_tbt_ms": 11,
+      "service_ttft_ms": 359,
+      "service_ttlt_ms": 10664,
+      "user_visible_ttft_ms": 216
     },
     "prompt_tokens": 62,
     "prompt_tokens_details": {
       "audio_tokens": 0,
       "cached_tokens": 0
     },
-    "total_tokens": 462
+    "total_tokens": 1024
   }
 }
-(tokens: prompt 62, completion 400)
-Assistant: Absolutely, Jordan! I’m here to help you fit in effective exercises that target muscle tone and endurance, even with a packed schedule. Keep in mind, though, I’m not a medical professional, so consult one if you have specific health concerns. Here are some time-efficient, equipment-free exercises you can do at home:
+(tokens: prompt 62, completion 962)
+Assistant: Great question, Jordan! Finding time to exercise with a busy schedule can be challenging, but the good news is, you can still build muscle tone and endurance with quick, effective home workouts. Before we dive in, just a friendly reminder that I'm not a medical professional, so if you have any health concerns, it's always best to check with your doctor first. 😊
+
+Here are some home workout ideas that fit into a tight schedule:
 
 ---
 
-### **1. Full-Body Circuit Workout (15–20 minutes)**  
-This hits multiple muscle groups while keeping your heart rate up for endurance:  
+### **1. High-Intensity Interval Training (HIIT)**  
+HIIT is perfect for muscle tone and endurance, and it can be done in just 15–20 minutes. Here's an example:  
+**Time:** 20 minutes  
+- **Warm-Up (2 mins):** Jog in place or do jumping jacks.  
+- **Workout (16 mins):** Alternate between 40 seconds of effort and 20 seconds of rest for each move:  
+   - **Bodyweight Squats** (for legs and glutes)  
+   - **Push-Ups** (for chest, shoulders, and triceps)  
+   - **Mountain Climbers** (for core and stamina)  
+   - **Plank to Shoulder Taps** (for core stability)  
+- **Cool-Down (2 mins):** Stretch or do a few yoga poses.  
 
-#### **Warm-Up (2–3 minutes)**  
-- **Jumping jacks** or high knees to get the blood flowing.  
-
-#### **Workout (30 seconds per move, repeat 3 rounds)**  
-1. **Bodyweight squats**: Builds lower-body tone and strength.  
-2. **Push-ups**: Targets chest, shoulders, and triceps. Modify by dropping to your knees if needed.  
-3. **Plank**: Core endurance builder—keep your body straight like a board. Start with 20–30 seconds and build up over time.  
-4. **Lunges**: Alternate legs to engage quads, glutes, and hamstrings.  
-5. **Burpees**: A full-body move that combines strength and cardio.  
-
-#### **Cool-Down (2 minutes)**  
-- Stretch your hamstrings, quads, chest, and shoulders to aid recovery.
+This workout targets multiple muscle groups while boosting your endurance!
 
 ---
 
-### **2. Tabata Training (4–10 minutes)**  
-Tabata alternates 20 seconds of intense work with 10 seconds of rest for 4-minute rounds. Example moves:  
-- **Mountain climbers**: Core and cardio.  
-- **Push-up to shoulder tap**: Adds stability and balance.  
-- **Side lunges**: Targets inner thighs and glutes.  
+### **2. Strength Training Circuit**  
+If you want to tone your muscles, strength training is key. You can use dumbbells, resistance bands, or even just your body weight.  
+**Time:** 20 minutes  
+- **Warm-Up (2 mins):** Dynamic stretches (e.g., arm circles, lunges with a twist).  
+- **Circuit (3 rounds):**  
+   - 10–12 **Dumbbell Deadlifts** or Bodyweight Hip Hinges (hamstrings and glutes)  
+   - 10–12 **Push-Ups** or Chest Press with Dumbbells (upper body strength)  
+   - 10 **Reverse Lunges** (legs and glutes)  
+   - 15–20 **Russian Twists** (core)  
+   - **Rest 1 minute**, then repeat.  
+- **Cool-Down (2 mins):** Stretch, focusing on hamstrings, shoulders, and hips.
 
 ---
 
-### **3. Core-Focused Routine (10 minutes)**  
-Strengthening your core helps with muscle tone and endurance across your whole body:  
-- **B
+### **3. Power Yoga Flow**  
+Yoga is fantastic for building endurance, toning muscles, and improving flexibility.  
+**Time:** 15–20 minutes  
+- Flow through poses like:  
+   - **Plank to Downward Dog** (build core strength)  
+   - **Warrior II** (tone thighs and shoulders)  
+   - **Chair Pose** (engage quads and glutes)  
+   - **Boat Pose** (strengthen your abs)  
+
+Yoga also doubles as stress relief—perfect for a busy lifestyle!
+
+---
+
+### **4. Tabata Training**  
+Tabata is a form of HIIT with shorter intervals (work for 20 seconds, rest for 10 seconds, repeat for 4 minutes).  
+**Example Moves:**  
+- Burpees (cardio + full body)  
+- Squat Jumps (legs and glutes)  
+- Push-Ups (upper body)  
+- Plank (core stability)  
+
+Even if you only have 4 minutes, Tabata is a great way to get your heart rate up and work your muscles.
+
+---
+
+### **5. Functional Training (Everyday Movement)**  
+Busy days call for workouts that mimic daily activities, helping you build strength for your lifestyle.  
+**Time:** 15–20 minutes  
+- **Step-Ups:** Use a sturdy chair or bench for glute and leg strength.  
+- **Wall Sit:** Hold for 30–60 seconds to strengthen your thighs.  
+- **Plank Variations:** Add shoulder taps or leg lifts for extra challenge.  
+- **Farmer’s Carry:** Grab two heavy objects (like water bottles) and walk around for grip and core strength.  
+
+---
+
+### **Tips for Staying Consistent**  
+1. **Schedule It:** Treat your workouts like appointments—a quick session before work or during lunch can make all the difference.  
+2. **Keep It Simple:** Don’t overcomplicate—just aim to move your body most days.  
+3. **Use Technology:** Apps or YouTube channels can guide you through quick workouts.  
+4. **Have Equipment Handy:** Keep a yoga mat, resistance bands, or dumbbells in a corner of your home for easy access.  
+
+Let me know if you'd like me to customize one of these workouts further or if you have specific equipment at home to work with! You’ve got this! 💪
 
 ================================================================================
 DONE
