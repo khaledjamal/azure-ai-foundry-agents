@@ -638,7 +638,7 @@ def fill_safety_index(search_client, vectors, embedding_model):
     for _ in range(INDEX_WAIT_SECONDS):
         if search_client.get_document_count() == len(SAFETY_DOCS):
             break
-        time.sleep(1)
+        time.sleep(1)  # seconds
     document_count = search_client.get_document_count()
     print(f"Index ready: {document_count} documents searchable")
 

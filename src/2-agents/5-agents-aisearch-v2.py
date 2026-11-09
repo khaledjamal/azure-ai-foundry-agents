@@ -207,7 +207,7 @@ def create_fitness_index(index_client, search_client):
         print("\n>>> Delete the old fitness index from Azure AI Search.")
         index_client.delete_index(INDEX_NAME)
         print(f"Deleted existing index: {INDEX_NAME}")
-        time.sleep(1)
+        time.sleep(1)  # seconds
     print("\n>>> Create the fitness index in Azure AI Search.")
     index_client.create_index(SearchIndex(name=INDEX_NAME, fields=fields))
     print(f"Created index: {INDEX_NAME}")
@@ -231,7 +231,7 @@ def create_fitness_index(index_client, search_client):
         if len(list(search_client.search(search_text="*", top=10))) == len(documents):
             print("Index is searchable.")
             return
-        time.sleep(2)
+        time.sleep(2)  # seconds
     raise RuntimeError("The index did not return all products after 20 seconds.")
 
 

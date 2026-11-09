@@ -232,7 +232,7 @@ def create_fitness_index(index_client):
         print("\n>>> Delete the old fitness index from Azure AI Search.")
         index_client.delete_index(INDEX_NAME)
         print(f"Deleted existing index: {INDEX_NAME}")
-        time.sleep(1)
+        time.sleep(1)  # seconds
 
     index = SearchIndex(name=INDEX_NAME, fields=fields)
     print("\n>>> Create the fitness index in Azure AI Search.")
@@ -330,7 +330,7 @@ def verify_search_index(search_client):
             last_error = exc
 
         if attempt < 5:
-            time.sleep(2)
+            time.sleep(2)  # seconds
 
     if last_error:
         raise RuntimeError(f"Could not verify uploaded documents: {last_error}")

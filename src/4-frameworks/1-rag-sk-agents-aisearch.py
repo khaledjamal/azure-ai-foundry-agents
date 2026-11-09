@@ -261,7 +261,7 @@ async def wait_for_documents(search_client, expected, timeout_seconds=30):
         if count >= expected or asyncio.get_running_loop().time() > deadline:
             print(f"Searchable documents: {count}/{expected}")
             return count
-        await asyncio.sleep(1)
+        await asyncio.sleep(1)  # seconds
 
 
 async def print_direct_search(search_client, text):

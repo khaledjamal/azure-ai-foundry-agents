@@ -179,7 +179,7 @@ def wait_for_documents(search_client, expected, timeout_seconds=30):
         if count >= expected or time.time() > deadline:
             print(f"Searchable documents: {count}/{expected}")
             return count
-        time.sleep(1)
+        time.sleep(1)  # seconds
 
 
 def rag_chat(openai_client, search_client, embedding_model, chat_model, query, top_k=3):
