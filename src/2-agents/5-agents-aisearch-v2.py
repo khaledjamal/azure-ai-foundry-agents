@@ -235,6 +235,19 @@ def create_fitness_index(index_client, search_client):
     raise RuntimeError("The index did not return all products after 20 seconds.")
 
 
+def escape_quotes_for_search_filter(value):
+    """Double each single quote in value, for a quoted Azure AI Search filter value.
+
+    - Azure AI Search filters use the OData query language (a web standard); in it,
+      a single quote inside a quoted value is written twice: O'Brien -> O''Brien.
+    - Only the single quote needs this: the SDK sends the filter in a JSON body,
+      which takes care of other characters.
+    - Why: the category comes from the model, so a stray quote must not end the
+      value early and change the filter.
+    """
+    return value.replace("'", "''")
+
+
 def make_find_items_under(search_client):
     # Same logic as find_items_under in 5-agents-aisearch.py and the Semantic Kernel
     # plugin.
@@ -251,7 +264,7 @@ def make_find_items_under(search_client):
 
     def find_items_under(max_price, category=None):
         category = category.strip().title() if category and category.strip() else None
-        category_filter = f" and Category eq '{category.replace(chr(39), chr(39) * 2)}'" if category else ""
+        category_filter = f" and Category eq '{escape_quotes_for_search_filter(category)}'" if category else ""
         matches = products(f"Price le {max_price}{category_filter}")
         if matches:
             return "\n".join(matches)

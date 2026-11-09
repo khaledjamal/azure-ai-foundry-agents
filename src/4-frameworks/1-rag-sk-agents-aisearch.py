@@ -140,6 +140,19 @@ CALL_DESCRIPTIONS = {
 }
 
 
+def escape_quotes_for_search_filter(value):
+    """Double each single quote in value, for a quoted Azure AI Search filter value.
+
+    - Azure AI Search filters use the OData query language (a web standard); in it,
+      a single quote inside a quoted value is written twice: O'Brien -> O''Brien.
+    - Only the single quote needs this: the SDK sends the filter in a JSON body,
+      which takes care of other characters.
+    - Why: the category comes from the model, so a stray quote must not end the
+      value early and change the filter.
+    """
+    return value.replace("'", "''")
+
+
 class FitnessCatalogPlugin:
     """Local tool for the agent: exact price filtering on the search index (runs in this
     script, not in Azure)."""
@@ -160,7 +173,7 @@ class FitnessCatalogPlugin:
         category: Annotated[str | None, "Product category, or empty for all categories"] = None,
     ) -> Annotated[str, "Matching products with their prices"]:
         category = category.strip().title() if category and category.strip() else None
-        category_filter = f" and Category eq '{category.replace(chr(39), chr(39) * 2)}'" if category else ""
+        category_filter = f" and Category eq '{escape_quotes_for_search_filter(category)}'" if category else ""
 
         matches = await self._products(f"Price le {max_price}{category_filter}")
         print(f"  [plugin] find_items_under(max_price={max_price}, category={category}) -> {len(matches)} item(s)")

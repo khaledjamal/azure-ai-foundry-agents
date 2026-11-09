@@ -265,6 +265,19 @@ def upload_fitness_documents(search_client):
     print(f"Uploaded {len(SAMPLE_DOCUMENTS)} fitness documents.")
 
 
+def escape_quotes_for_search_filter(value):
+    """Double each single quote in value, for a quoted Azure AI Search filter value.
+
+    - Azure AI Search filters use the OData query language (a web standard); in it,
+      a single quote inside a quoted value is written twice: O'Brien -> O''Brien.
+    - Only the single quote needs this: the SDK sends the filter in a JSON body,
+      which takes care of other characters.
+    - Why: the category comes from the model, so a stray quote must not end the
+      value early and change the filter.
+    """
+    return value.replace("'", "''")
+
+
 def make_find_items_under(search_client):
     # Local function tool: the agent asks for it, and this script runs it (not Azure).
     # Same logic as the Semantic Kernel plugin in
@@ -288,7 +301,7 @@ def make_find_items_under(search_client):
         :return: Matching products with their prices.
         """  # noqa: W505 - the agent gets this docstring as the tool description
         category = category.strip().title() if category and category.strip() else None
-        category_filter = f" and Category eq '{category.replace(chr(39), chr(39) * 2)}'" if category else ""
+        category_filter = f" and Category eq '{escape_quotes_for_search_filter(category)}'" if category else ""
 
         matches = products(f"Price le {max_price}{category_filter}")
         print(f"  [function] find_items_under(max_price={max_price}, category={category}) -> {len(matches)} item(s)")
