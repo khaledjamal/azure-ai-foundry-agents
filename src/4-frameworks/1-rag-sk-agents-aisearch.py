@@ -1,3 +1,4 @@
+# src/4-frameworks/1-rag-sk-agents-aisearch.py
 """Semantic Kernel + Azure AI Search lab (1-rag-sk-agents-aisearch.ipynb) as a script.
 
 Workshop notebook:

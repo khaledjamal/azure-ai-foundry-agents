@@ -1,3 +1,4 @@
+# src/1-models/1-basic-chat-completion-rest-vs-sdk.py
 """The same chat completion sent twice: once as a raw REST request, once through the
 openai SDK.
 

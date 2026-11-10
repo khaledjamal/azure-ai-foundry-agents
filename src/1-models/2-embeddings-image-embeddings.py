@@ -1,3 +1,4 @@
+# src/1-models/2-embeddings-image-embeddings.py
 """Image embeddings part of the embeddings lab (2-embeddings.ipynb, section 4) as a
 script, on Cohere embed-v-4-0.
 

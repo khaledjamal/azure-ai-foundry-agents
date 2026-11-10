@@ -1,3 +1,4 @@
+# src/2-agents/4-bing-grounding.py
 """Foundry agent (new agents API, azure-ai-projects 2.x) that grounds its answers with
 Grounding with Bing Search.
 

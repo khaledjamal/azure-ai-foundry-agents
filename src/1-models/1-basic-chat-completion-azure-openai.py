@@ -1,3 +1,4 @@
+# src/1-models/1-basic-chat-completion-azure-openai.py
 """Basic chat completion lab (1-basic-chat-completion.ipynb) as a script.
 
 Workshop notebook:

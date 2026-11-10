@@ -1,3 +1,4 @@
+# tests/test_http_log.py
 """Tests for workshop_utils.http_log against a local HTTP server (no Azure, no cost).
 
 Run from the repo root with the venv that has requests, httpx2 and httpx installed:

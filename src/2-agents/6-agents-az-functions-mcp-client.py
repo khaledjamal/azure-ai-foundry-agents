@@ -1,3 +1,4 @@
+# src/2-agents/6-agents-az-functions-mcp-client.py
 """Direct test of the Azure Functions MCP server: list its tools and call them, without
 any model or agent.
 

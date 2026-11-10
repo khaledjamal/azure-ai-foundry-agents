@@ -1,3 +1,4 @@
+# src/3-quality/2-evaluation.py
 """Evaluation lab (2-evaluation.ipynb) as a script.
 
 Workshop notebook:

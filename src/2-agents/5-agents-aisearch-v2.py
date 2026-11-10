@@ -1,3 +1,4 @@
+# src/2-agents/5-agents-aisearch-v2.py
 """Foundry agent (new agents API, azure-ai-projects 2.x) with an Azure AI Search tool
 and a local price function tool.
 

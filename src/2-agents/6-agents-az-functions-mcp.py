@@ -1,3 +1,4 @@
+# src/2-agents/6-agents-az-functions-mcp.py
 """Foundry agent (new agents API, azure-ai-projects 2.x) that uses the Azure Functions
 MCP server's workout tools.
 

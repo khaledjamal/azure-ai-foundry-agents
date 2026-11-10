@@ -1,3 +1,4 @@
+# src/1-models/2-embeddings-image-generation.py
 """Image generation part of the embeddings lab (2-embeddings.ipynb, section 5) as a
 script, on gpt-image-2.
 

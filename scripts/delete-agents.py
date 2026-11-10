@@ -1,3 +1,4 @@
+# scripts/delete-agents.py
 """Delete Foundry agents with an exact name from the project; all other agents are kept.
 
 Lists every agent first (id, name, model, created time), then deletes the ones whose

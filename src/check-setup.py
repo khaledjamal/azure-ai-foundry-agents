@@ -1,3 +1,4 @@
+# src/check-setup.py
 """Read-only setup check for the labs, the script version of the three 1-introduction
 notebooks.
 

@@ -1,3 +1,4 @@
+# src/1-models/4-phi-4.py
 """Phi-4 lab (4-phi-4.ipynb) as a script: Phi-4, Phi-4-reasoning and gpt-4o-mini on the
 same prompts.
 

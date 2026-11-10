@@ -1,3 +1,4 @@
+# src/4-frameworks/2-autogen-multi-agent-rag.py
 """AutoGen multi-agent RAG lab (2-autogen-multi-agent-rag.ipynb) as a script, on AutoGen
 0.7.
 

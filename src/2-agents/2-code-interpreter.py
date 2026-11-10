@@ -1,3 +1,4 @@
+# src/2-agents/2-code-interpreter.py
 """Code interpreter lab (2-code_interpreter.ipynb) as a script.
 
 Workshop notebook:

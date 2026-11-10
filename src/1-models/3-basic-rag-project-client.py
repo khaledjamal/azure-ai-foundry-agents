@@ -1,3 +1,4 @@
+# src/1-models/3-basic-rag-project-client.py
 """Basic RAG lab (3-basic-rag.ipynb) as a script.
 
 Workshop notebook:

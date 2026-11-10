@@ -1,3 +1,4 @@
+# src/3-quality/1-observability.py
 """Observability lab (1-Observability.ipynb) as a script: tracing a chat call and a
 file-search agent with OpenTelemetry, to the console or to Application Insights (shown
 on the Foundry portal's Tracing page).

@@ -1,3 +1,4 @@
+# src/workshop_utils/http_log.py
 """Log every HTTP request and response a script makes, in one format, with secrets
 redacted.
 

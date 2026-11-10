@@ -1,3 +1,4 @@
+# src/1-models/5-deep-seek-v4-flash.py
 """DeepSeek lab (5-deep-seek-r1.ipynb) as a script, on DeepSeek-V4-Flash: the same
 prompts with thinking off and on.
 

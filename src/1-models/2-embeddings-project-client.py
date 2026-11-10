@@ -1,3 +1,4 @@
+# src/1-models/2-embeddings-project-client.py
 """Text embeddings part of the embeddings lab (2-embeddings.ipynb) as a script.
 
 Workshop notebook:

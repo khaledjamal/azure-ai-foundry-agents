@@ -1,3 +1,4 @@
+# src/4-frameworks/3-autogen-personalized-heart-rate.py
 """AutoGen personalized heart-rate lab (3-autogen-personalized-heart-rate.ipynb) as a
 reduced script, on AutoGen 0.7.
 

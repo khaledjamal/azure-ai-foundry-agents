@@ -1,3 +1,4 @@
+# src/2-agents/3-file-search.py
 """File search lab (3-file-search.ipynb) as a script.
 
 Workshop notebook:

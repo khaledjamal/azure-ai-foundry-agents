@@ -1,3 +1,4 @@
+# src/3-quality/3-e2e-genai-ops.py
 """End-to-end GenAI Ops lab (3-e2e-GenAI-Ops.ipynb) as a script: model selection,
 safety, security, quality, observability, RAG evaluation and an indirect attack
 simulation, traced to Application Insights.

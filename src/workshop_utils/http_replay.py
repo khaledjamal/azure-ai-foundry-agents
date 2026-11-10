@@ -1,3 +1,4 @@
+# src/workshop_utils/http_replay.py
 """Record web service calls to JSON files once, then replay them: the same code runs
 again without paying again.
 

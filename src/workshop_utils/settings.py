@@ -1,3 +1,4 @@
+# src/workshop_utils/settings.py
 """Where the lab scripts' settings come from: one `.env` file at the repo root, next to
 `.env.example`.
 

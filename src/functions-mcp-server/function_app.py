@@ -1,3 +1,4 @@
+# src/functions-mcp-server/function_app.py
 """Remote MCP server on Azure Functions with two workout tools (fixed logic, no model).
 
 This file is the server side of the MCP lab: a small app on Azure Functions that offers

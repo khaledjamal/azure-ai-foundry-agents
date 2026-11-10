@@ -1,3 +1,4 @@
+# scripts/probe-mcp-http.py
 """Send raw MCP JSON-RPC requests over HTTP and print each status, header and body, to
 debug an MCP endpoint.
 

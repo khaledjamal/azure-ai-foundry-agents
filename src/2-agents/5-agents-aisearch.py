@@ -1,3 +1,4 @@
+# src/2-agents/5-agents-aisearch.py
 """Foundry agent with an Azure AI Search tool and a local price function tool
 (5-agents-aisearch.ipynb) as a script.
 

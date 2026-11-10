@@ -1,3 +1,4 @@
+# src/2-agents/1-basics.py
 """Agent basics lab (1-basics.ipynb) as a script.
 
 Workshop notebook:
