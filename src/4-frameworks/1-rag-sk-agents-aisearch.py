@@ -52,7 +52,13 @@ from azure.core.credentials import AzureKeyCredential
 from azure.identity.aio import DefaultAzureCredential
 from azure.search.documents.aio import SearchClient
 from azure.search.documents.indexes.aio import SearchIndexClient
-from azure.search.documents.indexes.models import SearchableField, SearchFieldDataType, SearchIndex, SimpleField
+from azure.search.documents.indexes.models import (
+    SearchableField,
+    SearchField,
+    SearchFieldDataType,
+    SearchIndex,
+    SimpleField,
+)
 from semantic_kernel.agents import AzureAIAgent, AzureAIAgentThread
 from semantic_kernel.functions import kernel_function
 
@@ -173,7 +179,6 @@ class FitnessCatalogPlugin:
         max_price: Annotated[float, "Maximum price in US dollars"],
         category: Annotated[str | None, "Product category, or empty for all categories"] = None,
     ) -> Annotated[str, "Matching products with their prices"]:
-        category = category.strip().title() if category and category.strip() else None
         category_filter = f" and Category eq '{escape_quotes_for_search_filter(category)}'" if category else ""
 
         matches = await self._products(f"Price le {max_price}{category_filter}")
@@ -239,7 +244,18 @@ async def create_fitness_index(index_client):
     fields = [
         SimpleField(name="FitnessItemID", type=SearchFieldDataType.String, key=True),
         SearchableField(name="Name", type=SearchFieldDataType.String, filterable=True),
-        SearchableField(name="Category", type=SearchFieldDataType.String, filterable=True, facetable=True),
+        # The lowercase normalizer makes the Category filter ignore case ("cardio"
+        # finds "Cardio"), whatever spelling the model sends. SearchField, not
+        # SearchableField: the shortcut drops normalizer_name.
+        SearchField(
+            name="Category",
+            type=SearchFieldDataType.String,
+            searchable=True,
+            filterable=True,
+            facetable=True,
+            sortable=False,
+            normalizer_name="lowercase",
+        ),
         SimpleField(name="Price", type=SearchFieldDataType.Double, filterable=True, sortable=True, facetable=True),
         SearchableField(name="Description", type=SearchFieldDataType.String),
     ]

@@ -67,7 +67,13 @@ from azure.core.credentials import AzureKeyCredential
 from azure.identity import DefaultAzureCredential
 from azure.search.documents import SearchClient
 from azure.search.documents.indexes import SearchIndexClient
-from azure.search.documents.indexes.models import SearchableField, SearchFieldDataType, SearchIndex, SimpleField
+from azure.search.documents.indexes.models import (
+    SearchableField,
+    SearchField,
+    SearchFieldDataType,
+    SearchIndex,
+    SimpleField,
+)
 
 from workshop_utils import http_log
 from workshop_utils.settings import load_env
@@ -199,7 +205,18 @@ def create_fitness_index(index_client):
     fields = [
         SimpleField(name="FitnessItemID", type=SearchFieldDataType.String, key=True, filterable=True),
         SearchableField(name="Name", type=SearchFieldDataType.String, filterable=True),
-        SearchableField(name="Category", type=SearchFieldDataType.String, filterable=True, facetable=True),
+        # The lowercase normalizer makes the Category filter ignore case ("cardio"
+        # finds "Cardio"), whatever spelling the model sends. SearchField, not
+        # SearchableField: the shortcut drops normalizer_name.
+        SearchField(
+            name="Category",
+            type=SearchFieldDataType.String,
+            searchable=True,
+            filterable=True,
+            facetable=True,
+            sortable=False,
+            normalizer_name="lowercase",
+        ),
         SimpleField(name="Price", type=SearchFieldDataType.Double, filterable=True, sortable=True, facetable=True),
         SearchableField(name="Description", type=SearchFieldDataType.String),
     ]
@@ -276,7 +293,6 @@ def make_find_items_under(search_client):
         return [f"{d['Name']} ({d['Category']}): ${d['Price']:.2f}" for d in results]
 
     def find_items_under(max_price, category=None):
-        category = category.strip().title() if category and category.strip() else None
         category_filter = f" and Category eq '{escape_quotes_for_search_filter(category)}'" if category else ""
         matches = products(f"Price le {max_price}{category_filter}")
         if matches:

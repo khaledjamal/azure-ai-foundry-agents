@@ -52,6 +52,7 @@ from azure.search.documents import SearchClient
 from azure.search.documents.indexes import SearchIndexClient
 from azure.search.documents.indexes.models import (
     SearchableField,
+    SearchField,
     SearchFieldDataType,
     SearchIndex,
     SimpleField,
@@ -208,11 +209,17 @@ def create_fitness_index(index_client):
             type=SearchFieldDataType.String,
             filterable=True,
         ),
-        SearchableField(
+        # The lowercase normalizer makes the Category filter ignore case ("cardio"
+        # finds "Cardio"), whatever spelling the model sends. SearchField, not
+        # SearchableField: the shortcut drops normalizer_name.
+        SearchField(
             name="Category",
             type=SearchFieldDataType.String,
+            searchable=True,
             filterable=True,
             facetable=True,
+            sortable=False,
+            normalizer_name="lowercase",
         ),
         SimpleField(
             name="Price",
@@ -301,7 +308,6 @@ def make_find_items_under(search_client):
         :param category: Product category, or empty for all categories.
         :return: Matching products with their prices.
         """  # noqa: W505 - the agent gets this docstring as the tool description
-        category = category.strip().title() if category and category.strip() else None
         category_filter = f" and Category eq '{escape_quotes_for_search_filter(category)}'" if category else ""
 
         matches = products(f"Price le {max_price}{category_filter}")
