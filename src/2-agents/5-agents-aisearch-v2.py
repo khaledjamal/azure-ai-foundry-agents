@@ -281,7 +281,9 @@ def escape_quotes_for_search_filter(value):
 def make_find_items_under(search_client):
     # Same logic as find_items_under in 5-agents-aisearch.py and the Semantic Kernel
     # plugin.
-    def products(filter_expression, top=10):
+    def search_products(filter_expression, top=10):
+        """Search the fitness index with an OData filter; "Name (Category): $price"
+        lines, cheapest first."""
         print("\n>>> Search the fitness index in Azure AI Search for products, for the find_items_under function.")
         results = search_client.search(
             search_text="*",
@@ -290,16 +292,16 @@ def make_find_items_under(search_client):
             select=["Name", "Category", "Price"],
             top=top,
         )
-        return [f"{d['Name']} ({d['Category']}): ${d['Price']:.2f}" for d in results]
+        return [f"{document['Name']} ({document['Category']}): ${document['Price']:.2f}" for document in results]
 
     def find_items_under(max_price, category=None):
         category_filter = f" and Category eq '{escape_quotes_for_search_filter(category)}'" if category else ""
-        matches = products(f"Price le {max_price}{category_filter}")
+        matches = search_products(f"Price le {max_price}{category_filter}")
         if matches:
             return "\n".join(matches)
         answer = f"No products cost ${max_price:.2f} or less" + (f" in category {category}." if category else ".")
         if category:
-            cheapest = products(category_filter.removeprefix(" and "), top=1)
+            cheapest = search_products(category_filter.removeprefix(" and "), top=1)
             if cheapest:
                 answer += f" Cheapest product in {category}: {cheapest[0]}"
         return answer

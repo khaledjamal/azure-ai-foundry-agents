@@ -181,19 +181,21 @@ class FitnessCatalogPlugin:
     ) -> Annotated[str, "Matching products with their prices"]:
         category_filter = f" and Category eq '{escape_quotes_for_search_filter(category)}'" if category else ""
 
-        matches = await self._products(f"Price le {max_price}{category_filter}")
+        matches = await self._search_products(f"Price le {max_price}{category_filter}")
         print(f"  [plugin] find_items_under(max_price={max_price}, category={category}) -> {len(matches)} item(s)")
         if matches:
             return "\n".join(matches)
 
         answer = f"No products cost ${max_price:.2f} or less" + (f" in category {category}." if category else ".")
         if category:
-            cheapest = await self._products(category_filter.removeprefix(" and "), top=1)
+            cheapest = await self._search_products(category_filter.removeprefix(" and "), top=1)
             if cheapest:
                 answer += f" Cheapest product in {category}: {cheapest[0]}"
         return answer
 
-    async def _products(self, filter_expression, top=10):
+    async def _search_products(self, filter_expression, top=10):
+        """Search the fitness index with an OData filter; "Name (Category): $price"
+        lines, cheapest first."""
         print(
             "\n>>> find_items_under function: search the fitness index in Azure AI Search with this filter: "
             f"{filter_expression}"
@@ -205,7 +207,7 @@ class FitnessCatalogPlugin:
             select=["Name", "Category", "Price"],
             top=top,
         )
-        return [f"{d['Name']} ({d['Category']}): ${d['Price']:.2f}" async for d in results]
+        return [f"{document['Name']} ({document['Category']}): ${document['Price']:.2f}" async for document in results]
 
 
 def load_environment():
