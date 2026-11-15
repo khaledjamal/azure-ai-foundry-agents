@@ -210,6 +210,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -284,10 +285,12 @@ async def run_query(team):
         if isinstance(item, TaskResult):
             result = item
             continue
+
         usage = getattr(item, "models_usage", None)
         if usage:
             prompt_tokens += usage.prompt_tokens
             completion_tokens += usage.completion_tokens
+
         if isinstance(item, ToolCallRequestEvent):
             for call in item.content:
                 print(f"\n{item.source} -> tool call: {call.name}({call.arguments})")
@@ -296,6 +299,7 @@ async def run_query(team):
                 print(f"{item.source} <- tool result:\n{output.content}")
         elif item.source != "user":
             print(f"\n{item.source}:\n{item.to_text()}")
+
     print(f"\n(chat tokens: prompt {prompt_tokens}, completion {completion_tokens})")
     return result
 
@@ -329,6 +333,7 @@ async def main():
     if not answered:
         print("FINISHED WITH ERRORS: the PersonalizedResponderAgent did not answer.")
         sys.exit(1)
+
     print("COMPLETED: the PersonalizedResponderAgent answered.")
 
 

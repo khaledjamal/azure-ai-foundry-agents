@@ -72,6 +72,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -108,6 +109,7 @@ def chat(openai_client, model, system_prompt, user_input):
     choice = response.choices[0]
     if choice.finish_reason == "length":
         print(f"(answer cut off: {model} reached max_tokens={MAX_ANSWER_TOKENS}, finish_reason=length)")
+
     return choice.message.content
 
 

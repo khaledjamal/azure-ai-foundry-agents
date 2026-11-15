@@ -92,6 +92,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -161,6 +162,7 @@ def run_prompts(openai_client, model):
             result = ask(openai_client, model, system_prompt, question, reasoning_effort)
             results[(name, mode)] = result
             print_result(name, mode, result)
+
     return results
 
 
@@ -173,6 +175,7 @@ def print_result(name, mode, result):
         print(f"[thinking, {len(result['thinking'].split())} words]")
         print(result["thinking"])
         print("[answer]")
+
     print(result["answer"])
     if name == "pace":
         print(f"[pace answer correct: {'yes' if pace_is_correct(result['answer']) else 'no'}]")
@@ -205,6 +208,7 @@ def check_results(results):
     print()
     for check, passed in checks:
         print(f"Check: {'PASS' if passed else 'FAIL'}  {check}")
+
     return all(passed for _, passed in checks)
 
 

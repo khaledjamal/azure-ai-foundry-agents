@@ -63,6 +63,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -101,6 +102,7 @@ def main():
         print(f"Sentence {i}: '{TEXT_PHRASES[i]}'")
         print(f"  Embedding length={len(item.embedding)}")
         print(f"  Sample: {sample(item.embedding)}")
+
     print(f"(tokens: {response.usage.total_tokens})")
 
     print_section("2. Embed user text with a prompt template in front")

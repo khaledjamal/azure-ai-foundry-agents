@@ -173,6 +173,7 @@ def first_env(*names):
         value = os.getenv(name)
         if value:
             return value
+
     return None
 
 
@@ -180,8 +181,10 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = os.environ["AZURE_AI_SERVICES_ENDPOINT"].rstrip("/")
     project_name = os.environ["AZURE_AI_PROJECT_NAME"]
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
@@ -196,8 +199,10 @@ def create_search_clients():
     search_endpoint = os.environ["AZURE_AI_SEARCH_ENDPOINT"]
     credential = AzureKeyCredential(os.environ["AZURE_AI_SEARCH_API_KEY"])
     print(f"Azure AI Search endpoint: {search_endpoint}")
+
     index_client = SearchIndexClient(endpoint=search_endpoint, credential=credential)
     search_client = SearchClient(endpoint=search_endpoint, index_name=INDEX_NAME, credential=credential)
+
     return index_client, search_client
 
 
@@ -220,13 +225,16 @@ def create_fitness_index(index_client):
         SimpleField(name="Price", type=SearchFieldDataType.Double, filterable=True, sortable=True, facetable=True),
         SearchableField(name="Description", type=SearchFieldDataType.String),
     ]
+
     print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index already exists.")
     index_names = {index.name for index in index_client.list_indexes()}
+
     if INDEX_NAME in index_names:
         print("\n>>> Delete the old fitness index from Azure AI Search.")
         index_client.delete_index(INDEX_NAME)
         print(f"Deleted existing index: {INDEX_NAME}")
         time.sleep(1)  # seconds
+
     print("\n>>> Create the fitness index in Azure AI Search.")
     index_client.create_index(SearchIndex(name=INDEX_NAME, fields=fields))
     print(f"Created index: {INDEX_NAME}")
@@ -241,11 +249,14 @@ def with_price_text(document):
 
 def upload_fitness_documents(search_client):
     documents = [with_price_text(d) for d in SAMPLE_DOCUMENTS]
+
     print("\n>>> Upload the fitness product documents to the fitness index in Azure AI Search.")
     results = search_client.upload_documents(documents=documents)
+
     failed = [result.key for result in results if not result.succeeded]
     if failed:
         raise RuntimeError(f"Documents failed to upload: {failed}")
+
     print(f"Uploaded {len(documents)} products.")
 
 
@@ -258,10 +269,13 @@ def wait_for_documents(search_client):
             "to become searchable, so this repeats until all of them come back."
         )
         found = list(search_client.search(search_text="*", top=10))
+
         if len(found) == len(SAMPLE_DOCUMENTS):
             print("Index is searchable.")
             return
+
         time.sleep(2)  # seconds
+
     raise RuntimeError("The index did not return all products after 20 seconds.")
 
 
@@ -292,18 +306,23 @@ def make_find_items_under(search_client):
             select=["Name", "Category", "Price"],
             top=top,
         )
+
         return [f"{document['Name']} ({document['Category']}): ${document['Price']:.2f}" for document in results]
 
     def find_items_under(max_price, category=None):
         category_filter = f" and Category eq '{escape_quotes_for_search_filter(category)}'" if category else ""
         matches = search_products(f"Price le {max_price}{category_filter}")
+
         if matches:
             return "\n".join(matches)
+
         answer = f"No products cost ${max_price:.2f} or less" + (f" in category {category}." if category else ".")
+
         if category:
             cheapest = search_products(category_filter.removeprefix(" and "), top=1)
             if cheapest:
                 answer += f" Cheapest product in {category}: {cheapest[0]}"
+
         return answer
 
     return find_items_under
@@ -311,6 +330,7 @@ def make_find_items_under(search_client):
 
 def find_search_connection(project_client):
     name = first_env("AZURE_AI_SEARCH_CONNECTION_NAME", "AI_SEARCH_CONNECTION_NAME")
+
     print("\n>>> Find the Azure AI Search connection of the Foundry project.")
     connection = (
         project_client.connections.get(name)
@@ -318,6 +338,7 @@ def find_search_connection(project_client):
         else project_client.connections.get_default(ConnectionType.AZURE_AI_SEARCH)
     )
     print(f"Azure AI Search connection: {connection.name}")
+
     return connection
 
 
@@ -343,17 +364,21 @@ def show_output(response, stats):
             if item.type.endswith("search_call"):
                 stats["searches"] += 1
             print(f"  {item.type}  status={getattr(item, 'status', None)}")
+
             for field in ("arguments", "output", "error"):
                 value = getattr(item, field, None)
                 if value:
                     print(f"    {field}: {excerpt(value)}")
+
     usage = response.usage
     if usage:
         details = getattr(usage, "output_tokens_details", None)
         reasoning = getattr(details, "reasoning_tokens", 0) or 0
+
         stats["input"] += usage.input_tokens
         stats["output"] += usage.output_tokens
         stats["reasoning"] += reasoning
+
         print(f"  (tokens: input {usage.input_tokens}, output {usage.output_tokens}, of which reasoning {reasoning})")
 
 
@@ -361,34 +386,43 @@ def ask(openai_client, agent_reference, question, find_items_under):
     """One question: send it, run every function call the model asks for, and return the
     final answer and stats."""
     stats = {"searches": 0, "functions": [], "input": 0, "output": 0, "reasoning": 0}
+
     print(f"\nUser: {question}")
     started = time.monotonic()
+
     print("\n>>> Send the question to the fitness search agent through the Foundry project's Responses API.")
     response = openai_client.responses.create(input=question, extra_body=agent_reference)
     print(f"Response (status {response.status}):")
     show_output(response, stats)
+
     for _ in range(MAX_FUNCTION_ROUNDS):
         calls = [item for item in response.output if item.type == "function_call"]
         if not calls:
             break
+
         outputs = []
         for call in calls:
             if call.name == "find_items_under":
                 output = find_items_under(**json.loads(call.arguments or "{}"))
             else:
                 output = f"Unknown function: {call.name}"
+
             print(f"  -> ran {call.name} here: {output!r}")
             outputs.append({"type": "function_call_output", "call_id": call.call_id, "output": output})
+
         print("\n>>> Send the find_items_under function's result back through the Foundry project's Responses API.")
         response = openai_client.responses.create(
             input=outputs, previous_response_id=response.id, extra_body=agent_reference
         )
         print(f"Response (status {response.status}):")
         show_output(response, stats)
+
     stats["seconds"] = time.monotonic() - started
     stats["status"] = response.status
     stats["answer"] = response.output_text or ""
+
     print(f"\nAgent: {stats['answer']}")
+
     return stats
 
 
@@ -403,7 +437,9 @@ def run_model(project_client, openai_client, model, search_tool, find_items_unde
         ),
     )
     print(f"Agent created: name={agent.name} version={agent.version} model={model}")
+
     agent_reference = {"agent_reference": {"name": agent.name, "type": "agent_reference"}}
+
     try:
         return [ask(openai_client, agent_reference, question, find_items_under) for question in QUESTIONS]
     finally:
@@ -415,6 +451,7 @@ def run_model(project_client, openai_client, model, search_tool, find_items_unde
 def model_checks(results):
     if len(results) != len(QUESTIONS):
         return [("all questions asked", False)]
+
     question_1, question_2 = results
     return [
         ("both questions answered", all(r["status"] == "completed" and r["answer"].strip() for r in results)),
@@ -429,6 +466,7 @@ def model_checks(results):
 def cost(model, input_tokens, output_tokens):
     if model not in PRICES:
         return None
+
     input_price, output_price = PRICES[model]
     return (input_tokens * input_price + output_tokens * output_price) / 1_000_000
 
@@ -441,15 +479,18 @@ def print_summary(all_results):
     )
     print(header)
     print("-" * len(header))
+
     for model, results in all_results.items():
         totals = {key: sum(r[key] for r in results) for key in ("searches", "input", "output", "reasoning", "seconds")}
         functions = sum(len(r["functions"]) for r in results)
         price = cost(model, totals["input"], totals["output"])
         price_text = f"${price:.4f}" if price is not None else "no price"
+
         print(
             f"{model:<14} {totals['searches']:>8} {functions:>9} {totals['input']:>7} {totals['output']:>7} "
             f"{totals['reasoning']:>9} {totals['seconds']:>6.1f}s {price_text:>9}"
         )
+
     print("Prices: list prices per 1M tokens (see PRICES), Global deployment in East US 2, checked 2026-10-23.")
 
 
@@ -466,6 +507,7 @@ def parse_args():
         default=os.getenv("MODEL_DEPLOYMENT_NAME") or "gpt-4o-mini",
         help="comma-separated model deployment names; each gets its own agent version and the same questions",
     )
+
     return parser.parse_args()
 
 
@@ -474,6 +516,7 @@ def load_settings(models):
     print(f"Project endpoint: {project_endpoint}")
     print(f"Models: {', '.join(models)}")
     print("Disclaimer: This program is a technical demonstration and does not provide professional medical advice.")
+
     return project_endpoint
 
 
@@ -491,6 +534,7 @@ def make_search_tool(connection):
         top_k=5,  # results the tool passes to the model per search
     )
     tool_resource = AzureAISearchToolResource(indexes=[index_resource])
+
     return AzureAISearchTool(azure_ai_search=tool_resource)
 
 
@@ -498,8 +542,10 @@ def run_models(project_client, openai_client, models, search_tool, find_items_un
     """Step 2: run the questions on an agent version per model; return {model: stats per
     question}."""
     all_results = {}
+
     for model in models:
         print_section(f"STEP 2: AGENT ON {model}")
+
         # One model failing (for example a deployment that doesn't exist) shouldn't hide
         # the others' results.
         try:
@@ -507,6 +553,7 @@ def run_models(project_client, openai_client, models, search_tool, find_items_un
         except Exception as exc:
             print(f"Model {model} failed: {exc!r}")
             all_results[model] = []
+
     return all_results
 
 
@@ -514,6 +561,7 @@ def cleanup(index_client):
     try:
         print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index is there to delete.")
         index_names = {index.name for index in index_client.list_indexes()}
+
         if INDEX_NAME in index_names:
             print("\n>>> Delete the fitness index from Azure AI Search.")
             index_client.delete_index(INDEX_NAME)
@@ -526,10 +574,12 @@ def check_results(all_results, models):
     """Every model must have run and passed model_checks()."""
     print("Checks:")
     passed_all = len(all_results) == len(models)
+
     for model, results in all_results.items():
         for name, passed in model_checks(results):
             print(f"  {'PASS' if passed else 'FAIL'}  {model}: {name}")
             passed_all = passed_all and passed
+
     return passed_all
 
 
@@ -540,11 +590,14 @@ def main():
 
     print_section("STEP 1: CREATE AND FILL THE AZURE AI SEARCH INDEX")
     index_client, search_client = create_search_clients()
+
     all_results = {}
+
     try:
         create_fitness_index(index_client)
         upload_fitness_documents(search_client)
         wait_for_documents(search_client)
+
         find_items_under = make_find_items_under(search_client)
 
         with (
@@ -554,6 +607,7 @@ def main():
         ):
             connection = find_search_connection(project_client)
             search_tool = make_search_tool(connection)
+
             all_results = run_models(project_client, openai_client, args.models, search_tool, find_items_under)
     finally:
         print_section("CLEANUP")
@@ -561,6 +615,7 @@ def main():
 
     print_summary(all_results)
     passed = check_results(all_results, args.models)
+
     raise SystemExit(0 if passed else 1)
 
 

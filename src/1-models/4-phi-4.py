@@ -100,6 +100,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -114,6 +115,7 @@ def pace_is_correct(answer):
 def cost(model, prompt_tokens, completion_tokens):
     if model not in PRICES:
         return None
+
     price_in, price_out = PRICES[model]
     return (prompt_tokens * price_in + completion_tokens * price_out) / 1_000_000
 
@@ -178,6 +180,7 @@ def run_prompts(openai_client, models):
             result = ask(openai_client, model, system_prompt, question, reasoning)
             results[(model, name)] = result
             print_result(name, model, result)
+
     return results
 
 

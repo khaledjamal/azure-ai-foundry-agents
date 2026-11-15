@@ -75,6 +75,7 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = os.environ["AZURE_AI_SERVICES_ENDPOINT"].rstrip("/")
     project_name = os.environ["AZURE_AI_PROJECT_NAME"]
     return f"{services_endpoint}/api/projects/{project_name}"
@@ -94,13 +95,16 @@ def check_function_app(url):
     except requests.RequestException as error:
         print(f"Function app not reachable: {error}")
         return False
+
     if response.status_code == 403 and "stopped" in response.text:
         print("Function app is stopped. Start it with:")
         print(f"    az functionapp start -g {resource_group} -n {app_name}")
         return False
+
     if response.status_code == 401:
         print("Function app is running (HTTP 401 without a key, as expected)")
         return True
+
     print(f"Unexpected answer from the Function app: HTTP {response.status_code}")
     return False
 
@@ -125,10 +129,12 @@ def show_output(response, totals):
             print("  message (answer, printed below)")
         else:
             print(f"  {item.type}")
+
     if response.usage:
         totals["input"] += response.usage.input_tokens
         totals["output"] += response.usage.output_tokens
         print(f"  (tokens: input {response.usage.input_tokens}, output {response.usage.output_tokens})")
+
     return approvals, calls
 
 
@@ -144,11 +150,13 @@ def ask(openai_client, agent_reference, question, previous_response_id, totals):
     for _ in range(MAX_APPROVAL_ROUNDS):
         if not approvals:
             break
+
         replies = []
         for request in approvals:
             approve = request.server_label == SERVER_LABEL and request.name in ALLOWED_TOOLS
             print(f"  -> {'approve' if approve else 'deny'} {request.name}")
             replies.append({"type": "mcp_approval_response", "approve": approve, "approval_request_id": request.id})
+
         print(
             "\n>>> Send the MCP tool approvals to the workout MCP agent through the Foundry project's Responses API; "
             "the approved MCP tools run on the service side, inside this one call."
@@ -159,6 +167,7 @@ def ask(openai_client, agent_reference, question, previous_response_id, totals):
         print(f"Response (status {response.status}):")
         approvals, more_calls = show_output(response, totals)
         calls += more_calls
+
     print(f"\nAgent: {response.output_text}")
     return response, calls
 
@@ -169,6 +178,7 @@ def called(calls, name, **expected):
         arguments = json.loads(call.arguments or "{}")
         if call.name == name and all(arguments.get(key) == value for key, value in expected.items()):
             return True
+
     return False
 
 
@@ -220,6 +230,7 @@ def run_conversation(openai_client, agent):
         response, calls = ask(openai_client, agent_reference, question, previous_response_id, totals)
         turns.append((response.output_text or "", calls))
         previous_response_id = response.id
+
     return turns, totals
 
 
@@ -243,9 +254,11 @@ def check_results(turns):
             ),
             ("both turns answered", bool(answer_1.strip()) and bool(answer_2.strip())),
         ]
+
     print("Checks:")
     for name, passed in checks:
         print(f"  {'PASS' if passed else 'FAIL'}  {name}")
+
     return bool(checks) and all(passed for _, passed in checks)
 
 

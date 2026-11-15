@@ -131,6 +131,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -138,6 +139,7 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
     return f"{services_endpoint}/api/projects/{project_name}"
@@ -162,6 +164,7 @@ def upload_sample_files(project_client):
             info = project_client.agents.files.upload_and_poll(file_path=str(path), purpose=FilePurpose.AGENTS)
             uploaded[info.id] = name
             print(f"Uploaded: {name} -> {info.id}")
+
     return uploaded
 
 
@@ -207,10 +210,12 @@ def ask_questions(project_client, thread, agent):
     for number, question in enumerate(QUESTIONS, start=1):
         print_section(f"{number + 2}. Question {number}")
         run = ask(project_client, thread.id, agent.id, question)
+
         # Azure reports a failed run as a status, not as a Python error, so check it
         # here.
         if run.status != RunStatus.COMPLETED:
             failed.append(number)
+
     return failed
 
 
@@ -229,6 +234,7 @@ def ask(project_client, thread_id, agent_id, question):
         print(f"(tokens: prompt {run.usage.prompt_tokens}, completion {run.usage.completion_tokens})")
     if run.last_error:
         print(f"Run error: {run.last_error}")
+
     return run
 
 
@@ -253,14 +259,17 @@ def cleanup(project_client, thread, agent, vector_store, uploaded):
         print("\n>>> Delete the conversation thread from Foundry Agent Service.")
         project_client.agents.threads.delete(thread.id)
         print(f"Deleted thread: {thread.id}")
+
     if agent:
         print("\n>>> Delete the health resource advisor agent from Foundry Agent Service.")
         project_client.agents.delete_agent(agent.id)
         print(f"Deleted agent: {agent.id}")
+
     if vector_store:
         print("\n>>> Delete the vector store from Foundry Agent Service.")
         project_client.agents.vector_stores.delete(vector_store.id)
         print(f"Deleted vector store: {vector_store.id}")
+
     for file_id, name in uploaded.items():
         print(f"\n>>> Delete the file {name} from the Foundry project.")
         project_client.agents.files.delete(file_id)
@@ -272,6 +281,7 @@ def check_results(failed):
     if failed:
         print_section(f"FINISHED WITH ERRORS: question(s) {failed} did not complete")
         return False
+
     print_section("DONE")
     return True
 

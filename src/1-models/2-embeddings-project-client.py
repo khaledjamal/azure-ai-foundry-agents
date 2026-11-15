@@ -63,6 +63,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -70,6 +71,7 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
     return f"{services_endpoint}/api/projects/{project_name}"
@@ -108,6 +110,7 @@ def main():
             print(f"Sentence {i}: '{TEXT_PHRASES[i]}'")
             print(f"  Embedding length={len(item.embedding)}")
             print(f"  Sample: {sample(item.embedding)}")
+
         print(f"(tokens: {response.usage.total_tokens})")
 
         print_section("2. Embed user text with a prompt template in front")

@@ -72,6 +72,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -79,6 +80,7 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
     return f"{services_endpoint}/api/projects/{project_name}"
@@ -107,6 +109,7 @@ def chat(openai_client, model, system_prompt, user_input):
     choice = response.choices[0]
     if choice.finish_reason == "length":
         print(f"(answer cut off: {model} reached max_tokens={MAX_ANSWER_TOKENS}, finish_reason=length)")
+
     return choice.message.content
 
 

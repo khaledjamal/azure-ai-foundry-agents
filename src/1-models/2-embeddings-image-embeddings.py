@@ -64,6 +64,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -105,6 +106,7 @@ def post_embeddings(url, api_version, token, body):
     print(f"HTTP {response.status_code} in {seconds:.2f} s")
     if not response.ok:
         raise RuntimeError(f"Embeddings call failed: HTTP {response.status_code}: {response.text[:500]}")
+
     return response.json()
 
 
@@ -139,6 +141,7 @@ def embed_captions(endpoint, api_version, token, model):
         f"\n>>> Ask the embedding model {model} in Azure AI Foundry for the vectors of all the captions, in one call."
     )
     result = post_embeddings(f"{endpoint}/models/embeddings", api_version, token, body)
+
     # Each item carries the index of its input; sorting by it lines the vectors up with
     # CAPTIONS.
     items = sorted(result["data"], key=lambda item: item["index"])
@@ -159,6 +162,7 @@ def rank_captions(image_vector, caption_vectors):
     ranked = sorted(scores, reverse=True)
     for rank, (score, caption) in enumerate(ranked, start=1):
         print(f"  {rank}. {score:.4f}  {caption}")
+
     return ranked
 
 

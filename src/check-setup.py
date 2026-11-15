@@ -68,6 +68,7 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = os.environ["AZURE_AI_SERVICES_ENDPOINT"].rstrip("/")
     project_name = os.environ["AZURE_AI_PROJECT_NAME"]
     return f"{services_endpoint}/api/projects/{project_name}"
@@ -80,12 +81,14 @@ def check_settings(checks):
     if not ENV_FILE.exists():
         print(f"Missing: {ENV_FILE} (copy .env.example)")
         raise SystemExit(1)
+
     load_env()
     for group, required, names in SETTINGS:
         missing = [name for name in names if not os.getenv(name)]
         status = "PASS" if not missing else ("FAIL" if required else "WARN")
         print(f"  {status}  {group}: " + (f"missing {', '.join(missing)}" if missing else "all set"))
         checks.append((status, f"settings for {group}"))
+
     project_set = bool(os.getenv("AZURE_AI_PROJECT_ENDPOINT") or os.getenv("AZURE_AI_PROJECT_NAME"))
     print(
         f"  {'PASS' if project_set else 'FAIL'}  Foundry project: "
@@ -127,6 +130,7 @@ def check_project(checks, credential):
         print(f"  Could not read the project: {exc}")
         checks.append(("FAIL", "project access"))
         report(checks)
+
     checks.append(("PASS", "project access"))
     print(f"  Deployments ({len(deployments)}):")
     for deployment in deployments:
@@ -135,9 +139,11 @@ def check_project(checks, credential):
             f"    {deployment.name:26} {deployment.model_publisher or '':10} {deployment.model_name} "
             f"{deployment.model_version or ''} {sku}"
         )
+
     print(f"  Connections ({len(connections)}):")
     for connection in connections:
         print(f"    {connection.name:40} {connection.type}")
+
     return deployments, connections
 
 
@@ -155,6 +161,7 @@ def check_named_deployments(checks, deployments, connections):
         status = "PASS" if found else ("FAIL" if name == "MODEL_DEPLOYMENT_NAME" else "WARN")
         print(f"  {status}  {name}={value}" + ("" if found else " (no deployment with that name)"))
         checks.append((status, f"deployment for {name}"))
+
     bing = os.getenv("GROUNDING_WITH_BING_CONNECTION_NAME")
     if bing:
         found = bing in {connection.name for connection in connections}
@@ -183,11 +190,13 @@ def check_search(checks):
 def main():
     checks = []  # (status, message) with status PASS, WARN or FAIL
     check_settings(checks)
+
     # Made after check_settings(), which loads .env: the credential reads its settings
     # from the environment when it is created.
     with DefaultAzureCredential() as credential:
         check_sign_in(checks, credential)
         deployments, connections = check_project(checks, credential)
+
     check_named_deployments(checks, deployments, connections)
     check_search(checks)
     report(checks)
@@ -199,6 +208,7 @@ def report(checks):
         for check_status, message in checks:
             if check_status == status:
                 print(f"  {status}  {message}")
+
     failed = any(status == "FAIL" for status, _ in checks)
     passed = sum(1 for status, _ in checks if status == "PASS")
     print(f"  {passed} passed, {sum(1 for s, _ in checks if s == 'WARN')} warnings, {'FAIL' if failed else 'OK'}")

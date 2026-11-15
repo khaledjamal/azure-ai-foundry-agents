@@ -66,10 +66,12 @@ def build_workout(goal, minutes):
     goal = str(goal or "").strip().lower()
     if goal not in WORKOUTS:
         return {"error": f"Unknown goal '{goal}'. Use one of: {', '.join(WORKOUTS)}."}
+
     try:
         minutes = int(minutes)
     except (TypeError, ValueError):
         return {"error": f"minutes must be a whole number from {MIN_MINUTES} to {MAX_MINUTES}."}
+
     if not MIN_MINUTES <= minutes <= MAX_MINUTES:
         return {"error": f"minutes must be from {MIN_MINUTES} to {MAX_MINUTES}, got {minutes}."}
 

@@ -57,6 +57,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -65,6 +66,7 @@ def png_size(data):
     PNG."""
     if len(data) < 24 or not data.startswith(PNG_SIGNATURE) or data[12:16] != b"IHDR":
         return None
+
     return struct.unpack(">II", data[16:24])
 
 
@@ -84,6 +86,7 @@ def create_openai_client():
     endpoint = require_env("OPENAI_ENDPOINT").rstrip("/")
     base_url = f"{endpoint}/openai/v1/"
     print(f"Endpoint: {base_url}")
+
     # The v1 endpoint takes the plain OpenAI client; the token provider is called for
     # each request.
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
@@ -126,6 +129,7 @@ def save_image(image, output_dir):
     size = png_size(data)
     if not data:
         return None, size
+
     output_dir.mkdir(parents=True, exist_ok=True)
     saved = output_dir / f"health-image-{datetime.now():%Y%m%d-%H%M%S}.png"
     saved.write_bytes(data)
@@ -133,6 +137,7 @@ def save_image(image, output_dir):
         print(f"\nSaved: {saved} ({len(data):,} bytes, {size[0]}x{size[1]} px)")
     else:
         print(f"\nSaved: {saved}")
+
     return saved, size
 
 

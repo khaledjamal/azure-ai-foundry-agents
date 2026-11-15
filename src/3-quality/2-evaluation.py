@@ -107,6 +107,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -114,6 +115,7 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
     return f"{services_endpoint}/api/projects/{project_name}"
@@ -129,6 +131,7 @@ def write_sample_data(output_dir):
     with path.open("w", encoding="utf-8") as f:
         for row in SAMPLE_DATA:
             f.write(json.dumps(row) + "\n")
+
     print(f"Sample evaluation data: {path} ({len(SAMPLE_DATA)} rows)")
     return path
 

@@ -78,6 +78,7 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = os.environ["AZURE_AI_SERVICES_ENDPOINT"].rstrip("/")
     project_name = os.environ["AZURE_AI_PROJECT_NAME"]
     return f"{services_endpoint}/api/projects/{project_name}"
@@ -90,14 +91,17 @@ def number_citations(text, annotations):
     for annotation in annotations:
         if annotation.type != "url_citation":
             continue
+
         source = (annotation.title, annotation.url)
         if source not in sources:
             sources.append(source)
         start, end = getattr(annotation, "start_index", None), getattr(annotation, "end_index", None)
         if start is not None and end is not None and text[start:end].startswith("【"):
             replacements.append((start, end, f"[{sources.index(source) + 1}]"))
+
     for start, end, label in sorted(replacements, reverse=True):
         text = text[:start] + label + text[end:]
+
     return text, sources
 
 
@@ -116,11 +120,14 @@ def show_response(response):
             for content in item.content:
                 if content.type == "output_text":
                     answer, sources = number_citations(content.text, content.annotations or [])
+
             print("  message (answer, printed below)")
         else:
             print(f"  {item.type}  status={getattr(item, 'status', None)}")
+
     if response.usage:
         print(f"  (tokens: input {response.usage.input_tokens}, output {response.usage.output_tokens})")
+
     return answer, sources, queries
 
 
@@ -169,6 +176,7 @@ def ask(openai_client, agent_reference, question, totals):
     if response.usage:
         totals["input"] += response.usage.input_tokens
         totals["output"] += response.usage.output_tokens
+
     totals["searches"] += sum(1 for item in response.output if item.type == "web_search_call")
     return response.status, answer, sources, queries
 
@@ -194,6 +202,7 @@ def ask_questions(openai_client, agent):
         status, answer, sources, queries = ask(openai_client, agent_reference, question, totals)
         print_answer(answer, sources, queries)
         results.append((question, status, answer, sources))
+
     return results, totals
 
 
@@ -217,6 +226,7 @@ def check_results(results):
     print("Checks:")
     for name, passed in checks:
         print(f"  {'PASS' if passed else 'FAIL'}  {name}")
+
     return len(checks) == len(QUESTIONS) and all(passed for _, passed in checks)
 
 

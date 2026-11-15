@@ -66,6 +66,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -83,6 +84,7 @@ def call_rest(endpoint, api_version, deployment, token, messages):
     if not response.ok:
         print(f"Error body: {response.text[:500]}")
         return response.status_code, seconds, None
+
     return response.status_code, seconds, response.json()
 
 
@@ -123,6 +125,7 @@ def rest_step(endpoint, api_version, model, token_provider):
         usage = body.get("usage", {})
         print(f"Response JSON keys: {list(body)}")
         print(f"\nAssistant: {answer}")
+
     return {
         "status": status,
         "seconds": seconds,
@@ -177,6 +180,7 @@ def main():
     args = parse_args()
     endpoint, api_version = load_settings(args.model)
     print(f"User: {QUESTION}")
+
     # One Entra ID token provider for both sides: REST puts the token in the header
     # itself, the SDK calls it.
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)

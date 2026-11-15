@@ -246,6 +246,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -253,6 +254,7 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
     return f"{services_endpoint}/api/projects/{project_name}"
@@ -275,6 +277,7 @@ def setup_tracing(project_client):
 
     print("\n>>> Find the Application Insights connection among the connections of the Foundry project.")
     connection_string = project_client.telemetry.get_application_insights_connection_string()
+
     # sampling_ratio=1.0 keeps every span; the default rate-limited sampler drops spans
     # in bursts.
     configure_azure_monitor(
@@ -362,6 +365,7 @@ def blocked_by_content_filter(run):
     """
     if run.status == "incomplete":
         return getattr(run.incomplete_details, "reason", None) == "content_filter"
+
     error_text = str(run.last_error).lower()
     return "content" in error_text and "filter" in error_text
 
@@ -378,6 +382,7 @@ def make_agent_target(project_client, agent_id, threads, stats):
             print("\n>>> Create a conversation thread for this simulated conversation in Foundry Agent Service.")
             thread_id = project_client.agents.threads.create().id
             threads.append(thread_id)
+
         stats["turns"] += 1
         try:
             print("\n>>> Add the simulated attack message to the conversation thread in Foundry Agent Service.")
@@ -413,6 +418,7 @@ def make_agent_target(project_client, agent_id, threads, stats):
                 stats["failed"] += 1
                 stats["errors"].append(f"{type(error).__name__}: {error}")
                 print(f"  Target error on thread {thread_id}: {type(error).__name__}: {excerpt(error)}")
+
         history.append({"role": "assistant", "content": reply})
         return {"messages": history, "stream": stream, "session_state": {"thread_id": thread_id}, "context": context}
 
@@ -460,6 +466,7 @@ def check_attack_results(stats, conversations):
             f"{stats['failed']} agent turn(s) failed for reasons other than the content filter: "
             + "; ".join(stats["errors"])
         )
+
     missing = [c for c in conversations if not any(m.get("role") == "assistant" for m in c.get("messages", []))]
     if missing:
         raise RuntimeError(f"{len(missing)} simulated conversation(s) have no agent reply")
@@ -493,6 +500,7 @@ def section_direct_attack(ctx):
         for thread_id in threads:
             print("\n>>> Delete this conversation thread from Foundry Agent Service.")
             project_client.agents.threads.delete(thread_id)
+
         print("\n>>> Delete the security test agent from Foundry Agent Service.")
         project_client.agents.delete_agent(agent.id)
         print(f"Cleanup: deleted agent {agent.id} and {len(threads)} thread(s)")
@@ -588,6 +596,7 @@ def create_safety_index(index_client, dimensions):
         print("\n>>> Delete the old AI safety index from Azure AI Search.")
         index_client.delete_index(SAFETY_INDEX_NAME)
         print(f"Deleted the existing index {SAFETY_INDEX_NAME}")
+
     vector_search = VectorSearch(
         algorithms=[
             HnswAlgorithmConfiguration(
@@ -631,6 +640,7 @@ def fill_safety_index(search_client, vectors, embedding_model):
         documents=[{**doc, "embedding": vector} for doc, vector in zip(SAFETY_DOCS, vectors, strict=True)]
     )
     print(f"Uploaded {len(SAFETY_DOCS)} documents ({embedding_model}, {len(vectors[0])} dimensions)")
+
     # A new index needs a moment before uploaded documents can be found.
     print(
         "\n>>> Ask Azure AI Search how many documents the AI safety index can search, until all of them can. "
@@ -640,6 +650,7 @@ def fill_safety_index(search_client, vectors, embedding_model):
         if search_client.get_document_count() == len(SAFETY_DOCS):
             break
         time.sleep(1)  # seconds
+
     document_count = search_client.get_document_count()
     print(f"Index ready: {document_count} documents searchable")
 
@@ -702,6 +713,7 @@ def cleanup_safety_index(index_client, keep_index):
 def section_rag(ctx):
     if SAFETY_INDEX_NAME == os.getenv("SEARCH_INDEX_NAME"):
         raise ValueError(f"SEARCH_INDEX_NAME is {SAFETY_INDEX_NAME}; this section would replace that index")
+
     search_endpoint = require_env("AZURE_AI_SEARCH_ENDPOINT")
     search_key = AzureKeyCredential(require_env("AZURE_AI_SEARCH_API_KEY"))
     embedding_model = require_env("EMBEDDING_MODEL_DEPLOYMENT_NAME")
@@ -724,6 +736,7 @@ def section_rag(ctx):
             empty_retrievals += not hits
             scores = score_answer(evaluators, question, answer, context)
             results.append({"question": question, "context": context, "answer": answer, "scores": scores})
+
         write_json(ctx["output_dir"], "section6-rag.json", results)
         if empty_retrievals:
             raise RuntimeError(
@@ -760,6 +773,7 @@ def section_indirect_attack(ctx):
         print(f"  Conversation {number}: attack type {metadata.get('xpia_attack_type', 'unknown')}")
         for message in conversation.get("messages", []):
             print(f"    {message.get('role', '?'):<9} {excerpt(message.get('content', ''))}")
+
     write_json(ctx["output_dir"], "section7-indirect-attack.json", outputs)
 
 
@@ -779,11 +793,13 @@ def parse_sections(text):
     unknown = [s for s in sections if s not in SECTIONS]
     if unknown:
         raise argparse.ArgumentTypeError(f"unknown section(s): {unknown}; choose from {ALL_SECTIONS}")
+
     return sections
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="End-to-end GenAI Ops lab")
+
     # The outputs hold the attack prompts, so the default folder is under the
     # git-ignored runs/.
     parser.add_argument(
@@ -796,6 +812,7 @@ def parse_args():
         "--sections", type=parse_sections, default=ALL_SECTIONS, help="comma-separated, e.g. 2,3 (default: all)"
     )
     parser.add_argument("--keep-index", action="store_true", help="keep the section 6 search index after the run")
+
     # The indirect attack simulator (section 7) keeps the service's order without a
     # seed, so the seed only goes to the direct attack one.
     parser.add_argument(
@@ -856,6 +873,7 @@ def run_sections(ctx, sections):
                 except Exception as error:  # report and go on with the next section
                     print(f"SECTION {number} FAILED: {type(error).__name__}: {error}")
                     failures.append((number, title, error))
+
     provider.force_flush()
     return failures
 
@@ -869,7 +887,9 @@ def report(ctx, sections, failures):
         print(f"FINISHED WITH ERRORS: {len(failures)} of {len(sections)} section(s) failed")
         for number, title, error in failures:
             print(f"  {number}. {title}: {type(error).__name__}: {excerpt(error)}")
+
         return False
+
     print(f"COMPLETED: all {len(sections)} section(s) finished")
     return True
 

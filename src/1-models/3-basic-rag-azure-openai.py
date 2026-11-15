@@ -102,6 +102,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -180,6 +181,7 @@ def wait_for_documents(search_client, expected, timeout_seconds=30):
         if count >= expected or time.time() > deadline:
             print(f"Searchable documents: {count}/{expected}")
             return count
+
         time.sleep(1)  # seconds
 
 

@@ -191,6 +191,7 @@ class FitnessCatalogPlugin:
             cheapest = await self._search_products(category_filter.removeprefix(" and "), top=1)
             if cheapest:
                 answer += f" Cheapest product in {category}: {cheapest[0]}"
+
         return answer
 
     async def _search_products(self, filter_expression, top=10):
@@ -219,9 +220,11 @@ def get_project_endpoint():
     endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if endpoint:
         return endpoint.rstrip("/")
+
     services_endpoint = os.getenv("AZURE_AI_SERVICES_ENDPOINT")
     if not services_endpoint:
         raise ValueError("Set AZURE_AI_PROJECT_ENDPOINT or AZURE_AI_SERVICES_ENDPOINT in .env")
+
     project_name = os.environ["AZURE_AI_PROJECT_NAME"]
     return f"{services_endpoint.rstrip('/')}/api/projects/{project_name}"
 
@@ -237,6 +240,7 @@ async def get_search_connection(project_client):
     api_key = getattr(connection.credentials, "api_key", None)
     if not api_key:
         raise RuntimeError(f"Connection {connection.name} has no API key; this lab expects key auth for AI Search.")
+
     print(f"Azure AI Search connection: {connection.name}")
     print(f"Azure AI Search endpoint:   {connection.target}")
     return connection, AzureKeyCredential(api_key)
@@ -267,6 +271,7 @@ async def create_fitness_index(index_client):
         print("\n>>> Delete the old fitness index from Azure AI Search.")
         await index_client.delete_index(INDEX_NAME)
         print(f"Deleted existing index: {INDEX_NAME}")
+
     print("\n>>> Create the fitness index in Azure AI Search.")
     created = await index_client.create_index(SearchIndex(name=INDEX_NAME, fields=fields))
     print(f"Created index: {created.name}")
@@ -278,6 +283,7 @@ async def upload_documents(search_client):
     failed = [r for r in results if not r.succeeded]
     if failed:
         raise RuntimeError("Upload failed: " + "; ".join(f"{r.key}: {r.error_message}" for r in failed))
+
     print(f"Uploaded {len(results)} documents.")
 
 
@@ -293,6 +299,7 @@ async def wait_for_documents(search_client, expected, timeout_seconds=30):
         if count >= expected or asyncio.get_running_loop().time() > deadline:
             print(f"Searchable documents: {count}/{expected}")
             return count
+
         await asyncio.sleep(1)  # seconds
 
 
@@ -322,6 +329,7 @@ async def print_tool_calls(project_client, thread_id):
                 print(f"    azure_ai_search output: {call.azure_ai_search.get('output')}")
             elif call.type == "function":
                 print(f"  - function {call.function.name}({call.function.arguments})")
+
                 # The SDK model has no output attribute; the value is only in the raw
                 # response data.
                 print(f"    output: {call.function.get('output')}")
@@ -379,6 +387,7 @@ async def ask(project_client, agent, thread, question):
         await print_tool_calls(project_client, thread.id)
     except Exception as exc:
         print(f"  Could not list tool calls: {exc!r}")
+
     return thread
 
 
@@ -392,6 +401,7 @@ async def cleanup(project_client, index_client, search_client, thread, definitio
             print("Deleted thread")
         except Exception as exc:
             print(f"Could not delete thread: {exc}")
+
     if definition is not None:
         try:
             print("\n>>> Delete the fitness shopping agent from Foundry Agent Service.")
@@ -399,6 +409,7 @@ async def cleanup(project_client, index_client, search_client, thread, definitio
             print(f"Deleted agent: {definition.id}")
         except Exception as exc:
             print(f"Could not delete agent: {exc}")
+
     if index_created:
         try:
             print("\n>>> Delete the fitness index from Azure AI Search.")
@@ -406,6 +417,7 @@ async def cleanup(project_client, index_client, search_client, thread, definitio
             print(f"Deleted index: {INDEX_NAME}")
         except Exception as exc:
             print(f"Could not delete index: {exc}")
+
     await search_client.close()
     await index_client.close()
 
@@ -434,6 +446,7 @@ async def main():
 
             print("\n=== Step 2: create the agent (Azure AI Search tool + local price plugin) ===")
             definition = await create_agent(project_client, model, connection)
+
             # Semantic Kernel wraps the Foundry agent and adds the local price plugin.
             agent = AzureAIAgent(
                 client=project_client, definition=definition, plugins=[FitnessCatalogPlugin(search_client)]

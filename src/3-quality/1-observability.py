@@ -161,11 +161,13 @@ class CompactConsoleExporter(SpanExporter):
             if span.instrumentation_scope.name != SERVICE_NAME and not any(k.startswith("gen_ai.") for k in attributes):
                 self.hidden += 1
                 continue
+
             details = "  ".join(
                 f"{label}={attributes[key]}" for key, label in SHOWN_ATTRIBUTES.items() if key in attributes
             )
             duration_ms = (span.end_time - span.start_time) / 1e6
             print(f"  [span] {span.name:<45} {duration_ms:7.0f} ms  {details}")
+
         return SpanExportResult.SUCCESS
 
 
@@ -185,6 +187,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -192,6 +195,7 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
     return f"{services_endpoint}/api/projects/{project_name}"
@@ -208,6 +212,7 @@ def setup_tracing(destination, project_client, record_content):
 
         print("\n>>> Find the Application Insights connection among the connections of the Foundry project.")
         connection_string = project_client.telemetry.get_application_insights_connection_string()
+
         # sampling_ratio=1.0 keeps every span; the default rate-limited sampler drops
         # spans in bursts.
         configure_azure_monitor(connection_string=connection_string, resource=resource, sampling_ratio=1.0)
@@ -217,6 +222,7 @@ def setup_tracing(destination, project_client, record_content):
         provider = TracerProvider(resource=resource)
         trace.set_tracer_provider(provider)
         print("Tracing to the console only.")
+
     exporter = CompactConsoleExporter()
     provider.add_span_processor(SimpleSpanProcessor(exporter))
 
@@ -255,6 +261,7 @@ def run_agent(project_client, model, tracer):
                 uploaded.append(
                     project_client.agents.files.upload_and_poll(file_path=str(path), purpose=FilePurpose.AGENTS).id
                 )
+
         print("\n>>> Create the vector store with the uploaded files in Foundry Agent Service.")
         vector_store = project_client.agents.vector_stores.create_and_poll(file_ids=uploaded, name=VECTOR_STORE_NAME)
         file_search_tool = FileSearchTool(vector_store_ids=[vector_store.id])
@@ -297,18 +304,22 @@ def run_agent(project_client, model, tracer):
             print("\n>>> Delete the conversation thread from Foundry Agent Service.")
             project_client.agents.threads.delete(thread.id)
             print(f"  deleted thread {thread.id}")
+
         if agent:
             print("\n>>> Delete the health resource advisor agent from Foundry Agent Service.")
             project_client.agents.delete_agent(agent.id)
             print(f"  deleted agent {agent.id}")
+
         if vector_store:
             print("\n>>> Delete the vector store from Foundry Agent Service.")
             project_client.agents.vector_stores.delete(vector_store.id)
             print(f"  deleted vector store {vector_store.id}")
+
         for file_id in uploaded:
             print("\n>>> Delete this uploaded file from the Foundry project.")
             project_client.agents.files.delete(file_id)
             print(f"  deleted file {file_id}")
+
     return failed_runs
 
 
@@ -359,11 +370,13 @@ def main():
             f"In the Foundry portal: project -> Tracing; or in Application Insights: search for operation ID {trace_id}."
         )
         print("Traces usually appear there within a few minutes.")
+
     if failed_runs:
         print(f"FINISHED WITH ERRORS: {len(failed_runs)} agent run(s) did not complete")
         for question, status, error in failed_runs:
             print(f"  {question!r}: status {status}, error: {error}")
         sys.exit(1)
+
     print(f"COMPLETED: chat call and {len(AGENT_QUESTIONS)} agent runs finished; trace {trace_id}")
 
 

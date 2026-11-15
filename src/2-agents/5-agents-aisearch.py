@@ -145,6 +145,7 @@ def first_env(*names):
         value = os.getenv(name)
         if value:
             return value
+
     return None
 
 
@@ -153,6 +154,7 @@ def require_any_env(*names):
     if not value:
         joined = " or ".join(names)
         raise ValueError(f"Required environment variable is not set: {joined}")
+
     return value
 
 
@@ -322,6 +324,7 @@ def make_find_items_under(search_client):
             cheapest = search_products(category_filter.removeprefix(" and "), top=1)
             if cheapest:
                 answer += f" Cheapest product in {category}: {cheapest[0]}"
+
         return answer
 
     return find_items_under
@@ -346,6 +349,7 @@ def verify_search_index(search_client):
                         f"{doc.get('Category')} | ${doc.get('Price')} | "
                         f"{doc.get('Description')}"
                     )
+
                 print("-" * 80)
                 return
         except Exception as exc:
@@ -356,6 +360,7 @@ def verify_search_index(search_client):
 
     if last_error:
         raise RuntimeError(f"Could not verify uploaded documents: {last_error}")
+
     raise RuntimeError("The search index query returned no documents after multiple attempts.")
 
 
@@ -498,11 +503,13 @@ def print_tool_calls(project_client, thread_id, run):
                 print(f"    azure_ai_search output: {call.azure_ai_search.get('output')}")
             elif call.type == "function":
                 print(f"  - function {call.function.name}({call.function.arguments})")
+
                 # The SDK model has no output attribute; the value is only in the raw
                 # response data.
                 print(f"    output: {call.function.get('output')}")
             else:
                 print(f"  - {call.type}")
+
     if not calls:
         print("  (none)")
 
@@ -557,6 +564,7 @@ def run_agent_query(project_client, agent, question):
 def cleanup_agent(project_client, agent):
     if agent is None:
         return
+
     print("\n>>> Delete the fitness search agent from Foundry Agent Service.")
     project_client.agents.delete_agent(agent.id)
     print(f"Deleted temporary agent: {agent.id}")
@@ -581,10 +589,12 @@ def run_questions(project_client, agent):
     for index, question in enumerate(QUESTIONS, start=1):
         print_section(f"QUESTION {index} OF {len(QUESTIONS)}")
         run = run_agent_query(project_client, agent, question)
+
         # Azure reports a failed run as a status, not as a Python error, so check it
         # here.
         if run.status != RunStatus.COMPLETED:
             failed_runs.append((index, run.status, getattr(run, "last_error", None)))
+
     return failed_runs
 
 
@@ -596,7 +606,9 @@ def check_results(failed_runs):
         print("=" * 80)
         for index, status, error in failed_runs:
             print(f"Question {index}: status {status}, error: {error}")
+
         return False
+
     print(f"COMPLETED: all {len(QUESTIONS)} agent runs finished with status COMPLETED")
     print("=" * 80)
     return True

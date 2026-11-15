@@ -56,13 +56,16 @@ def describe_mcp_call(request):
             "Open the event stream on which the workout MCP server can send messages to this client. A background "
             "task does this, so it can appear after later lines of this lab."
         )
+
     if request.method == "DELETE":
         return "End the MCP session on the workout MCP server. Leaving the `async with` block does this."
+
     message = json.loads(request.content)
     message_method = message.get("method", "reply")
     if message_method == "tools/call":
         params = message["params"]
         return f"Ask the workout MCP server to run its {params['name']} tool with: {params['arguments']}"
+
     return MCP_MESSAGE_DESCRIPTIONS.get(
         message_method, f"Send the MCP message {message_method} to the workout MCP server."
     )
@@ -95,6 +98,7 @@ async def check_server(url, key):
         for tool in tools:
             print(f"  {tool.name}: {tool.description}")
             print(f"    input schema: {json.dumps(tool.input_schema)}")
+
         checks.append(("both tools listed", EXPECTED_TOOLS <= {tool.name for tool in tools}))
 
         print("\nCall list_workout_goals()")
@@ -117,6 +121,7 @@ async def check_server(url, key):
         text = tool_text(result)
         print(f"  {text}")
         checks.append(("unknown goal rejected", "error" in text))
+
     return checks
 
 

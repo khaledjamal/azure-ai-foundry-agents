@@ -77,6 +77,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -84,6 +85,7 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
     return f"{services_endpoint}/api/projects/{project_name}"
@@ -103,6 +105,7 @@ def ask(project_client, thread_id, agent_id, question):
         print(f"(tokens: prompt {run.usage.prompt_tokens}, completion {run.usage.completion_tokens})")
     if run.last_error:
         print(f"Run error: {run.last_error}")
+
     return run
 
 
@@ -145,6 +148,7 @@ def main():
             for number, question in enumerate(QUESTIONS, start=1):
                 print_section(f"Question {number}")
                 run = ask(project_client, thread.id, agent.id, question)
+
                 # Azure reports a failed run as a status, not as a Python error, so
                 # check it here.
                 if run.status != RunStatus.COMPLETED:
@@ -158,6 +162,7 @@ def main():
                 print("\n>>> Delete the conversation thread from Foundry Agent Service.")
                 project_client.agents.threads.delete(thread.id)
                 print(f"Deleted thread: {thread.id}")
+
             print("\n>>> Delete the health advisor agent from Foundry Agent Service.")
             project_client.agents.delete_agent(agent.id)
             print(f"Deleted agent: {agent.id}")
@@ -165,6 +170,7 @@ def main():
     if failed:
         print_section(f"FINISHED WITH ERRORS: question(s) {failed} did not complete")
         raise SystemExit(1)
+
     print_section("DONE")
 
 

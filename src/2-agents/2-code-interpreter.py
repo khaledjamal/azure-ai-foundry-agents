@@ -110,6 +110,7 @@ def require_env(name):
     value = os.getenv(name)
     if not value:
         raise ValueError(f"Required environment variable is not set: {name}")
+
     return value
 
 
@@ -117,6 +118,7 @@ def get_project_endpoint():
     direct_endpoint = os.getenv("AZURE_AI_PROJECT_ENDPOINT")
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
+
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
     return f"{services_endpoint}/api/projects/{project_name}"
@@ -148,6 +150,7 @@ def ask(project_client, agent_id, request):
         print(f"(tokens: prompt {run.usage.prompt_tokens}, completion {run.usage.completion_tokens})")
     if run.last_error:
         print(f"Run error: {run.last_error}")
+
     return thread, run
 
 
@@ -160,6 +163,7 @@ def code_interpreter_images(project_client, thread_id, run_id):
             details = getattr(call, "code_interpreter", None)
             if not details:
                 continue
+
             outputs = details.outputs or []
             print(
                 f"Code interpreter call: {len(details.input.splitlines())} lines of code, "
@@ -170,6 +174,7 @@ def code_interpreter_images(project_client, thread_id, run_id):
                 image = getattr(output, "image", None)
                 if image:
                     file_ids.append(image.file_id)
+
     return file_ids
 
 
@@ -183,10 +188,12 @@ def show_results(project_client, thread_id, run_id, output_dir, generated_file_i
     for message in messages:
         if message.role != MessageRole.AGENT:
             continue
+
         print(f"\n[message content types: {[content.type for content in message.content]}]")
         for text_message in message.text_messages:
             print(f"ASSISTANT: {text_message.text.value}")
         image_ids += [image.image_file.file_id for image in message.image_contents]
+
         # A file saved under /mnt/data comes back as a link in the text
         # (sandbox:/mnt/data/...).
         for annotation in message.file_path_annotations:
@@ -199,6 +206,7 @@ def show_results(project_client, thread_id, run_id, output_dir, generated_file_i
         project_client.agents.files.save(file_id=file_id, file_name=file_name, target_dir=str(output_dir))
         generated_file_ids.append(file_id)
         print(f"\nSaved chart: {Path(output_dir) / file_name}")
+
     if not image_ids:
         print("\nNo chart image was returned for this request.")
 
@@ -230,6 +238,7 @@ def upload_sample_data(project_client):
             file_path=str(csv_path),
             purpose=FilePurpose.AGENTS,
         )
+
     print(f"Uploaded CSV file: {uploaded_file.id}")
     return uploaded_file
 
@@ -257,10 +266,12 @@ def cleanup(project_client, threads, agent, uploaded_file, generated_file_ids):
         print("\n>>> Delete this conversation thread from Foundry Agent Service.")
         project_client.agents.threads.delete(thread.id)
         print(f"Deleted thread: {thread.id}")
+
     if agent:
         print("\n>>> Delete the health calculator agent from Foundry Agent Service.")
         project_client.agents.delete_agent(agent.id)
         print(f"Deleted agent: {agent.id}")
+
     for file_id in ([uploaded_file.id] if uploaded_file else []) + generated_file_ids:
         print("\n>>> Delete this file (uploaded CSV or generated chart) from the Foundry project.")
         project_client.agents.files.delete(file_id)
