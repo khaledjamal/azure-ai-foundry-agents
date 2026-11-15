@@ -121,14 +121,18 @@ def get_project_endpoint():
 
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
 def write_sample_csv(folder):
     path = Path(folder) / "nutrition_data.csv"
+
     with open(path, "w", newline="", encoding="utf-8") as f:
         csv.writer(f).writerows(NUTRITION_ROWS)
+
     print(f"Created sample data file: {path.name} ({len(NUTRITION_ROWS) - 1} rows)")
+
     return path
 
 
@@ -137,8 +141,10 @@ def ask(project_client, agent_id, request):
     thread = project_client.agents.threads.create()
     print(f"Created thread: {thread.id}")
     print(f"User: {request.strip()}")
+
     print("\n>>> Add the user's request to the conversation thread in Foundry Agent Service.")
     project_client.agents.messages.create(thread_id=thread.id, role="user", content=request)
+
     print(
         "\n>>> Start a run, in which the health calculator agent reads the conversation thread, runs code and answers, "
         "then check the run's status until it ends. The first check is logged in full, later ones as one "
@@ -146,8 +152,10 @@ def ask(project_client, agent_id, request):
     )
     run = project_client.agents.runs.create_and_process(thread_id=thread.id, agent_id=agent_id)
     print(f"Run status: {run.status}")
+
     if run.usage:
         print(f"(tokens: prompt {run.usage.prompt_tokens}, completion {run.usage.completion_tokens})")
+
     if run.last_error:
         print(f"Run error: {run.last_error}")
 
@@ -158,6 +166,7 @@ def code_interpreter_images(project_client, thread_id, run_id):
     # Charts can show up in the run's tool-call outputs as well as in the messages.
     file_ids = []
     steps = project_client.agents.run_steps.list(thread_id=thread_id, run_id=run_id, order=ListSortOrder.ASCENDING)
+
     for step in steps:
         for call in getattr(step.step_details, "tool_calls", None) or []:
             details = getattr(call, "code_interpreter", None)
@@ -170,6 +179,7 @@ def code_interpreter_images(project_client, thread_id, run_id):
                 f"outputs {[output.type for output in outputs]}"
             )
             print("  " + details.input.replace("\n", "\n  "))
+
             for output in outputs:
                 image = getattr(output, "image", None)
                 if image:
@@ -180,18 +190,22 @@ def code_interpreter_images(project_client, thread_id, run_id):
 
 def show_results(project_client, thread_id, run_id, output_dir, generated_file_ids):
     image_ids = code_interpreter_images(project_client, thread_id, run_id)
+
     print(
         "\n>>> Read the conversation thread's messages from Foundry Agent Service. The `for` loop in show_results() "
         "makes these calls, not its list() line: one call per page, and the last page is empty."
     )
     messages = project_client.agents.messages.list(thread_id=thread_id, order=ListSortOrder.ASCENDING)
+
     for message in messages:
         if message.role != MessageRole.AGENT:
             continue
 
         print(f"\n[message content types: {[content.type for content in message.content]}]")
+
         for text_message in message.text_messages:
             print(f"ASSISTANT: {text_message.text.value}")
+
         image_ids += [image.image_file.file_id for image in message.image_contents]
 
         # A file saved under /mnt/data comes back as a link in the text
@@ -202,6 +216,7 @@ def show_results(project_client, thread_id, run_id, output_dir, generated_file_i
 
     for file_id in dict.fromkeys(image_ids):
         file_name = f"chart_{file_id}.png"
+
         print("\n>>> Download the chart file the health calculator agent drew from Foundry Agent Service.")
         project_client.agents.files.save(file_id=file_id, file_name=file_name, target_dir=str(output_dir))
         generated_file_ids.append(file_id)
@@ -216,6 +231,7 @@ def parse_args():
     parser.add_argument(
         "--output-dir", type=Path, default=Path("."), help="folder for charts the agent draws (default: current folder)"
     )
+
     return parser.parse_args()
 
 
@@ -225,6 +241,7 @@ def load_settings():
     print("Connection method: AIProjectClient (project_client.agents)")
     print(f"Project endpoint:  {project_endpoint}")
     print(f"Model deployment:  {model}")
+
     return model, project_endpoint
 
 
@@ -233,6 +250,7 @@ def upload_sample_data(project_client):
     project; return the file."""
     with tempfile.TemporaryDirectory() as temp_dir:
         csv_path = write_sample_csv(temp_dir)
+
         print("\n>>> Upload the nutrition CSV file to the Foundry project through Foundry Agent Service.")
         uploaded_file = project_client.agents.files.upload_and_poll(
             file_path=str(csv_path),
@@ -240,6 +258,7 @@ def upload_sample_data(project_client):
         )
 
     print(f"Uploaded CSV file: {uploaded_file.id}")
+
     return uploaded_file
 
 
@@ -247,6 +266,7 @@ def create_agent(project_client, model, uploaded_file):
     """Step 2: create the agent with the Code Interpreter tool, which can read the
     uploaded file."""
     code_tool = CodeInterpreterTool(file_ids=[uploaded_file.id])
+
     print("\n>>> Create the health calculator agent, with the Code Interpreter tool, in Foundry Agent Service.")
     agent = project_client.agents.create_agent(
         model=model,
@@ -256,6 +276,7 @@ def create_agent(project_client, model, uploaded_file):
         tool_resources=code_tool.resources,
     )
     print(f"Created agent: {agent.name} ({agent.id})")
+
     return agent
 
 
@@ -289,6 +310,7 @@ def main():
         uploaded_file = agent = None
         threads = []
         generated_file_ids = []
+
         try:
             print_section("1. Upload sample data and create the agent")
             uploaded_file = upload_sample_data(project_client)

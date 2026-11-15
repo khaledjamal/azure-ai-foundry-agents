@@ -101,12 +101,14 @@ def pace_is_correct(answer):
     lines = [line for line in answer.splitlines() if "answer" in line.lower()]
     last = lines[-1] if lines else answer[-200:]
     pace_ok = "6:00" in last or re.search(r"\b360\b", last) is not None
+
     return pace_ok and re.search(r"\b18\b", last) is not None
 
 
 def ask(openai_client, model, system_prompt, question, reasoning_effort):
     messages = [{"role": "system", "content": system_prompt}] if system_prompt else []
     messages.append({"role": "user", "content": question})
+
     print(f"\n>>> Ask the model {model} in Azure AI Foundry to answer this prompt (reasoning: {reasoning_effort}).")
     start = time.perf_counter()
     response = openai_client.chat.completions.create(
@@ -119,6 +121,7 @@ def ask(openai_client, model, system_prompt, question, reasoning_effort):
     seconds = time.perf_counter() - start
     choice = response.choices[0]
     thinking = (choice.message.model_extra or {}).get("reasoning_content") or ""
+
     return {
         "seconds": seconds,
         "thinking": thinking.strip(),
@@ -141,6 +144,7 @@ def load_settings():
     model = os.getenv("DEEPSEEK_MODEL_DEPLOYMENT_NAME") or "DeepSeek-V4-Flash"
     print(f"Endpoint: {endpoint}/openai/v1/")
     print(f"Model: {model}, thinking off (default) and on (reasoning_effort=high)")
+
     return endpoint, model
 
 
@@ -149,6 +153,7 @@ def create_openai_client(endpoint):
     ID token."""
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
     openai_client = OpenAI(base_url=f"{endpoint}/openai/v1/", api_key=token_provider)
+
     return openai_client
 
 
@@ -156,8 +161,10 @@ def run_prompts(openai_client, model):
     """Ask every prompt with thinking off and on; return {(prompt name, mode):
     result}."""
     results = {}
+
     for name, system_prompt, question in PROMPTS:
         print_section(f"Prompt '{name}': {question}")
+
         for mode, reasoning_effort in MODES:
             result = ask(openai_client, model, system_prompt, question, reasoning_effort)
             results[(name, mode)] = result
@@ -171,12 +178,14 @@ def print_result(name, mode, result):
         f"\n--- thinking {mode}: {result['seconds']:.1f} s, tokens in {result['prompt_tokens']} / out "
         f"{result['completion_tokens']}, finish={result['finish']}"
     )
+
     if result["thinking"]:
         print(f"[thinking, {len(result['thinking'].split())} words]")
         print(result["thinking"])
         print("[answer]")
 
     print(result["answer"])
+
     if name == "pace":
         print(f"[pace answer correct: {'yes' if pace_is_correct(result['answer']) else 'no'}]")
 
@@ -186,6 +195,7 @@ def print_comparison(results):
     answer was right."""
     print_section("Comparison (all three prompts)")
     print(f"{'thinking':10}{'tokens in':>10}{'tokens out':>12}{'seconds':>9}{'cost USD':>11}  pace correct")
+
     for mode, _ in MODES:
         rows = [results[(name, mode)] for name, _, _ in PROMPTS]
         tokens_in = sum(row["prompt_tokens"] for row in rows)
@@ -206,6 +216,7 @@ def check_results(results):
         ),
     ]
     print()
+
     for check, passed in checks:
         print(f"Check: {'PASS' if passed else 'FAIL'}  {check}")
 
@@ -219,6 +230,7 @@ def main():
     results = run_prompts(openai_client, model)
     print_comparison(results)
     passed = check_results(results)
+
     raise SystemExit(0 if passed else 1)
 
 

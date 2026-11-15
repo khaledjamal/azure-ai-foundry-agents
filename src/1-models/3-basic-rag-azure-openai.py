@@ -120,6 +120,7 @@ def create_openai_client():
     print("Connection method: AzureOpenAI (direct)")
     print(f"Endpoint:          {endpoint}")
     print(f"API version:       {api_version}")
+
     return openai_client
 
 
@@ -130,6 +131,7 @@ def embed(openai_client, model, text):
 
 def create_healthtips_index(index_client, index_name, dimension):
     print("\n>>> Delete the health tips index from Azure AI Search, if an earlier run left it there.")
+
     try:
         index_client.delete_index(index_name)
         print(f"Deleted existing index: {index_name}")
@@ -172,12 +174,15 @@ def create_healthtips_index(index_client, index_name, dimension):
 def wait_for_documents(search_client, expected, timeout_seconds=30):
     # Uploaded documents become searchable after a short indexing delay.
     deadline = time.time() + timeout_seconds
+
     print(
         "\n>>> Ask Azure AI Search how many documents the health tips index can search, until all of them can. "
         "The first check is logged in full, later ones as one `HTTP #n GET` line."
     )
+
     while True:
         count = search_client.get_document_count()
+
         if count >= expected or time.time() > deadline:
             print(f"Searchable documents: {count}/{expected}")
             return count
@@ -191,11 +196,13 @@ def rag_chat(openai_client, search_client, embedding_model, chat_model, query, t
         k_nearest_neighbors=top_k,
         fields="embedding",
     )
+
     print("\n>>> Search the health tips index in Azure AI Search with the question's vector.")
     results = search_client.search(search_text="", vector_queries=[vector_query], select=["content", "source"])
     top_docs = [f"Source: {r['source']} => {r['content']}" for r in results]
 
     print("Retrieved tips:")
+
     for doc in top_docs:
         print(f"  {doc}")
 
@@ -204,6 +211,7 @@ def rag_chat(openai_client, search_client, embedding_model, chat_model, query, t
         "Answer user questions using ONLY the text from these docs.\n"
         "Docs:\n" + "\n".join(top_docs) + "\nIf unsure, say 'I'm not sure'.\n"
     )
+
     print(f"\n>>> Ask the Azure OpenAI chat model {chat_model} to answer from the retrieved tips.")
     response = openai_client.chat.completions.create(
         model=chat_model,
@@ -216,6 +224,7 @@ def rag_chat(openai_client, search_client, embedding_model, chat_model, query, t
     )
     usage = response.usage
     print(f"(tokens: prompt {usage.prompt_tokens}, completion {usage.completion_tokens})")
+
     return response.choices[0].message.content
 
 
@@ -241,6 +250,7 @@ def main():
 
     search_client = SearchClient(endpoint=search_endpoint, index_name=index_name, credential=search_credential)
     documents = [{**tip, "embedding": vector} for tip, vector in zip(HEALTH_TIPS, vectors, strict=True)]
+
     print("\n>>> Upload the health tips and their vectors to the health tips index in Azure AI Search.")
     results = search_client.upload_documents(documents=documents)
     print(f"Uploaded {sum(r.succeeded for r in results)}/{len(documents)} documents to '{index_name}'")

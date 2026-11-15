@@ -76,11 +76,13 @@ def call_rest(endpoint, api_version, deployment, token, messages):
     url = f"{endpoint.rstrip('/')}/openai/deployments/{deployment}/chat/completions"
     params = {"api-version": api_version}
     body = {"messages": messages, **SETTINGS}
+
     print(f"\n>>> Ask the Azure OpenAI chat model {deployment} for an answer, by hand with requests.post.")
     start = time.perf_counter()
     response = requests.post(url, params=params, json=body, headers={"Authorization": f"Bearer {token}"}, timeout=60)
     seconds = time.perf_counter() - start
     print(f"\nHTTP {response.status_code} in {seconds:.2f} s")
+
     if not response.ok:
         print(f"Error body: {response.text[:500]}")
         return response.status_code, seconds, None
@@ -96,6 +98,7 @@ def call_sdk(openai_client, deployment, messages):
     raw = openai_client.chat.completions.with_raw_response.create(model=deployment, messages=messages, **SETTINGS)
     seconds = time.perf_counter() - start
     print(f"\nHTTP {raw.status_code} in {seconds:.2f} s")
+
     return raw.status_code, seconds, raw.parse()
 
 
@@ -111,6 +114,7 @@ def load_settings(model):
     print(f"Endpoint: {endpoint}")
     print(f"API version: {api_version}")
     print(f"Model deployment: {model}")
+
     return endpoint, api_version
 
 
@@ -120,6 +124,7 @@ def rest_step(endpoint, api_version, model, token_provider):
     token = token_provider()
     status, seconds, body = call_rest(endpoint, api_version, model, token, MESSAGES)
     answer, usage = "", {}
+
     if body:
         answer = body["choices"][0]["message"]["content"] or ""
         usage = body.get("usage", {})
@@ -145,6 +150,7 @@ def sdk_step(endpoint, api_version, model, token_provider):
     answer = completion.choices[0].message.content or ""
     print(f"Parsed into: {type(completion).__module__}.{type(completion).__name__}")
     print(f"\nAssistant: {answer}")
+
     return {
         "status": status,
         "seconds": seconds,
@@ -163,8 +169,10 @@ def print_side_by_side(rest, sdk):
         ("answer length (chars)", len(rest["answer"]), len(sdk["answer"])),
     ]
     print(f"{'':24}{'REST':>12}{'SDK':>12}")
+
     for name, rest_value, sdk_value in rows:
         print(f"{name:24}{rest_value!s:>12}{sdk_value!s:>12}")
+
     print("Same prompt tokens show both sides sent the same request; the answers differ because temperature > 0.")
 
 
@@ -172,6 +180,7 @@ def check_results(rest, sdk):
     """Both calls must have returned an answer."""
     passed = bool(rest["answer"].strip()) and bool(sdk["answer"].strip())
     print(f"\nCheck: {'PASS' if passed else 'FAIL'}  both calls returned an answer")
+
     return passed
 
 
@@ -195,6 +204,7 @@ def main():
     print_side_by_side(rest, sdk)
 
     passed = check_results(rest, sdk)
+
     raise SystemExit(0 if passed else 1)
 
 

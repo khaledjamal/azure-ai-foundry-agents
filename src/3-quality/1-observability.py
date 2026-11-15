@@ -198,6 +198,7 @@ def get_project_endpoint():
 
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
@@ -233,6 +234,7 @@ def setup_tracing(destination, project_client, record_content):
     AIAgentsInstrumentor().instrument()
     print(f"Prompt and answer content in spans: {'recorded' if record_content else 'not recorded'}")
     print("Spans are printed when they end, so inner steps appear before the step that contains them.")
+
     return provider, exporter
 
 
@@ -244,6 +246,7 @@ def list_connections(project_client):
 
 def chat_call(openai_client, model):
     print(f"User: {CHAT_QUESTION}")
+
     print(f"\n>>> Ask the Azure OpenAI chat model {model} for an answer.")
     response = openai_client.chat.completions.create(model=model, messages=[{"role": "user", "content": CHAT_QUESTION}])
     print(f"Assistant: {response.choices[0].message.content}")
@@ -252,11 +255,13 @@ def chat_call(openai_client, model):
 def run_agent(project_client, model, tracer):
     uploaded, vector_store, agent, thread = [], None, None, None
     failed_runs = []
+
     try:
         with tempfile.TemporaryDirectory() as temp_dir:
             for name, content in SAMPLE_FILES.items():
                 path = Path(temp_dir) / name
                 path.write_text(content, encoding="utf-8")
+
                 print(f"\n>>> Upload the file {name} to the Foundry project through Foundry Agent Service.")
                 uploaded.append(
                     project_client.agents.files.upload_and_poll(file_path=str(path), purpose=FilePurpose.AGENTS).id
@@ -265,6 +270,7 @@ def run_agent(project_client, model, tracer):
         print("\n>>> Create the vector store with the uploaded files in Foundry Agent Service.")
         vector_store = project_client.agents.vector_stores.create_and_poll(file_ids=uploaded, name=VECTOR_STORE_NAME)
         file_search_tool = FileSearchTool(vector_store_ids=[vector_store.id])
+
         print("\n>>> Create the health resource advisor agent, with the File Search tool, in Foundry Agent Service.")
         agent = project_client.agents.create_agent(
             model=model,
@@ -273,6 +279,7 @@ def run_agent(project_client, model, tracer):
             tools=file_search_tool.definitions,
             tool_resources=file_search_tool.resources,
         )
+
         print("\n>>> Create an empty conversation thread; Foundry Agent Service keeps the conversation history.")
         thread = project_client.agents.threads.create()
         print(f"Agent {agent.id}, vector store {vector_store.id}, thread {thread.id}")
@@ -281,8 +288,10 @@ def run_agent(project_client, model, tracer):
             with tracer.start_as_current_span("ask-agent") as span:
                 span.set_attribute("lab.question", question)
                 print(f"\nUser: {question}")
+
                 print("\n>>> Add the user's question to the conversation thread in Foundry Agent Service.")
                 project_client.agents.messages.create(thread_id=thread.id, role="user", content=question)
+
                 print(
                     "\n>>> Start a run, in which the health resource advisor agent reads the conversation thread, "
                     "searches the vector store and answers, then check the run's status until it ends. The first "
@@ -290,16 +299,20 @@ def run_agent(project_client, model, tracer):
                 )
                 run = project_client.agents.runs.create_and_process(thread_id=thread.id, agent_id=agent.id)
                 print(f"Run status: {run.status}")
+
                 if run.status != RunStatus.COMPLETED:
                     failed_runs.append((question, run.status, run.last_error))
+
                 print("\n>>> Read the agent's latest answer from the conversation thread in Foundry Agent Service.")
                 answer = project_client.agents.messages.get_last_message_text_by_role(
                     thread_id=thread.id, role=MessageRole.AGENT
                 )
+
                 if answer:
                     print(f"Assistant: {answer.text.value}")
     finally:
         print("\nCleanup:")
+
         if thread:
             print("\n>>> Delete the conversation thread from Foundry Agent Service.")
             project_client.agents.threads.delete(thread.id)
@@ -355,6 +368,7 @@ def main():
             list_connections(project_client)
 
             print_section("2. Chat call")
+
             with tracer.start_as_current_span("chat-call"):
                 chat_call(openai_client, model)
 
@@ -365,6 +379,7 @@ def main():
 
     print_section("Result")
     print(f"Spans not printed (Azure SDK and HTTP calls): {exporter.hidden}")
+
     if args.destination == "azure-monitor":
         print(
             f"In the Foundry portal: project -> Tracing; or in Application Insights: search for operation ID {trace_id}."
@@ -373,8 +388,10 @@ def main():
 
     if failed_runs:
         print(f"FINISHED WITH ERRORS: {len(failed_runs)} agent run(s) did not complete")
+
         for question, status, error in failed_runs:
             print(f"  {question!r}: status {status}, error: {error}")
+
         sys.exit(1)
 
     print(f"COMPLETED: chat call and {len(AGENT_QUESTIONS)} agent runs finished; trace {trace_id}")

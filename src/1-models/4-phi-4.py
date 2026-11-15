@@ -109,6 +109,7 @@ def pace_is_correct(answer):
     lines = [line for line in answer.splitlines() if "answer" in line.lower()]
     last = lines[-1] if lines else answer[-200:]
     pace_ok = "6:00" in last or re.search(r"\b360\b", last) is not None
+
     return pace_ok and re.search(r"\b18\b", last) is not None
 
 
@@ -123,6 +124,7 @@ def cost(model, prompt_tokens, completion_tokens):
 def ask(openai_client, model, system_prompt, question, reasoning):
     if reasoning:
         system_prompt = f"{REASONING_SYSTEM_PROMPT}\n\n{system_prompt}"
+
     print(f"\n>>> Ask the model {model} in Azure AI Foundry to answer this prompt.")
     start = time.perf_counter()
     response = openai_client.chat.completions.create(
@@ -133,6 +135,7 @@ def ask(openai_client, model, system_prompt, question, reasoning):
     )
     seconds = time.perf_counter() - start
     choice = response.choices[0]
+
     return {
         "seconds": seconds,
         "answer": (choice.message.content or "").strip(),
@@ -160,6 +163,7 @@ def load_settings():
     ]
     print(f"Endpoint: {endpoint}/openai/v1/")
     print(f"Models: {', '.join(model for model, _ in models)}")
+
     return endpoint, models
 
 
@@ -168,14 +172,17 @@ def create_openai_client(endpoint):
     ID token."""
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
     openai_client = OpenAI(base_url=f"{endpoint}/openai/v1/", api_key=token_provider)
+
     return openai_client
 
 
 def run_prompts(openai_client, models):
     """Ask every prompt on every model; return {(model, prompt name): result}."""
     results = {}
+
     for name, system_prompt, question in PROMPTS:
         print_section(f"Prompt '{name}': {question}")
+
         for model, reasoning in models:
             result = ask(openai_client, model, system_prompt, question, reasoning)
             results[(model, name)] = result
@@ -190,6 +197,7 @@ def print_result(name, model, result):
         f"{result['completion_tokens']}, finish={result['finish']}"
     )
     print(result["answer"])
+
     if name == "pace":
         print(f"[pace answer correct: {'yes' if pace_is_correct(result['answer']) else 'no'}]")
 
@@ -199,6 +207,7 @@ def print_comparison(results, models):
     answer was right."""
     print_section("Comparison (all three prompts)")
     print(f"{'model':18}{'tokens in':>10}{'tokens out':>12}{'seconds':>9}{'cost USD':>11}  pace correct")
+
     for model, _ in models:
         rows = [results[(model, name)] for name, _, _ in PROMPTS]
         tokens_in = sum(row["prompt_tokens"] for row in rows)
@@ -214,6 +223,7 @@ def check_results(results):
     """Every model answered every prompt."""
     answered = all(result["answer"].strip() for result in results.values())
     print(f"\nCheck: {'PASS' if answered else 'FAIL'}  every model answered every prompt")
+
     return answered
 
 
@@ -224,6 +234,7 @@ def main():
     results = run_prompts(openai_client, models)
     print_comparison(results, models)
     passed = check_results(results)
+
     raise SystemExit(0 if passed else 1)
 
 

@@ -83,6 +83,7 @@ def get_project_endpoint():
 
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 

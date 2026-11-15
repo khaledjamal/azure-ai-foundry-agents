@@ -72,6 +72,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Embed an image and captions with Cohere embed-v-4-0, rank captions")
     parser.add_argument("--model", default=os.getenv("IMAGE_EMBEDDING_MODEL_DEPLOYMENT_NAME") or "embed-v-4-0")
     parser.add_argument("--image", type=Path, default=DEFAULT_IMAGE, help="PNG image (default: hand-xray.png)")
+
     return parser.parse_args()
 
 
@@ -92,6 +93,7 @@ def sign_in():
     key)."""
     get_token = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
     token = get_token()
+
     return token
 
 
@@ -104,6 +106,7 @@ def post_embeddings(url, api_version, token, body):
     )
     seconds = time.perf_counter() - start
     print(f"HTTP {response.status_code} in {seconds:.2f} s")
+
     if not response.ok:
         raise RuntimeError(f"Embeddings call failed: HTTP {response.status_code}: {response.text[:500]}")
 
@@ -125,11 +128,13 @@ def embed_image(endpoint, api_version, token, model, image_bytes):
     return its vector."""
     data_url = f"data:image/png;base64,{base64.b64encode(image_bytes).decode()}"
     body = {"model": model, "input": [{"image": data_url}], "input_type": "document"}
+
     print(f"\n>>> Ask the embedding model {model} in Azure AI Foundry for the vector of the image.")
     result = post_embeddings(f"{endpoint}/models/images/embeddings", api_version, token, body)
     image_vector = result["data"][0]["embedding"]
     show_vector("image", image_vector)
     print(f"  usage: {result.get('usage')}")
+
     return image_vector
 
 
@@ -137,6 +142,7 @@ def embed_captions(endpoint, api_version, token, model):
     """Step 2: embed the captions with input_type query; return their vectors in the
     order of CAPTIONS."""
     body = {"model": model, "input": CAPTIONS, "input_type": "query"}
+
     print(
         f"\n>>> Ask the embedding model {model} in Azure AI Foundry for the vectors of all the captions, in one call."
     )
@@ -146,9 +152,12 @@ def embed_captions(endpoint, api_version, token, model):
     # CAPTIONS.
     items = sorted(result["data"], key=lambda item: item["index"])
     caption_vectors = [item["embedding"] for item in items]
+
     for caption, vector in zip(CAPTIONS, caption_vectors, strict=True):
         show_vector(repr(caption), vector)
+
     print(f"  usage: {result.get('usage')}")
+
     return caption_vectors
 
 
@@ -160,6 +169,7 @@ def rank_captions(image_vector, caption_vectors):
         for caption, vector in zip(CAPTIONS, caption_vectors, strict=True)
     ]
     ranked = sorted(scores, reverse=True)
+
     for rank, (score, caption) in enumerate(ranked, start=1):
         print(f"  {rank}. {score:.4f}  {caption}")
 
@@ -170,6 +180,7 @@ def check_ranking(ranked):
     """The caption that describes the image (CAPTIONS[0]) must rank first."""
     passed = ranked[0][1] == CAPTIONS[0]
     print(f"\nCheck: {'PASS' if passed else 'FAIL'}  the X-ray caption is the closest to the image")
+
     return passed
 
 
@@ -192,6 +203,7 @@ def main():
     ranked = rank_captions(image_vector, caption_vectors)
 
     passed = check_ranking(ranked)
+
     raise SystemExit(0 if passed else 1)
 
 

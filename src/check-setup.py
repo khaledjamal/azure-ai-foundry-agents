@@ -71,6 +71,7 @@ def get_project_endpoint():
 
     services_endpoint = os.environ["AZURE_AI_SERVICES_ENDPOINT"].rstrip("/")
     project_name = os.environ["AZURE_AI_PROJECT_NAME"]
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
@@ -78,11 +79,13 @@ def check_settings(checks):
     """Step 1: which lab settings are set (names only). Stops with the summary if the
     Foundry project isn't set."""
     print_section("1. Settings in .env")
+
     if not ENV_FILE.exists():
         print(f"Missing: {ENV_FILE} (copy .env.example)")
         raise SystemExit(1)
 
     load_env()
+
     for group, required, names in SETTINGS:
         missing = [name for name in names if not os.getenv(name)]
         status = "PASS" if not missing else ("FAIL" if required else "WARN")
@@ -95,6 +98,7 @@ def check_settings(checks):
         + ("set" if project_set else "missing AZURE_AI_PROJECT_NAME (or AZURE_AI_PROJECT_ENDPOINT)")
     )
     checks.append(("PASS" if project_set else "FAIL", "Foundry project setting"))
+
     if not project_set:
         report(checks)
 
@@ -103,6 +107,7 @@ def check_sign_in(checks, credential):
     """Step 2: get a token for Azure AI services. Stops with the summary if sign-in
     fails."""
     print_section("2. Sign-in (DefaultAzureCredential)")
+
     try:
         token = credential.get_token(COGNITIVE_SERVICES_SCOPE)
         expires = datetime.fromtimestamp(token.expires_on, tz=UTC)
@@ -120,10 +125,12 @@ def check_project(checks, credential):
     print_section("3. Foundry project")
     endpoint = get_project_endpoint()
     print(f"  Project endpoint: {endpoint}")
+
     try:
         with AIProjectClient(endpoint=endpoint, credential=credential) as project_client:
             print("\n>>> List the model deployments of the Foundry project.")
             deployments = list(project_client.deployments.list())
+
             print("\n>>> List the connections of the Foundry project.")
             connections = list(project_client.connections.list())
     except Exception as exc:
@@ -133,6 +140,7 @@ def check_project(checks, credential):
 
     checks.append(("PASS", "project access"))
     print(f"  Deployments ({len(deployments)}):")
+
     for deployment in deployments:
         sku = getattr(deployment.sku, "name", "") if getattr(deployment, "sku", None) else ""
         print(
@@ -141,6 +149,7 @@ def check_project(checks, credential):
         )
 
     print(f"  Connections ({len(connections)}):")
+
     for connection in connections:
         print(f"    {connection.name:40} {connection.type}")
 
@@ -156,6 +165,7 @@ def check_named_deployments(checks, deployments, connections):
     lab_names = [name for _, _, names in SETTINGS for name in names if name.endswith("_DEPLOYMENT_NAME")]
     named = {"MODEL_DEPLOYMENT_NAME": model}
     named.update({name: os.environ[name] for name in lab_names if os.getenv(name)})
+
     for name, value in sorted(named.items()):
         found = value in deployment_names
         status = "PASS" if found else ("FAIL" if name == "MODEL_DEPLOYMENT_NAME" else "WARN")
@@ -204,6 +214,7 @@ def main():
 
 def report(checks):
     print_section("Summary")
+
     for status in ("FAIL", "WARN"):
         for check_status, message in checks:
             if check_status == status:
@@ -212,6 +223,7 @@ def report(checks):
     failed = any(status == "FAIL" for status, _ in checks)
     passed = sum(1 for status, _ in checks if status == "PASS")
     print(f"  {passed} passed, {sum(1 for s, _ in checks if s == 'WARN')} warnings, {'FAIL' if failed else 'OK'}")
+
     raise SystemExit(1 if failed else 0)
 
 

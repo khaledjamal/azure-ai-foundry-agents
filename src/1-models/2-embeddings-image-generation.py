@@ -77,6 +77,7 @@ def parse_args():
     parser.add_argument("--quality", choices=["low", "medium", "high"], default="low")
     parser.add_argument("--size", default="1024x1024", help="WIDTHxHEIGHT (default 1024x1024)")
     parser.add_argument("--output-dir", type=Path, default=Path("generated-images"))
+
     return parser.parse_args()
 
 
@@ -91,6 +92,7 @@ def create_openai_client():
     # each request.
     token_provider = get_bearer_token_provider(DefaultAzureCredential(), COGNITIVE_SERVICES_SCOPE)
     openai_client = OpenAI(base_url=base_url, api_key=token_provider)
+
     return openai_client
 
 
@@ -100,6 +102,7 @@ def generate_image(openai_client, args):
     print(f"Model deployment: {args.model}")
     print(f"Prompt: {args.prompt}")
     print(f"Size: {args.size}, quality: {args.quality}")
+
     print(f"\n>>> Ask the image model {args.model} in Azure AI Foundry to generate the image from the prompt.")
     start = time.perf_counter()
     result = openai_client.images.generate(
@@ -107,6 +110,7 @@ def generate_image(openai_client, args):
     )
     seconds = time.perf_counter() - start
     print(f"Done in {seconds:.1f} s")
+
     return result
 
 
@@ -115,6 +119,7 @@ def print_details(result):
     image = result.data[0]
     if getattr(image, "revised_prompt", None):
         print(f"Revised prompt: {image.revised_prompt}")
+
     if result.usage:
         print(
             f"Usage: input {result.usage.input_tokens} tokens, output {result.usage.output_tokens} tokens, "
@@ -127,12 +132,14 @@ def save_image(image, output_dir):
     return (path, size) or (None, ...)."""
     data = base64.b64decode(image.b64_json) if image.b64_json else b""
     size = png_size(data)
+
     if not data:
         return None, size
 
     output_dir.mkdir(parents=True, exist_ok=True)
     saved = output_dir / f"health-image-{datetime.now():%Y%m%d-%H%M%S}.png"
     saved.write_bytes(data)
+
     if size:
         print(f"\nSaved: {saved} ({len(data):,} bytes, {size[0]}x{size[1]} px)")
     else:
@@ -146,6 +153,7 @@ def check_image(saved, size, requested_size):
     expected = tuple(int(part) for part in requested_size.lower().split("x"))
     passed = saved is not None and size == expected
     print(f"\nCheck: {'PASS' if passed else 'FAIL'}  a {requested_size} PNG was returned and saved")
+
     return passed
 
 
@@ -157,6 +165,7 @@ def main():
     print_details(result)
     saved, size = save_image(result.data[0], args.output_dir)
     passed = check_image(saved, size, args.size)
+
     raise SystemExit(0 if passed else 1)
 
 

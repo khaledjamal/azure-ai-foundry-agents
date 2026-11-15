@@ -107,6 +107,7 @@ def make_retrieve_tips(embed):
             f"  [tool] retrieve_tips(query={query!r}) similarity: "
             + ", ".join(f"{tip['id']} {score:.2f}" for tip, score in ranked)
         )
+
         return "\n".join(f"Source: {tip['source']} => {tip['content']}" for tip, _ in ranked[:TOP_TIPS])
 
     return retrieve_tips
@@ -158,6 +159,7 @@ def create_clients():
             f"\n>>> Ask the Azure OpenAI embedding model {embedding_deployment} for the vectors of {len(texts)} "
             f"text(s), starting with: {texts[0][:60]}"
         )
+
         return [
             item.embedding for item in openai_client.embeddings.create(model=embedding_deployment, input=texts).data
         ]
@@ -189,6 +191,7 @@ def create_team(model_client, retrieve_tips):
     # Stop as soon as the responder has answered; MaxMessageTermination is a safety
     # limit.
     termination = SourceMatchTermination(["ResponderAgent"]) | MaxMessageTermination(8)
+
     return RoundRobinGroupChat([retriever, responder], termination_condition=termination)
 
 
@@ -196,10 +199,12 @@ async def run_query(team):
     print(f"user: {USER_QUERY}")
     result = None
     prompt_tokens = completion_tokens = 0
+
     print(
         "\n>>> Run team.run_stream(), in which AutoGen makes the Azure OpenAI chat model calls of both agents, and "
         "the retrieve_tips tool makes one embedding call: each is described just before it in this log."
     )
+
     async for item in team.run_stream(task=USER_QUERY):
         if isinstance(item, TaskResult):
             result = item
@@ -220,6 +225,7 @@ async def run_query(team):
             print(f"\n{item.source}:\n{item.to_text()}")
 
     print(f"\n(chat tokens: prompt {prompt_tokens}, completion {completion_tokens})")
+
     return result
 
 
@@ -227,6 +233,7 @@ async def main():
     print_section("AUTOGEN MULTI-AGENT RAG")
     load_environment()
     model_client, embed = create_clients()
+
     try:
         team = create_team(model_client, make_retrieve_tips(embed))
         print_section("Query")
@@ -237,6 +244,7 @@ async def main():
     print_section("Result")
     answered = result is not None and result.messages and result.messages[-1].source == "ResponderAgent"
     print(f"Stop reason: {result.stop_reason if result else 'no result'}")
+
     if not answered:
         print("FINISHED WITH ERRORS: the ResponderAgent did not answer.")
         sys.exit(1)

@@ -140,6 +140,7 @@ def load_hourly_heart_rate():
         f"Loaded {len(readings)} readings from {DATA_FILE.name} "
         f"({readings['time'].min():%Y-%m-%d %H:%M} to {readings['time'].max():%H:%M})"
     )
+
     return hourly
 
 
@@ -147,6 +148,7 @@ def hourly_summary_text(hourly):
     lowest = hourly["avg_bpm"].nsmallest(3).index
     highest = hourly["avg_bpm"].nlargest(3).index
     lines = [f"{t:%H}:00  average {row.avg_bpm:.0f} bpm" for t, row in hourly.iterrows()]
+
     return (
         f"Hourly average heart rate yesterday (wearable data, {len(hourly)} hours):\n" + "\n".join(lines) + "\n"
         f"Overall average: {hourly['avg_bpm'].mean():.0f} bpm\n"
@@ -189,6 +191,7 @@ def make_retrieve_personalized_tips(summary, embed):
             + ", ".join(f"{tip['id']} {score:.2f}" for tip, score in ranked[:5])
         )
         tip_text = "\n".join(f"Source: {tip['source']} => {tip['content']}" for tip, _ in ranked[:TOP_TIPS])
+
         return f"YOUR HEART RATE DATA:\n{summary}\n\nWELLNESS TIPS:\n{tip_text}"
 
     return retrieve_personalized_tips
@@ -240,6 +243,7 @@ def create_clients():
             f"\n>>> Ask the Azure OpenAI embedding model {embedding_deployment} for the vectors of {len(texts)} "
             f"text(s), starting with: {texts[0][:60]}"
         )
+
         return [
             item.embedding for item in openai_client.embeddings.create(model=embedding_deployment, input=texts).data
         ]
@@ -270,6 +274,7 @@ def create_team(model_client, retrieve_personalized_tips):
         model_client=model_client,
     )
     termination = SourceMatchTermination(["PersonalizedResponderAgent"]) | MaxMessageTermination(8)
+
     return RoundRobinGroupChat([retriever, responder], termination_condition=termination)
 
 
@@ -277,10 +282,12 @@ async def run_query(team):
     print(f"user: {USER_QUERY}")
     result = None
     prompt_tokens = completion_tokens = 0
+
     print(
         "\n>>> Run team.run_stream(), in which AutoGen makes the Azure OpenAI chat model calls of both agents, and "
         "the retrieve_personalized_tips tool makes one embedding call: each is described just before it in this log."
     )
+
     async for item in team.run_stream(task=USER_QUERY):
         if isinstance(item, TaskResult):
             result = item
@@ -301,6 +308,7 @@ async def run_query(team):
             print(f"\n{item.source}:\n{item.to_text()}")
 
     print(f"\n(chat tokens: prompt {prompt_tokens}, completion {completion_tokens})")
+
     return result
 
 
@@ -322,6 +330,7 @@ async def main():
 
     print_section("2. Agents")
     model_client, embed = create_clients()
+
     try:
         result = await run_query(create_team(model_client, make_retrieve_personalized_tips(summary, embed)))
     finally:
@@ -330,6 +339,7 @@ async def main():
     print_section("Result")
     answered = result is not None and result.messages and result.messages[-1].source == "PersonalizedResponderAgent"
     print(f"Stop reason: {result.stop_reason if result else 'no result'}")
+
     if not answered:
         print("FINISHED WITH ERRORS: the PersonalizedResponderAgent did not answer.")
         sys.exit(1)

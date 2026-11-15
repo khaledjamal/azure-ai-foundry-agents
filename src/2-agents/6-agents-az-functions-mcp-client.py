@@ -84,6 +84,7 @@ async def print_call_description(request):
 async def check_server(url, key):
     headers = {"x-functions-key": key} if key else {}
     checks = []
+
     async with (
         create_mcp_http_client(headers=headers) as http_client,
         streamable_http_client(url, http_client=http_client) as (read_stream, write_stream),
@@ -95,6 +96,7 @@ async def check_server(url, key):
 
         tools = (await session.list_tools()).tools
         print(f"\nTools: {len(tools)}")
+
         for tool in tools:
             print(f"  {tool.name}: {tool.description}")
             print(f"    input schema: {json.dumps(tool.input_schema)}")
@@ -131,15 +133,19 @@ def main():
     parser.add_argument("--url", default=os.getenv("AZURE_FUNCTIONS_MCP_URL") or LOCAL_URL)
     parser.add_argument("--verbose", action="store_true", help="log every HTTP request with its status code")
     args = parser.parse_args()
+
     if args.verbose:
         logging.basicConfig(level=logging.INFO, format="  [%(name)s] %(message)s")
+
     key = os.getenv("AZURE_FUNCTIONS_MCP_KEY") if args.url != LOCAL_URL else None
     print(f"MCP endpoint: {args.url} (key {'sent' if key else 'not sent'})")
 
     checks = asyncio.run(check_server(args.url, key))
     print("\nChecks:")
+
     for name, passed in checks:
         print(f"  {'PASS' if passed else 'FAIL'}  {name}")
+
     raise SystemExit(0 if all(passed for _, passed in checks) else 1)
 
 

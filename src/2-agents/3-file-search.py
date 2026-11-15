@@ -142,6 +142,7 @@ def get_project_endpoint():
 
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
@@ -151,15 +152,18 @@ def load_settings():
     print("Connection method: AIProjectClient (project_client.agents)")
     print(f"Project endpoint:  {project_endpoint}")
     print(f"Model deployment:  {model}")
+
     return model, project_endpoint
 
 
 def upload_sample_files(project_client):
     uploaded = {}
+
     with tempfile.TemporaryDirectory() as temp_dir:
         for name, content in SAMPLE_FILES.items():
             path = Path(temp_dir) / name
             path.write_text(content, encoding="utf-8")
+
             print(f"\n>>> Upload the file {name} to the Foundry project through Foundry Agent Service.")
             info = project_client.agents.files.upload_and_poll(file_path=str(path), purpose=FilePurpose.AGENTS)
             uploaded[info.id] = name
@@ -178,12 +182,14 @@ def build_vector_store(project_client, file_ids):
         f"Created vector store '{VECTOR_STORE_NAME}': {vector_store.id} "
         f"(files completed {counts.completed}, failed {counts.failed})"
     )
+
     return vector_store
 
 
 def create_agent(project_client, model, vector_store):
     """Step 2: create the agent with the File Search tool on the vector store."""
     file_search_tool = FileSearchTool(vector_store_ids=[vector_store.id])
+
     print("\n>>> Create the health resource advisor agent, with the File Search tool, in Foundry Agent Service.")
     agent = project_client.agents.create_agent(
         model=model,
@@ -193,6 +199,7 @@ def create_agent(project_client, model, vector_store):
         tool_resources=file_search_tool.resources,
     )
     print(f"Created agent: {agent.name} ({agent.id})")
+
     return agent
 
 
@@ -200,6 +207,7 @@ def create_thread(project_client):
     print("\n>>> Create an empty conversation thread; Foundry Agent Service keeps the conversation history.")
     thread = project_client.agents.threads.create()
     print(f"Created thread: {thread.id}")
+
     return thread
 
 
@@ -207,6 +215,7 @@ def ask_questions(project_client, thread, agent):
     """Step 3: ask each question on the thread; return the numbers of the questions
     whose run didn't complete."""
     failed = []
+
     for number, question in enumerate(QUESTIONS, start=1):
         print_section(f"{number + 2}. Question {number}")
         run = ask(project_client, thread.id, agent.id, question)
@@ -221,8 +230,10 @@ def ask_questions(project_client, thread, agent):
 
 def ask(project_client, thread_id, agent_id, question):
     print(f"User: {question}")
+
     print("\n>>> Add the user's question to the conversation thread in Foundry Agent Service.")
     project_client.agents.messages.create(thread_id=thread_id, role="user", content=question)
+
     print(
         "\n>>> Start a run, in which the health resource advisor agent reads the conversation thread, searches the "
         "vector store and answers, then check the run's status until it ends. The first check is logged in full, "
@@ -230,8 +241,10 @@ def ask(project_client, thread_id, agent_id, question):
     )
     run = project_client.agents.runs.create_and_process(thread_id=thread_id, agent_id=agent_id)
     print(f"Run status: {run.status}")
+
     if run.usage:
         print(f"(tokens: prompt {run.usage.prompt_tokens}, completion {run.usage.completion_tokens})")
+
     if run.last_error:
         print(f"Run error: {run.last_error}")
 
@@ -244,10 +257,13 @@ def print_conversation(project_client, thread_id, file_names):
         "print_conversation() makes these calls, not its list() line: one call per page, and the last page is empty."
     )
     messages = project_client.agents.messages.list(thread_id=thread_id, order=ListSortOrder.ASCENDING)
+
     for message in messages:
         for text_message in message.text_messages:
             print(f"\n{message.role.upper()}: {text_message.text.value}")
+
         citations = {c.text: c.file_citation.file_id for c in message.file_citation_annotations}
+
         for marker, file_id in citations.items():
             print(f"  citation {marker} -> {file_names.get(file_id, file_id)}")
 
@@ -283,6 +299,7 @@ def check_results(failed):
         return False
 
     print_section("DONE")
+
     return True
 
 
@@ -295,6 +312,7 @@ def main():
         uploaded = {}
         failed = []
         vector_store = agent = thread = None
+
         try:
             print_section("1. Upload files and build the vector store")
             uploaded = upload_sample_files(project_client)
@@ -312,6 +330,7 @@ def main():
             cleanup(project_client, thread, agent, vector_store, uploaded)
 
     passed = check_results(failed)
+
     raise SystemExit(0 if passed else 1)
 
 

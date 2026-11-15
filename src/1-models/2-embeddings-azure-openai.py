@@ -81,6 +81,7 @@ def create_openai_client():
     print("Connection method: AzureOpenAI (direct)")
     print(f"Endpoint:          {endpoint}")
     print(f"API version:       {api_version}")
+
     return openai_client
 
 
@@ -96,8 +97,10 @@ def main():
     openai_client = create_openai_client()
 
     print_section("1. Embed health-themed phrases")
+
     print(f"\n>>> Ask the Azure OpenAI embedding model {model} for the vectors of all the phrases, in one call.")
     response = openai_client.embeddings.create(model=model, input=TEXT_PHRASES)
+
     for i, item in enumerate(response.data):
         print(f"Sentence {i}: '{TEXT_PHRASES[i]}'")
         print(f"  Embedding length={len(item.embedding)}")
@@ -107,6 +110,7 @@ def main():
 
     print_section("2. Embed user text with a prompt template in front")
     user_text = "Can you suggest a quick home workout for busy moms?"
+
     print(f"\n>>> Ask the Azure OpenAI embedding model {model} for the vector of the user text with the template.")
     response = openai_client.embeddings.create(model=model, input=[f"{TEMPLATE_SYSTEM} {user_text}"])
     vector = response.data[0].embedding

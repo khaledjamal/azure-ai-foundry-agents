@@ -257,6 +257,7 @@ def get_project_endpoint():
 
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
@@ -288,6 +289,7 @@ def setup_tracing(project_client):
     OpenAIInstrumentor().instrument()
     AIAgentsInstrumentor().instrument()
     print("Tracing to Application Insights (connection found on the Foundry project); content not recorded.")
+
     return trace.get_tracer_provider()
 
 
@@ -297,14 +299,20 @@ def setup_tracing(project_client):
 def section_model_selection(ctx):
     project_client = ctx["project_client"]
     print("Model deployments in the project:")
+
     print("\n>>> List the model deployments of the Foundry project.")
+
     for deployment in project_client.deployments.list():
         print(f"  {deployment.name}: {deployment.model_publisher} {deployment.model_name} {deployment.model_version}")
+
     print("Azure OpenAI connections:")
+
     print("\n>>> List the Azure OpenAI connections of the Foundry project.")
     connections = list(project_client.connections.list(connection_type=ConnectionType.AZURE_OPEN_AI))
+
     for connection in connections:
         print(f"  {connection.name}: {connection.target}")
+
     if not connections:
         print(
             "  none: the models above are deployed in the Foundry resource itself, so no separate connection is needed"
@@ -312,6 +320,7 @@ def section_model_selection(ctx):
 
     print(f"\nChat call on {ctx['model']}")
     print(f"User: {CHAT_QUESTION}")
+
     print(f"\n>>> Ask the Azure OpenAI chat model {ctx['model']} for an answer.")
     response = ctx["openai_client"].chat.completions.create(
         model=ctx["model"], messages=[{"role": "user", "content": CHAT_QUESTION}]
@@ -330,8 +339,10 @@ def section_safety(ctx):
     protected_material = ProtectedMaterialEvaluator(credential=credential, azure_ai_project=project_endpoint)
 
     print("Content safety on the self-harm story sample (query and response from the notebook):")
+
     print("\n>>> Run the content safety evaluator, which sends several requests to the safety evaluation service.")
     safety_result = content_safety(query=SELF_HARM_QUERY, response=SELF_HARM_RESPONSE)
+
     for harm in ("violence", "sexual", "self_harm", "hate_unfairness"):
         print(
             f"  {harm:<16} {safety_result.get(harm)!s:<10} score {safety_result.get(f'{harm}_score')}  "
@@ -340,6 +351,7 @@ def section_safety(ctx):
         print(f"    reason: {excerpt(safety_result.get(f'{harm}_reason', ''))}")
 
     print("\nProtected material on the copyrighted book excerpt:")
+
     print("\n>>> Run the protected material evaluator, which sends a request to the safety evaluation service.")
     protected_result = protected_material(query=COPYRIGHT_QUERY, response=COPYRIGHT_RESPONSE)
     print(f"  protected_material_label: {protected_result.get('protected_material_label')}")
@@ -384,15 +396,18 @@ def make_agent_target(project_client, agent_id, threads, stats):
             threads.append(thread_id)
 
         stats["turns"] += 1
+
         try:
             print("\n>>> Add the simulated attack message to the conversation thread in Foundry Agent Service.")
             project_client.agents.messages.create(thread_id=thread_id, role="user", content=user_text)
+
             print(
                 "\n>>> Start a run, in which the security test agent reads the conversation thread and answers, then "
                 "check the run's status until it ends. The first check is logged in full, later ones as one "
                 "`HTTP #n GET` line."
             )
             run = project_client.agents.runs.create_and_process(thread_id=thread_id, agent_id=agent_id)
+
             if run.status == RunStatus.COMPLETED:
                 print("\n>>> Read the agent's latest answer from the conversation thread in Foundry Agent Service.")
                 answer = project_client.agents.messages.get_last_message_text_by_role(
@@ -420,6 +435,7 @@ def make_agent_target(project_client, agent_id, threads, stats):
                 print(f"  Target error on thread {thread_id}: {type(error).__name__}: {excerpt(error)}")
 
         history.append({"role": "assistant", "content": reply})
+
         return {"messages": history, "stream": stream, "session_state": {"thread_id": thread_id}, "context": context}
 
     return agent_target
@@ -427,6 +443,7 @@ def make_agent_target(project_client, agent_id, threads, stats):
 
 def print_conversations(label, conversations):
     print(f"\n{label}: {len(conversations)} conversation(s)")
+
     for number, conversation in enumerate(conversations, start=1):
         print(f"  Conversation {number}:")
         for message in conversation.get("messages", []):
@@ -441,6 +458,7 @@ def run_direct_attack(ctx, target):
         f"Running DirectAttackSimulator: ADVERSARIAL_REWRITE, max {SIMULATION_RESULTS} results, "
         f"max {SIMULATION_TURNS} turns, as written and with a jailbreak added"
     )
+
     print(
         "\n>>> Run the direct attack simulator, which makes several web service calls of its own and calls the "
         "security test agent: each is described just before it in this log."
@@ -455,6 +473,7 @@ def run_direct_attack(ctx, target):
             randomization_seed=ctx["seed"],
         )
     )
+
     return list(outputs["regular"]), list(outputs["jailbreak"])
 
 
@@ -474,6 +493,7 @@ def check_attack_results(stats, conversations):
 
 def section_direct_attack(ctx):
     project_client = ctx["project_client"]
+
     print("\n>>> Create the security test agent in Foundry Agent Service.")
     agent = project_client.agents.create_agent(
         model=ctx["model"], name=SECURITY_AGENT_NAME, instructions=SECURITY_AGENT_INSTRUCTIONS
@@ -481,6 +501,7 @@ def section_direct_attack(ctx):
     print(f"Created agent {agent.id} ({SECURITY_AGENT_NAME}) on {ctx['model']}")
     threads = []
     stats = {"turns": 0, "answered": 0, "blocked": 0, "failed": 0, "errors": []}
+
     try:
         target = make_agent_target(project_client, agent.id, threads, stats)
         regular, jailbreak = run_direct_attack(ctx, target)
@@ -528,6 +549,7 @@ def run_evaluation(data_path, evaluators, project_endpoint, output_dir):
     """Score every row with every evaluator, log the results to the Foundry project and
     save them as JSON."""
     results_path = output_dir / "section4-quality-results.json"
+
     print(
         "\n>>> Run evaluate(), which makes several web service calls of its own, some at the same time: each is "
         "described just before it in this log."
@@ -541,6 +563,7 @@ def run_evaluation(data_path, evaluators, project_endpoint, output_dir):
         output_path=str(results_path),
     )
     print(f"Full results saved to: {results_path}")
+
     return result
 
 
@@ -592,6 +615,7 @@ def section_observability(ctx):
 # --------------------------------------------------------------------------------------
 def create_safety_index(index_client, dimensions):
     print("\n>>> List the indexes in Azure AI Search, to see whether the AI safety index already exists.")
+
     if SAFETY_INDEX_NAME in index_client.list_index_names():
         print("\n>>> Delete the old AI safety index from Azure AI Search.")
         index_client.delete_index(SAFETY_INDEX_NAME)
@@ -620,6 +644,7 @@ def create_safety_index(index_client, dimensions):
             vector_search_profile_name="hnsw-profile",
         ),
     ]
+
     print("\n>>> Create the AI safety index in Azure AI Search.")
     index_client.create_index(SearchIndex(name=SAFETY_INDEX_NAME, fields=fields, vector_search=vector_search))
     print(f"Created index {SAFETY_INDEX_NAME}")
@@ -629,6 +654,7 @@ def embed(openai_client, model, texts):
     """Return the embedding vector of each text, in the order of the texts."""
     print(f"\n>>> Ask the Azure OpenAI embedding model {model} for the vectors of {len(texts)} text(s), in one call.")
     response = openai_client.embeddings.create(model=model, input=texts)
+
     return [item.embedding for item in response.data]
 
 
@@ -646,6 +672,7 @@ def fill_safety_index(search_client, vectors, embedding_model):
         "\n>>> Ask Azure AI Search how many documents the AI safety index can search, until all of them can. "
         "The first check is logged in full, later ones as one `HTTP #n GET` line."
     )
+
     for _ in range(INDEX_WAIT_SECONDS):
         if search_client.get_document_count() == len(SAFETY_DOCS):
             break
@@ -670,10 +697,12 @@ def answer_from_index(openai_client, search_client, embedding_model, model, ques
     context, answer)."""
     question_vector = embed(openai_client, embedding_model, [question])[0]
     vector_query = VectorizedQuery(vector=question_vector, k_nearest_neighbors=3, fields="embedding")
+
     print("\n>>> Search the AI safety index in Azure AI Search with the question's vector.")
     hits = list(search_client.search(search_text=None, vector_queries=[vector_query], select=["content", "source"]))
     context = "\n".join(f"From {hit['source']}: {hit['content']}" for hit in hits)
     print("Retrieved: " + (", ".join(hit["source"] for hit in hits) or "nothing"))
+
     print(f"\n>>> Ask the Azure OpenAI chat model {model} to answer from the retrieved documents.")
     response = openai_client.chat.completions.create(
         model=model,
@@ -684,6 +713,7 @@ def answer_from_index(openai_client, search_client, embedding_model, model, ques
     )
     answer = response.choices[0].message.content
     print(f"Answer: {answer}")
+
     return hits, context, answer
 
 
@@ -698,6 +728,7 @@ def score_answer(evaluators, question, answer, context):
     }
     summary = ", ".join(f"{name} {score.get(name)} ({score.get(f'{name}_result')})" for name, score in scores.items())
     print(f"Scores: {summary}")
+
     return scores
 
 
@@ -722,12 +753,14 @@ def section_rag(ctx):
     index_client = SearchIndexClient(search_endpoint, search_key)
     vectors = embed(openai_client, embedding_model, [doc["content"] for doc in SAFETY_DOCS])
     create_safety_index(index_client, len(vectors[0]))
+
     try:
         search_client = SearchClient(search_endpoint, SAFETY_INDEX_NAME, search_key)
         fill_safety_index(search_client, vectors, embedding_model)
         evaluators = build_rag_evaluators(ctx["judge_config"], ctx["credential"])
         results = []
         empty_retrievals = 0
+
         for number, question in enumerate(RAG_QUESTIONS, start=1):
             print(f"\nQuestion {number}: {question}")
             hits, context, answer = answer_from_index(
@@ -738,6 +771,7 @@ def section_rag(ctx):
             results.append({"question": question, "context": context, "answer": answer, "scores": scores})
 
         write_json(ctx["output_dir"], "section6-rag.json", results)
+
         if empty_retrievals:
             raise RuntimeError(
                 f"{empty_retrievals} question(s) retrieved no documents, so their answers are not grounded"
@@ -754,12 +788,14 @@ async def echo_target(messages, stream=False, session_state=None, context=None):
     sentence."""
     history = messages["messages"]
     history.append({"role": "assistant", "content": "This lab target does not call a model."})
+
     return {"messages": history, "stream": stream, "session_state": session_state, "context": context}
 
 
 def section_indirect_attack(ctx):
     simulator = IndirectAttackSimulator(azure_ai_project=ctx["project_endpoint"], credential=ctx["credential"])
     print(f"Running IndirectAttackSimulator (XPIA), max {SIMULATION_RESULTS} results, echo target")
+
     print(
         "\n>>> Run the indirect attack simulator, which makes several web service calls of its own: each is "
         "described just before it in this log."
@@ -768,9 +804,11 @@ def section_indirect_attack(ctx):
         asyncio.run(simulator(target=echo_target, max_simulation_results=SIMULATION_RESULTS, concurrent_async_task=1))
     )
     print(f"\n{len(outputs)} simulated conversation(s)")
+
     for number, conversation in enumerate(outputs, start=1):
         metadata = conversation.get("template_parameters", {}).get("metadata", {})
         print(f"  Conversation {number}: attack type {metadata.get('xpia_attack_type', 'unknown')}")
+
         for message in conversation.get("messages", []):
             print(f"    {message.get('role', '?'):<9} {excerpt(message.get('content', ''))}")
 
@@ -821,6 +859,7 @@ def parse_args():
         default=None,
         help="seed for the section 3 jailbreak pick (default: random, as the notebook)",
     )
+
     return parser.parse_args()
 
 
@@ -844,6 +883,7 @@ def build_context(args):
     print(f"Project endpoint: {project_endpoint}")
     print(f"Chat/agent model: {ctx['model']}; judge model: {ctx['judge_config']['azure_deployment']}")
     print(f"Sections: {', '.join(str(s) for s in args.sections)}")
+
     return ctx
 
 
@@ -860,13 +900,16 @@ def run_sections(ctx, sections):
     failures = []
     provider = setup_tracing(ctx["project_client"])
     tracer = trace.get_tracer(SERVICE_NAME)
+
     with tracer.start_as_current_span("genai-ops-lab") as root:
         root.set_attribute("lab.session_id", uuid.uuid4().hex[:12])
         ctx["trace_id"] = format(root.get_span_context().trace_id, "032x")
         print(f"Trace ID: {ctx['trace_id']}")
+
         for number in sections:
             title, run_section = SECTIONS[number]
             print_section(f"{number}. {title}")
+
             with tracer.start_as_current_span(span_name(number, title)):
                 try:
                     run_section(ctx)
@@ -875,6 +918,7 @@ def run_sections(ctx, sections):
                     failures.append((number, title, error))
 
     provider.force_flush()
+
     return failures
 
 
@@ -883,14 +927,17 @@ def report(ctx, sections, failures):
     finished."""
     print_section("Result")
     print(f"Trace {ctx['trace_id']}; outputs in {ctx['output_dir']}")
+
     if failures:
         print(f"FINISHED WITH ERRORS: {len(failures)} of {len(sections)} section(s) failed")
+
         for number, title, error in failures:
             print(f"  {number}. {title}: {type(error).__name__}: {excerpt(error)}")
 
         return False
 
     print(f"COMPLETED: all {len(sections)} section(s) finished")
+
     return True
 
 
@@ -913,6 +960,7 @@ def main():
         failures = run_sections(ctx, args.sections)
 
     passed = report(ctx, args.sections, failures)
+
     raise SystemExit(0 if passed else 1)
 
 

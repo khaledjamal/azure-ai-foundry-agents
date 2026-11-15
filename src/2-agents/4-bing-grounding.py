@@ -83,6 +83,7 @@ def get_project_endpoint():
 
     services_endpoint = os.environ["AZURE_AI_SERVICES_ENDPOINT"].rstrip("/")
     project_name = os.environ["AZURE_AI_PROJECT_NAME"]
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
@@ -90,6 +91,7 @@ def number_citations(text, annotations):
     """Replace each cited marker (e.g. 【4:0†source】) with [n]; return the new text and
     the numbered (title, url) list."""
     sources, replacements = [], []
+
     for annotation in annotations:
         if annotation.type != "url_citation":
             continue
@@ -97,6 +99,7 @@ def number_citations(text, annotations):
         source = (annotation.title, annotation.url)
         if source not in sources:
             sources.append(source)
+
         start, end = getattr(annotation, "start_index", None), getattr(annotation, "end_index", None)
         if start is not None and end is not None and text[start:end].startswith("【"):
             replacements.append((start, end, f"[{sources.index(source) + 1}]"))
@@ -111,6 +114,7 @@ def show_response(response):
     """Print one response's output items; return (answer text, sources, Bing search
     URLs)."""
     answer, sources, search_urls = "", [], []
+
     for item in response.output:
         if item.type == "bing_grounding_call":
             query = json.loads(item.arguments or "{}").get("query", "")
@@ -140,6 +144,7 @@ def parse_args():
         default=date.today(),
         help="date written into the instructions (default: today); a replay passes the recording's date",
     )
+
     return parser.parse_args()
 
 
@@ -148,6 +153,7 @@ def load_settings(model):
     project_endpoint = get_project_endpoint()
     print(f"Project endpoint: {project_endpoint}")
     print(f"Model deployment: {model}")
+
     return project_endpoint, connection_name
 
 
@@ -162,12 +168,14 @@ def create_agent(project_client, model, connection_name, today):
             search_configurations=[BingGroundingSearchConfiguration(project_connection_id=connection.id)]
         )
     )
+
     print("\n>>> Create a version of the health Bing agent, with the Bing tool, in Foundry Agent Service.")
     agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(model=model, instructions=build_instructions(today), tools=[tool]),
     )
     print(f"\nAgent created: name={agent.name} version={agent.version}")
+
     return agent
 
 
@@ -175,6 +183,7 @@ def ask(openai_client, agent_reference, question, totals):
     """Send one question with a required search; return the response status, answer,
     sources and search URLs."""
     print(f"\nUser: {question}")
+
     print(
         "\n>>> Send the question to the health Bing agent through the Foundry project's Responses API; "
         "the Bing searches run on the service side, inside this one call."
@@ -182,21 +191,26 @@ def ask(openai_client, agent_reference, question, totals):
     response = openai_client.responses.create(input=question, tool_choice="required", extra_body=agent_reference)
     print(f"Response (status {response.status}):")
     answer, sources, search_urls = show_response(response)
+
     if response.usage:
         totals["input"] += response.usage.input_tokens
         totals["output"] += response.usage.output_tokens
 
     totals["searches"] += len(search_urls)
+
     return response.status, answer, sources, search_urls
 
 
 def print_answer(answer, sources, search_urls):
     print(f"\nAgent: {answer}")
     print("Sources:")
+
     for number, (title, url) in enumerate(sources, start=1):
         print(f"  [{number}] {title}: {url}")
+
     if not sources:
         print("  (none)")
+
     for url in search_urls:
         print(f"Bing search: {url}")
 
@@ -207,6 +221,7 @@ def ask_questions(openai_client, agent):
     agent_reference = {"agent_reference": {"name": agent.name, "type": "agent_reference"}}
     totals = {"input": 0, "output": 0, "searches": 0}
     results = []
+
     for question in QUESTIONS:
         status, answer, sources, search_urls = ask(openai_client, agent_reference, question, totals)
         print_answer(answer, sources, search_urls)
@@ -237,6 +252,7 @@ def check_results(results):
         for question, status, answer, sources, search_urls in results
     ]
     print("Checks:")
+
     for name, passed in checks:
         print(f"  {'PASS' if passed else 'FAIL'}  {name}")
 
@@ -254,6 +270,7 @@ def main():
         project_client.get_openai_client() as openai_client,
     ):
         agent = create_agent(project_client, args.model, connection_name, args.today)
+
         try:
             results, totals = ask_questions(openai_client, agent)
         finally:
@@ -261,6 +278,7 @@ def main():
 
     print_totals(totals)
     passed = check_results(results)
+
     raise SystemExit(0 if passed else 1)
 
 

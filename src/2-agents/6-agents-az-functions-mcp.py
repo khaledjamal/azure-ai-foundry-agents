@@ -78,6 +78,7 @@ def get_project_endpoint():
 
     services_endpoint = os.environ["AZURE_AI_SERVICES_ENDPOINT"].rstrip("/")
     project_name = os.environ["AZURE_AI_PROJECT_NAME"]
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
@@ -86,10 +87,12 @@ def check_function_app(url):
     why not otherwise."""
     app_name = urlparse(url).hostname.split(".")[0]
     resource_group = os.getenv("AZURE_RESOURCE_GROUP") or "<resource-group>"
+
     print(
         "\n>>> Check that the Azure Function app hosting the MCP workout tools is running: "
         "a call without its function key should get HTTP 401."
     )
+
     try:
         response = requests.post(url, json={}, timeout=60)
     except requests.RequestException as error:
@@ -106,6 +109,7 @@ def check_function_app(url):
         return True
 
     print(f"Unexpected answer from the Function app: HTTP {response.status_code}")
+
     return False
 
 
@@ -113,6 +117,7 @@ def show_output(response, totals):
     """Print the MCP items of one response; return the approval requests and the
     successful MCP calls."""
     approvals, calls = [], []
+
     for item in response.output:
         if item.type == "mcp_list_tools":
             names = [tool.name for tool in item.tools]
@@ -123,6 +128,7 @@ def show_output(response, totals):
         elif item.type == "mcp_call":
             print(f"  mcp_call  server={item.server_label}  tool={item.name}  arguments={item.arguments}")
             print(f"            output: {item.output}  error={item.error}")
+
             if item.output and not item.error:
                 calls.append(item)
         elif item.type == "message":
@@ -143,15 +149,18 @@ def ask(openai_client, agent_reference, question, previous_response_id, totals):
     and the successful calls."""
     print(f"\nUser: {question}")
     follow_up = {"previous_response_id": previous_response_id} if previous_response_id else {}
+
     print("\n>>> Send the question to the workout MCP agent through the Foundry project's Responses API.")
     response = openai_client.responses.create(input=question, extra_body=agent_reference, **follow_up)
     print(f"Response (status {response.status}):")
     approvals, calls = show_output(response, totals)
+
     for _ in range(MAX_APPROVAL_ROUNDS):
         if not approvals:
             break
 
         replies = []
+
         for request in approvals:
             approve = request.server_label == SERVER_LABEL and request.name in ALLOWED_TOOLS
             print(f"  -> {'approve' if approve else 'deny'} {request.name}")
@@ -169,6 +178,7 @@ def ask(openai_client, agent_reference, question, previous_response_id, totals):
         calls += more_calls
 
     print(f"\nAgent: {response.output_text}")
+
     return response, calls
 
 
@@ -194,6 +204,7 @@ def load_settings(model):
     print(f"Project endpoint: {project_endpoint}")
     print(f"Model deployment: {model}")
     print(f"MCP server: {SERVER_LABEL} at {server_url}, allowed tools {ALLOWED_TOOLS}")
+
     return server_url, project_endpoint
 
 
@@ -210,12 +221,14 @@ def create_agent(project_client, model, server_url):
         require_approval="always",
         project_connection_id=connection.id,
     )
+
     print("\n>>> Create a version of the workout MCP agent, with the MCP tool, in Foundry Agent Service.")
     agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(model=model, instructions=INSTRUCTIONS, tools=[tool]),
     )
     print(f"\nAgent created: name={agent.name} version={agent.version}")
+
     return agent
 
 
@@ -226,6 +239,7 @@ def run_conversation(openai_client, agent):
     totals = {"input": 0, "output": 0}
     turns = []
     previous_response_id = None
+
     for question in QUESTIONS:
         response, calls = ask(openai_client, agent_reference, question, previous_response_id, totals)
         turns.append((response.output_text or "", calls))
@@ -244,6 +258,7 @@ def check_results(turns):
     """Turn 1 listed the goals, turn 2 planned a 30-minute strength workout, and both
     turns answered."""
     checks = []
+
     if len(turns) == len(QUESTIONS):
         (answer_1, calls_1), (answer_2, calls_2) = turns
         checks = [
@@ -256,6 +271,7 @@ def check_results(turns):
         ]
 
     print("Checks:")
+
     for name, passed in checks:
         print(f"  {'PASS' if passed else 'FAIL'}  {name}")
 
@@ -266,6 +282,7 @@ def main():
     load_env()
     args = parse_args()
     server_url, project_endpoint = load_settings(args.model)
+
     if not check_function_app(server_url):
         raise SystemExit(1)
 
@@ -275,6 +292,7 @@ def main():
         project_client.get_openai_client() as openai_client,
     ):
         agent = create_agent(project_client, args.model, server_url)
+
         try:
             turns, totals = run_conversation(openai_client, agent)
         finally:
@@ -282,6 +300,7 @@ def main():
 
     print(f"Total tokens: input {totals['input']}, output {totals['output']}")
     passed = check_results(turns)
+
     raise SystemExit(0 if passed else 1)
 
 

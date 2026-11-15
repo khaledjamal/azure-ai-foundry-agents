@@ -183,10 +183,12 @@ class FitnessCatalogPlugin:
 
         matches = await self._search_products(f"Price le {max_price}{category_filter}")
         print(f"  [plugin] find_items_under(max_price={max_price}, category={category}) -> {len(matches)} item(s)")
+
         if matches:
             return "\n".join(matches)
 
         answer = f"No products cost ${max_price:.2f} or less" + (f" in category {category}." if category else ".")
+
         if category:
             cheapest = await self._search_products(category_filter.removeprefix(" and "), top=1)
             if cheapest:
@@ -208,6 +210,7 @@ class FitnessCatalogPlugin:
             select=["Name", "Category", "Price"],
             top=top,
         )
+
         return [f"{document['Name']} ({document['Category']}): ${document['Price']:.2f}" async for document in results]
 
 
@@ -243,6 +246,7 @@ async def get_search_connection(project_client):
 
     print(f"Azure AI Search connection: {connection.name}")
     print(f"Azure AI Search endpoint:   {connection.target}")
+
     return connection, AzureKeyCredential(api_key)
 
 
@@ -265,8 +269,10 @@ async def create_fitness_index(index_client):
         SimpleField(name="Price", type=SearchFieldDataType.Double, filterable=True, sortable=True, facetable=True),
         SearchableField(name="Description", type=SearchFieldDataType.String),
     ]
+
     print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index already exists.")
     existing = [name async for name in index_client.list_index_names()]
+
     if INDEX_NAME in existing:
         print("\n>>> Delete the old fitness index from Azure AI Search.")
         await index_client.delete_index(INDEX_NAME)
@@ -290,12 +296,15 @@ async def upload_documents(search_client):
 async def wait_for_documents(search_client, expected, timeout_seconds=30):
     # Uploaded documents become searchable after a short indexing delay.
     deadline = asyncio.get_running_loop().time() + timeout_seconds
+
     print(
         "\n>>> Ask Azure AI Search how many documents the fitness index can search, until all of them can. "
         "The first check is logged in full, later ones as one `HTTP #n GET` line."
     )
+
     while True:
         count = await search_client.get_document_count()
+
         if count >= expected or asyncio.get_running_loop().time() > deadline:
             print(f"Searchable documents: {count}/{expected}")
             return count
@@ -305,8 +314,10 @@ async def wait_for_documents(search_client, expected, timeout_seconds=30):
 
 async def print_direct_search(search_client, text):
     print(f"\nDirect Azure AI Search check for '{text}':")
+
     print(f"\n>>> Search the fitness index in Azure AI Search for '{text}', without the agent.")
     results = await search_client.search(search_text=text, top=10)
+
     async for doc in results:
         print(f"  {doc['Name']} | {doc['Category']} | ${doc['Price']:.2f} | {doc['Description']}")
 
@@ -315,11 +326,13 @@ async def print_tool_calls(project_client, thread_id):
     # Shows what each tool returned to the model in the latest run (e.g. which fields
     # the search tool passed on).
     runs = project_client.agents.runs.list(thread_id=thread_id, order=ListSortOrder.DESCENDING, limit=1)
+
     print("\n>>> Read the conversation thread's latest agent run from Foundry Agent Service, to show the tools it had.")
     run = await anext(aiter(runs))
     offered = [t.function.name if t.type == "function" else t.type for t in run.tools or []]
     print(f"  Tools offered in run {run.id} ({run.status}): {offered}")
     print("  Tool calls:")
+
     async for step in project_client.agents.run_steps.list(
         thread_id=thread_id, run_id=run.id, order=ListSortOrder.ASCENDING
     ):
@@ -342,6 +355,7 @@ def load_settings():
     model = os.getenv("MODEL_DEPLOYMENT_NAME") or "gpt-4o-mini"
     print(f"Foundry project endpoint: {project_endpoint}")
     print(f"Model: {model}")
+
     return project_endpoint, model
 
 
@@ -360,6 +374,7 @@ async def create_agent(project_client, model, connection):
         query_type=AzureAISearchQueryType.SIMPLE,
         top_k=5,
     )
+
     print("\n>>> Create the fitness shopping agent, with the Azure AI Search tool, in Foundry Agent Service.")
     definition = await project_client.agents.create_agent(
         model=model,
@@ -369,6 +384,7 @@ async def create_agent(project_client, model, connection):
         tool_resources=search_tool.resources,
     )
     print(f"Created agent: {definition.id}")
+
     return definition
 
 
@@ -376,6 +392,7 @@ async def ask(project_client, agent, thread, question):
     """Step 3: ask one question on the thread, print the answer and the tool calls;
     return the thread."""
     print(f"\n# User: {question}")
+
     print(
         "\n>>> Run get_response(), in which Semantic Kernel makes several web service calls of its own: each is "
         "described just before it in this log."
@@ -383,6 +400,7 @@ async def ask(project_client, agent, thread, question):
     response = await agent.get_response(messages=question, thread=thread)
     thread = response.thread
     print(f"# Agent: {response.message.content}")
+
     try:
         await print_tool_calls(project_client, thread.id)
     except Exception as exc:
@@ -436,6 +454,7 @@ async def main():
         index_created = False
         definition = None
         thread = None
+
         try:
             print("\n=== Step 1: create and fill the search index ===")
             await create_fitness_index(index_client)
@@ -454,6 +473,7 @@ async def main():
 
             print("\n=== Step 3: ask the agent ===")
             thread = AzureAIAgentThread(client=project_client)
+
             for question in QUESTIONS:
                 thread = await ask(project_client, agent, thread, question)
         finally:

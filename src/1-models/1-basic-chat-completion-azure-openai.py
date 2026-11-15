@@ -90,6 +90,7 @@ def create_openai_client():
     print("Connection method: AzureOpenAI (direct)")
     print(f"Endpoint:          {endpoint}")
     print(f"API version:       {api_version}")
+
     return openai_client
 
 

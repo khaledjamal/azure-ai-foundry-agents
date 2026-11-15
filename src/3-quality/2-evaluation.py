@@ -118,6 +118,7 @@ def get_project_endpoint():
 
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
@@ -128,11 +129,13 @@ def response_length_eval(response, **kwargs):
 
 def write_sample_data(output_dir):
     path = output_dir / "health_fitness_eval_data.jsonl"
+
     with path.open("w", encoding="utf-8") as f:
         for row in SAMPLE_DATA:
             f.write(json.dumps(row) + "\n")
 
     print(f"Sample evaluation data: {path} ({len(SAMPLE_DATA)} rows)")
+
     return path
 
 
@@ -142,6 +145,7 @@ def print_rows(rows):
         print(f"Query:        {row.get('inputs.query')}")
         print(f"Response:     {row.get('inputs.response')}")
         print(f"Ground truth: {row.get('inputs.ground_truth')}")
+
         for key, value in row.items():
             if key.startswith("outputs."):
                 print(f"  {key[len('outputs.') :]}: {value}")
@@ -152,6 +156,7 @@ def parse_args():
     parser.add_argument(
         "--output-dir", type=Path, default=Path("."), help="folder for the sample data and results JSON"
     )
+
     return parser.parse_args()
 
 
@@ -166,6 +171,7 @@ def load_settings():
     }
     print(f"Judge model:       {model_config['azure_deployment']} at {model_config['azure_endpoint']}")
     print(f"Project endpoint:  {project_endpoint}")
+
     return project_endpoint, model_config
 
 
@@ -186,6 +192,7 @@ def run_evaluation(data_path, evaluators, project_endpoint, output_dir):
     """Score every row with every evaluator, log the results to the Foundry project and
     save them as JSON."""
     results_path = output_dir / "evaluation_results.json"
+
     print(
         "\n>>> Run evaluate(), which makes several web service calls of its own, some at the same time: each is "
         "described just before it in this log."
@@ -199,6 +206,7 @@ def run_evaluation(data_path, evaluators, project_endpoint, output_dir):
         output_path=str(results_path),
     )
     print(f"Full results saved to: {results_path}")
+
     return result
 
 

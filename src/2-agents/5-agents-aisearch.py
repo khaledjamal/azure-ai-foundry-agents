@@ -151,6 +151,7 @@ def first_env(*names):
 
 def require_any_env(*names):
     value = first_env(*names)
+
     if not value:
         joined = " or ".join(names)
         raise ValueError(f"Required environment variable is not set: {joined}")
@@ -164,11 +165,13 @@ def get_project_endpoint():
         "PROJECT_ENDPOINT",
         "FOUNDRY_PROJECT_ENDPOINT",
     )
+
     if direct_endpoint:
         return direct_endpoint.rstrip("/")
 
     services_endpoint = require_any_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_any_env("AZURE_AI_PROJECT_NAME")
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
@@ -195,6 +198,7 @@ def create_search_clients():
 
     print(f"Azure AI Search endpoint: {search_endpoint}")
     print("SearchIndexClient created successfully.")
+
     return index_client, search_client
 
 
@@ -238,6 +242,7 @@ def create_fitness_index(index_client):
 
     print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index already exists.")
     existing_names = {index.name for index in index_client.list_indexes()}
+
     if INDEX_NAME in existing_names:
         print("\n>>> Delete the old fitness index from Azure AI Search.")
         index_client.delete_index(INDEX_NAME)
@@ -245,6 +250,7 @@ def create_fitness_index(index_client):
         time.sleep(1)  # seconds
 
     index = SearchIndex(name=INDEX_NAME, fields=fields)
+
     print("\n>>> Create the fitness index in Azure AI Search.")
     created = index_client.create_index(index)
     print(f"Created index: {created.name}")
@@ -262,9 +268,11 @@ def upload_fitness_documents(search_client):
     results = search_client.upload_documents(documents=[with_price_text(d) for d in SAMPLE_DOCUMENTS])
 
     failures = []
+
     for result in results:
         status = "SUCCESS" if result.succeeded else "FAILED"
         print(f"Upload {status}: key={result.key}")
+
         if not result.succeeded:
             failures.append(result)
 
@@ -303,6 +311,7 @@ def make_find_items_under(search_client):
             select=["Name", "Category", "Price"],
             top=top,
         )
+
         return [f"{document['Name']} ({document['Category']}): ${document['Price']:.2f}" for document in results]
 
     def find_items_under(max_price: float, category: str | None = None) -> str:
@@ -316,10 +325,12 @@ def make_find_items_under(search_client):
 
         matches = search_products(f"Price le {max_price}{category_filter}")
         print(f"  [function] find_items_under(max_price={max_price}, category={category}) -> {len(matches)} item(s)")
+
         if matches:
             return "\n".join(matches)
 
         answer = f"No products cost ${max_price:.2f} or less" + (f" in category {category}." if category else ".")
+
         if category:
             cheapest = search_products(category_filter.removeprefix(" and "), top=1)
             if cheapest:
@@ -335,6 +346,7 @@ def verify_search_index(search_client):
     print("-" * 80)
 
     last_error = None
+
     for attempt in range(1, 6):
         try:
             print(
@@ -342,6 +354,7 @@ def verify_search_index(search_client):
                 "can take a moment to become searchable, so this repeats until results come back."
             )
             results = list(search_client.search(search_text="Strength", top=10))
+
             if results:
                 for doc in results:
                     print(
@@ -351,6 +364,7 @@ def verify_search_index(search_client):
                     )
 
                 print("-" * 80)
+
                 return
         except Exception as exc:
             last_error = exc
@@ -374,6 +388,7 @@ def create_project_client():
 
     print(f"Foundry project endpoint: {project_endpoint}")
     print("AIProjectClient created successfully.")
+
     return project_client
 
 
@@ -385,6 +400,7 @@ def resolve_ai_search_connection(project_client):
 
     if explicit_name:
         print("\n>>> Read the Azure AI Search connection of the Foundry project, by the name set in .env.")
+
         try:
             connection = project_client.connections.get(connection_name=explicit_name)
         except TypeError:
@@ -392,13 +408,16 @@ def resolve_ai_search_connection(project_client):
 
         print(f"Azure AI Search connection name: {connection.name}")
         print(f"Azure AI Search connection ID:   {connection.id}")
+
         return connection
 
     print("\n>>> Read the default Azure AI Search connection of the Foundry project.")
+
     try:
         connection = project_client.connections.get_default(connection_type=ConnectionType.AZURE_AI_SEARCH)
         print(f"Azure AI Search connection name: {connection.name}")
         print(f"Azure AI Search connection ID:   {connection.id}")
+
         return connection
     except Exception as default_error:
         print(f"No default Azure AI Search connection was found: {default_error}")
@@ -406,6 +425,7 @@ def resolve_ai_search_connection(project_client):
     print("\n>>> List all the connections of the Foundry project, to look for Azure AI Search.")
     connections = list(project_client.connections.list())
     print(f"Project currently has {len(connections)} connection(s).")
+
     for connection in connections:
         print(
             f"  Name: {getattr(connection, 'name', None)} | "
@@ -457,6 +477,7 @@ def create_search_agent(project_client, search_connection, search_client):
     print(f"Created Azure AI Search agent: {agent.id}")
     print(f"Model: {model_name}")
     print(f"Tools: {[getattr(tool, 'type', None) for tool in agent.tools]} (function: find_items_under)")
+
     return agent
 
 
@@ -475,6 +496,7 @@ def print_thread_messages(project_client, thread_id):
         "\n>>> Read the conversation thread's messages from Foundry Agent Service. This `for` loop makes these calls, "
         "not the list() line above it: one call per page, and the last page is empty."
     )
+
     for message in data:
         role = getattr(message.role, "value", str(message.role)).upper()
         text_messages = getattr(message, "text_messages", None) or []
@@ -495,9 +517,11 @@ def print_tool_calls(project_client, thread_id, run):
     # visible.
     print("Tool calls:")
     calls = 0
+
     for step in project_client.agents.run_steps.list(thread_id=thread_id, run_id=run.id, order=ListSortOrder.ASCENDING):
         for call in getattr(step.step_details, "tool_calls", None) or []:
             calls += 1
+
             if call.type == "azure_ai_search":
                 print(f"  - azure_ai_search input: {call.azure_ai_search.get('input')}")
                 print(f"    azure_ai_search output: {call.azure_ai_search.get('output')}")
@@ -549,6 +573,7 @@ def run_agent_query(project_client, agent, question):
             print(f"Could not list tool calls: {exc!r}")
 
         print_thread_messages(project_client, thread.id)
+
         return run
     finally:
         # Each question gets its own thread, so delete it here rather than in the final
@@ -576,6 +601,7 @@ def cleanup_index(index_client):
 
     print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index is there to delete.")
     existing_names = {index.name for index in index_client.list_indexes()}
+
     if INDEX_NAME in existing_names:
         print("\n>>> Delete the fitness index from Azure AI Search.")
         index_client.delete_index(INDEX_NAME)
@@ -586,6 +612,7 @@ def run_questions(project_client, agent):
     """Step 3: ask each question on its own thread; return (number, status, error) for
     each run that didn't complete."""
     failed_runs = []
+
     for index, question in enumerate(QUESTIONS, start=1):
         print_section(f"QUESTION {index} OF {len(QUESTIONS)}")
         run = run_agent_query(project_client, agent, question)
@@ -601,9 +628,11 @@ def run_questions(project_client, agent):
 def check_results(failed_runs):
     """Every agent run must have completed; print which ones didn't."""
     print("\n" + "=" * 80)
+
     if failed_runs:
         print(f"FINISHED WITH ERRORS: {len(failed_runs)} of {len(QUESTIONS)} agent runs did not complete")
         print("=" * 80)
+
         for index, status, error in failed_runs:
             print(f"Question {index}: status {status}, error: {error}")
 
@@ -611,6 +640,7 @@ def check_results(failed_runs):
 
     print(f"COMPLETED: all {len(QUESTIONS)} agent runs finished with status COMPLETED")
     print("=" * 80)
+
     return True
 
 

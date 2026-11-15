@@ -88,21 +88,26 @@ def get_project_endpoint():
 
     services_endpoint = require_env("AZURE_AI_SERVICES_ENDPOINT").rstrip("/")
     project_name = require_env("AZURE_AI_PROJECT_NAME")
+
     return f"{services_endpoint}/api/projects/{project_name}"
 
 
 def ask(project_client, thread_id, agent_id, question):
     print(f"User: {question}")
+
     print("\n>>> Add the user's question to the conversation thread in Foundry Agent Service.")
     project_client.agents.messages.create(thread_id=thread_id, role="user", content=question)
+
     print(
         "\n>>> Start a run, in which the health advisor agent reads the conversation thread and answers, then check "
         "the run's status until it ends. The first check is logged in full, later ones as one `HTTP #n GET` line."
     )
     run = project_client.agents.runs.create_and_process(thread_id=thread_id, agent_id=agent_id)
     print(f"Run status: {run.status}")
+
     if run.usage:
         print(f"(tokens: prompt {run.usage.prompt_tokens}, completion {run.usage.completion_tokens})")
+
     if run.last_error:
         print(f"Run error: {run.last_error}")
 
@@ -115,6 +120,7 @@ def print_conversation(project_client, thread_id):
         "print_conversation() makes these calls, not its list() line: one call per page, and the last page is empty."
     )
     messages = project_client.agents.messages.list(thread_id=thread_id, order=ListSortOrder.ASCENDING)
+
     for message in messages:
         for text_message in message.text_messages:
             print(f"\n{message.role.upper()}: {text_message.text.value}")
@@ -140,6 +146,7 @@ def main():
 
         thread = None
         failed = []
+
         try:
             print("\n>>> Create an empty conversation thread; Foundry Agent Service keeps the conversation history.")
             thread = project_client.agents.threads.create()
@@ -158,6 +165,7 @@ def main():
             print_conversation(project_client, thread.id)
         finally:
             print_section("Cleanup")
+
             if thread:
                 print("\n>>> Delete the conversation thread from Foundry Agent Service.")
                 project_client.agents.threads.delete(thread.id)

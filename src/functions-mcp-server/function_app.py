@@ -82,6 +82,7 @@ def build_workout(goal, minutes):
     exercises = plan["main"]
     rounds = max(1, main // (2 * len(exercises)))
     seconds_each = main * 60 // (rounds * len(exercises))
+
     return {
         "goal": goal,
         "total_minutes": minutes,
@@ -115,6 +116,7 @@ def suggest_workout(goal: str, minutes: int) -> str:
     Call list_workout_goals first if you don't know the goals.
     """  # noqa: W505 - the agent gets this docstring as the tool description
     logging.info("suggest_workout called with goal=%r minutes=%r", goal, minutes)
+
     return json.dumps(build_workout(goal, minutes))
 
 
