@@ -195,7 +195,7 @@ def create_search_clients():
     return index_client, search_client
 
 
-def create_fitness_index(index_client, search_client):
+def create_fitness_index(index_client):
     fields = [
         SimpleField(name="FitnessItemID", type=SearchFieldDataType.String, key=True, filterable=True),
         SearchableField(name="Name", type=SearchFieldDataType.String, filterable=True),
@@ -204,7 +204,8 @@ def create_fitness_index(index_client, search_client):
         SearchableField(name="Description", type=SearchFieldDataType.String),
     ]
     print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index already exists.")
-    if INDEX_NAME in {index.name for index in index_client.list_indexes()}:
+    index_names = {index.name for index in index_client.list_indexes()}
+    if INDEX_NAME in index_names:
         print("\n>>> Delete the old fitness index from Azure AI Search.")
         index_client.delete_index(INDEX_NAME)
         print(f"Deleted existing index: {INDEX_NAME}")
@@ -213,15 +214,25 @@ def create_fitness_index(index_client, search_client):
     index_client.create_index(SearchIndex(name=INDEX_NAME, fields=fields))
     print(f"Created index: {INDEX_NAME}")
 
-    # The search tool passes only text fields to the model, so the price also goes into
-    # the description.
-    documents = [{**d, "Description": f"{d['Description']} Price: ${d['Price']:.2f}."} for d in SAMPLE_DOCUMENTS]
+
+def with_price_text(document):
+    # The Azure AI Search tool only passes text fields to the model (it selects
+    # FitnessItemID, Name, Category, Description), so the numeric Price would never
+    # reach it. The numeric Price stays for filtering and sorting.
+    return {**document, "Description": f"{document['Description']} Price: ${document['Price']:.2f}."}
+
+
+def upload_fitness_documents(search_client):
+    documents = [with_price_text(d) for d in SAMPLE_DOCUMENTS]
     print("\n>>> Upload the fitness product documents to the fitness index in Azure AI Search.")
-    failed = [result.key for result in search_client.upload_documents(documents=documents) if not result.succeeded]
+    results = search_client.upload_documents(documents=documents)
+    failed = [result.key for result in results if not result.succeeded]
     if failed:
         raise RuntimeError(f"Documents failed to upload: {failed}")
     print(f"Uploaded {len(documents)} products.")
 
+
+def wait_for_documents(search_client):
     # A new index can take a moment before its documents are searchable; wait instead of
     # letting the agent search an empty index.
     for _ in range(10):
@@ -229,7 +240,8 @@ def create_fitness_index(index_client, search_client):
             "\n>>> Search the fitness index in Azure AI Search for every document: new documents can take a moment "
             "to become searchable, so this repeats until all of them come back."
         )
-        if len(list(search_client.search(search_text="*", top=10))) == len(documents):
+        found = list(search_client.search(search_text="*", top=10))
+        if len(found) == len(SAMPLE_DOCUMENTS):
             print("Index is searchable.")
             return
         time.sleep(2)  # seconds
@@ -449,19 +461,19 @@ def load_settings(models):
 
 def make_search_tool(connection):
     """The Azure AI Search tool on the index, reached through the project's Azure AI
-    Search connection."""
-    return AzureAISearchTool(
-        azure_ai_search=AzureAISearchToolResource(
-            indexes=[
-                AISearchIndexResource(
-                    project_connection_id=connection.id,
-                    index_name=INDEX_NAME,
-                    query_type=AzureAISearchQueryType.SIMPLE,
-                    top_k=5,
-                )
-            ]
-        )
+    Search connection.
+
+    - The new agents API wraps the index settings in two layers (tool, tool resource);
+      the classic API in 5-agents-aisearch.py takes the same four settings directly.
+    """
+    index_resource = AISearchIndexResource(
+        project_connection_id=connection.id,
+        index_name=INDEX_NAME,
+        query_type=AzureAISearchQueryType.SIMPLE,
+        top_k=5,  # results the tool passes to the model per search
     )
+    tool_resource = AzureAISearchToolResource(indexes=[index_resource])
+    return AzureAISearchTool(azure_ai_search=tool_resource)
 
 
 def run_models(project_client, openai_client, models, search_tool, find_items_under):
@@ -483,7 +495,8 @@ def run_models(project_client, openai_client, models, search_tool, find_items_un
 def cleanup(index_client):
     try:
         print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index is there to delete.")
-        if INDEX_NAME in {index.name for index in index_client.list_indexes()}:
+        index_names = {index.name for index in index_client.list_indexes()}
+        if INDEX_NAME in index_names:
             print("\n>>> Delete the fitness index from Azure AI Search.")
             index_client.delete_index(INDEX_NAME)
             print(f"Deleted index: {INDEX_NAME}")
@@ -511,7 +524,9 @@ def main():
     index_client, search_client = create_search_clients()
     all_results = {}
     try:
-        create_fitness_index(index_client, search_client)
+        create_fitness_index(index_client)
+        upload_fitness_documents(search_client)
+        wait_for_documents(search_client)
         find_items_under = make_find_items_under(search_client)
 
         with (
