@@ -1,10 +1,7 @@
 Sample output of src/4-frameworks/3-autogen-personalized-heart-rate.py
-Replay on 2026-11-01 21:56 of answers recorded on 2026-10-27 22:20 (no service called), with:
-HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/3-autogen-personalized-heart-rate-20261027-222036 uv run python src/4-frameworks/3-autogen-personalized-heart-rate.py --output-dir runs/20261101-215643-3-autogen-personalized-heart-rate
+Run on 2026-11-15 14:59 with: uv run python src/4-frameworks/3-autogen-personalized-heart-rate.py --output-dir runs/20261115-145925-3-autogen-personalized-heart-rate
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
-[http_replay] no random seed in this recording: random values differ from the record run
-[http_replay] replay mode, folder runs/recordings/3-autogen-personalized-heart-rate-20261027-222036
 
 ================================================================================
 AUTOGEN PERSONALIZED HEART-RATE AGENTS (REDUCED)
@@ -35,7 +32,7 @@ Hourly average heart rate yesterday (wearable data, 15 hours):
 Overall average: 78 bpm
 Calmest hours (lowest averages): 07:00, 16:00, 17:00
 Most active hours (highest averages): 11:00, 18:00, 19:00
-Saved chart: runs/20261101-215643-3-autogen-personalized-heart-rate/hourly-heart-rate.png
+Saved chart: runs/20261115-145925-3-autogen-personalized-heart-rate/hourly-heart-rate.png
 
 ================================================================================
 2. Agents
@@ -64,7 +61,7 @@ Embedding deployment:  text-embedding-3-small
 > authorization: Bearer <redacted>
 > x-stainless-retry-count: 0
 > x-stainless-read-timeout: 600
-> Content-Length: 827
+> Content-Length: 839
 >
 {
   "model": "text-embedding-3-small",
@@ -74,7 +71,7 @@ Embedding deployment:  text-embedding-3-small
     "Stretch for 5 minutes every hour if you're sitting at a desk.",
     "Incorporate strength training twice a week for overall fitness.",
     "Drink water regularly to stay hydrated during workouts.",
-    "For low-intensity recovery days, try yoga or gentle swimming.",
+    "For low-intensity recovery days, try light stretching or gentle swimming.",
     "If your heart rate was elevated yesterday, focus on slow, deep breathing exercises today.",
     "Morning walks are ideal when your body is naturally in a recovery state.",
     "Adjust your hydration based on your previous day's heart rate - higher rates mean more water today.",
@@ -85,24 +82,23 @@ Embedding deployment:  text-embedding-3-small
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
+< Content-Length: 82508
 < Content-Type: application/json
-< Date: Tue, 27 Oct 2026 18:20:37 GMT
+< Date: Sun, 15 Nov 2026 10:59:30 GMT
 < Server: istio-envoy
 < Vary: Origin
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< x-ratelimit-remaining-tokens: 149728
+< x-ratelimit-remaining-tokens: 149811
 < x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261013064008-e5ca7446
+< azureml-model-session: d20261112031331-1348d844
 < x-ms-served-model: text-embedding-3-small-1
 < x-request-id: <id>
-< x-http2-stream-id: 833
+< x-http2-stream-id: 537
 < x-ms-client-request-id: Not-Set
 < x-ms-deployment-name: text-embedding-3-small
-< Content-Length: 82577
-< x-http-replay: 0001-POST-openai_deployments_text-embedding-3-small_embeddings.json
 <
 {
   "object": "list",
@@ -134,7 +130,7 @@ Embedding deployment:  text-embedding-3-small
     },
     {
       "object": "embedding",
-      "embedding": "AID1OwDAPD0AoFA8AGAWugDgSz0A4IA6AMBYvQBggjwAoFM9AMAYPQDg0bsAwBk9AECQvQCg8DwAgDw9...(8192 characters)",
+      "embedding": "AGCNPADgED0AgJo8AEAOvACAKj0AAIe7AKBLvQBgM7sAYGA9AEArPQBARLwAACo9AEBxvQBAFz0AwI49...(8192 characters)",
       "index": 5
     },
     {
@@ -154,14 +150,14 @@ Embedding deployment:  text-embedding-3-small
     },
     {
       "object": "embedding",
-      "embedding": "AOCtvABg4DwAYHU7AAAyvAAgVLsAYP48AKCgvAAAfT0AoDU9AKAlvQAAJjwAIII9AMDEuwBAwLsAwNQ8...(8192 characters)",
+      "embedding": "AECuvABg4DwAwHY7AEAyvADgVLsAQP48AICgvABgfT0AoDU9AMAlvQCAJjwAIII9AMDEuwDAwbsAgNQ8...(8192 characters)",
       "index": 9
     }
   ],
   "model": "text-embedding-3-small",
   "usage": {
-    "prompt_tokens": 145,
-    "total_tokens": 145
+    "prompt_tokens": 146,
+    "total_tokens": 146
   }
 }
 Embedded 10 wellness tips.
@@ -234,13 +230,14 @@ user: Plan my day: when is a good time for a workout, and when should I take a c
 
 --- OUTBOUND RESPONSE #2 ---
 < 200 OK
+< Content-Length: 1760
 < Content-Type: application/json
-< Date: Tue, 27 Oct 2026 18:20:39 GMT
+< Date: Sun, 15 Nov 2026 10:59:31 GMT
 < Server: istio-envoy
 < Vary: Origin
 < azureai-fe-is-streaming: False
 < azureai-fe-offer-type: paygo
-< azureml-model-session: d20261025041626-398ce032
+< azureml-model-session: d20261105113136-c3911b42
 < skip-error-remapping: true
 < x-accel-buffering: no
 < x-ms-is-spilled-over: false
@@ -258,24 +255,41 @@ user: Plan my day: when is a good time for a workout, and when should I take a c
 < x-ratelimit-reset-tokens: 0
 < x-request-id: <id>
 < apim-request-id: <id>
-< x-http2-stream-id: 27
+< x-http2-stream-id: 883
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< Content-Length: 1367
-< x-http-replay: 0002-POST-openai_deployments_gpt-4o-mini_chat_completions.json
 <
 {
   "choices": [
     {
-      "content_filter_result": {
-        "error": {
-          "code": "content_filter_error",
-          "message": "The contents are not filtered"
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
         }
       },
-      "content_filter_results": {},
       "finish_reason": "tool_calls",
       "index": 0,
       "logprobs": null,
@@ -287,281 +301,18 @@ user: Plan my day: when is a good time for a workout, and when should I take a c
         "tool_calls": [
           {
             "function": {
-              "arguments": "{\"query\":\"best time for workout and calm break\"}",
+              "arguments": "{\"query\":\"Plan my day: when is a good time for a workout, and when should I take a calm break?\"}",
               "name": "retrieve_personalized_tips"
             },
-            "id": "call_QKZAMxQ9GuH81zf1wTeURouh",
+            "id": "call_yFO7DrWslrNEpebfOXEHTO6N",
             "type": "function"
           }
         ]
       }
     }
   ],
-  "created": 1793125239,
-  "id": "chatcmpl-Edg4lhTiJ7G5sMwmZMI0rk5XRlFBC",
-  "model": "gpt-4o-mini-2024-07-18",
-  "object": "chat.completion",
-  "prompt_filter_results": [
-    {
-      "prompt_index": 0,
-      "content_filter_results": {}
-    }
-  ],
-  "routing": {
-    "serving_pipereplica": "d20261025041626-398ce032-default-r1-dp0-default"
-  },
-  "service_tier": "default",
-  "system_fingerprint": "fp_4b2adf74ff",
-  "usage": {
-    "completion_tokens": 24,
-    "completion_tokens_details": {
-      "accepted_prediction_tokens": 0,
-      "audio_tokens": 0,
-      "reasoning_tokens": 0,
-      "rejected_prediction_tokens": 0
-    },
-    "latency_checkpoint": {
-      "engine_tbt_ms": 9,
-      "engine_ttft_ms": 43,
-      "engine_ttlt_ms": 261,
-      "pre_inference_ms": 212,
-      "service_tbt_ms": 9,
-      "service_ttft_ms": 553,
-      "service_ttlt_ms": 765,
-      "user_visible_ttft_ms": 341
-    },
-    "prompt_tokens": 113,
-    "prompt_tokens_details": {
-      "audio_tokens": 0,
-      "cached_tokens": 0
-    },
-    "total_tokens": 137
-  }
-}
-
-PersonalizedRetrieverAgent -> tool call: retrieve_personalized_tips({"query":"best time for workout and calm break"})
-
->>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vectors of 1 text(s), starting with: best time for workout and calm break
-
---- OUTBOUND REQUEST #3 ---
-> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
-> Host: <resource-name>.openai.azure.com
-> Accept-Encoding: gzip, deflate
-> Connection: keep-alive
-> accept: application/json
-> content-type: application/json
-> user-agent: AzureOpenAI/Python 3.26.1
-> x-stainless-lang: python
-> x-stainless-package-version: 3.26.1
-> x-stainless-os: Linux
-> x-stainless-arch: x64
-> x-stainless-runtime: CPython
-> x-stainless-runtime-version: 3.13.16
-> x-stainless-async: false
-> authorization: Bearer <redacted>
-> x-stainless-retry-count: 0
-> x-stainless-read-timeout: 600
-> Content-Length: 110
->
-{
-  "model": "text-embedding-3-small",
-  "input": [
-    "best time for workout and calm break"
-  ],
-  "encoding_format": "base64"
-}
-
---- OUTBOUND RESPONSE #3 ---
-< 200 OK
-< Content-Type: application/json
-< Date: Tue, 27 Oct 2026 18:20:40 GMT
-< Server: istio-envoy
-< Vary: Origin
-< apim-request-id: <id>
-< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< X-Content-Type-Options: nosniff
-< x-ms-region: East US 2
-< x-ratelimit-remaining-tokens: 149719
-< x-ratelimit-limit-tokens: 150000
-< azureml-model-session: d20261014070400-222f987b
-< x-ms-served-model: text-embedding-3-small-1
-< x-request-id: <id>
-< x-http2-stream-id: 409
-< x-ms-client-request-id: Not-Set
-< x-ms-deployment-name: text-embedding-3-small
-< Content-Length: 8359
-< x-http-replay: 0003-POST-openai_deployments_text-embedding-3-small_embeddings.json
-<
-{
-  "object": "list",
-  "data": [
-    {
-      "object": "embedding",
-      "embedding": "AEBGvADAnDwAgGy6AEBovQDgY7oAYLC8AKAIOgBAAjwA4BA9AGAOPQBADD0AIH09AGBavACAobwAoCo9...(8192 characters)",
-      "index": 0
-    }
-  ],
-  "model": "text-embedding-3-small",
-  "usage": {
-    "prompt_tokens": 7,
-    "total_tokens": 7
-  }
-}
-  [tool] retrieve_personalized_tips(query='best time for workout and calm break') top similarity: tip10 0.48, tip8 0.41, tip6 0.40, tip2 0.39, tip1 0.34
-PersonalizedRetrieverAgent <- tool result:
-YOUR HEART RATE DATA:
-Hourly average heart rate yesterday (wearable data, 15 hours):
-07:00  average 65 bpm
-08:00  average 71 bpm
-09:00  average 71 bpm
-10:00  average 74 bpm
-11:00  average 94 bpm
-12:00  average 87 bpm
-13:00  average 76 bpm
-14:00  average 69 bpm
-15:00  average 76 bpm
-16:00  average 56 bpm
-17:00  average 56 bpm
-18:00  average 106 bpm
-19:00  average 107 bpm
-20:00  average 88 bpm
-21:00  average 71 bpm
-Overall average: 78 bpm
-Calmest hours (lowest averages): 07:00, 16:00, 17:00
-Most active hours (highest averages): 11:00, 18:00, 19:00
-
-WELLNESS TIPS:
-Source: Performance Coach => Schedule high-intensity workouts during your body's natural energy peaks based on heart rate patterns.
-Source: Circadian Expert => Morning walks are ideal when your body is naturally in a recovery state.
-Source: Recovery Specialist => For low-intensity recovery days, try yoga or gentle swimming.
-
-PersonalizedRetrieverAgent:
-YOUR HEART RATE DATA:
-Hourly average heart rate yesterday (wearable data, 15 hours):
-07:00  average 65 bpm
-08:00  average 71 bpm
-09:00  average 71 bpm
-10:00  average 74 bpm
-11:00  average 94 bpm
-12:00  average 87 bpm
-13:00  average 76 bpm
-14:00  average 69 bpm
-15:00  average 76 bpm
-16:00  average 56 bpm
-17:00  average 56 bpm
-18:00  average 106 bpm
-19:00  average 107 bpm
-20:00  average 88 bpm
-21:00  average 71 bpm
-Overall average: 78 bpm
-Calmest hours (lowest averages): 07:00, 16:00, 17:00
-Most active hours (highest averages): 11:00, 18:00, 19:00
-
-WELLNESS TIPS:
-Source: Performance Coach => Schedule high-intensity workouts during your body's natural energy peaks based on heart rate patterns.
-Source: Circadian Expert => Morning walks are ideal when your body is naturally in a recovery state.
-Source: Recovery Specialist => For low-intensity recovery days, try yoga or gentle swimming.
-
->>> team.run_stream(): AutoGen asks the Azure OpenAI chat model for the next agent's turn: PersonalizedRetrieverAgent chooses its tool call, then PersonalizedResponderAgent writes the day plan.
-
---- OUTBOUND REQUEST #4 ---
-> POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-08-01-preview
-> Host: <resource-name>.openai.azure.com
-> Accept-Encoding: gzip, deflate
-> Connection: keep-alive
-> accept: application/json
-> content-type: application/json
-> user-agent: autogen-python/0.7.5
-> x-stainless-lang: python
-> x-stainless-package-version: 3.26.1
-> x-stainless-os: Linux
-> x-stainless-arch: x64
-> x-stainless-runtime: CPython
-> x-stainless-runtime-version: 3.13.16
-> x-stainless-async: async:asyncio
-> authorization: Bearer <redacted>
-> x-stainless-retry-count: 0
-> x-stainless-read-timeout: 600
-> Content-Length: 1631
->
-{
-  "model": "gpt-4o-mini",
-  "stream": false,
-  "messages": [
-    {
-      "content": "You are a friendly wellness coach. Plan the user's day using only the hourly heart-rate summary and the wellness tips provided: suggest workouts in the most active hours and calm breaks in the calmest hours, and name the source of each tip you use. Do not add tips or advice that are not in the list. This is a wellness demo: do not assess health risks, diagnose, or interpret heart rate as a medical sign, and say it is not medical advice.",
-      "role": "system"
-    },
-    {
-      "role": "user",
-      "name": "user",
-      "content": "Plan my day: when is a good time for a workout, and when should I take a calm break?"
-    },
-    {
-      "role": "user",
-      "name": "PersonalizedRetrieverAgent",
-      "content": "YOUR HEART RATE DATA:\nHourly average heart rate yesterday (wearable data, 15 hours):\n07:00  average 65 bpm\n08:00  average 71 bpm\n09:00  average 71 bpm\n10:00  average 74 bpm\n11:00  average 94 bpm\n12:00  average 87 bpm\n13:00  average 76 bpm\n14:00  average 69 bpm\n15:00  average 76 bpm\n16:00  average 56 bpm\n17:00  average 56 bpm\n18:00  average 106 bpm\n19:00  average 107 bpm\n20:00  average 88 bpm\n21:00  average 71 bpm\nOverall average: 78 bpm\nCalmest hours (lowest averages): 07:00, 16:00, 17:00\nMost active hours (highest averages): 11:00, 18:00, 19:00\n\nWELLNESS TIPS:\nSource: Performance Coach => Schedule high-intensity workouts during your body's natural energy peaks based on heart rate patterns.\nSource: Circadian Expert => Morning walks are ideal when your body is naturally in a recovery state.\nSource: Recovery Specialist => For low-intensity recovery days, try yoga or gentle swimming."
-    }
-  ]
-}
-
---- OUTBOUND RESPONSE #4 ---
-< 200 OK
-< Content-Type: application/json
-< Date: Tue, 27 Oct 2026 18:20:40 GMT
-< Server: istio-envoy
-< Vary: Origin
-< azureai-fe-is-streaming: False
-< azureai-fe-offer-type: paygo
-< azureml-model-session: d20261025034216-aab5dbc5
-< skip-error-remapping: true
-< x-accel-buffering: no
-< x-ms-is-spilled-over: false
-< x-ms-rai-invoked: true
-< x-ms-served-model: gpt-4o-mini-2024-07-18
-< x-ratelimit-abusepenalty-active: False
-< x-ratelimit-key: gpt-4o-mini
-< x-ratelimit-limit-requests: 2000
-< x-ratelimit-limit-tokens: 200000
-< x-ratelimit-remaining-requests: 1999
-< x-ratelimit-remaining-tokens: 199592
-< x-ratelimit-renewalperiod-requests: 60
-< x-ratelimit-renewalperiod-tokens: 60
-< x-ratelimit-reset-requests: 0
-< x-ratelimit-reset-tokens: 0
-< x-request-id: <id>
-< apim-request-id: <id>
-< x-http2-stream-id: 161
-< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-< x-ms-client-request-id: Not-Set
-< X-Content-Type-Options: nosniff
-< x-ms-region: East US 2
-< Content-Length: 2927
-< x-http-replay: 0004-POST-openai_deployments_gpt-4o-mini_chat_completions.json
-<
-{
-  "choices": [
-    {
-      "content_filter_result": {
-        "error": {
-          "code": "content_filter_error",
-          "message": "The contents are not filtered"
-        }
-      },
-      "content_filter_results": {},
-      "finish_reason": "stop",
-      "index": 0,
-      "logprobs": null,
-      "message": {
-        "annotations": [],
-        "content": "Based on your hourly heart-rate data and the wellness tips provided, here's a su...(1481 characters)",
-        "refusal": null,
-        "role": "assistant"
-      }
-    }
-  ],
-  "created": 1793125241,
-  "id": "chatcmpl-Edg4nOHv6Za4miT4oqwGIMKc8Mggi",
+  "created": 1794740371,
+  "id": "chatcmpl-EkSFHuehWCmeQjBVyABEDtsUiWVEL",
   "model": "gpt-4o-mini-2024-07-18",
   "object": "chat.completion",
   "prompt_filter_results": [
@@ -592,12 +343,12 @@ Source: Recovery Specialist => For low-intensity recovery days, try yoga or gent
     }
   ],
   "routing": {
-    "serving_pipereplica": "d20261025034216-aab5dbc5-default-r3-dp0-default"
+    "serving_pipereplica": "d20261105113136-c3911b42-default-r5-dp0-default"
   },
   "service_tier": "default",
-  "system_fingerprint": "fp_4b2adf74ff",
+  "system_fingerprint": "fp_486a957a0b",
   "usage": {
-    "completion_tokens": 340,
+    "completion_tokens": 39,
     "completion_tokens_details": {
       "accepted_prediction_tokens": 0,
       "audio_tokens": 0,
@@ -605,51 +356,358 @@ Source: Recovery Specialist => For low-intensity recovery days, try yoga or gent
       "rejected_prediction_tokens": 0
     },
     "latency_checkpoint": {
-      "engine_tbt_ms": 10,
-      "engine_ttft_ms": 42,
-      "engine_ttlt_ms": 3503,
-      "pre_inference_ms": 74,
-      "service_tbt_ms": 10,
-      "service_ttft_ms": 327,
-      "service_ttlt_ms": 3781,
-      "user_visible_ttft_ms": 253
+      "engine_tbt_ms": 7,
+      "engine_ttft_ms": 35,
+      "engine_ttlt_ms": 301,
+      "pre_inference_ms": 75,
+      "service_tbt_ms": 7,
+      "service_ttft_ms": 317,
+      "service_ttlt_ms": 577,
+      "user_visible_ttft_ms": 241
     },
-    "prompt_tokens": 408,
+    "prompt_tokens": 113,
     "prompt_tokens_details": {
       "audio_tokens": 0,
       "cached_tokens": 0
     },
-    "total_tokens": 748
+    "total_tokens": 152
+  }
+}
+
+PersonalizedRetrieverAgent -> tool call: retrieve_personalized_tips({"query":"Plan my day: when is a good time for a workout, and when should I take a calm break?"})
+
+>>> Ask the Azure OpenAI embedding model text-embedding-3-small for the vectors of 1 text(s), starting with: Plan my day: when is a good time for a workout, and when sho
+
+--- OUTBOUND REQUEST #3 ---
+> POST https://<resource-name>.openai.azure.com/openai/deployments/text-embedding-3-small/embeddings?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: AzureOpenAI/Python 3.26.1
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: false
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 158
+>
+{
+  "model": "text-embedding-3-small",
+  "input": [
+    "Plan my day: when is a good time for a workout, and when should I take a calm break?"
+  ],
+  "encoding_format": "base64"
+}
+
+--- OUTBOUND RESPONSE #3 ---
+< 200 OK
+< Content-Length: 8346
+< Content-Type: application/json
+< Date: Sun, 15 Nov 2026 10:59:31 GMT
+< Server: istio-envoy
+< Vary: Origin
+< apim-request-id: <id>
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+< x-ratelimit-remaining-tokens: 149790
+< x-ratelimit-limit-tokens: 150000
+< azureml-model-session: d20261113034017-ef5d0c9d
+< x-ms-served-model: text-embedding-3-small-1
+< x-request-id: <id>
+< x-http2-stream-id: 225
+< x-ms-client-request-id: Not-Set
+< x-ms-deployment-name: text-embedding-3-small
+<
+{
+  "object": "list",
+  "data": [
+    {
+      "object": "embedding",
+      "embedding": "AIA/vABgjzwAINk7AIA+vQDgMLsAoL47AIBtPADgHbwAQCw9AAABPQBg+DwAAFc9AOD3OwAgwrwA4MQ8...(8192 characters)",
+      "index": 0
+    }
+  ],
+  "model": "text-embedding-3-small",
+  "usage": {
+    "prompt_tokens": 22,
+    "total_tokens": 22
+  }
+}
+  [tool] retrieve_personalized_tips(query='Plan my day: when is a good time for a workout, and when should I take a calm break?') top similarity: tip10 0.48, tip2 0.38, tip9 0.36, tip8 0.36, tip6 0.36
+PersonalizedRetrieverAgent <- tool result:
+YOUR HEART RATE DATA:
+Hourly average heart rate yesterday (wearable data, 15 hours):
+07:00  average 65 bpm
+08:00  average 71 bpm
+09:00  average 71 bpm
+10:00  average 74 bpm
+11:00  average 94 bpm
+12:00  average 87 bpm
+13:00  average 76 bpm
+14:00  average 69 bpm
+15:00  average 76 bpm
+16:00  average 56 bpm
+17:00  average 56 bpm
+18:00  average 106 bpm
+19:00  average 107 bpm
+20:00  average 88 bpm
+21:00  average 71 bpm
+Overall average: 78 bpm
+Calmest hours (lowest averages): 07:00, 16:00, 17:00
+Most active hours (highest averages): 11:00, 18:00, 19:00
+
+WELLNESS TIPS:
+Source: Performance Coach => Schedule high-intensity workouts during your body's natural energy peaks based on heart rate patterns.
+Source: Health Coach => Take a brisk 15-minute walk to clear your mind and improve circulation.
+Source: Hydration Specialist => Adjust your hydration based on your previous day's heart rate - higher rates mean more water today.
+
+PersonalizedRetrieverAgent:
+YOUR HEART RATE DATA:
+Hourly average heart rate yesterday (wearable data, 15 hours):
+07:00  average 65 bpm
+08:00  average 71 bpm
+09:00  average 71 bpm
+10:00  average 74 bpm
+11:00  average 94 bpm
+12:00  average 87 bpm
+13:00  average 76 bpm
+14:00  average 69 bpm
+15:00  average 76 bpm
+16:00  average 56 bpm
+17:00  average 56 bpm
+18:00  average 106 bpm
+19:00  average 107 bpm
+20:00  average 88 bpm
+21:00  average 71 bpm
+Overall average: 78 bpm
+Calmest hours (lowest averages): 07:00, 16:00, 17:00
+Most active hours (highest averages): 11:00, 18:00, 19:00
+
+WELLNESS TIPS:
+Source: Performance Coach => Schedule high-intensity workouts during your body's natural energy peaks based on heart rate patterns.
+Source: Health Coach => Take a brisk 15-minute walk to clear your mind and improve circulation.
+Source: Hydration Specialist => Adjust your hydration based on your previous day's heart rate - higher rates mean more water today.
+
+>>> team.run_stream(): AutoGen asks the Azure OpenAI chat model for the next agent's turn: PersonalizedRetrieverAgent chooses its tool call, then PersonalizedResponderAgent writes the day plan.
+
+--- OUTBOUND REQUEST #4 ---
+> POST https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-08-01-preview
+> Host: <resource-name>.openai.azure.com
+> Accept-Encoding: gzip, deflate
+> Connection: keep-alive
+> accept: application/json
+> content-type: application/json
+> user-agent: autogen-python/0.7.5
+> x-stainless-lang: python
+> x-stainless-package-version: 3.26.1
+> x-stainless-os: Linux
+> x-stainless-arch: x64
+> x-stainless-runtime: CPython
+> x-stainless-runtime-version: 3.13.16
+> x-stainless-async: async:asyncio
+> authorization: Bearer <redacted>
+> x-stainless-retry-count: 0
+> x-stainless-read-timeout: 600
+> Content-Length: 1777
+>
+{
+  "model": "gpt-4o-mini",
+  "stream": false,
+  "messages": [
+    {
+      "content": "You are a friendly wellness coach. Plan the user's day using only the hourly heart-rate summary and the wellness tips provided: suggest workouts in the most active hours and calm breaks in the calmest hours, and name the source of each tip you use. Do not add tips or advice that are not in the list. Suggest activities from this app's list: walking, running, cycling, swimming, strength training and stretching. This is a wellness demo: do not assess health risks, diagnose, or interpret heart rate as a medical sign, and say it is not medical advice.",
+      "role": "system"
+    },
+    {
+      "role": "user",
+      "name": "user",
+      "content": "Plan my day: when is a good time for a workout, and when should I take a calm break?"
+    },
+    {
+      "role": "user",
+      "name": "PersonalizedRetrieverAgent",
+      "content": "YOUR HEART RATE DATA:\nHourly average heart rate yesterday (wearable data, 15 hours):\n07:00  average 65 bpm\n08:00  average 71 bpm\n09:00  average 71 bpm\n10:00  average 74 bpm\n11:00  average 94 bpm\n12:00  average 87 bpm\n13:00  average 76 bpm\n14:00  average 69 bpm\n15:00  average 76 bpm\n16:00  average 56 bpm\n17:00  average 56 bpm\n18:00  average 106 bpm\n19:00  average 107 bpm\n20:00  average 88 bpm\n21:00  average 71 bpm\nOverall average: 78 bpm\nCalmest hours (lowest averages): 07:00, 16:00, 17:00\nMost active hours (highest averages): 11:00, 18:00, 19:00\n\nWELLNESS TIPS:\nSource: Performance Coach => Schedule high-intensity workouts during your body's natural energy peaks based on heart rate patterns.\nSource: Health Coach => Take a brisk 15-minute walk to clear your mind and improve circulation.\nSource: Hydration Specialist => Adjust your hydration based on your previous day's heart rate - higher rates mean more water today."
+    }
+  ]
+}
+
+--- OUTBOUND RESPONSE #4 ---
+< 200 OK
+< Content-Length: 3622
+< Content-Type: application/json
+< Date: Sun, 15 Nov 2026 10:59:32 GMT
+< Server: istio-envoy
+< Vary: Origin
+< azureai-fe-is-streaming: False
+< azureai-fe-offer-type: paygo
+< azureml-model-session: d20261109134951-92862e8b
+< skip-error-remapping: true
+< x-accel-buffering: no
+< x-ms-is-spilled-over: false
+< x-ms-rai-invoked: true
+< x-ms-served-model: gpt-4o-mini-2024-07-18
+< x-ratelimit-abusepenalty-active: False
+< x-ratelimit-key: gpt-4o-mini
+< x-ratelimit-limit-requests: 2000
+< x-ratelimit-limit-tokens: 200000
+< x-ratelimit-remaining-requests: 1999
+< x-ratelimit-remaining-tokens: 199565
+< x-ratelimit-renewalperiod-requests: 60
+< x-ratelimit-renewalperiod-tokens: 60
+< x-ratelimit-reset-requests: 0
+< x-ratelimit-reset-tokens: 0
+< x-request-id: <id>
+< apim-request-id: <id>
+< x-http2-stream-id: 31
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+< x-ms-client-request-id: Not-Set
+< X-Content-Type-Options: nosniff
+< x-ms-region: East US 2
+<
+{
+  "choices": [
+    {
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "protected_material_code": {
+          "detected": false,
+          "filtered": false
+        },
+        "protected_material_text": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      },
+      "finish_reason": "stop",
+      "index": 0,
+      "logprobs": null,
+      "message": {
+        "annotations": [],
+        "content": "Based on your hourly heart-rate summary and the wellness tips provided, here's a...(2071 characters)",
+        "refusal": null,
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1794740373,
+  "id": "chatcmpl-EkSFJ1gLPVToGVH9sUpr2QzKdX8sQ",
+  "model": "gpt-4o-mini-2024-07-18",
+  "object": "chat.completion",
+  "prompt_filter_results": [
+    {
+      "prompt_index": 0,
+      "content_filter_results": {
+        "hate": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "jailbreak": {
+          "detected": false,
+          "filtered": false
+        },
+        "self_harm": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "sexual": {
+          "filtered": false,
+          "severity": "safe"
+        },
+        "violence": {
+          "filtered": false,
+          "severity": "safe"
+        }
+      }
+    }
+  ],
+  "routing": {
+    "serving_pipereplica": "d20261109134951-92862e8b-default-r11-dp0-default"
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_486a957a0b",
+  "usage": {
+    "completion_tokens": 459,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 0,
+      "audio_tokens": 0,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+      "engine_tbt_ms": 7,
+      "engine_ttft_ms": 35,
+      "engine_ttlt_ms": 3319,
+      "pre_inference_ms": 71,
+      "service_tbt_ms": 7,
+      "service_ttft_ms": 345,
+      "service_ttlt_ms": 3615,
+      "user_visible_ttft_ms": 274
+    },
+    "prompt_tokens": 435,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "total_tokens": 894
   }
 }
 
 PersonalizedResponderAgent:
-Based on your hourly heart-rate data and the wellness tips provided, here's a suggested plan for your day:
+Based on your hourly heart-rate summary and the wellness tips provided, here's a suggested plan for your day:
 
 **Morning:**
-- **07:00**: Start your day with a morning walk to help your body transition into activity, as it's naturally in a recovery state (Source: Circadian Expert).
+- **07:00 - Calm Break:** Start your day with a peaceful morning routine during your calmest hour. Consider taking some time to meditate or enjoy a quiet breakfast to set a positive tone for the day.
 
 **Mid-Morning:**
-- **08:00 - 09:00**: Consider light activities or stretching.
+- **08:00 - 10:00:** Use this time to prepare for the more active part of your day. Hydrate well, as hydration levels can be influenced by your previous day's heart rate (tip from Hydration Specialist).
 
-**Late Morning:**
-- **11:00**: This is a good time for a high-intensity workout, as it's one of your body's natural energy peaks. You could focus on a vigorous workout based on your preference (Source: Performance Coach).
+**Midday:**
+- **11:00 - Workout:** Engage in a high-intensity workout, such as strength training or a brisk run, during your body’s natural energy peak. This is ideal based on your heart rate patterns (Performance Coach tip).
 
-**Lunch and Early Afternoon:**
-- **12:00 - 13:00**: Take a calm break post-lunch; engage in some light stretching or a brief meditation to recover from your workout.
+**Afternoon:**
+- **12:00 - Calm Break:** After your workout, take a moment to unwind. Enjoy a break with a light snack and some stretching exercises to help your body recover.
 
-**Mid to Late Afternoon:**
-- **16:00 - 17:00**: Another calm break would be effective here. Use this time for gentle yoga or relaxation exercises to enhance recovery (Source: Recovery Specialist).
+- **13:00 - 15:00:** Relax and hydrate, preparing your body for the next activity.
+
+**Late Afternoon:**
+- **16:00 - Calm Break:** Take this calm hour to walk slowly or do some gentle stretching. This can help clear your mind and improve circulation (Health Coach tip).
 
 **Evening:**
-- **18:00 - 19:00**: This is another optimal time for a high-intensity workout. Engage in a motivating activity, like a more intense fitness session or a group class (Source: Performance Coach).
+- **18:00 - Workout:** At this most active hour, consider a high-intensity workout again, such as cycling or swimming, to maximize your energy levels (Performance Coach tip).
+
+- **19:00 - Workout or Cool Down:** If you're feeling energetic, continue with another session of your preferred activity. If not, switch to a calm activity like light stretching or walking to bring your day to a peaceful close.
 
 **Night:**
-- **20:00 and onwards**: Wind down with some light activity or reflection to prepare for bedtime.
+- **20:00 - Begin winding down:** Conclude your day with light stretching followed by a relaxing evening routine that helps you prepare for restful sleep.
 
-This plan provides a balance of high-energy engagement and calm relaxation throughout the day. Remember, this is not medical advice; please adjust as needed based on your feelings and energy levels. Enjoy your day!
+**21:00 - Prepare for bed:** Dedicate time to relax, ensuring a good night's rest.
 
-(chat tokens: prompt 521, completion 364)
+This plan is tailored to incorporate the tips while respecting your heart-rate data. Remember, this is not medical advice; it's meant to promote a balanced and wellness-focused day!
+
+(chat tokens: prompt 548, completion 498)
 
 ================================================================================
 Result

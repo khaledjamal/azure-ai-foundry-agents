@@ -87,7 +87,7 @@ HEALTH_TIPS = [
     {"id": "tip5", "content": "Drink water regularly to stay hydrated during workouts.", "source": "Nutritionist"},
     {
         "id": "tip6",
-        "content": "For low-intensity recovery days, try yoga or gentle swimming.",
+        "content": "For low-intensity recovery days, try light stretching or gentle swimming.",
         "source": "Recovery Specialist",
     },
     {
@@ -261,9 +261,10 @@ def create_team(model_client, retrieve_personalized_tips):
         system_message=(
             "You are a friendly wellness coach. Plan the user's day using only the hourly heart-rate summary and the "
             "wellness tips provided: suggest workouts in the most active hours and calm breaks in the calmest hours, "
-            "and name the source of each tip you use. Do not add tips or advice that are not in the list. This is a "
-            "wellness demo: do not assess health risks, diagnose, or interpret heart rate as a medical sign, and say "
-            "it is not medical advice."
+            "and name the source of each tip you use. Do not add tips or advice that are not in the list. Suggest "
+            "activities from this app's list: walking, running, cycling, swimming, strength training and stretching. "
+            "This is a wellness demo: do not assess health risks, diagnose, or interpret heart rate as a medical sign, "
+            "and say it is not medical advice."
         ),
         model_client=model_client,
     )

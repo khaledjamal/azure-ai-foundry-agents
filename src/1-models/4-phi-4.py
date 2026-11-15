@@ -15,7 +15,7 @@ newer sample replays saved answers from a later real run: it calls no service an
 nothing, its times show 0.0 s, and its cost column is what that real run cost.
 
 Each model gets three prompts:
-  1. the notebook's chat question (a weekly 5K training schedule),
+  1. a chat question about pacing a first 5K on race day,
   2. the notebook's "RAG-like" question, answered from a short context snippet,
   3. a pace calculation with one right answer (6:00 per km, 18 seconds per km faster),
      to show what reasoning adds.
@@ -57,19 +57,21 @@ COGNITIVE_SERVICES_SCOPE = "https://cognitiveservices.azure.com/.default"
 PRICES = {"Phi-4": (0.125, 0.50), "Phi-4-reasoning": (0.125, 0.50), "gpt-4o-mini": (0.15, 0.60)}
 SYSTEM_PROMPT = (
     "You are a helpful AI assistant, focusing on health and fitness. Remind users that you are not a medical "
-    "professional, but can provide general info."
+    "professional, but can provide general info. "
+    "Suggest only activities from this app's list: walking, running, cycling, swimming and strength training."
 )
 CONTEXT_SNIPPET = (
     "Recommended to run 3 times per week and mix with cross-training.\n"
     "Include rest days or active recovery days for muscle repair."
 )
 PROMPTS = [
-    ("chat", SYSTEM_PROMPT, "I'm training for a 5K. Any tips on a weekly workout schedule?"),
+    ("chat", SYSTEM_PROMPT, "I'm running my first 5K next month. How should I pace myself on race day?"),
     (
         "context",
         (
             "You are a helpful fitness AI. We have some context from the user's knowledge base:\n"
-            f"{CONTEXT_SNIPPET}\nPlease use this context to help your answer. If the context doesn't help, say so."
+            f"{CONTEXT_SNIPPET}\nPlease use this context to help your answer. If the context doesn't help, say so.\n"
+            "Suggest only activities from this app's list: walking, running, cycling, swimming and strength training."
         ),
         "How often should I run weekly to prepare for a 5K?",
     ),

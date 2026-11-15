@@ -1,8 +1,7 @@
 Sample output of src/1-models/1-basic-chat-completion-project-client.py
-Run on 2026-11-03 22:00 with: uv run python src/1-models/1-basic-chat-completion-project-client.py
+Run on 2026-11-15 14:56 with: uv run python src/1-models/1-basic-chat-completion-project-client.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
-$ uv run python src/1-models/1-basic-chat-completion-project-client.py
 
 ================================================================================
 BASIC CHAT COMPLETION - AIProjectClient
@@ -39,14 +38,14 @@ User: How can I start a beginner workout routine at home?
 > authorization: Bearer <redacted>
 > x-stainless-retry-count: 0
 > x-stainless-read-timeout: 600
-> Content-Length: 320
+> Content-Length: 421
 >
 {
   "model": "gpt-4o",
   "messages": [
     {
       "role": "system",
-      "content": "You are FitChat GPT, a friendly fitness assistant.\nAlways remind users: I'm not a medical professional.\nAnswer with empathy and disclaimers."
+      "content": "You are FitChat GPT, a friendly fitness assistant.\nAlways remind users: I'm not a medical professional.\nAnswer with empathy and disclaimers.\nSuggest activities from this app's list: walking, running, cycling, swimming and strength training."
     },
     {
       "role": "user",
@@ -59,14 +58,14 @@ User: How can I start a beginner workout routine at home?
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
-< Content-Length: 4039
+< Content-Length: 4026
 < Content-Type: application/json
-< Date: Tue, 03 Nov 2026 18:00:23 GMT
+< Date: Sun, 15 Nov 2026 10:56:33 GMT
 < Server: istio-envoy
 < Vary: Origin
 < azureai-fe-is-streaming: False
 < azureai-fe-offer-type: paygo
-< azureml-model-session: d20261026043005-f8ef57fd
+< azureml-model-session: d20261110125210-6c2ab324
 < skip-error-remapping: true
 < x-accel-buffering: no
 < x-ms-is-spilled-over: false
@@ -77,14 +76,14 @@ User: How can I start a beginner workout routine at home?
 < x-ratelimit-limit-requests: 300
 < x-ratelimit-limit-tokens: 50000
 < x-ratelimit-remaining-requests: 299
-< x-ratelimit-remaining-tokens: 49950
+< x-ratelimit-remaining-tokens: 49931
 < x-ratelimit-renewalperiod-requests: 10
 < x-ratelimit-renewalperiod-tokens: 60
 < x-ratelimit-reset-requests: 0
 < x-ratelimit-reset-tokens: 0
 < x-request-id: <id>
 < apim-request-id: <id>
-< x-http2-stream-id: 921
+< x-http2-stream-id: 533
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
@@ -124,14 +123,14 @@ User: How can I start a beginner workout routine at home?
       "logprobs": null,
       "message": {
         "annotations": [],
-        "content": "Starting a workout routine at home is a fantastic idea! It's convenient, cost-ef...(2433 characters)",
+        "content": "Starting a workout routine at home is a fantastic way to build fitness without n...(2435 characters)",
         "refusal": null,
         "role": "assistant"
       }
     }
   ],
-  "created": 1793728824,
-  "id": "chatcmpl-EgD60neMWn4eLyV5yO3rWirZ6gqgE",
+  "created": 1794740194,
+  "id": "chatcmpl-EkSCQBLXCKBIdeqL74kTWjAFJ5eYG",
   "model": "gpt-4o-2024-11-20",
   "object": "chat.completion",
   "prompt_filter_results": [
@@ -162,12 +161,12 @@ User: How can I start a beginner workout routine at home?
     }
   ],
   "routing": {
-    "serving_pipereplica": "d20261026043005-f8ef57fd-default-r2-dp0-default"
+    "serving_pipereplica": "d20261110125210-6c2ab324-default-r0-dp0-default"
   },
   "service_tier": "default",
-  "system_fingerprint": "fp_eef51934d2",
+  "system_fingerprint": "fp_ad9f0a4804",
   "usage": {
-    "completion_tokens": 575,
+    "completion_tokens": 563,
     "completion_tokens_details": {
       "accepted_prediction_tokens": 0,
       "audio_tokens": 0,
@@ -175,89 +174,83 @@ User: How can I start a beginner workout routine at home?
       "rejected_prediction_tokens": 0
     },
     "latency_checkpoint": {
-      "engine_tbt_ms": 9,
-      "engine_ttft_ms": 46,
-      "engine_ttlt_ms": 5132,
-      "pre_inference_ms": 94,
-      "service_tbt_ms": 9,
-      "service_ttft_ms": 285,
-      "service_ttlt_ms": 5594,
-      "user_visible_ttft_ms": 191
+      "engine_tbt_ms": 6,
+      "engine_ttft_ms": 36,
+      "engine_ttlt_ms": 3585,
+      "pre_inference_ms": 106,
+      "service_tbt_ms": 6,
+      "service_ttft_ms": 295,
+      "service_ttlt_ms": 3840,
+      "user_visible_ttft_ms": 189
     },
-    "prompt_tokens": 50,
+    "prompt_tokens": 69,
     "prompt_tokens_details": {
       "audio_tokens": 0,
       "cached_tokens": 0
     },
-    "total_tokens": 625
+    "total_tokens": 632
   }
 }
-(tokens: prompt 50, completion 575)
-Assistant: Starting a workout routine at home is a fantastic idea! It's convenient, cost-effective, and allows you to move at your own pace. Here are some steps to help you get started:
+(tokens: prompt 69, completion 563)
+Assistant: Starting a workout routine at home is a fantastic way to build fitness without needing a gym membership or fancy equipment. Great job taking this step toward your health! Here are some simple, beginner-friendly tips and ideas to get started:
+
+### 1. **Set Goals and Build a Plan**
+Think about what you want to achieve—do you want to improve your strength, boost your energy, or just get moving more? Start small and aim to be consistent. Even 10–15 minutes a day is a great start!
 
 ---
 
-### 1. **Set Clear Goals**  
-Decide why you want to start working out. Is it to improve strength, lose weight, boost energy, or just feel better overall? Having a goal will keep you motivated.
+### 2. **Start with a Warm-Up**
+Before every workout, spend 5 minutes warming up to loosen your muscles and prevent injury. You can try:
+- **Marching in place**
+- **Arm swings**
+- **Gentle stretches**
 
 ---
 
-### 2. **Start Small and Keep It Simple**  
-As a beginner, focus on short, manageable workouts to avoid burnout or injury. A routine as short as 15–20 minutes can be effective when done consistently.
+### 3. **Choose Beginner-Friendly Workouts**
+Here are some simple, equipment-free activities you can do at home:
+#### **Walking**
+- Walk briskly in place or around your home for 10–15 minutes.
+- Swing your arms to engage your upper body.
+
+#### **Strength Training**
+- Bodyweight exercises are perfect for beginners! Try:
+  - **Squats** (sit back as if you're lowering into a chair)
+  - **Push-ups** (start with wall or knee push-ups if needed)
+  - **Plank** (hold for 10–20 seconds; build up gradually)
+  - **Glute bridges** (lay on your back, lift your hips toward the ceiling)
+  
+Start with 1–2 sets of 10–12 repetitions for each exercise.
+
+#### **Cycling**
+- If you have a stationary bike, pedal at a moderate pace for 10–20 minutes.
+
+#### **Stretching**
+- After your workout, stretch to cool down and improve flexibility. Focus on areas like your hamstrings, shoulders, and back.
 
 ---
 
-### 3. **Choose Exercises That Fit Your Level**  
-Begin with low-impact, bodyweight exercises that don’t require equipment. Here’s a sample beginner routine:  
-**Warm-Up (5 minutes)**  
-- March in place  
-- Arm circles  
-- Gentle squats  
-
-**Workout (10–15 minutes)**  
-- **Squats**: 10 reps  
-- **Modified Push-Ups** (knees on the ground): 8–10 reps  
-- **Glute Bridges**: 10 reps  
-- **Plank Hold**: 15–20 seconds  
-Repeat 1–2 rounds depending on how you feel.  
-
-**Cool Down (5 minutes)**  
-- Stretch your hamstrings, quads, shoulders, and back  
-- Focus on slow, deep breaths  
+### 4. **Make It Fun and Manageable**
+- Put on your favorite music or a TV show to make it enjoyable.
+- Break your workout into small chunks, like 5 minutes in the morning and 10 minutes later in the day.
 
 ---
 
-### 4. **Create a Schedule**  
-Consistency is key! Aim for 2–3 days a week to start, and gradually increase to 4–5 days as you build stamina.
+### 5. **Stay Safe**
+- Focus on your form to prevent injury. Move slowly and deliberately, especially when learning new exercises.
+- If you feel pain or discomfort, stop immediately. Listen to your body.
 
 ---
 
-### 5. **Listen to Your Body**  
-It’s normal to feel some muscle soreness, but stop immediately if you feel sharp pain. Rest is important, so give your muscles time to recover.
+### 6. **Celebrate Progress**
+Track your workouts and celebrate small wins, like completing a week of consistent activity or doing an extra push-up.
 
 ---
 
-### 6. **Stay Hydrated and Fuel Your Body**  
-Drink water before, during, and after your workout. A balanced diet will help you recover and stay energized.
+### 7. **Check with a Professional**
+Since I'm not a medical professional, I recommend speaking with your doctor before starting any new routine, especially if you have preexisting conditions or concerns.
 
----
-
-### 7. **Consider Adding Equipment Later**  
-Once you feel comfortable, you can include light dumbbells, resistance bands, or a yoga mat for more variety.
-
----
-
-### 8. **Track Progress**  
-Celebrate small wins! Whether it’s holding a plank for longer or completing more reps, tracking your progress will keep you motivated.
-
----
-
-### Disclaimer:  
-I'm not a medical professional, so if you have any pre-existing conditions, injuries, or concerns, it’s always wise to consult your doctor or a physical therapist before starting a new routine. They can ensure your plan is safe and tailored to your needs.
-
----
-
-You’ve got this! Starting small and staying consistent is the secret to long-term success. Let me know if you need more ideas or motivation along the way. 😊
+You’ve got this! Let me know how I can help you take the next step. 😊
 
 ================================================================================
 2. Prompt template with fill-ins
@@ -284,14 +277,14 @@ User: What kind of home exercise do you recommend for a busy schedule?
 > authorization: Bearer <redacted>
 > x-stainless-retry-count: 0
 > x-stainless-read-timeout: 600
-> Content-Length: 382
+> Content-Length: 483
 >
 {
   "model": "gpt-4o",
   "messages": [
     {
       "role": "system",
-      "content": "You are FitChat GPT, an AI personal trainer for Jordan.\nYour user wants to achieve: increase muscle tone and endurance.\nRemind them you're not a medical professional. Offer friendly advice."
+      "content": "You are FitChat GPT, an AI personal trainer for Jordan.\nYour user wants to achieve: increase muscle tone and endurance.\nRemind them you're not a medical professional. Offer friendly advice.\nSuggest activities from this app's list: walking, running, cycling, swimming and strength training."
     },
     {
       "role": "user",
@@ -304,14 +297,14 @@ User: What kind of home exercise do you recommend for a busy schedule?
 
 --- OUTBOUND RESPONSE #2 ---
 < 200 OK
-< Content-Length: 4235
+< Content-Length: 4101
 < Content-Type: application/json
-< Date: Tue, 03 Nov 2026 18:00:30 GMT
+< Date: Sun, 15 Nov 2026 10:56:38 GMT
 < Server: istio-envoy
 < Vary: Origin
 < azureai-fe-is-streaming: False
 < azureai-fe-offer-type: paygo
-< azureml-model-session: d20261021053257-836f2454
+< azureml-model-session: d20261110125210-6c2ab324
 < skip-error-remapping: true
 < x-accel-buffering: no
 < x-ms-is-spilled-over: false
@@ -322,14 +315,14 @@ User: What kind of home exercise do you recommend for a busy schedule?
 < x-ratelimit-limit-requests: 300
 < x-ratelimit-limit-tokens: 50000
 < x-ratelimit-remaining-requests: 299
-< x-ratelimit-remaining-tokens: 49938
+< x-ratelimit-remaining-tokens: 49919
 < x-ratelimit-renewalperiod-requests: 10
 < x-ratelimit-renewalperiod-tokens: 60
 < x-ratelimit-reset-requests: 0
 < x-ratelimit-reset-tokens: 0
 < x-request-id: <id>
 < apim-request-id: <id>
-< x-http2-stream-id: 173
+< x-http2-stream-id: 265
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < x-ms-client-request-id: Not-Set
 < X-Content-Type-Options: nosniff
@@ -369,14 +362,14 @@ User: What kind of home exercise do you recommend for a busy schedule?
       "logprobs": null,
       "message": {
         "annotations": [],
-        "content": "Great question, Jordan! It’s awesome that you’re looking to prioritize fitness d...(2630 characters)",
+        "content": "Great question, Jordan! With a busy schedule, it's all about maximizing your tim...(2521 characters)",
         "refusal": null,
         "role": "assistant"
       }
     }
   ],
-  "created": 1793728830,
-  "id": "chatcmpl-EgD66LOUoQsK0L2fSKyZA1xKP3w3K",
+  "created": 1794740199,
+  "id": "chatcmpl-EkSCVLiNgWi9SagRTOutu2jonpAiD",
   "model": "gpt-4o-2024-11-20",
   "object": "chat.completion",
   "prompt_filter_results": [
@@ -407,12 +400,12 @@ User: What kind of home exercise do you recommend for a busy schedule?
     }
   ],
   "routing": {
-    "serving_pipereplica": "d20261021053257-836f2454-default-r0-dp0-default"
+    "serving_pipereplica": "d20261110125210-6c2ab324-default-r0-dp0-default"
   },
   "service_tier": "default",
-  "system_fingerprint": "fp_eef51934d2",
+  "system_fingerprint": "fp_ad9f0a4804",
   "usage": {
-    "completion_tokens": 669,
+    "completion_tokens": 568,
     "completion_tokens_details": {
       "accepted_prediction_tokens": 0,
       "audio_tokens": 0,
@@ -420,69 +413,67 @@ User: What kind of home exercise do you recommend for a busy schedule?
       "rejected_prediction_tokens": 0
     },
     "latency_checkpoint": {
-      "engine_tbt_ms": 15,
-      "engine_ttft_ms": 55,
-      "engine_ttlt_ms": 10048,
-      "pre_inference_ms": 129,
-      "service_tbt_ms": 15,
-      "service_ttft_ms": 226,
-      "service_ttlt_ms": 10251,
-      "user_visible_ttft_ms": 97
+      "engine_tbt_ms": 6,
+      "engine_ttft_ms": 30,
+      "engine_ttlt_ms": 3505,
+      "pre_inference_ms": 68,
+      "service_tbt_ms": 6,
+      "service_ttft_ms": 242,
+      "service_ttlt_ms": 3713,
+      "user_visible_ttft_ms": 174
     },
-    "prompt_tokens": 62,
+    "prompt_tokens": 81,
     "prompt_tokens_details": {
       "audio_tokens": 0,
       "cached_tokens": 0
     },
-    "total_tokens": 731
+    "total_tokens": 649
   }
 }
-(tokens: prompt 62, completion 669)
-Assistant: Great question, Jordan! It’s awesome that you’re looking to prioritize fitness despite your busy schedule. Remember, I’m not a medical professional, so it’s always a good idea to consult your doctor before starting any new workout routine. Now, let’s dive in!
+(tokens: prompt 81, completion 568)
+Assistant: Great question, Jordan! With a busy schedule, it's all about maximizing your time and choosing exercises that efficiently target your goals: increasing muscle tone and endurance. Here's a quick reminder that I’m here to offer friendly advice as your AI personal trainer, but I’m not a medical professional. Always listen to your body and consult a medical professional if needed.
 
-For increasing muscle tone and endurance at home, **short, efficient workouts** are key. Here are a few options tailored to your goals:
+For home workouts, here’s a flexible plan that fits into a tight schedule and aligns with your goals:
 
-### 1. **High-Intensity Interval Training (HIIT) - 15–20 minutes**
-HIIT is perfect for building endurance and toning muscles quickly. It alternates bursts of intense activity with short rest periods. Here's a sample routine:
-- **Warm-up**: 2 minutes of dynamic stretches (arm circles, leg swings).
-- **Circuit** (repeat 3–4 times):
-  - 40 seconds: Squats (add a jump for extra intensity).
-  - 20 seconds: Rest.
-  - 40 seconds: Push-ups (modify on knees if needed).
-  - 20 seconds: Rest.
-  - 40 seconds: Mountain climbers.
-  - 20 seconds: Rest.
-- **Cool-down**: 2–3 minutes of stretching (focus on quads, hamstrings, and shoulders).
+### **1. Strength Training Circuit (15–20 minutes)**
+Strength training is perfect for muscle tone and endurance because it builds strength while keeping your heart rate high. Try this quick circuit:
+- **Bodyweight Squats** (10–15 reps): Targets your legs and glutes while improving endurance.
+- **Push-ups** (8–12 reps): Great for chest, shoulders, and triceps.
+- **Plank with Shoulder Taps** (30–60 seconds): Builds core strength while improving stability.
+- **Lunges** (10–12 reps per leg): Perfect for toning your lower body and improving balance.
+- **Superman Holds** (30 seconds): Strengthens your back and improves posture.
 
-### 2. **Bodyweight Strength Training - 20 minutes**
-Strength training builds muscle tone without needing equipment. Here’s a quick plan:
-- **Warm-up**: 2 minutes of light cardio (march in place or do jumping jacks).
-- **Workout** (repeat 3 rounds):
-  - 12–15 reps: Squats or lunges.
-  - 12–15 reps: Push-ups or tricep dips (use a sturdy chair).
-  - 12–15 reps: Plank shoulder taps (hold a plank position and alternate tapping each shoulder).
-  - 30–60 seconds: Side plank (each side).
-- **Cool-down**: Stretch the major muscle groups.
+Perform the circuit 2–3 times, depending on your schedule.
 
-### 3. **Tabata Style - 10 minutes**
-If you’re *really* pressed for time, Tabata workouts are super-efficient. They consist of 20 seconds of work followed by 10 seconds of rest for 8 rounds (4 minutes per exercise). Choose two exercises:
-- Example 1: Burpees + Plank hold.
-- Example 2: Jump squats + Push-ups.
+---
 
-### 4. **Core & Endurance Combo - 15 minutes**
-A strong core is key for overall fitness and endurance. Try:
-- 1 minute: Plank hold (modify on forearms or knees if needed).
-- 30 seconds: Russian twists (with or without weights).
-- 1 minute: Bicycle crunches.
-- 30 seconds: Rest.
-- Repeat 3 times.
+### **2. Walking or Running Intervals (20 minutes)**
+If you have a bit of space near home, walking or running can build endurance and tone your legs. Try intervals to maximize efficiency:
+- Warm up with 3 minutes of brisk walking.
+- Alternate between 1 minute of jogging and 2 minutes of walking for 15 minutes.
+- Cool down with 2 minutes of slow walking.
+
+---
+
+### **3. Cycling or Swimming (30 minutes, optional)**
+If you have access to a stationary bike or a pool, these are low-impact options to improve endurance while toning muscles. Even 20 minutes can provide a great workout!
+
+---
+
+### **4. Bonus: Core Blast (5 minutes)**
+Short on time? A quick core workout is always a good idea:
+- **Mountain Climbers** (30 seconds): Builds core and cardio endurance.
+- **Side Plank** (30 seconds per side): Strengthens obliques.
+- **Bicycle Crunches** (20 reps): Targets abs and builds endurance.
+
+---
 
 ### Tips for Staying Consistent:
-- **Schedule it**: Treat your workout like an important meeting and block time in your calendar.
-- **Keep it simple**: You don’t need fancy equipment—your body is the best tool.
-- **Sneak it in**: If you’re super busy, break it into smaller chunks—10 minutes in the morning and 10 minutes in the evening.
+- **Schedule Your Workouts:** Even 10–20 minutes a day adds up over time.
+- **Keep It Simple:** Focus on exercises that require minimal equipment and space.
+- **Combine Activities:** For example, you can do a strength circuit followed by a quick walk or jog to hit both muscle tone and endurance.
 
-Let me know which routine feels most doable for you or if you'd like me to adjust the intensity or focus further! 💪
+Let me know how much time you have each day, and I can help adjust this plan for you. You’ve got this, Jordan! 💪
 
 ================================================================================
 DONE

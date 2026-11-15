@@ -107,10 +107,10 @@ SAMPLE_DOCUMENTS = [
     },
     {
         "FitnessItemID": "2",
-        "Name": "Yoga Mat",
+        "Name": "Exercise Mat",
         "Category": "Flexibility",
         "Price": 25.0,
-        "Description": "Non-slip mat designed for yoga, Pilates, and other exercises.",
+        "Description": "Non-slip mat for stretching, core workouts and floor exercises.",
     },
     {
         "FitnessItemID": "3",

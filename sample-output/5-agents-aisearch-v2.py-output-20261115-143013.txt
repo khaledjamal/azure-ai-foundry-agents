@@ -1,10 +1,7 @@
 Sample output of src/2-agents/5-agents-aisearch-v2.py
-Replay on 2026-11-01 20:17 of answers recorded on 2026-10-25 21:33 (no service called), with:
-HTTP_REPLAY=replay HTTP_REPLAY_DIR=runs/recordings/5-agents-aisearch-v2-20261025-213339 ../../.venv-agents-v2/bin/python src/2-agents/5-agents-aisearch-v2.py
+Run on 2026-11-15 14:30 with: ../../.venv-agents-v2/bin/python src/2-agents/5-agents-aisearch-v2.py
 Real endpoints, resource names and GUIDs are replaced with placeholders such as <resource-name> and <id>; agent, thread and message IDs are kept.
 --------------------------------------------------------------------------------
-[http_replay] no random seed in this recording: random values differ from the record run
-[http_replay] replay mode, folder runs/recordings/5-agents-aisearch-v2-20261025-213339
 Project endpoint: https://<resource-name>.services.ai.azure.com/api/projects/<project-name>
 Models: gpt-4o-mini
 Disclaimer: This program is a technical demonstration and does not provide professional medical advice.
@@ -27,22 +24,22 @@ Azure AI Search endpoint: https://<search-service>.search.windows.net
 
 --- OUTBOUND RESPONSE #1 ---
 < 200 OK
+< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=minimal; odata.streaming=true; charset=utf-8
+< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 137
-< Date: Sun, 25 Oct 2026 17:33:41 GMT
-< Content-Length: 4869
-< x-http-replay: 0001-GET-indexes.json
+< elapsed-time: 157
+< Date: Sun, 15 Nov 2026 10:30:16 GMT
 <
 {
   "@odata.context": "https://<search-service>.search.windows.net/$metadata#indexes",
   "value": [
     {
-      "@odata.etag": "\"0x8DF29B5F1807B8D\"",
+      "@odata.etag": "\"0x8DF337D7579910E\"",
       "name": "healthtips-index",
       "description": null,
       "defaultScoringProfile": null,
@@ -315,7 +312,7 @@ Azure AI Search endpoint: https://<search-service>.search.windows.net
 > Accept: application/json;odata.metadata=minimal
 > Connection: keep-alive
 > Content-Type: application/json
-> Content-Length: 831
+> Content-Length: 823
 > x-ms-client-request-id: <id>
 > api-key: <redacted>
 >
@@ -345,12 +342,11 @@ Azure AI Search endpoint: https://<search-service>.search.windows.net
     {
       "name": "Category",
       "type": "Edm.String",
-      "key": false,
       "searchable": true,
       "filterable": true,
       "facetable": true,
       "sortable": false,
-      "retrievable": true
+      "normalizer": "lowercase"
     },
     {
       "name": "Price",
@@ -377,21 +373,20 @@ Azure AI Search endpoint: https://<search-service>.search.windows.net
 
 --- OUTBOUND RESPONSE #2 ---
 < 201 Created
+< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=minimal; odata.streaming=true; charset=utf-8
-< ETag: "0x8DF32BE1D4EFD96"
+< ETag: "0x8DF43037154F714"
 < Location: https://<search-service>.search.windows.net:443/indexes('myfitnessindex-v2')?api-version=2026-04-01
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 948
-< Date: Sun, 25 Oct 2026 17:33:42 GMT
-< Content-Length: 2308
-< x-http-replay: 0002-POST-indexes.json
+< elapsed-time: 654
+< Date: Sun, 15 Nov 2026 10:30:16 GMT
 <
 {
   "@odata.context": "https://<search-service>.search.windows.net/$metadata#indexes/$entity",
-  "@odata.etag": "\"0x8DF32BE1D4EFD96\"",
+  "@odata.etag": "\"0x8DF43037154F714\"",
   "name": "myfitnessindex-v2",
   "description": null,
   "defaultScoringProfile": null,
@@ -447,7 +442,7 @@ Azure AI Search endpoint: https://<search-service>.search.windows.net
       "indexAnalyzer": null,
       "searchAnalyzer": null,
       "analyzer": null,
-      "normalizer": null,
+      "normalizer": "lowercase",
       "dimensions": null,
       "vectorSearchProfile": null,
       "vectorEncoding": null,
@@ -520,7 +515,7 @@ Created index: myfitnessindex-v2
 > Accept: application/json;odata.metadata=none
 > Connection: keep-alive
 > Content-Type: application/json
-> Content-Length: 860
+> Content-Length: 866
 > x-ms-client-request-id: <id>
 > api-key: <redacted>
 >
@@ -537,10 +532,10 @@ Created index: myfitnessindex-v2
     {
       "@search.action": "upload",
       "FitnessItemID": "2",
-      "Name": "Yoga Mat",
+      "Name": "Exercise Mat",
       "Category": "Flexibility",
       "Price": 25.0,
-      "Description": "Non-slip mat designed for yoga, Pilates, and other exercises. Price: $25.00."
+      "Description": "Non-slip mat for stretching, core workouts and floor exercises. Price: $25.00."
     },
     {
       "@search.action": "upload",
@@ -563,16 +558,16 @@ Created index: myfitnessindex-v2
 
 --- OUTBOUND RESPONSE #3 ---
 < 200 OK
+< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
+< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 98
-< Date: Sun, 25 Oct 2026 17:33:43 GMT
-< Content-Length: 295
-< x-http-replay: 0003-POST-indexes--myfitnessindex-v2--_docs_search.index.json
+< elapsed-time: 93
+< Date: Sun, 15 Nov 2026 10:30:18 GMT
 <
 {
   "value": [
@@ -624,16 +619,16 @@ Uploaded 4 products.
 
 --- OUTBOUND RESPONSE #4 ---
 < 200 OK
+< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
+< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 12
-< Date: Sun, 25 Oct 2026 17:33:43 GMT
-< Content-Length: 13
-< x-http-replay: 0004-POST-indexes--myfitnessindex-v2--_docs_search.post.search.json
+< elapsed-time: 16
+< Date: Sun, 15 Nov 2026 10:30:18 GMT
 <
 {
   "value": []
@@ -659,16 +654,16 @@ Uploaded 4 products.
 
 --- OUTBOUND RESPONSE #5 ---
 < 200 OK
+< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
+< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 11
-< Date: Sun, 25 Oct 2026 17:33:46 GMT
-< Content-Length: 836
-< x-http-replay: 0005-POST-indexes--myfitnessindex-v2--_docs_search.post.search.json
+< elapsed-time: 13
+< Date: Sun, 15 Nov 2026 10:30:20 GMT
 <
 {
   "value": [
@@ -683,10 +678,10 @@ Uploaded 4 products.
     {
       "@search.score": 1.0,
       "FitnessItemID": "2",
-      "Name": "Yoga Mat",
+      "Name": "Exercise Mat",
       "Category": "Flexibility",
       "Price": 25.0,
-      "Description": "Non-slip mat designed for yoga, Pilates, and other exercises. Price: $25.00."
+      "Description": "Non-slip mat for stretching, core workouts and floor exercises. Price: $25.00."
     },
     {
       "@search.score": 1.0,
@@ -722,19 +717,19 @@ Index is searchable.
 --- OUTBOUND RESPONSE #6 ---
 < 200 OK
 < Content-Type: application/json; charset=utf-8
-< Date: Sun, 25 Oct 2026 17:33:47 GMT
+< Date: Sun, 15 Nov 2026 10:30:22 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
-< azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.037
+< azureml-served-by-cluster: vienna-eastus2-01
+< x-request-time: 0.042
 < apim-request-id: <id>
 < x-ms-region: East US 2
-< Content-Length: 810
-< x-http-replay: 0006-GET-api_projects_<project-name>_connections.json
 <
 {
   "value": [
@@ -771,19 +766,19 @@ Index is searchable.
 --- OUTBOUND RESPONSE #7 ---
 < 200 OK
 < Content-Type: application/json; charset=utf-8
-< Date: Sun, 25 Oct 2026 17:33:47 GMT
+< Date: Sun, 15 Nov 2026 10:30:22 GMT
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < Request-Context: appId=cid-v1:<id>
 < x-ms-response-type: standard
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
-< azureml-served-by-cluster: vienna-eastus2-02
-< x-request-time: 0.025
+< azureml-served-by-cluster: vienna-eastus2-01
+< x-request-time: 0.054
 < apim-request-id: <id>
 < x-ms-region: East US 2
-< Content-Length: 797
-< x-http-replay: 0007-GET-api_projects_<project-name>_connections_ai-search-workshop.json
 <
 {
   "name": "<search-service>",
@@ -873,21 +868,21 @@ STEP 2: AGENT ON gpt-4o-mini
 --- OUTBOUND RESPONSE #8 ---
 < 200 OK
 < Content-Type: application/json; charset=utf-8
-< Date: Sun, 25 Oct 2026 17:33:53 GMT
+< Date: Sun, 15 Nov 2026 10:30:29 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
-< x-request-id: 2aa251cdc41ffdf5b58173956e047d25
+< x-request-id: 8e7abee96808545f545287e820b4454d
 < api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
-< azureml-served-by-cluster: hyena-eastus2-01
+< azureml-served-by-cluster: hyena-eastus2-02
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< Content-Length: 2419
-< x-http-replay: 0008-POST-api_projects_<project-name>_agents_fitness-agent-search-v2.json
 <
 {
   "metadata": {},
@@ -896,7 +891,7 @@ STEP 2: AGENT ON gpt-4o-mini
   "name": "fitness-agent-search-v2",
   "version": "1",
   "description": "",
-  "created_at": 1792949634,
+  "created_at": 1794738629,
   "definition": {
     "kind": "prompt",
     "model": "gpt-4o-mini",
@@ -956,7 +951,7 @@ STEP 2: AGENT ON gpt-4o-mini
   },
   "blueprint_reference": {
     "type": "ManagedAgentIdentityBlueprint",
-    "blueprint_id": "fitness-agent-search-v2-b896f"
+    "blueprint_id": "fitness-agent-search-v2-19a64"
   },
   "agent_guid": "<id>"
 }
@@ -997,9 +992,11 @@ User: Which items are good for strength training?
 --- OUTBOUND RESPONSE #9 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:33:56 GMT
+< Date: Sun, 15 Nov 2026 10:30:31 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
 < Vary: Origin,Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
@@ -1025,15 +1022,13 @@ User: Which items are good for strength training?
 < openai-version: 2020-10-01
 < openai-organization: <id>
 < openai-project: <id>
-< openai-processing-ms: 2389
-< azureml-served-by-cluster: hyena-eastus2-02,hyena-eastus2-03
+< openai-processing-ms: 1652
+< azureml-served-by-cluster: hyena-eastus2-02,hyena-eastus2-01
 < api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< Content-Length: 6422
-< x-http-replay: 0009-POST-api_projects_<project-name>_openai_v1_responses.json
 <
 {
   "metadata": {},
@@ -1098,54 +1093,54 @@ User: Which items are good for strength training?
   ],
   "tool_choice": "auto",
   "truncation": "disabled",
-  "id": "resp_03a8f1045c83b5fe006ade3d854d7481938931802338e5bcc7",
+  "id": "resp_0876e20a28c74456006af989c7edf08196a59264f5d54b4d9d",
   "object": "response",
   "status": "completed",
-  "created_at": 1792949637,
-  "completed_at": 1792949639,
+  "created_at": 1794738631,
+  "completed_at": 1794738633,
   "error": null,
   "incomplete_details": null,
   "output": [
     {
       "type": "azure_ai_search_call",
-      "id": "fc_03a8f1045c83b5fe006ade3d85d3c481938e67098be28c0804",
+      "id": "fc_0876e20a28c74456006af989c844d08196b6ef003bb3613320",
       "agent_reference": {
         "type": "agent_reference",
         "name": "fitness-agent-search-v2",
         "version": "1"
       },
-      "response_id": "resp_03a8f1045c83b5fe006ade3d854d7481938931802338e5bcc7",
-      "call_id": "call_a3ca8c67bd6d4d30be6caeafef834a69",
+      "response_id": "resp_0876e20a28c74456006af989c7edf08196a59264f5d54b4d9d",
+      "call_id": "call_80745d59afe7491fa9666654ce3a5c5e",
       "arguments": "{\"query\":\"strength training equipment\"}",
       "status": "completed"
     },
     {
       "type": "azure_ai_search_call_output",
-      "id": "fco_03a8f1045c83b5fe006ade3d8663308193951281f206cc9bcf",
+      "id": "fco_0876e20a28c74456006af989c8a74c8196a85e04ccb24ded9b",
       "agent_reference": {
         "type": "agent_reference",
         "name": "fitness-agent-search-v2",
         "version": "1"
       },
-      "response_id": "resp_03a8f1045c83b5fe006ade3d854d7481938931802338e5bcc7",
-      "call_id": "call_a3ca8c67bd6d4d30be6caeafef834a69",
+      "response_id": "resp_0876e20a28c74456006af989c7edf08196a59264f5d54b4d9d",
+      "call_id": "call_80745d59afe7491fa9666654ce3a5c5e",
       "output": "{\n        \"documents\": [\n          {\n            \"id\": \"1\",\n            \"content...(1200 characters)",
       "status": "completed"
     },
     {
       "type": "message",
-      "id": "msg_03a8f1045c83b5fe006ade3d86a74c8193a5c42ca2ebb1e671",
+      "id": "msg_0876e20a28c74456006af989c8cb1881968319c8657cd90dcc",
       "agent_reference": {
         "type": "agent_reference",
         "name": "fitness-agent-search-v2",
         "version": "1"
       },
-      "response_id": "resp_03a8f1045c83b5fe006ade3d854d7481938931802338e5bcc7",
+      "response_id": "resp_0876e20a28c74456006af989c7edf08196a59264f5d54b4d9d",
       "role": "assistant",
       "content": [
         {
           "type": "output_text",
-          "text": "Here are some good items for strength training:\n\n1. **Adjustable Dumbbell**\n   - Price: $59.99\n   - A compact, adjustable weight ideal for targeted muscle workouts.\n\n2. **Resistance Bands**\n   - Price: $15.00\n   - A set of colorful bands for light to moderate resistance workouts.\n\nIf you're looking for something specific or have a budget in mind, let me know!",
+          "text": "Here are some great options for strength training:\n\n1. **Adjustable Dumbbell**  \n   - Price: $59.99  \n   - A compact, adjustable weight suited for targeted muscle workouts.\n\n2. **Resistance Bands**  \n   - Price: $15.00  \n   - A set of colorful bands designed for light to moderate resistance workouts.\n\nThese items are ideal for various strength training exercises and can cater to different fitness levels.",
           "annotations": [],
           "logprobs": []
         }
@@ -1160,11 +1155,11 @@ User: Which items are good for strength training?
       "cached_tokens": 0,
       "cache_write_tokens": 0
     },
-    "output_tokens": 106,
+    "output_tokens": 109,
     "output_tokens_details": {
       "reasoning_tokens": 0
     },
-    "total_tokens": 1047
+    "total_tokens": 1050
   },
   "parallel_tool_calls": true,
   "agent_reference": {
@@ -1237,7 +1232,7 @@ User: Which items are good for strength training?
       "content_filter_raw": [],
       "content_filter_offsets": {
         "start_offset": 0,
-        "end_offset": 361,
+        "end_offset": 407,
         "check_offset": 0
       }
     }
@@ -1259,19 +1254,19 @@ Response (status completed):
             "knowledgeSourceIndex": 0
    ...
   message (answer, printed below)
-  (tokens: input 941, output 106, of which reasoning 0)
+  (tokens: input 941, output 109, of which reasoning 0)
 
-Agent: Here are some good items for strength training:
+Agent: Here are some great options for strength training:
 
-1. **Adjustable Dumbbell**
-   - Price: $59.99
-   - A compact, adjustable weight ideal for targeted muscle workouts.
+1. **Adjustable Dumbbell**  
+   - Price: $59.99  
+   - A compact, adjustable weight suited for targeted muscle workouts.
 
-2. **Resistance Bands**
-   - Price: $15.00
-   - A set of colorful bands for light to moderate resistance workouts.
+2. **Resistance Bands**  
+   - Price: $15.00  
+   - A set of colorful bands designed for light to moderate resistance workouts.
 
-If you're looking for something specific or have a budget in mind, let me know!
+These items are ideal for various strength training exercises and can cater to different fitness levels.
 
 User: I need something for cardio under $300, any suggestions?
 
@@ -1308,9 +1303,11 @@ User: I need something for cardio under $300, any suggestions?
 --- OUTBOUND RESPONSE #10 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:33:59 GMT
+< Date: Sun, 15 Nov 2026 10:30:33 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
 < Vary: Origin,Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
@@ -1336,15 +1333,13 @@ User: I need something for cardio under $300, any suggestions?
 < openai-version: 2020-10-01
 < openai-organization: <id>
 < openai-project: <id>
-< openai-processing-ms: 1026
-< azureml-served-by-cluster: hyena-eastus2-02,hyena-eastus2-03
+< openai-processing-ms: 1148
+< azureml-served-by-cluster: hyena-eastus2-02,hyena-eastus2-01
 < api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< Content-Length: 4020
-< x-http-replay: 0010-POST-api_projects_<project-name>_openai_v1_responses.json
 <
 {
   "metadata": {},
@@ -1409,24 +1404,24 @@ User: I need something for cardio under $300, any suggestions?
   ],
   "tool_choice": "auto",
   "truncation": "disabled",
-  "id": "resp_049a2ed7106f7850006ade3d884ab0819490fc6bc1ba1dd21c",
+  "id": "resp_0d3face6d88712fb006af989ca341c8194aacd61f896d901d3",
   "object": "response",
   "status": "completed",
-  "created_at": 1792949640,
-  "completed_at": 1792949641,
+  "created_at": 1794738634,
+  "completed_at": 1794738635,
   "error": null,
   "incomplete_details": null,
   "output": [
     {
       "type": "function_call",
-      "id": "fc_049a2ed7106f7850006ade3d88ce7c8194aa20d2af26bf5c29",
+      "id": "fc_0d3face6d88712fb006af989cb07d8819498aedfaa4881aacd",
       "agent_reference": {
         "type": "agent_reference",
         "name": "fitness-agent-search-v2",
         "version": "1"
       },
-      "response_id": "resp_049a2ed7106f7850006ade3d884ab0819490fc6bc1ba1dd21c",
-      "call_id": "call_mQPWXazcSLj0oW05jUjowlcE",
+      "response_id": "resp_0d3face6d88712fb006af989ca341c8194aacd61f896d901d3",
+      "call_id": "call_lGhnAZygRwiCmPPlrEwePKhB",
       "name": "find_items_under",
       "arguments": "{\"max_price\":300,\"category\":\"Cardio\"}",
       "status": "completed"
@@ -1549,16 +1544,16 @@ Response (status completed):
 
 --- OUTBOUND RESPONSE #11 ---
 < 200 OK
+< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
+< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 44
-< Date: Sun, 25 Oct 2026 17:34:00 GMT
-< Content-Length: 13
-< x-http-replay: 0011-POST-indexes--myfitnessindex-v2--_docs_search.post.search.json
+< elapsed-time: 63
+< Date: Sun, 15 Nov 2026 10:30:35 GMT
 <
 {
   "value": []
@@ -1587,16 +1582,16 @@ Response (status completed):
 
 --- OUTBOUND RESPONSE #12 ---
 < 200 OK
+< Transfer-Encoding: chunked
 < Content-Type: application/json; odata.metadata=none; odata.streaming=true; charset=utf-8
+< Content-Encoding: gzip
 < Vary: Accept-Encoding
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < OData-Version: 4.0
 < request-id: <id>
-< elapsed-time: 9
-< Date: Sun, 25 Oct 2026 17:34:00 GMT
-< Content-Length: 94
-< x-http-replay: 0012-POST-indexes--myfitnessindex-v2--_docs_search.post.search.json
+< elapsed-time: 30
+< Date: Sun, 15 Nov 2026 10:30:35 GMT
 <
 {
   "value": [
@@ -1636,11 +1631,11 @@ Response (status completed):
   "input": [
     {
       "type": "function_call_output",
-      "call_id": "call_mQPWXazcSLj0oW05jUjowlcE",
+      "call_id": "call_lGhnAZygRwiCmPPlrEwePKhB",
       "output": "No products cost $300.00 or less in category Cardio. Cheapest product in Cardio: Treadmill (Cardio): $499.00"
     }
   ],
-  "previous_response_id": "resp_049a2ed7106f7850006ade3d884ab0819490fc6bc1ba1dd21c",
+  "previous_response_id": "resp_0d3face6d88712fb006af989ca341c8194aacd61f896d901d3",
   "agent_reference": {
     "name": "fitness-agent-search-v2",
     "type": "agent_reference"
@@ -1650,9 +1645,11 @@ Response (status completed):
 --- OUTBOUND RESPONSE #13 ---
 < 200 OK
 < Content-Type: application/json
-< Date: Sun, 25 Oct 2026 17:34:01 GMT
+< Date: Sun, 15 Nov 2026 10:30:35 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
 < Vary: Origin,Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
@@ -1678,15 +1675,13 @@ Response (status completed):
 < openai-version: 2020-10-01
 < openai-organization: <id>
 < openai-project: <id>
-< openai-processing-ms: 1056
-< azureml-served-by-cluster: hyena-eastus2-01,hyena-eastus2-03
+< openai-processing-ms: 2145
+< azureml-served-by-cluster: hyena-eastus2-03,hyena-eastus2-01
 < api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< Content-Length: 4258
-< x-http-replay: 0013-POST-api_projects_<project-name>_openai_v1_responses.json
 <
 {
   "metadata": {},
@@ -1695,7 +1690,7 @@ Response (status completed):
   "top_p": 1,
   "service_tier": "default",
   "prompt_cache_retention": "in_memory",
-  "previous_response_id": "resp_049a2ed7106f7850006ade3d884ab0819490fc6bc1ba1dd21c",
+  "previous_response_id": "resp_0d3face6d88712fb006af989ca341c8194aacd61f896d901d3",
   "model": "gpt-4o-mini",
   "reasoning": {
     "context": null
@@ -1752,28 +1747,28 @@ Response (status completed):
   ],
   "tool_choice": "auto",
   "truncation": "disabled",
-  "id": "resp_049a2ed7106f7850006ade3d8a1f1081948aabe5aa6f30347e",
+  "id": "resp_0d3face6d88712fb006af989cc5c2c819483bb32c9a3bed951",
   "object": "response",
   "status": "completed",
-  "created_at": 1792949642,
-  "completed_at": 1792949642,
+  "created_at": 1794738636,
+  "completed_at": 1794738638,
   "error": null,
   "incomplete_details": null,
   "output": [
     {
       "type": "message",
-      "id": "msg_049a2ed7106f7850006ade3d8aa05881949a697f8bdd7f28a3",
+      "id": "msg_0d3face6d88712fb006af989cd87248194a105ba5a9a342c74",
       "agent_reference": {
         "type": "agent_reference",
         "name": "fitness-agent-search-v2",
         "version": "1"
       },
-      "response_id": "resp_049a2ed7106f7850006ade3d8a1f1081948aabe5aa6f30347e",
+      "response_id": "resp_0d3face6d88712fb006af989cc5c2c819483bb32c9a3bed951",
       "role": "assistant",
       "content": [
         {
           "type": "output_text",
-          "text": "There are no cardio products available for $300 or less. The cheapest option in the cardio category is a treadmill priced at $499. If you're open to increasing your budget, let me know!",
+          "text": "I couldn't find any cardio products priced under $300. The closest option is a treadmill, which costs $499. If you're open to increasing your budget or considering other types of fitness equipment, let me know!",
           "annotations": [],
           "logprobs": []
         }
@@ -1788,11 +1783,11 @@ Response (status completed):
       "cached_tokens": 0,
       "cache_write_tokens": 0
     },
-    "output_tokens": 41,
+    "output_tokens": 44,
     "output_tokens_details": {
       "reasoning_tokens": 0
     },
-    "total_tokens": 909
+    "total_tokens": 912
   },
   "parallel_tool_calls": true,
   "agent_reference": {
@@ -1865,7 +1860,7 @@ Response (status completed):
       "content_filter_raw": [],
       "content_filter_offsets": {
         "start_offset": 0,
-        "end_offset": 185,
+        "end_offset": 210,
         "check_offset": 0
       }
     }
@@ -1873,9 +1868,9 @@ Response (status completed):
 }
 Response (status completed):
   message (answer, printed below)
-  (tokens: input 868, output 41, of which reasoning 0)
+  (tokens: input 868, output 44, of which reasoning 0)
 
-Agent: There are no cardio products available for $300 or less. The cheapest option in the cardio category is a treadmill priced at $499. If you're open to increasing your budget, let me know!
+Agent: I couldn't find any cardio products priced under $300. The closest option is a treadmill, which costs $499. If you're open to increasing your budget or considering other types of fitness equipment, let me know!
 
 >>> Delete this version of the fitness search agent from Foundry Agent Service.
 
@@ -1892,21 +1887,21 @@ Agent: There are no cardio products available for $300 or less. The cheapest opt
 --- OUTBOUND RESPONSE #14 ---
 < 200 OK
 < Content-Type: application/json; charset=utf-8
-< Date: Sun, 25 Oct 2026 17:34:05 GMT
+< Date: Sun, 15 Nov 2026 10:30:40 GMT
 < Server: istio-envoy
 < Access-Control-Expose-Headers: Operation-Location,Location,Apim-Request-Id,x-agent-session-id,x-agent-invocation-id
+< Content-Encoding: gzip
+< Transfer-Encoding: chunked
 < Vary: Accept-Encoding
 < request-context: appId=
 < x-ms-response-type: standard
-< x-request-id: baa83ecfe29a89d132f2a0a3ff1e7b21
+< x-request-id: 0891be3e287250f57084e10e70fdb4f4
 < api-supported-versions: 1.0,2025-05-15-preview,2025-11-15-preview
-< azureml-served-by-cluster: hyena-eastus2-01
+< azureml-served-by-cluster: hyena-eastus2-02
 < apim-request-id: <id>
 < Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 < X-Content-Type-Options: nosniff
 < x-ms-region: East US 2
-< Content-Length: 103
-< x-http-replay: 0014-DELETE-api_projects_<project-name>_agents_fitness-agent-search-v2.json
 <
 {
   "object": "agent.version.deleted",
@@ -1942,10 +1937,8 @@ HTTP #15 GET https://<search-service>.search.windows.net/indexes?api-version=202
 < Strict-Transport-Security: max-age=2592000, max-age=15724800; includeSubDomains
 < Preference-Applied: odata.include-annotations="*"
 < request-id: <id>
-< elapsed-time: 507
-< Date: Sun, 25 Oct 2026 17:34:05 GMT
-< Content-Length: 0
-< x-http-replay: 0016-DELETE-indexes--myfitnessindex-v2--.json
+< elapsed-time: 387
+< Date: Sun, 15 Nov 2026 10:30:40 GMT
 Deleted index: myfitnessindex-v2
 
 ================================================================================
@@ -1953,7 +1946,7 @@ COMPARISON (both questions per model)
 ================================================================================
 model          searches functions   input  output reasoning    time      cost
 -----------------------------------------------------------------------------
-gpt-4o-mini           1         1    2615     169         0    0.3s   $0.0005
+gpt-4o-mini           1         1    2615     175         0    8.6s   $0.0005
 Prices: list prices per 1M tokens (see PRICES), Global deployment in East US 2, checked 2026-10-23.
 Checks:
   PASS  gpt-4o-mini: both questions answered

@@ -242,16 +242,16 @@ new agent. Recorded runs: [Web Search](../sample-output/4-web-search.py-output-2
 
 ## Phi-4 and Phi-4-reasoning vs gpt-4o-mini
 
-All three solved the pace question (6:00 per km, 18 seconds faster) and gave similar training advice. In the recorded
-run gpt-4o-mini was the fastest (11.5 s for the three prompts against 27 s for Phi-4) and cost about the same ($0.0004
-vs $0.0006: Phi-4 is slightly cheaper per token, $0.125 / $0.50 per 1M input / output tokens against $0.15 / $0.60,
-but used more tokens; list prices from the
+All three solved the pace question (6:00 per km, 18 seconds faster) and gave similar race-day pacing advice. In the
+recorded run gpt-4o-mini was the fastest (5.9 s for the three prompts against 24 s for Phi-4) and cost about the same
+($0.0003 vs $0.0005: Phi-4 is slightly cheaper per token, $0.125 / $0.50 per 1M input / output tokens against $0.15 /
+$0.60, but used more tokens; list prices from the
 [Azure Retail Prices API](https://learn.microsoft.com/rest/api/cost-management/retail-prices/azure-retail-prices),
-checked October 2026), so the small Phi model brought no gain here. Phi-4-reasoning wrote about 7 times the output tokens of
-gpt-4o-mini (4,524 vs 654) and took 103 s, roughly 9 times as long, to reach the same answers: on these three prompts,
+checked October 2026), so the small Phi model brought no gain here. Phi-4-reasoning wrote about 8 times the output tokens of
+gpt-4o-mini (3,818 vs 492) and took 91 s, roughly 15 times as long, to reach the same answers: on these three prompts,
 reasoning added only time and cost. This is one run, not a benchmark; the script reports whether each pace answer is
 right, but fails only when a model returns no answer. Recorded run:
-[output](../sample-output/4-phi-4.py-output-20261018-164134.txt).
+[output](../sample-output/4-phi-4.py-output-20261115-204036.txt).
 
 Phi-4-reasoning's thinking can't be separated from its answer on Azure. The model card's system prompt asks for the
 thinking between `<think>` tags, but the endpoint strips those tags (they are special tokens), leaves the message's

@@ -44,13 +44,15 @@ MAX_ANSWER_TOKENS = 1500
 FITNESS_SYSTEM_PROMPT = (
     "You are FitChat GPT, a friendly fitness assistant.\n"
     "Always remind users: I'm not a medical professional.\n"
-    "Answer with empathy and disclaimers."
+    "Answer with empathy and disclaimers.\n"
+    "Suggest activities from this app's list: walking, running, cycling, swimming and strength training."
 )
 
 TRAINER_SYSTEM_TEMPLATE = (
     "You are FitChat GPT, an AI personal trainer for {name}.\n"
     "Your user wants to achieve: {goal}.\n"
-    "Remind them you're not a medical professional. Offer friendly advice."
+    "Remind them you're not a medical professional. Offer friendly advice.\n"
+    "Suggest activities from this app's list: walking, running, cycling, swimming and strength training."
 )
 
 

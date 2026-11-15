@@ -112,8 +112,8 @@ async def check_server(url, key):
         parts = sum(plan.get(part, {}).get("minutes", 0) for part in ("warm_up", "main", "cool_down"))
         checks.append(("30-minute cardio plan adds up", plan.get("goal") == "cardio" and parts == 30))
 
-        print("\nCall suggest_workout(goal='yoga', minutes=30), expecting a clear error")
-        result = await session.call_tool("suggest_workout", {"goal": "yoga", "minutes": 30})
+        print("\nCall suggest_workout(goal='swimming', minutes=30), expecting a clear error")
+        result = await session.call_tool("suggest_workout", {"goal": "swimming", "minutes": 30})
         text = tool_text(result)
         print(f"  {text}")
         checks.append(("unknown goal rejected", "error" in text))
