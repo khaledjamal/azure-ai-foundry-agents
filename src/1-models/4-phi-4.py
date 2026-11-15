@@ -8,11 +8,9 @@ https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/1-chat_com
 This script compares three models on the same three prompts: Microsoft's small Phi-4,
 Phi-4-reasoning (which thinks step by step before answering) and gpt-4o-mini. It answers
 a practical question: does a smaller model or a reasoning model pay off? In a real run
-against Azure on 2026-10-18 (sample-output/4-phi-4.py-output-20261018-164134.txt), all
+against Azure on 2026-11-15 (sample-output/4-phi-4.py-output-20261115-204036.txt), all
 three got the calculation right, gpt-4o-mini was the fastest at about the same cost, and
-Phi-4-reasoning took about 9 times as long as gpt-4o-mini for the same answers. The
-newer sample replays saved answers from a later real run: it calls no service and costs
-nothing, its times show 0.0 s, and its cost column is what that real run cost.
+Phi-4-reasoning took about 15 times as long as gpt-4o-mini for the same answers.
 
 Each model gets three prompts:
   1. a chat question about pacing a first 5K on race day,
