@@ -27,6 +27,7 @@ import asyncio
 import json
 import logging
 import os
+import textwrap
 
 from mcp import ClientSession
 from mcp.client.streamable_http import create_mcp_http_client, streamable_http_client
@@ -83,9 +84,68 @@ async def print_call_description(request):
     print(f"\n>>> {describe_mcp_call(request)}")
 
 
+async def check_tools_listed(session):
+    """List the workout MCP server's tools; both workout tools must be there."""
+    tools = (await session.list_tools()).tools
+    print(f"\nTools: {len(tools)}")
+
+    for tool in tools:
+        description = textwrap.indent(tool.description or "", "    ")
+        print(f"  {tool.name}:\n{description}")
+        print(f"    input schema: {json.dumps(tool.input_schema)}")
+
+    return ("both tools listed", EXPECTED_TOOLS <= {tool.name for tool in tools})
+
+
+async def check_goals_returned(session):
+    """Call list_workout_goals(); its goals must include cardio."""
+    print("\nCall list_workout_goals()")
+    result = await session.call_tool("list_workout_goals", {})
+    text = tool_text(result)
+    print(f"  {text}")
+
+    if result.is_error:
+        return ("goals returned", False)
+
+    goal_items = json.loads(text)["goals"]
+    goals = [item["goal"] for item in goal_items]
+
+    return ("goals returned", "cardio" in goals)
+
+
+async def check_cardio_plan(session):
+    """Call suggest_workout() for 30 minutes of cardio; its parts must add up to 30."""
+    print("\nCall suggest_workout(goal='cardio', minutes=30)")
+    result = await session.call_tool("suggest_workout", {"goal": "cardio", "minutes": 30})
+    text = tool_text(result)
+    print(f"  {text}")
+
+    if result.is_error:
+        return ("30-minute cardio plan adds up", False)
+
+    plan = json.loads(text)
+    plan_parts = [plan.get(part, {}) for part in ("warm_up", "main", "cool_down")]
+    total_minutes = sum(part.get("minutes", 0) for part in plan_parts)
+    passed = plan.get("goal") == "cardio" and total_minutes == 30
+
+    return ("30-minute cardio plan adds up", passed)
+
+
+async def check_unknown_goal_rejected(session):
+    """Call suggest_workout() with a goal it doesn't know; it must answer with an
+    error."""
+    print("\nCall suggest_workout(goal='swimming', minutes=30), expecting a clear error")
+    result = await session.call_tool("suggest_workout", {"goal": "swimming", "minutes": 30})
+    text = tool_text(result)
+    print(f"  {text}")
+
+    return ("unknown goal rejected", "error" in text)
+
+
 async def check_server(url, key):
+    """Open an MCP session with the workout MCP server and run the four checks; return
+    their (name, passed) pairs."""
     headers = {"x-functions-key": key} if key else {}
-    checks = []
 
     async with (
         create_mcp_http_client(headers=headers) as http_client,
@@ -96,37 +156,12 @@ async def check_server(url, key):
         info = await session.initialize()
         print(f"Server: {info.server_info.name} {info.server_info.version}")
 
-        tools = (await session.list_tools()).tools
-        print(f"\nTools: {len(tools)}")
-
-        for tool in tools:
-            print(f"  {tool.name}: {tool.description}")
-            print(f"    input schema: {json.dumps(tool.input_schema)}")
-
-        checks.append(("both tools listed", EXPECTED_TOOLS <= {tool.name for tool in tools}))
-
-        print("\nCall list_workout_goals()")
-        result = await session.call_tool("list_workout_goals", {})
-        text = tool_text(result)
-        print(f"  {text}")
-        goals = [item["goal"] for item in json.loads(text)["goals"]] if not result.is_error else []
-        checks.append(("goals returned", "cardio" in goals))
-
-        print("\nCall suggest_workout(goal='cardio', minutes=30)")
-        result = await session.call_tool("suggest_workout", {"goal": "cardio", "minutes": 30})
-        text = tool_text(result)
-        print(f"  {text}")
-        plan = json.loads(text) if not result.is_error else {}
-        parts = sum(plan.get(part, {}).get("minutes", 0) for part in ("warm_up", "main", "cool_down"))
-        checks.append(("30-minute cardio plan adds up", plan.get("goal") == "cardio" and parts == 30))
-
-        print("\nCall suggest_workout(goal='swimming', minutes=30), expecting a clear error")
-        result = await session.call_tool("suggest_workout", {"goal": "swimming", "minutes": 30})
-        text = tool_text(result)
-        print(f"  {text}")
-        checks.append(("unknown goal rejected", "error" in text))
-
-    return checks
+        return [
+            await check_tools_listed(session),
+            await check_goals_returned(session),
+            await check_cardio_plan(session),
+            await check_unknown_goal_rejected(session),
+        ]
 
 
 def main():
