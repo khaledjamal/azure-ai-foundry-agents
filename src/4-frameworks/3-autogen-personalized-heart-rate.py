@@ -54,6 +54,7 @@ from autogen_agentchat.base import TaskResult
 from autogen_agentchat.conditions import MaxMessageTermination, SourceMatchTermination
 from autogen_agentchat.messages import ToolCallExecutionEvent, ToolCallRequestEvent
 from autogen_agentchat.teams import RoundRobinGroupChat
+from autogen_core.tools import FunctionTool
 from autogen_ext.models.openai import AzureOpenAIChatCompletionClient
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from openai import AzureOpenAI
@@ -66,6 +67,11 @@ DATA_FILE = Path(__file__).resolve().parent / "example-data" / "20250417_health_
 TIMEZONE_OFFSET_SECONDS = 5 * 60 * 60  # same shift to local time as the notebook
 USER_QUERY = "Plan my day: when is a good time for a workout, and when should I take a calm break?"
 TOP_TIPS = 3
+# The agent gets this text as the tool description.
+RETRIEVE_PERSONALIZED_TIPS_DESCRIPTION = (
+    "Return the user's hourly heart-rate summary from yesterday plus the wellness tips "
+    "closest in meaning to the question."
+)
 
 HEALTH_TIPS = [
     {"id": "tip1", "content": "Do a 10-minute HIIT workout to boost your metabolism.", "source": "Fitness Guru"},
@@ -185,7 +191,7 @@ def make_retrieve_personalized_tips(summary, embed):
     print(f"Embedded {len(HEALTH_TIPS)} wellness tips.")
 
     def retrieve_personalized_tips(query: str) -> str:
-        """Return the user's hourly heart-rate summary from yesterday plus the wellness tips closest in meaning to the question."""  # noqa: W505 - the agent gets this docstring as the tool description
+        """Embed the query and return the summary plus the TOP_TIPS closest tips."""
         query_vector = embed([query])[0]
         similarities = [cosine(query_vector, tip_vector) for tip_vector in tip_vectors]
         ranked = sorted(
@@ -202,7 +208,7 @@ def make_retrieve_personalized_tips(summary, embed):
 
         return f"YOUR HEART RATE DATA:\n{summary}\n\nWELLNESS TIPS:\n{tip_text}"
 
-    return retrieve_personalized_tips
+    return FunctionTool(retrieve_personalized_tips, description=RETRIEVE_PERSONALIZED_TIPS_DESCRIPTION)
 
 
 def print_section(title):

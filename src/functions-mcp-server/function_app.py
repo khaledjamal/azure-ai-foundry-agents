@@ -101,7 +101,8 @@ def build_workout(goal, minutes):
 
 @app.mcp_tool()
 def list_workout_goals() -> str:
-    """List the workout goals that suggest_workout knows, with a short description of each."""  # noqa: W505 - the agent gets this docstring as the tool description
+    """List the workout goals that suggest_workout knows, with a short description of
+    each."""
     logging.info("list_workout_goals called")
     return json.dumps(list_goals())
 
@@ -112,10 +113,11 @@ def list_workout_goals() -> str:
     arg_name="minutes", description=f"Total workout length in minutes, {MIN_MINUTES} to {MAX_MINUTES}."
 )
 def suggest_workout(goal: str, minutes: int) -> str:
-    """Suggest a simple home workout plan (warm-up, main block, cool-down) for a goal and a length in minutes.
+    """Suggest a simple home workout plan (warm-up, main block, cool-down) for a goal
+    and a length in minutes.
 
     Call list_workout_goals first if you don't know the goals.
-    """  # noqa: W505 - the agent gets this docstring as the tool description
+    """
     logging.info("suggest_workout called with goal=%r minutes=%r", goal, minutes)
 
     return json.dumps(build_workout(goal, minutes))
