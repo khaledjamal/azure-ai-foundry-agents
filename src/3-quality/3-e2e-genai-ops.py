@@ -567,14 +567,14 @@ def run_evaluation(data_path, evaluators, project_endpoint, output_dir):
     return result
 
 
-def print_metrics(result):
+def print_metrics(evaluation_result):
     print("\nAggregate metrics:")
-    for name, value in sorted(result.get("metrics", {}).items()):
+    for name, value in sorted(evaluation_result.get("metrics", {}).items()):
         print(f"  {name}: {value}")
 
 
-def print_portal_link(result):
-    studio_url = result.get("studio_url")
+def print_portal_link(evaluation_result):
+    studio_url = evaluation_result.get("studio_url")
     if studio_url:
         print(f"\nEvaluation in the portal: {studio_url}")
     else:

@@ -114,16 +114,16 @@ def generate_image(openai_client, args):
     return result
 
 
-def print_details(result):
+def print_details(image_response):
     """Print the revised prompt (if the model rewrote it) and the token usage."""
-    image = result.data[0]
+    image = image_response.data[0]
     if getattr(image, "revised_prompt", None):
         print(f"Revised prompt: {image.revised_prompt}")
 
-    if result.usage:
+    usage = image_response.usage
+    if usage:
         print(
-            f"Usage: input {result.usage.input_tokens} tokens, output {result.usage.output_tokens} tokens, "
-            f"total {result.usage.total_tokens}"
+            f"Usage: input {usage.input_tokens} tokens, output {usage.output_tokens} tokens, total {usage.total_tokens}"
         )
 
 

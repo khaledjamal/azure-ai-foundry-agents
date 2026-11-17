@@ -44,8 +44,8 @@ MCP_MESSAGE_DESCRIPTIONS = {
 }
 
 
-def tool_text(result):
-    return "\n".join(item.text for item in result.content if getattr(item, "type", "") == "text")
+def tool_text(tool_result):
+    return "\n".join(item.text for item in tool_result.content if item.type == "text")
 
 
 def describe_mcp_call(request):
