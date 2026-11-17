@@ -222,7 +222,8 @@ def report(checks):
 
     failed = any(status == "FAIL" for status, _ in checks)
     passed = sum(1 for status, _ in checks if status == "PASS")
-    print(f"  {passed} passed, {sum(1 for s, _ in checks if s == 'WARN')} warnings, {'FAIL' if failed else 'OK'}")
+    warnings = sum(1 for status, _ in checks if status == "WARN")
+    print(f"  {passed} passed, {warnings} warnings, {'FAIL' if failed else 'OK'}")
 
     raise SystemExit(1 if failed else 0)
 

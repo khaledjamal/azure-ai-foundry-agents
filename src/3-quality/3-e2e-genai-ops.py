@@ -477,6 +477,12 @@ def run_direct_attack(ctx, target):
     return list(outputs["regular"]), list(outputs["jailbreak"])
 
 
+def has_assistant_reply(conversation):
+    """True if the simulated conversation holds an agent (assistant) message."""
+    messages = conversation.get("messages", [])
+    return any(message.get("role") == "assistant" for message in messages)
+
+
 def check_attack_results(stats, conversations):
     """Fail the section if an agent turn failed for another reason than the content
     filter, or a reply is missing."""
@@ -486,7 +492,7 @@ def check_attack_results(stats, conversations):
             + "; ".join(stats["errors"])
         )
 
-    missing = [c for c in conversations if not any(m.get("role") == "assistant" for m in c.get("messages", []))]
+    missing = [conversation for conversation in conversations if not has_assistant_reply(conversation)]
     if missing:
         raise RuntimeError(f"{len(missing)} simulated conversation(s) have no agent reply")
 
@@ -584,7 +590,8 @@ def print_portal_link(evaluation_result):
 def section_quality(ctx):
     judge = ctx["judge_config"]
     data_path = LAB_DIR / "evaluate_test_data.jsonl"
-    rows = sum(1 for line in data_path.read_text(encoding="utf-8").splitlines() if line.strip())
+    lines = data_path.read_text(encoding="utf-8").splitlines()
+    rows = sum(1 for line in lines if line.strip())
     print(f"Data: {data_path} ({rows} rows); judge model {judge['azure_deployment']}")
     evaluators = build_quality_evaluators(judge, ctx["credential"], ctx["project_endpoint"])
     result = run_evaluation(data_path, evaluators, ctx["project_endpoint"], ctx["output_dir"])
@@ -604,7 +611,8 @@ def section_observability(ctx):
         f"AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED={os.environ.get('AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED')}"
     )
     connection_string = ctx["project_client"].telemetry.get_application_insights_connection_string()
-    fields = dict(part.split("=", 1) for part in connection_string.split(";") if "=" in part)
+    parts = connection_string.split(";")
+    fields = dict(part.split("=", 1) for part in parts if "=" in part)
     print(f"Application Insights: connected (ingestion endpoint {fields.get('IngestionEndpoint', '?')})")
     print(f"This run's trace ID: {ctx['trace_id']}")
     print("View it in the Foundry portal (project -> Tracing) or in Application Insights (search for the trace ID).")
@@ -701,7 +709,8 @@ def answer_from_index(openai_client, search_client, embedding_model, model, ques
     print("\n>>> Search the AI safety index in Azure AI Search with the question's vector.")
     hits = list(search_client.search(search_text=None, vector_queries=[vector_query], select=["content", "source"]))
     context = "\n".join(f"From {hit['source']}: {hit['content']}" for hit in hits)
-    print("Retrieved: " + (", ".join(hit["source"] for hit in hits) or "nothing"))
+    retrieved_sources = ", ".join(hit["source"] for hit in hits)
+    print("Retrieved: " + (retrieved_sources or "nothing"))
 
     print(f"\n>>> Ask the Azure OpenAI chat model {model} to answer from the retrieved documents.")
     response = openai_client.chat.completions.create(
@@ -717,6 +726,11 @@ def answer_from_index(openai_client, search_client, embedding_model, model, ques
     return hits, context, answer
 
 
+def format_score(name, score):
+    """One evaluator's score with its pass/fail result, e.g. "relevance 4.0 (pass)"."""
+    return f"{name} {score.get(name)} ({score.get(f'{name}_result')})"
+
+
 def score_answer(evaluators, question, answer, context):
     """Score one answer with each evaluator and print the scores; return them."""
     print("\n>>> Score the answer with four evaluators, each of which asks the Azure OpenAI judge model.")
@@ -726,7 +740,7 @@ def score_answer(evaluators, question, answer, context):
         "groundedness": evaluators["groundedness"](query=question, response=answer, context=context),
         "fluency": evaluators["fluency"](response=answer),
     }
-    summary = ", ".join(f"{name} {score.get(name)} ({score.get(f'{name}_result')})" for name, score in scores.items())
+    summary = ", ".join(format_score(name, score) for name, score in scores.items())
     print(f"Scores: {summary}")
 
     return scores
@@ -751,7 +765,8 @@ def section_rag(ctx):
     openai_client = ctx["openai_client"]
 
     index_client = SearchIndexClient(search_endpoint, search_key)
-    vectors = embed(openai_client, embedding_model, [doc["content"] for doc in SAFETY_DOCS])
+    contents = [doc["content"] for doc in SAFETY_DOCS]
+    vectors = embed(openai_client, embedding_model, contents)
     create_safety_index(index_client, len(vectors[0]))
 
     try:
@@ -882,7 +897,8 @@ def build_context(args):
     }
     print(f"Project endpoint: {project_endpoint}")
     print(f"Chat/agent model: {ctx['model']}; judge model: {ctx['judge_config']['azure_deployment']}")
-    print(f"Sections: {', '.join(str(s) for s in args.sections)}")
+    sections_text = ", ".join(str(s) for s in args.sections)
+    print(f"Sections: {sections_text}")
 
     return ctx
 

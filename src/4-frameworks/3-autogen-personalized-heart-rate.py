@@ -148,12 +148,14 @@ def hourly_summary_text(hourly):
     lowest = hourly["avg_bpm"].nsmallest(3).index
     highest = hourly["avg_bpm"].nlargest(3).index
     lines = [f"{t:%H}:00  average {row.avg_bpm:.0f} bpm" for t, row in hourly.iterrows()]
+    calm_hours = ", ".join(f"{hour:%H}:00" for hour in sorted(lowest))
+    active_hours = ", ".join(f"{hour:%H}:00" for hour in sorted(highest))
 
     return (
         f"Hourly average heart rate yesterday (wearable data, {len(hourly)} hours):\n" + "\n".join(lines) + "\n"
         f"Overall average: {hourly['avg_bpm'].mean():.0f} bpm\n"
-        f"Calmest hours (lowest averages): {', '.join(f'{t:%H}:00' for t in sorted(lowest))}\n"
-        f"Most active hours (highest averages): {', '.join(f'{t:%H}:00' for t in sorted(highest))}"
+        f"Calmest hours (lowest averages): {calm_hours}\n"
+        f"Most active hours (highest averages): {active_hours}"
     )
 
 
@@ -181,16 +183,18 @@ def make_retrieve_personalized_tips(summary, embed):
     def retrieve_personalized_tips(query: str) -> str:
         """Return the user's hourly heart-rate summary from yesterday plus the wellness tips closest in meaning to the question."""  # noqa: W505 - the agent gets this docstring as the tool description
         query_vector = embed([query])[0]
+        similarities = [cosine(query_vector, tip_vector) for tip_vector in tip_vectors]
         ranked = sorted(
-            zip(HEALTH_TIPS, (cosine(query_vector, v) for v in tip_vectors), strict=True),
-            key=lambda p: p[1],
+            zip(HEALTH_TIPS, similarities, strict=True),
+            key=lambda pair: pair[1],
             reverse=True,
         )
-        print(
-            f"  [tool] retrieve_personalized_tips(query={query!r}) top similarity: "
-            + ", ".join(f"{tip['id']} {score:.2f}" for tip, score in ranked[:5])
-        )
-        tip_text = "\n".join(f"Source: {tip['source']} => {tip['content']}" for tip, _ in ranked[:TOP_TIPS])
+        top_tip_scores = [f"{tip['id']} {score:.2f}" for tip, score in ranked[:5]]
+        print(f"  [tool] retrieve_personalized_tips(query={query!r}) top similarity: " + ", ".join(top_tip_scores))
+
+        top_tips = ranked[:TOP_TIPS]
+        tip_lines = [f"Source: {tip['source']} => {tip['content']}" for tip, _ in top_tips]
+        tip_text = "\n".join(tip_lines)
 
         return f"YOUR HEART RATE DATA:\n{summary}\n\nWELLNESS TIPS:\n{tip_text}"
 

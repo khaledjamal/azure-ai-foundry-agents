@@ -57,7 +57,8 @@ NOTE = "General fitness ideas, not medical advice. Stop if anything hurts."
 
 
 def list_goals():
-    return {"goals": [{"goal": name, "description": plan["description"]} for name, plan in WORKOUTS.items()]}
+    goals = [{"goal": name, "description": plan["description"]} for name, plan in WORKOUTS.items()]
+    return {"goals": goals}
 
 
 def build_workout(goal, minutes):

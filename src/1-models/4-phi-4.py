@@ -162,7 +162,8 @@ def load_settings():
         (os.getenv("MODEL_DEPLOYMENT_NAME") or "gpt-4o-mini", False),
     ]
     print(f"Endpoint: {endpoint}/openai/v1/")
-    print(f"Models: {', '.join(model for model, _ in models)}")
+    model_names = ", ".join(model for model, _ in models)
+    print(f"Models: {model_names}")
 
     return endpoint, models
 

@@ -174,10 +174,9 @@ def code_interpreter_images(project_client, thread_id, run_id):
                 continue
 
             outputs = details.outputs or []
-            print(
-                f"Code interpreter call: {len(details.input.splitlines())} lines of code, "
-                f"outputs {[output.type for output in outputs]}"
-            )
+            code_line_count = len(details.input.splitlines())
+            output_types = [output.type for output in outputs]
+            print(f"Code interpreter call: {code_line_count} lines of code, outputs {output_types}")
             print("  " + details.input.replace("\n", "\n  "))
 
             for output in outputs:
@@ -201,7 +200,8 @@ def show_results(project_client, thread_id, run_id, output_dir, generated_file_i
         if message.role != MessageRole.AGENT:
             continue
 
-        print(f"\n[message content types: {[content.type for content in message.content]}]")
+        content_types = [content.type for content in message.content]
+        print(f"\n[message content types: {content_types}]")
 
         for text_message in message.text_messages:
             print(f"ASSISTANT: {text_message.text.value}")

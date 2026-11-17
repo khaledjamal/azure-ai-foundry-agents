@@ -187,7 +187,8 @@ def ask(openai_client, agent_reference, question, totals):
         totals["input"] += response.usage.input_tokens
         totals["output"] += response.usage.output_tokens
 
-    totals["searches"] += sum(1 for item in response.output if item.type == "web_search_call")
+    web_search_count = sum(1 for item in response.output if item.type == "web_search_call")
+    totals["searches"] += web_search_count
 
     return response.status, answer, sources, queries
 

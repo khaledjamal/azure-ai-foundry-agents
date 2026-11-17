@@ -453,13 +453,14 @@ def model_checks(results):
         return [("all questions asked", False)]
 
     question_1, question_2 = results
+    both_answered = all(result["status"] == "completed" and result["answer"].strip() for result in results)
+    price_tool_calls = [args for name, args in question_2["functions"] if name == "find_items_under"]
+    price_tool_called = any(args.get("max_price") == 300 for args in price_tool_calls)
+
     return [
-        ("both questions answered", all(r["status"] == "completed" and r["answer"].strip() for r in results)),
+        ("both questions answered", both_answered),
         ("question 1 used the search tool", question_1["searches"] > 0),
-        (
-            "question 2 called find_items_under(max_price=300)",
-            any(name == "find_items_under" and args.get("max_price") == 300 for name, args in question_2["functions"]),
-        ),
+        ("question 2 called find_items_under(max_price=300)", price_tool_called),
     ]
 
 
@@ -480,8 +481,10 @@ def print_summary(all_results):
     print(header)
     print("-" * len(header))
 
+    # The per-question counts the comparison table adds up for each model.
+    summed_keys = ("searches", "input", "output", "reasoning", "seconds")
     for model, results in all_results.items():
-        totals = {key: sum(r[key] for r in results) for key in ("searches", "input", "output", "reasoning", "seconds")}
+        totals = {key: sum(result[key] for result in results) for key in summed_keys}
         functions = sum(len(r["functions"]) for r in results)
         price = cost(model, totals["input"], totals["output"])
         price_text = f"${price:.4f}" if price is not None else "no price"

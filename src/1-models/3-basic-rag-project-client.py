@@ -272,7 +272,8 @@ def main():
 
         print("\n>>> Upload the health tips and their vectors to the health tips index in Azure AI Search.")
         results = search_client.upload_documents(documents=documents)
-        print(f"Uploaded {sum(r.succeeded for r in results)}/{len(documents)} documents to '{index_name}'")
+        uploaded_count = sum(result.succeeded for result in results)
+        print(f"Uploaded {uploaded_count}/{len(documents)} documents to '{index_name}'")
         wait_for_documents(search_client, len(documents))
 
         for number, question in enumerate(QUESTIONS, start=1):

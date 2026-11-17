@@ -98,17 +98,19 @@ def make_retrieve_tips(embed):
     def retrieve_tips(query: str) -> str:
         """Return the health tips closest in meaning to the user's question."""
         query_vector = embed([query])[0]
+        similarities = [cosine(query_vector, tip_vector) for tip_vector in tip_vectors]
         ranked = sorted(
-            zip(HEALTH_TIPS, (cosine(query_vector, v) for v in tip_vectors), strict=True),
-            key=lambda p: p[1],
+            zip(HEALTH_TIPS, similarities, strict=True),
+            key=lambda pair: pair[1],
             reverse=True,
         )
-        print(
-            f"  [tool] retrieve_tips(query={query!r}) similarity: "
-            + ", ".join(f"{tip['id']} {score:.2f}" for tip, score in ranked)
-        )
+        tip_scores = [f"{tip['id']} {score:.2f}" for tip, score in ranked]
+        print(f"  [tool] retrieve_tips(query={query!r}) similarity: " + ", ".join(tip_scores))
 
-        return "\n".join(f"Source: {tip['source']} => {tip['content']}" for tip, _ in ranked[:TOP_TIPS])
+        top_tips = ranked[:TOP_TIPS]
+        tip_lines = [f"Source: {tip['source']} => {tip['content']}" for tip, _ in top_tips]
+
+        return "\n".join(tip_lines)
 
     return retrieve_tips
 

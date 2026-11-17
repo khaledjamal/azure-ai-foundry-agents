@@ -288,7 +288,8 @@ async def upload_documents(search_client):
     results = await search_client.upload_documents(documents=[with_price_text(d) for d in SAMPLE_DOCUMENTS])
     failed = [r for r in results if not r.succeeded]
     if failed:
-        raise RuntimeError("Upload failed: " + "; ".join(f"{r.key}: {r.error_message}" for r in failed))
+        failures = [f"{result.key}: {result.error_message}" for result in failed]
+        raise RuntimeError("Upload failed: " + "; ".join(failures))
 
     print(f"Uploaded {len(results)} documents.")
 

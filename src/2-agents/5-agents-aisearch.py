@@ -476,7 +476,8 @@ def create_search_agent(project_client, search_connection, search_client):
 
     print(f"Created Azure AI Search agent: {agent.id}")
     print(f"Model: {model_name}")
-    print(f"Tools: {[getattr(tool, 'type', None) for tool in agent.tools]} (function: find_items_under)")
+    tool_types = [getattr(tool, "type", None) for tool in agent.tools]
+    print(f"Tools: {tool_types} (function: find_items_under)")
 
     return agent
 

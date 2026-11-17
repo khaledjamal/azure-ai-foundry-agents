@@ -148,6 +148,13 @@ CALL_DESCRIPTIONS = {
 }
 
 
+def format_span_details(attributes):
+    """The span's SHOWN_ATTRIBUTES as `label=value` pairs, two spaces apart."""
+    shown_keys = [key for key in SHOWN_ATTRIBUTES if key in attributes]
+    pairs = [f"{SHOWN_ATTRIBUTES[key]}={attributes[key]}" for key in shown_keys]
+    return "  ".join(pairs)
+
+
 class CompactConsoleExporter(SpanExporter):
     """Prints one line per GenAI or lab span; Azure SDK and HTTP spans are only
     counted."""
@@ -158,13 +165,13 @@ class CompactConsoleExporter(SpanExporter):
     def export(self, spans):
         for span in spans:
             attributes = span.attributes or {}
-            if span.instrumentation_scope.name != SERVICE_NAME and not any(k.startswith("gen_ai.") for k in attributes):
+            from_lab = span.instrumentation_scope.name == SERVICE_NAME
+            has_gen_ai_attributes = any(key.startswith("gen_ai.") for key in attributes)
+            if not from_lab and not has_gen_ai_attributes:
                 self.hidden += 1
                 continue
 
-            details = "  ".join(
-                f"{label}={attributes[key]}" for key, label in SHOWN_ATTRIBUTES.items() if key in attributes
-            )
+            details = format_span_details(attributes)
             duration_ms = (span.end_time - span.start_time) / 1e6
             print(f"  [span] {span.name:<45} {duration_ms:7.0f} ms  {details}")
 

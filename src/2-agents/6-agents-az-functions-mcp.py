@@ -186,7 +186,8 @@ def called(calls, name, **expected):
     """True if one of the calls is `name` with all the expected arguments."""
     for call in calls:
         arguments = json.loads(call.arguments or "{}")
-        if call.name == name and all(arguments.get(key) == value for key, value in expected.items()):
+        arguments_match = all(arguments.get(key) == value for key, value in expected.items())
+        if call.name == name and arguments_match:
             return True
 
     return False
