@@ -120,30 +120,34 @@ Always include a disclaimer that you are not providing medical advice.
 # description before a matching call that it logs in full. The first match wins, and
 # [?] is a literal question mark.
 CALL_DESCRIPTIONS = {
-    "GET */connections[?]*": "get_default(): list the connections of the Foundry project, to find the default Azure "
-    "AI Search connection.",
-    "POST */getConnectionWithCredentials*": "get_default(): read the key of the default Azure AI Search connection "
-    "from the Foundry project.",
-    "POST */threads[?]*": "get_response(): Semantic Kernel creates the conversation thread in Foundry Agent Service, "
-    "for the first question.",
-    "POST */threads/*/messages[?]*": "get_response(): Semantic Kernel adds the user's question to the conversation "
-    "thread in Foundry Agent Service.",
-    "POST */submit_tool_outputs*": "get_response(): Semantic Kernel sends the find_items_under function's result back "
-    "to the agent run in Foundry Agent Service; the run then continues.",
-    "POST */threads/*/runs[?]*": "get_response(): Semantic Kernel starts a run in Foundry Agent Service, in which the "
-    "fitness shopping agent reads the conversation thread, uses its tools and answers.",
-    "GET */steps*order=asc*after=*": "print_tool_calls(): ask Foundry Agent Service for the next page of the agent "
-    "run's steps.",
-    "GET */steps*order=asc*": "print_tool_calls(): read the agent run's steps from Foundry Agent Service, to show "
-    "which tools the fitness shopping agent called and what they returned.",
-    "GET */steps*after=*": "get_response(): Semantic Kernel asks Foundry Agent Service for the next page of the agent "
-    "run's steps.",
-    "GET */steps*": "get_response(): Semantic Kernel reads the agent run's steps from Foundry Agent Service, to find "
-    "the fitness shopping agent's answer.",
-    "GET */threads/*/messages/*": "get_response(): Semantic Kernel reads the fitness shopping agent's answer message "
-    "from Foundry Agent Service.",
-    "GET */threads/*/runs/*": "get_response(): Semantic Kernel checks the agent run's status in Foundry Agent Service. "
-    "The first check is logged in full, later ones as one `HTTP #n GET` line.",
+    "GET */connections[?]*": "get_default(): list the connections of the Foundry "
+    "project, to find the default Azure AI Search connection.",
+    "POST */getConnectionWithCredentials*": "get_default(): read the key of the "
+    "default Azure AI Search connection from the Foundry project.",
+    "POST */threads[?]*": "get_response(): Semantic Kernel creates the conversation "
+    "thread in Foundry Agent Service, for the first question.",
+    "POST */threads/*/messages[?]*": "get_response(): Semantic Kernel adds the user's "
+    "question to the conversation thread in Foundry Agent Service.",
+    "POST */submit_tool_outputs*": "get_response(): Semantic Kernel sends the "
+    "find_items_under function's result back to the agent run in Foundry Agent "
+    "Service; the run then continues.",
+    "POST */threads/*/runs[?]*": "get_response(): Semantic Kernel starts a run in "
+    "Foundry Agent Service, in which the fitness shopping agent reads the conversation "
+    "thread, uses its tools and answers.",
+    "GET */steps*order=asc*after=*": "print_tool_calls(): ask Foundry Agent Service "
+    "for the next page of the agent run's steps.",
+    "GET */steps*order=asc*": "print_tool_calls(): read the agent run's steps from "
+    "Foundry Agent Service, to show which tools the fitness shopping agent called and "
+    "what they returned.",
+    "GET */steps*after=*": "get_response(): Semantic Kernel asks Foundry Agent Service "
+    "for the next page of the agent run's steps.",
+    "GET */steps*": "get_response(): Semantic Kernel reads the agent run's steps from "
+    "Foundry Agent Service, to find the fitness shopping agent's answer.",
+    "GET */threads/*/messages/*": "get_response(): Semantic Kernel reads the fitness "
+    "shopping agent's answer message from Foundry Agent Service.",
+    "GET */threads/*/runs/*": "get_response(): Semantic Kernel checks the agent run's "
+    "status in Foundry Agent Service. The first check is logged in full, later ones as "
+    "one `HTTP #n GET` line.",
 }
 
 
@@ -170,8 +174,9 @@ class FitnessCatalogPlugin:
     @kernel_function(
         name="find_items_under",
         description=(
-            "Find fitness products whose price is at or below a maximum price, optionally in one category "
-            "(Strength, Flexibility or Cardio). Use it whenever the user gives a budget or price limit."
+            "Find fitness products whose price is at or below a maximum price, "
+            "optionally in one category (Strength, Flexibility or Cardio). Use it "
+            "whenever the user gives a budget or price limit."
         ),
     )
     async def find_items_under(
@@ -200,8 +205,8 @@ class FitnessCatalogPlugin:
         """Search the fitness index with an OData filter; "Name (Category): $price"
         lines, cheapest first."""
         print(
-            "\n>>> find_items_under function: search the fitness index in Azure AI Search with this filter: "
-            f"{filter_expression}"
+            "\n>>> find_items_under function: search the fitness index in Azure AI "
+            f"Search with this filter: {filter_expression}"
         )
         results = await self._search_client.search(
             search_text="*",
@@ -299,8 +304,9 @@ async def wait_for_documents(search_client, expected, timeout_seconds=30):
     deadline = asyncio.get_running_loop().time() + timeout_seconds
 
     print(
-        "\n>>> Ask Azure AI Search how many documents the fitness index can search, until all of them can. "
-        "The first check is logged in full, later ones as one `HTTP #n GET` line."
+        "\n>>> Ask Azure AI Search how many documents the fitness index can search, "
+        "until all of them can. The first check is logged in full, later ones as one "
+        "`HTTP #n GET` line."
     )
 
     while True:
@@ -395,8 +401,8 @@ async def ask(project_client, agent, thread, question):
     print(f"\n# User: {question}")
 
     print(
-        "\n>>> Run get_response(), in which Semantic Kernel makes several web service calls of its own: each is "
-        "described just before it in this log."
+        "\n>>> Run get_response(), in which Semantic Kernel makes several web service "
+        "calls of its own: each is described just before it in this log."
     )
     response = await agent.get_response(messages=question, thread=thread)
     thread = response.thread

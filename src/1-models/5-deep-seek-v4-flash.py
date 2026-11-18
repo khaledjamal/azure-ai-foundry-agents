@@ -70,18 +70,20 @@ PROMPTS = [
         "technical",
         None,
         (
-            "How can I optimize a PostgreSQL database handling 10k transactions/second?\n"
-            "Consider indexing strategies, hardware requirements, and query optimization. "
-            "Please reason step by step, and put your final answer within \\boxed{}."
+            "How can I optimize a PostgreSQL database handling 10k "
+            "transactions/second?\n"
+            "Consider indexing strategies, hardware requirements, and query "
+            "optimization. Please reason step by step, and put your final answer "
+            "within \\boxed{}."
         ),
     ),
     (
         "pace",
         None,
         (
-            "I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what average pace per km do I need, and "
-            "how many seconds per km faster is that than my current pace? "
-            "End with one line: 'Answer: <pace>, <seconds>'."
+            "I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what "
+            "average pace per km do I need, and how many seconds per km faster is that "
+            "than my current pace? End with one line: 'Answer: <pace>, <seconds>'."
         ),
     ),
 ]
@@ -175,8 +177,9 @@ def run_prompts(openai_client, model):
 
 def print_result(name, mode, result):
     print(
-        f"\n--- thinking {mode}: {result['seconds']:.1f} s, tokens in {result['prompt_tokens']} / out "
-        f"{result['completion_tokens']}, finish={result['finish']}"
+        f"\n--- thinking {mode}: {result['seconds']:.1f} s, tokens in "
+        f"{result['prompt_tokens']} / out {result['completion_tokens']}, "
+        f"finish={result['finish']}"
     )
 
     if result["thinking"]:

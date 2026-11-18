@@ -122,8 +122,8 @@ Any health or fitness information you provide is for general educational purpose
 CALL_DESCRIPTIONS = {
     "GET */steps*after=*": "Ask Foundry Agent Service for the next page of the agent run's steps.",
     "GET */steps*": "Read the agent run's steps from Foundry Agent Service, to show which tools the agent called.",
-    "POST */submit_tool_outputs*": "Send the find_items_under function's result back to the agent run in Foundry "
-    "Agent Service; the run then continues.",
+    "POST */submit_tool_outputs*": "Send the find_items_under function's result back "
+    "to the agent run in Foundry Agent Service; the run then continues.",
     "GET */messages*after=*": "Ask Foundry Agent Service for the next page of the conversation thread's messages.",
     "GET */runs/*": "Check the agent run's status in Foundry Agent Service; this first check is logged in full.",
 }
@@ -350,8 +350,9 @@ def verify_search_index(search_client):
     for attempt in range(1, 6):
         try:
             print(
-                f"\n>>> Search the fitness index in Azure AI Search for 'Strength' (attempt {attempt}): new documents "
-                "can take a moment to become searchable, so this repeats until results come back."
+                "\n>>> Search the fitness index in Azure AI Search for 'Strength' "
+                f"(attempt {attempt}): new documents can take a moment to become "
+                "searchable, so this repeats until results come back."
             )
             results = list(search_client.search(search_text="Strength", top=10))
 
@@ -441,8 +442,8 @@ def resolve_ai_search_connection(project_client):
 
     raise RuntimeError(
         "No current Foundry project connection to Azure AI Search was found.\n"
-        "Add your Azure AI Search resource to this Foundry project under Connected resources, "
-        "then rerun this script.\n"
+        "Add your Azure AI Search resource to this Foundry project under Connected "
+        "resources, then rerun this script.\n"
         "Optionally set AZURE_AI_SEARCH_CONNECTION_NAME in .env to the connection name."
     )
 
@@ -463,8 +464,8 @@ def create_search_agent(project_client, search_connection, search_client):
     project_client.agents.enable_auto_function_calls(price_tool)
 
     print(
-        "\n>>> Create the fitness search agent, with the Azure AI Search tool and the find_items_under function "
-        "tool, in Foundry Agent Service."
+        "\n>>> Create the fitness search agent, with the Azure AI Search tool and the "
+        "find_items_under function tool, in Foundry Agent Service."
     )
     agent = project_client.agents.create_agent(
         model=model_name,
@@ -494,8 +495,9 @@ def print_thread_messages(project_client, thread_id):
     print("-" * 80)
 
     print(
-        "\n>>> Read the conversation thread's messages from Foundry Agent Service. This `for` loop makes these calls, "
-        "not the list() line above it: one call per page, and the last page is empty."
+        "\n>>> Read the conversation thread's messages from Foundry Agent Service. "
+        "This `for` loop makes these calls, not the list() line above it: one call per "
+        "page, and the last page is empty."
     )
 
     for message in data:
@@ -555,8 +557,9 @@ def run_agent_query(project_client, agent, question):
         print(f"Created user message: {message.id}")
 
         print(
-            "\n>>> Start a run, in which the fitness search agent reads the conversation thread, uses its tools and "
-            "answers, then check the run's status until it ends. The first check is logged in full, later ones as "
+            "\n>>> Start a run, in which the fitness search agent reads the "
+            "conversation thread, uses its tools and answers, then check the run's "
+            "status until it ends. The first check is logged in full, later ones as "
             "one `HTTP #n GET` line."
         )
         run = project_client.agents.runs.create_and_process(

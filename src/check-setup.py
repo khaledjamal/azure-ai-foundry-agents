@@ -144,8 +144,8 @@ def check_project(checks, credential):
     for deployment in deployments:
         sku = getattr(deployment.sku, "name", "") if getattr(deployment, "sku", None) else ""
         print(
-            f"    {deployment.name:26} {deployment.model_publisher or '':10} {deployment.model_name} "
-            f"{deployment.model_version or ''} {sku}"
+            f"    {deployment.name:26} {deployment.model_publisher or '':10} "
+            f"{deployment.model_name} {deployment.model_version or ''} {sku}"
         )
 
     print(f"  Connections ({len(connections)}):")

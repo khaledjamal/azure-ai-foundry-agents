@@ -78,8 +78,9 @@ HEALTH_TIPS = [
 # AutoGen makes these calls inside team.run_stream(), so no print can go right before
 # them; http_log prints the description before a matching call that it logs in full.
 CALL_DESCRIPTIONS = {
-    "POST */chat/completions*": "team.run_stream(): AutoGen asks the Azure OpenAI chat model for the next agent's "
-    "turn: RetrieverAgent chooses its tool call, then ResponderAgent writes the answer.",
+    "POST */chat/completions*": "team.run_stream(): AutoGen asks the Azure OpenAI chat "
+    "model for the next agent's turn: RetrieverAgent chooses its tool call, then "
+    "ResponderAgent writes the answer.",
 }
 
 
@@ -158,8 +159,8 @@ def create_clients():
 
     def embed(texts):
         print(
-            f"\n>>> Ask the Azure OpenAI embedding model {embedding_deployment} for the vectors of {len(texts)} "
-            f"text(s), starting with: {texts[0][:60]}"
+            f"\n>>> Ask the Azure OpenAI embedding model {embedding_deployment} for "
+            f"the vectors of {len(texts)} text(s), starting with: {texts[0][:60]}"
         )
 
         return [
@@ -173,8 +174,9 @@ def create_team(model_client, retrieve_tips):
     retriever = AssistantAgent(
         name="RetrieverAgent",
         system_message=(
-            "You are a smart retrieval agent. Your task is to fetch relevant fitness and health tips for the "
-            "user's question. Call the tool 'retrieve_tips' once with the user's question."
+            "You are a smart retrieval agent. Your task is to fetch relevant fitness "
+            "and health tips for the user's question. Call the tool 'retrieve_tips' "
+            "once with the user's question."
         ),
         model_client=model_client,
         tools=[retrieve_tips],
@@ -183,9 +185,10 @@ def create_team(model_client, retrieve_tips):
     responder = AssistantAgent(
         name="ResponderAgent",
         system_message=(
-            "You are a friendly fitness coach. Craft a fun and engaging response to the user's question using only "
-            "the health tips the RetrieverAgent provided, and name each tip's source. Do not add exercises, tips or "
-            "facts that are not in those tips. Say briefly that this is not medical advice."
+            "You are a friendly fitness coach. Craft a fun and engaging response to "
+            "the user's question using only the health tips the RetrieverAgent "
+            "provided, and name each tip's source. Do not add exercises, tips or facts "
+            "that are not in those tips. Say briefly that this is not medical advice."
         ),
         model_client=model_client,
     )
@@ -203,8 +206,9 @@ async def run_query(team):
     prompt_tokens = completion_tokens = 0
 
     print(
-        "\n>>> Run team.run_stream(), in which AutoGen makes the Azure OpenAI chat model calls of both agents, and "
-        "the retrieve_tips tool makes one embedding call: each is described just before it in this log."
+        "\n>>> Run team.run_stream(), in which AutoGen makes the Azure OpenAI chat "
+        "model calls of both agents, and the retrieve_tips tool makes one embedding "
+        "call: each is described just before it in this log."
     )
 
     async for item in team.run_stream(task=USER_QUERY):

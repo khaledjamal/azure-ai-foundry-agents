@@ -115,8 +115,9 @@ HEALTH_TIPS = [
 # AutoGen makes these calls inside team.run_stream(), so no print can go right before
 # them; http_log prints the description before a matching call that it logs in full.
 CALL_DESCRIPTIONS = {
-    "POST */chat/completions*": "team.run_stream(): AutoGen asks the Azure OpenAI chat model for the next agent's "
-    "turn: PersonalizedRetrieverAgent chooses its tool call, then PersonalizedResponderAgent writes the day plan.",
+    "POST */chat/completions*": "team.run_stream(): AutoGen asks the Azure OpenAI chat "
+    "model for the next agent's turn: PersonalizedRetrieverAgent chooses its tool "
+    "call, then PersonalizedResponderAgent writes the day plan.",
 }
 
 
@@ -150,9 +151,11 @@ def hourly_summary_text(hourly):
     lines = [f"{t:%H}:00  average {row.avg_bpm:.0f} bpm" for t, row in hourly.iterrows()]
     calm_hours = ", ".join(f"{hour:%H}:00" for hour in sorted(lowest))
     active_hours = ", ".join(f"{hour:%H}:00" for hour in sorted(highest))
+    hourly_lines = "\n".join(lines)
 
     return (
-        f"Hourly average heart rate yesterday (wearable data, {len(hourly)} hours):\n" + "\n".join(lines) + "\n"
+        f"Hourly average heart rate yesterday (wearable data, {len(hourly)} hours):\n"
+        f"{hourly_lines}\n"
         f"Overall average: {hourly['avg_bpm'].mean():.0f} bpm\n"
         f"Calmest hours (lowest averages): {calm_hours}\n"
         f"Most active hours (highest averages): {active_hours}"
@@ -244,8 +247,8 @@ def create_clients():
 
     def embed(texts):
         print(
-            f"\n>>> Ask the Azure OpenAI embedding model {embedding_deployment} for the vectors of {len(texts)} "
-            f"text(s), starting with: {texts[0][:60]}"
+            f"\n>>> Ask the Azure OpenAI embedding model {embedding_deployment} for "
+            f"the vectors of {len(texts)} text(s), starting with: {texts[0][:60]}"
         )
 
         return [
@@ -268,12 +271,14 @@ def create_team(model_client, retrieve_personalized_tips):
     responder = AssistantAgent(
         name="PersonalizedResponderAgent",
         system_message=(
-            "You are a friendly wellness coach. Plan the user's day using only the hourly heart-rate summary and the "
-            "wellness tips provided: suggest workouts in the most active hours and calm breaks in the calmest hours, "
-            "and name the source of each tip you use. Do not add tips or advice that are not in the list. Suggest "
-            "activities from this app's list: walking, running, cycling, swimming, strength training and stretching. "
-            "This is a wellness demo: do not assess health risks, diagnose, or interpret heart rate as a medical sign, "
-            "and say it is not medical advice."
+            "You are a friendly wellness coach. Plan the user's day using only the "
+            "hourly heart-rate summary and the wellness tips provided: suggest "
+            "workouts in the most active hours and calm breaks in the calmest hours, "
+            "and name the source of each tip you use. Do not add tips or advice that "
+            "are not in the list. Suggest activities from this app's list: walking, "
+            "running, cycling, swimming, strength training and stretching. This is a "
+            "wellness demo: do not assess health risks, diagnose, or interpret heart "
+            "rate as a medical sign, and say it is not medical advice."
         ),
         model_client=model_client,
     )
@@ -288,8 +293,9 @@ async def run_query(team):
     prompt_tokens = completion_tokens = 0
 
     print(
-        "\n>>> Run team.run_stream(), in which AutoGen makes the Azure OpenAI chat model calls of both agents, and "
-        "the retrieve_personalized_tips tool makes one embedding call: each is described just before it in this log."
+        "\n>>> Run team.run_stream(), in which AutoGen makes the Azure OpenAI chat "
+        "model calls of both agents, and the retrieve_personalized_tips tool makes one "
+        "embedding call: each is described just before it in this log."
     )
 
     async for item in team.run_stream(task=USER_QUERY):

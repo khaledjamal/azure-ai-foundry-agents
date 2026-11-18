@@ -235,9 +235,10 @@ def ask(project_client, thread_id, agent_id, question):
     project_client.agents.messages.create(thread_id=thread_id, role="user", content=question)
 
     print(
-        "\n>>> Start a run, in which the health resource advisor agent reads the conversation thread, searches the "
-        "vector store and answers, then check the run's status until it ends. The first check is logged in full, "
-        "later ones as one `HTTP #n GET` line."
+        "\n>>> Start a run, in which the health resource advisor agent reads the "
+        "conversation thread, searches the vector store and answers, then check the "
+        "run's status until it ends. The first check is logged in full, later ones as "
+        "one `HTTP #n GET` line."
     )
     run = project_client.agents.runs.create_and_process(thread_id=thread_id, agent_id=agent_id)
     print(f"Run status: {run.status}")
@@ -253,8 +254,9 @@ def ask(project_client, thread_id, agent_id, question):
 
 def print_conversation(project_client, thread_id, file_names):
     print(
-        "\n>>> Read the conversation thread's messages from Foundry Agent Service. The `for` loop in "
-        "print_conversation() makes these calls, not its list() line: one call per page, and the last page is empty."
+        "\n>>> Read the conversation thread's messages from Foundry Agent Service. The "
+        "`for` loop in print_conversation() makes these calls, not its list() line: "
+        "one call per page, and the last page is empty."
     )
     messages = project_client.agents.messages.list(thread_id=thread_id, order=ListSortOrder.ASCENDING)
 

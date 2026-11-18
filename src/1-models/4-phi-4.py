@@ -54,9 +54,10 @@ COGNITIVE_SERVICES_SCOPE = "https://cognitiveservices.azure.com/.default"
 # API, checked 2026-10-18).
 PRICES = {"Phi-4": (0.125, 0.50), "Phi-4-reasoning": (0.125, 0.50), "gpt-4o-mini": (0.15, 0.60)}
 SYSTEM_PROMPT = (
-    "You are a helpful AI assistant, focusing on health and fitness. Remind users that you are not a medical "
-    "professional, but can provide general info. "
-    "Suggest only activities from this app's list: walking, running, cycling, swimming and strength training."
+    "You are a helpful AI assistant, focusing on health and fitness. Remind users that "
+    "you are not a medical professional, but can provide general info. Suggest only "
+    "activities from this app's list: walking, running, cycling, swimming and strength "
+    "training."
 )
 CONTEXT_SNIPPET = (
     "Recommended to run 3 times per week and mix with cross-training.\n"
@@ -67,9 +68,13 @@ PROMPTS = [
     (
         "context",
         (
-            "You are a helpful fitness AI. We have some context from the user's knowledge base:\n"
-            f"{CONTEXT_SNIPPET}\nPlease use this context to help your answer. If the context doesn't help, say so.\n"
-            "Suggest only activities from this app's list: walking, running, cycling, swimming and strength training."
+            "You are a helpful fitness AI. We have some context from the user's "
+            "knowledge base:\n"
+            f"{CONTEXT_SNIPPET}\n"
+            "Please use this context to help your answer. If the context doesn't help, "
+            "say so.\n"
+            "Suggest only activities from this app's list: walking, running, cycling, "
+            "swimming and strength training."
         ),
         "How often should I run weekly to prepare for a 5K?",
     ),
@@ -77,9 +82,9 @@ PROMPTS = [
         "pace",
         SYSTEM_PROMPT,
         (
-            "I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what average pace per km do I need, and "
-            "how many seconds per km faster is that than my current pace? "
-            "End with one line: 'Answer: <pace>, <seconds>'."
+            "I run 5 km in 31 minutes 30 seconds. To finish in 30 minutes, what "
+            "average pace per km do I need, and how many seconds per km faster is that "
+            "than my current pace? End with one line: 'Answer: <pace>, <seconds>'."
         ),
     ),
 ]
@@ -87,12 +92,14 @@ PROMPTS = [
 # added after it. The <think> tags it asks for are special tokens, which the Azure
 # endpoint strips (it also rejects skip_special_tokens=False).
 REASONING_SYSTEM_PROMPT = (
-    "You are Phi, a language model trained by Microsoft to help users. Your role as an assistant involves thoroughly "
-    "exploring questions through a systematic thinking process before providing the final precise and accurate "
-    "solutions. Please structure your response into two main sections: Thought and Solution using the specified "
-    "format: <think> {Thought section} </think> {Solution section}. In the Thought section, detail your reasoning "
-    "process in steps. In the Solution section, based on the various attempts, explorations, and reflections from the "
-    "Thought section, systematically present the final solution that you deem correct."
+    "You are Phi, a language model trained by Microsoft to help users. Your role as an "
+    "assistant involves thoroughly exploring questions through a systematic thinking "
+    "process before providing the final precise and accurate solutions. Please "
+    "structure your response into two main sections: Thought and Solution using the "
+    "specified format: <think> {Thought section} </think> {Solution section}. In the "
+    "Thought section, detail your reasoning process in steps. In the Solution section, "
+    "based on the various attempts, explorations, and reflections from the Thought "
+    "section, systematically present the final solution that you deem correct."
 )
 
 
@@ -194,8 +201,9 @@ def run_prompts(openai_client, models):
 
 def print_result(name, model, result):
     print(
-        f"\n--- {model}: {result['seconds']:.1f} s, tokens in {result['prompt_tokens']} / out "
-        f"{result['completion_tokens']}, finish={result['finish']}"
+        f"\n--- {model}: {result['seconds']:.1f} s, tokens in "
+        f"{result['prompt_tokens']} / out {result['completion_tokens']}, "
+        f"finish={result['finish']}"
     )
     print(result["answer"])
 

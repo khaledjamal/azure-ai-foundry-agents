@@ -38,8 +38,9 @@ LOCAL_URL = "http://localhost:7071/runtime/webhooks/mcp"
 EXPECTED_TOOLS = {"list_workout_goals", "suggest_workout"}
 MCP_MESSAGE_DESCRIPTIONS = {
     "initialize": "Start the MCP session with the workout MCP server.",
-    "notifications/initialized": "Tell the workout MCP server that this client has finished starting the MCP session. "
-    "A background task sends this, so it can appear after later lines of this lab.",
+    "notifications/initialized": "Tell the workout MCP server that this client has "
+    "finished starting the MCP session. A background task sends this, so it can appear "
+    "after later lines of this lab.",
     "tools/list": "Ask the workout MCP server which tools it has.",
 }
 
@@ -53,8 +54,9 @@ def describe_mcp_call(request):
     MCP message."""
     if request.method == "GET":
         return (
-            "Open the event stream on which the workout MCP server can send messages to this client. A background "
-            "task does this, so it can appear after later lines of this lab."
+            "Open the event stream on which the workout MCP server can send messages "
+            "to this client. A background task does this, so it can appear after later "
+            "lines of this lab."
         )
 
     if request.method == "DELETE":

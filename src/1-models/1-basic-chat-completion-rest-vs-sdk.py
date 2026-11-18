@@ -47,8 +47,9 @@ from workshop_utils.settings import load_env
 
 COGNITIVE_SERVICES_SCOPE = "https://cognitiveservices.azure.com/.default"
 SYSTEM_PROMPT = (
-    "You are FitChat GPT, a friendly fitness assistant. Remind users you're not a medical professional. "
-    "Suggest activities from this app's list: walking, running, cycling, swimming, strength training and stretching."
+    "You are FitChat GPT, a friendly fitness assistant. Remind users you're not a "
+    "medical professional. Suggest activities from this app's list: walking, running, "
+    "cycling, swimming, strength training and stretching."
 )
 QUESTION = "Give me three quick tips to stay active during a busy workday."
 SETTINGS = {"max_tokens": 200, "temperature": 0.7}

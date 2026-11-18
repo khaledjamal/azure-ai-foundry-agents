@@ -149,8 +149,9 @@ CALL_DESCRIPTIONS = {
 FIND_ITEMS_UNDER_TOOL = FunctionTool(
     name="find_items_under",
     description=(
-        "Find fitness products priced at or below max_price, optionally in one category (Strength, Flexibility or "
-        "Cardio); use it whenever the user gives a budget or price limit."
+        "Find fitness products priced at or below max_price, optionally in one "
+        "category (Strength, Flexibility or Cardio); use it whenever the user gives a "
+        "budget or price limit."
     ),
     parameters={
         "type": "object",
@@ -265,8 +266,9 @@ def wait_for_documents(search_client):
     # letting the agent search an empty index.
     for _ in range(10):
         print(
-            "\n>>> Search the fitness index in Azure AI Search for every document: new documents can take a moment "
-            "to become searchable, so this repeats until all of them come back."
+            "\n>>> Search the fitness index in Azure AI Search for every document: new "
+            "documents can take a moment to become searchable, so this repeats until "
+            "all of them come back."
         )
         found = list(search_client.search(search_text="*", top=10))
 
@@ -475,8 +477,8 @@ def cost(model, input_tokens, output_tokens):
 def print_summary(all_results):
     print_section("COMPARISON (both questions per model)")
     header = (
-        f"{'model':<14} {'searches':>8} {'functions':>9} {'input':>7} {'output':>7} {'reasoning':>9} "
-        f"{'time':>7} {'cost':>9}"
+        f"{'model':<14} {'searches':>8} {'functions':>9} {'input':>7} {'output':>7} "
+        f"{'reasoning':>9} {'time':>7} {'cost':>9}"
     )
     print(header)
     print("-" * len(header))
@@ -490,8 +492,9 @@ def print_summary(all_results):
         price_text = f"${price:.4f}" if price is not None else "no price"
 
         print(
-            f"{model:<14} {totals['searches']:>8} {functions:>9} {totals['input']:>7} {totals['output']:>7} "
-            f"{totals['reasoning']:>9} {totals['seconds']:>6.1f}s {price_text:>9}"
+            f"{model:<14} {totals['searches']:>8} {functions:>9} {totals['input']:>7} "
+            f"{totals['output']:>7} {totals['reasoning']:>9} "
+            f"{totals['seconds']:>6.1f}s {price_text:>9}"
         )
 
     print("Prices: list prices per 1M tokens (see PRICES), Global deployment in East US 2, checked 2026-10-23.")

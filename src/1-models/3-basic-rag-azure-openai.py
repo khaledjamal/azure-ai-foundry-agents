@@ -176,8 +176,9 @@ def wait_for_documents(search_client, expected, timeout_seconds=30):
     deadline = time.time() + timeout_seconds
 
     print(
-        "\n>>> Ask Azure AI Search how many documents the health tips index can search, until all of them can. "
-        "The first check is logged in full, later ones as one `HTTP #n GET` line."
+        "\n>>> Ask Azure AI Search how many documents the health tips index can "
+        "search, until all of them can. The first check is logged in full, later ones "
+        "as one `HTTP #n GET` line."
     )
 
     while True:

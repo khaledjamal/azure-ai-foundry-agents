@@ -61,11 +61,12 @@ SERVER_LABEL = "workout_tools"
 CONNECTION_NAME = "workout-mcp-key"
 ALLOWED_TOOLS = ["list_workout_goals", "suggest_workout"]
 INSTRUCTIONS = (
-    "You help people plan simple home workouts. Use the workout tools for every answer: list_workout_goals to see "
-    "which goals exist, suggest_workout to build a plan. Never invent a plan or a goal the tools didn't return. "
-    "Show times, counts and exercises only as the tool gives them: don't split a block's minutes across its items "
-    "or add numbers of your own. Present the plan clearly and end with one line saying it is general fitness "
-    "information, not medical advice."
+    "You help people plan simple home workouts. Use the workout tools for every "
+    "answer: list_workout_goals to see which goals exist, suggest_workout to build a "
+    "plan. Never invent a plan or a goal the tools didn't return. Show times, counts "
+    "and exercises only as the tool gives them: don't split a block's minutes across "
+    "its items or add numbers of your own. Present the plan clearly and end with one "
+    "line saying it is general fitness information, not medical advice."
 )
 QUESTIONS = ["Which workout goals can you plan for?", "Plan a 30-minute strength workout for me."]
 MAX_APPROVAL_ROUNDS = 4
@@ -89,8 +90,8 @@ def check_function_app(url):
     resource_group = os.getenv("AZURE_RESOURCE_GROUP") or "<resource-group>"
 
     print(
-        "\n>>> Check that the Azure Function app hosting the MCP workout tools is running: "
-        "a call without its function key should get HTTP 401."
+        "\n>>> Check that the Azure Function app hosting the MCP workout tools is "
+        "running: a call without its function key should get HTTP 401."
     )
 
     try:
@@ -167,8 +168,9 @@ def ask(openai_client, agent_reference, question, previous_response_id, totals):
             replies.append({"type": "mcp_approval_response", "approve": approve, "approval_request_id": request.id})
 
         print(
-            "\n>>> Send the MCP tool approvals to the workout MCP agent through the Foundry project's Responses API; "
-            "the approved MCP tools run on the service side, inside this one call."
+            "\n>>> Send the MCP tool approvals to the workout MCP agent through the "
+            "Foundry project's Responses API; the approved MCP tools run on the "
+            "service side, inside this one call."
         )
         response = openai_client.responses.create(
             input=replies, previous_response_id=response.id, extra_body=agent_reference

@@ -74,8 +74,10 @@ BMI_REQUEST = (
 NUTRITION_REQUEST = (
     "Analyze the CSV file with daily nutrition data.\n"
     "1. Compute average daily macros (calories, protein, carbs, fat, fiber).\n"
-    "2. Create a chart to show trends and save it as /mnt/data/nutrition_trends.png. Use two panels, one above the\n"
-    "   other: daily calories in the top panel, and protein, carbs, fat and fiber in grams in the bottom panel, so\n"
+    "2. Create a chart to show trends and save it as /mnt/data/nutrition_trends.png. "
+    "Use two panels, one above the\n"
+    "   other: daily calories in the top panel, and protein, carbs, fat and fiber in "
+    "grams in the bottom panel, so\n"
     "   the gram values are not flattened by the calorie scale.\n"
     "3. Discuss any insights or disclaimers.\n"
 )
@@ -146,9 +148,10 @@ def ask(project_client, agent_id, request):
     project_client.agents.messages.create(thread_id=thread.id, role="user", content=request)
 
     print(
-        "\n>>> Start a run, in which the health calculator agent reads the conversation thread, runs code and answers, "
-        "then check the run's status until it ends. The first check is logged in full, later ones as one "
-        "`HTTP #n GET` line."
+        "\n>>> Start a run, in which the health calculator agent reads the "
+        "conversation thread, runs code and answers, then check the run's status until "
+        "it ends. The first check is logged in full, later ones as one `HTTP #n GET` "
+        "line."
     )
     run = project_client.agents.runs.create_and_process(thread_id=thread.id, agent_id=agent_id)
     print(f"Run status: {run.status}")
@@ -191,8 +194,9 @@ def show_results(project_client, thread_id, run_id, output_dir, generated_file_i
     image_ids = code_interpreter_images(project_client, thread_id, run_id)
 
     print(
-        "\n>>> Read the conversation thread's messages from Foundry Agent Service. The `for` loop in show_results() "
-        "makes these calls, not its list() line: one call per page, and the last page is empty."
+        "\n>>> Read the conversation thread's messages from Foundry Agent Service. The "
+        "`for` loop in show_results() makes these calls, not its list() line: one call "
+        "per page, and the last page is empty."
     )
     messages = project_client.agents.messages.list(thread_id=thread_id, order=ListSortOrder.ASCENDING)
 

@@ -135,14 +135,17 @@ SHOWN_ATTRIBUTES = {
 # exporter, where no print can go right before them; http_log prints each description
 # before a matching call that it logs in full.
 CALL_DESCRIPTIONS = {
-    "POST */getConnectionWithCredentials*": "Read the credentials of the Application Insights connection from the "
-    "Foundry project.",
-    "POST */v2.1/track*": "Azure Monitor exporter uploads telemetry to Application Insights. A background thread does "
-    "this, not a line of this lab, so it can appear anywhere in the log.",
-    "POST */QuickPulseService.svc/*": "Azure Monitor live metrics checks in with Application Insights. A background "
-    "thread does this, not a line of this lab, so it can appear anywhere in the log.",
-    "GET */AzMonSDKDynamicConfiguration*": "Azure Monitor exporter reads its settings from Application Insights. A "
-    "background thread does this, not a line of this lab, so it can appear anywhere in the log.",
+    "POST */getConnectionWithCredentials*": "Read the credentials of the Application "
+    "Insights connection from the Foundry project.",
+    "POST */v2.1/track*": "Azure Monitor exporter uploads telemetry to Application "
+    "Insights. A background thread does this, not a line of this lab, so it can appear "
+    "anywhere in the log.",
+    "POST */QuickPulseService.svc/*": "Azure Monitor live metrics checks in with "
+    "Application Insights. A background thread does this, not a line of this lab, so "
+    "it can appear anywhere in the log.",
+    "GET */AzMonSDKDynamicConfiguration*": "Azure Monitor exporter reads its settings "
+    "from Application Insights. A background thread does this, not a line of this lab, "
+    "so it can appear anywhere in the log.",
     "GET */vector_stores/*": "Check whether Foundry Agent Service has finished adding the files to the vector store.",
     "GET */runs/*": "Check the agent run's status in Foundry Agent Service; this first check is logged in full.",
 }
@@ -300,8 +303,9 @@ def run_agent(project_client, model, tracer):
                 project_client.agents.messages.create(thread_id=thread.id, role="user", content=question)
 
                 print(
-                    "\n>>> Start a run, in which the health resource advisor agent reads the conversation thread, "
-                    "searches the vector store and answers, then check the run's status until it ends. The first "
+                    "\n>>> Start a run, in which the health resource advisor agent "
+                    "reads the conversation thread, searches the vector store and "
+                    "answers, then check the run's status until it ends. The first "
                     "check is logged in full, later ones as one `HTTP #n GET` line."
                 )
                 run = project_client.agents.runs.create_and_process(thread_id=thread.id, agent_id=agent.id)

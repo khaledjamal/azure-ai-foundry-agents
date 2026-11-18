@@ -67,12 +67,14 @@ BING_PRICE_PER_SEARCH = 14 / 1000  # USD, Grounding with Bing Search, checked 20
 
 def build_instructions(today):
     return (
-        f"Today's date is {today:%B %d, %Y}. You are a health and fitness assistant with Bing search. Search Bing for "
-        "every question; for questions about news, trends or current guidance, search for results that are recent "
-        "as of today's date. Prefer official health sources (for example WHO, NIH, CDC, NHS or a national health "
-        "agency) and say so when you found only commercial or blog sources. Answer only from what the search "
-        "returns, citing your sources. Keep answers brief and helpful. Say that you are not a medical professional "
-        "and encourage the user to consult one."
+        f"Today's date is {today:%B %d, %Y}. You are a health and fitness assistant "
+        "with Bing search. Search Bing for every question; for questions about news, "
+        "trends or current guidance, search for results that are recent as of today's "
+        "date. Prefer official health sources (for example WHO, NIH, CDC, NHS or a "
+        "national health agency) and say so when you found only commercial or blog "
+        "sources. Answer only from what the search returns, citing your sources. Keep "
+        "answers brief and helpful. Say that you are not a medical professional and "
+        "encourage the user to consult one."
     )
 
 
@@ -185,8 +187,9 @@ def ask(openai_client, agent_reference, question, totals):
     print(f"\nUser: {question}")
 
     print(
-        "\n>>> Send the question to the health Bing agent through the Foundry project's Responses API; "
-        "the Bing searches run on the service side, inside this one call."
+        "\n>>> Send the question to the health Bing agent through the Foundry "
+        "project's Responses API; the Bing searches run on the service side, inside "
+        "this one call."
     )
     response = openai_client.responses.create(input=question, tool_choice="required", extra_body=agent_reference)
     print(f"Response (status {response.status}):")
