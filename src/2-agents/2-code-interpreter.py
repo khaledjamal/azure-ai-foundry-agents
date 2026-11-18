@@ -306,6 +306,7 @@ def cleanup(project_client, threads, agent, uploaded_file, generated_file_ids):
 def main():
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
+
     print_section("CODE INTERPRETER AGENT - AIProjectClient")
     load_environment()
     model, project_endpoint = load_settings()

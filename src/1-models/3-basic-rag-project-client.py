@@ -275,6 +275,7 @@ def main():
         results = search_client.upload_documents(documents=documents)
         uploaded_count = sum(result.succeeded for result in results)
         print(f"Uploaded {uploaded_count}/{len(documents)} documents to '{index_name}'")
+
         wait_for_documents(search_client, len(documents))
 
         for number, question in enumerate(QUESTIONS, start=1):

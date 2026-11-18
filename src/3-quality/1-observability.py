@@ -216,6 +216,7 @@ def setup_tracing(destination, project_client, record_content):
     # Content recording must be set before the instrumentors run.
     os.environ["OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"] = "SPAN_ONLY" if record_content else "NO_CONTENT"
     os.environ["AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED"] = "true" if record_content else "false"
+
     resource = Resource.create({"service.name": SERVICE_NAME})
 
     if destination == "azure-monitor":
@@ -242,6 +243,7 @@ def setup_tracing(destination, project_client, record_content):
 
     OpenAIInstrumentor().instrument()
     AIAgentsInstrumentor().instrument()
+
     print(f"Prompt and answer content in spans: {'recorded' if record_content else 'not recorded'}")
     print("Spans are printed when they end, so inner steps appear before the step that contains them.")
 

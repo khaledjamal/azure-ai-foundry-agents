@@ -323,6 +323,7 @@ def main():
             print_section("2. Create the agent")
             agent = create_agent(project_client, model, vector_store)
             thread = create_thread(project_client)
+
             failed = ask_questions(project_client, thread, agent)
 
             print_section("Conversation with citations (oldest to newest)")

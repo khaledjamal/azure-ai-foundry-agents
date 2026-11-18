@@ -94,6 +94,7 @@ def main():
     load_environment()
     model = require_env("EMBEDDING_MODEL_DEPLOYMENT_NAME")
     print(f"Model deployment:  {model}")
+
     openai_client = create_openai_client()
 
     print_section("1. Embed health-themed phrases")

@@ -109,6 +109,7 @@ def chat(openai_client, model, system_prompt, user_input):
     )
     usage = response.usage
     print(f"(tokens: prompt {usage.prompt_tokens}, completion {usage.completion_tokens})")
+
     choice = response.choices[0]
     if choice.finish_reason == "length":
         print(f"(answer cut off: {model} reached max_tokens={MAX_ANSWER_TOKENS}, finish_reason=length)")
@@ -121,6 +122,7 @@ def main():
     load_environment()
     model = require_env("OPENAI_DEPLOYMENT_NAME")
     print(f"Model deployment:  {model}")
+
     openai_client = create_openai_client()
 
     print_section("1. Chat with a system prompt")

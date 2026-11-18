@@ -160,9 +160,12 @@ def check_image(saved, size, requested_size):
 def main():
     load_env()
     args = parse_args()
+
     openai_client = create_openai_client()
+
     result = generate_image(openai_client, args)
     print_details(result)
+
     saved, size = save_image(result.data[0], args.output_dir)
     passed = check_image(saved, size, args.size)
 

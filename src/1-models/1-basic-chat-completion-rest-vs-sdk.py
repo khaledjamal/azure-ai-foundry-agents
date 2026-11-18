@@ -147,6 +147,7 @@ def sdk_step(endpoint, api_version, model, token_provider):
     openai_client = AzureOpenAI(
         azure_endpoint=endpoint, azure_ad_token_provider=token_provider, api_version=api_version
     )
+
     status, seconds, completion = call_sdk(openai_client, model, MESSAGES)
     answer = completion.choices[0].message.content or ""
     print(f"Parsed into: {type(completion).__module__}.{type(completion).__name__}")

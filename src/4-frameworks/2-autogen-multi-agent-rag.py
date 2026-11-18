@@ -242,6 +242,7 @@ async def main():
 
     try:
         team = create_team(model_client, make_retrieve_tips(embed))
+
         print_section("Query")
         result = await run_query(team)
     finally:

@@ -229,9 +229,12 @@ def check_results(results):
 def main():
     load_env()
     endpoint, model = load_settings()
+
     openai_client = create_openai_client(endpoint)
+
     results = run_prompts(openai_client, model)
     print_comparison(results)
+
     passed = check_results(results)
 
     raise SystemExit(0 if passed else 1)

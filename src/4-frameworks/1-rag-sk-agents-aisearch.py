@@ -458,6 +458,7 @@ async def main():
     ):
         connection, search_key = await get_search_connection(project_client)
         index_client, search_client = create_search_clients(connection, search_key)
+
         index_created = False
         definition = None
         thread = None
@@ -468,6 +469,7 @@ async def main():
             index_created = True
             await upload_documents(search_client)
             await wait_for_documents(search_client, len(SAMPLE_DOCUMENTS))
+
             await print_direct_search(search_client, "Strength")
 
             print("\n=== Step 2: create the agent (Azure AI Search tool + local price plugin) ===")

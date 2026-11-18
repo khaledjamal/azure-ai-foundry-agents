@@ -217,6 +217,7 @@ def create_agent(project_client, model, server_url):
     print("\n>>> Read the connection of the Foundry project that holds the Azure Function app's key.")
     connection = project_client.connections.get(CONNECTION_NAME)
     print(f"Key from project connection: {connection.name} ({connection.type})")
+
     tool = MCPTool(
         server_label=SERVER_LABEL,
         server_url=server_url,

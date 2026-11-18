@@ -165,6 +165,7 @@ def create_agent(project_client, model, connection_name, today):
     print("\n>>> Read the Grounding with Bing Search connection of the Foundry project.")
     connection = project_client.connections.get(connection_name)
     print(f"Bing connection: {connection.name} ({connection.type})")
+
     tool = BingGroundingTool(
         bing_grounding=BingGroundingSearchToolParameters(
             search_configurations=[BingGroundingSearchConfiguration(project_connection_id=connection.id)]

@@ -172,6 +172,7 @@ def save_chart(hourly, output_dir):
     ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%H:00"))
     ax.grid(True, linestyle="--", alpha=0.5)
     fig.tight_layout()
+
     fig.savefig(path, dpi=120)
     plt.close(fig)
     print(f"Saved chart: {path}")
@@ -282,6 +283,7 @@ def create_team(model_client, retrieve_personalized_tips):
         ),
         model_client=model_client,
     )
+
     termination = SourceMatchTermination(["PersonalizedResponderAgent"]) | MaxMessageTermination(8)
 
     return RoundRobinGroupChat([retriever, responder], termination_condition=termination)

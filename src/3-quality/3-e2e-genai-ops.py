@@ -292,6 +292,7 @@ def setup_tracing(project_client):
     )
     OpenAIInstrumentor().instrument()
     AIAgentsInstrumentor().instrument()
+
     print("Tracing to Application Insights (connection found on the Foundry project); content not recorded.")
 
     return trace.get_tracer_provider()
@@ -512,12 +513,14 @@ def section_direct_attack(ctx):
         model=ctx["model"], name=SECURITY_AGENT_NAME, instructions=SECURITY_AGENT_INSTRUCTIONS
     )
     print(f"Created agent {agent.id} ({SECURITY_AGENT_NAME}) on {ctx['model']}")
+
     threads = []
     stats = {"turns": 0, "answered": 0, "blocked": 0, "failed": 0, "errors": []}
 
     try:
         target = make_agent_target(project_client, agent.id, threads, stats)
         regular, jailbreak = run_direct_attack(ctx, target)
+
         print_conversations("Regular attacks", regular)
         print_conversations("Jailbreak (UPIA) attacks", jailbreak)
         print(
@@ -525,11 +528,13 @@ def section_direct_attack(ctx):
             f"by the content filter {stats['blocked']}, other failures "
             f"{stats['failed']}"
         )
+
         write_json(
             ctx["output_dir"],
             "section3-direct-attack.json",
             {"regular": regular, "jailbreak": jailbreak, "stats": stats},
         )
+
         check_attack_results(stats, regular + jailbreak)
     finally:
         for thread_id in threads:
@@ -601,6 +606,7 @@ def section_quality(ctx):
     lines = data_path.read_text(encoding="utf-8").splitlines()
     rows = sum(1 for line in lines if line.strip())
     print(f"Data: {data_path} ({rows} rows); judge model {judge['azure_deployment']}")
+
     evaluators = build_quality_evaluators(judge, ctx["credential"], ctx["project_endpoint"])
     result = run_evaluation(data_path, evaluators, ctx["project_endpoint"], ctx["output_dir"])
     print_metrics(result)
@@ -613,6 +619,7 @@ def section_quality(ctx):
 def section_observability(ctx):
     provider = trace.get_tracer_provider()
     print(f"OpenTelemetry provider: {provider.__class__.__module__}.{provider.__class__.__name__}")
+
     capture_content = os.environ.get("OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT")
     content_recording_enabled = os.environ.get("AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED")
     print(
@@ -620,6 +627,7 @@ def section_observability(ctx):
         f"OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT={capture_content}, "
         f"AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED={content_recording_enabled}"
     )
+
     connection_string = ctx["project_client"].telemetry.get_application_insights_connection_string()
     parts = connection_string.split(";")
     fields = dict(part.split("=", 1) for part in parts if "=" in part)
@@ -776,14 +784,18 @@ def section_rag(ctx):
     openai_client = ctx["openai_client"]
 
     index_client = SearchIndexClient(search_endpoint, search_key)
+
     contents = [doc["content"] for doc in SAFETY_DOCS]
     vectors = embed(openai_client, embedding_model, contents)
+
     create_safety_index(index_client, len(vectors[0]))
 
     try:
         search_client = SearchClient(search_endpoint, SAFETY_INDEX_NAME, search_key)
         fill_safety_index(search_client, vectors, embedding_model)
+
         evaluators = build_rag_evaluators(ctx["judge_config"], ctx["credential"])
+
         results = []
         empty_retrievals = 0
 
@@ -971,10 +983,12 @@ def report(ctx, sections, failures):
 def main():
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
+
     print_section("END-TO-END GENAI OPS LAB")
     print(f"Based on: {UPSTREAM}")
     load_environment()
     ctx = build_context(args)
+
     judge_pattern = f"POST */deployments/{ctx['judge_config']['azure_deployment']}/chat/completions*"
     http_log.enable(call_descriptions={**CALL_DESCRIPTIONS, judge_pattern: JUDGE_CALL_DESCRIPTION})
 

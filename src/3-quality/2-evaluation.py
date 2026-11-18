@@ -226,9 +226,11 @@ def print_portal_link(evaluation_result):
 def main():
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
+
     print_section("EVALUATION - azure-ai-evaluation")
     load_environment()
     project_endpoint, model_config = load_settings()
+
     data_path = write_sample_data(args.output_dir)
     evaluators = build_evaluators(model_config, project_endpoint)
 

@@ -190,6 +190,7 @@ def main():
     endpoint, api_version = load_settings()
     print(f"Endpoint: {endpoint}/models")
     print(f"Model deployment: {args.model}")
+
     image_bytes = read_image(args.image)
     token = sign_in()
 
