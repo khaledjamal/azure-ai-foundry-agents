@@ -7,8 +7,9 @@
 I built AI agents on Azure AI Foundry (now
 [Microsoft Foundry](https://learn.microsoft.com/azure/foundry/what-is-foundry)) in Python: a shopping agent that searches
 a product catalog and filters by price, web-grounded agents, an agent that calls a remote MCP server I deployed on
-Azure Functions, safety red-teaming and quality evaluation, and agents with Semantic Kernel and AutoGen. Each has a
-recorded run, and the [findings](docs/findings.md) explain the issues I found, why they happened and how I fixed them.
+Azure Functions, safety red-teaming and quality evaluation, and agents with Semantic Kernel, Microsoft Agent Framework
+and AutoGen. Each has a recorded run, and the [findings](docs/findings.md) explain the issues I found, why they happened
+and how I fixed them.
 Starting from Microsoft's [Azure AI Foundry workshop](https://github.com/Azure/ai-foundry-workshop), I developed
 standalone Python scripts in [`src/`](src/) using current SDKs, adapted the notebook examples, and added the MCP server,
 the price-filter tool and the Web Search lab. The Bing, Web Search and MCP agents, and a second version of the Azure
@@ -33,6 +34,7 @@ on the current agents API in its own repo: [Clinical Research Agents](https://gi
   [Agent Service code](src/2-agents/5-agents-aisearch.py) ·
   [New agents API version](src/2-agents/5-agents-aisearch-v2.py) ·
   [Semantic Kernel code](src/4-frameworks/1-rag-sk-agents-aisearch.py) ·
+  [Agent Framework version](src/4-frameworks/1-rag-agent-framework-aisearch.py) ·
   [Recorded run](sample-output/5-agents-aisearch.py-output-20261018-204747.txt) ·
   [Full write-up](docs/findings.md#shopping-agent-prices-never-reached-the-model)
 - **Red-teaming an agent with Microsoft's attack simulators.** The test agent refused the jailbreak attacks. The first
@@ -100,7 +102,7 @@ flowchart LR
 | Agent SDKs | `azure-ai-projects` 1.x with `azure-ai-agents` (classic agents API); `azure-ai-projects` 2.x (new agents API, Responses API) |
 | Models and search | `openai` (Azure OpenAI v1 endpoint), `azure-search-documents`, Cohere `embed-v-4-0` over REST |
 | Quality | `azure-ai-evaluation` (evaluators, attack simulators), OpenTelemetry with `azure-monitor-opentelemetry` |
-| Frameworks | Semantic Kernel, AutoGen, as in Microsoft's workshop. Microsoft now names [Agent Framework](https://learn.microsoft.com/agent-framework/overview/) as the successor to both (checked November 2026); these labs don't use it. |
+| Frameworks | Semantic Kernel, AutoGen, as in Microsoft's workshop. Microsoft now names [Agent Framework](https://learn.microsoft.com/agent-framework/overview/) as the successor to both (checked November 2026); the Semantic Kernel agent is also rebuilt on it. |
 | MCP | the Azure Functions MCP extension (`azure-functions`, `@app.mcp_tool()`) for the server; the `mcp` Python SDK for the test client |
 | Sign-in and tooling | `azure-identity` (Microsoft Entra ID), uv, ruff |
 
@@ -136,6 +138,7 @@ Microsoft's original notebook, what each script cleans up and the generated imag
 | [Evaluation](src/3-quality/2-evaluation.py) | `azure-ai-evaluation`: F1, plus relevance and groundedness judged by a model | [output](sample-output/2-evaluation.py-output-20261101-204453.txt) |
 | [GenAI Ops](src/3-quality/3-e2e-genai-ops.py) | safety evaluators, direct attacks against a test agent, indirect attack generation, quality and RAG evaluation, all traced | [output](sample-output/3-e2e-genai-ops.py-output-20261101-204457.txt) (replay of 2026-10-26 answers) |
 | [Semantic Kernel agent](src/4-frameworks/1-rag-sk-agents-aisearch.py) | `AzureAIAgent` with a `@kernel_function` price plugin | [output](sample-output/1-rag-sk-agents-aisearch.py-output-20261115-143041.txt) |
+| [Agent Framework agent](src/4-frameworks/1-rag-agent-framework-aisearch.py) (new) | the same assistant on Microsoft Agent Framework: `Agent` on `FoundryChatClient` (Responses API), a plain function as the price tool, a chat middleware that prints the tool calls | [output](sample-output/1-rag-agent-framework-aisearch.py-output-20261122-013300.txt) |
 | [AutoGen multi-agent RAG](src/4-frameworks/2-autogen-multi-agent-rag.py) | retriever and responder agents, embedding search over tips | [output](sample-output/2-autogen-multi-agent-rag.py-output-20261101-215641.txt) |
 | [AutoGen wellness agents](src/4-frameworks/3-autogen-personalized-heart-rate.py) | heart-rate summary from sample wearable data, then two agents plan workouts; not medical advice | [output](sample-output/3-autogen-personalized-heart-rate.py-output-20261115-145925.txt) |
 
@@ -182,7 +185,7 @@ src/                      all my code
   2-agents/               Foundry Agent Service: basics, Code Interpreter, File Search, Bing, Web Search,
                           Azure AI Search, MCP
   3-quality/              observability, evaluation, GenAI Ops
-  4-frameworks/           Semantic Kernel and AutoGen
+  4-frameworks/           Semantic Kernel, Agent Framework and AutoGen
   functions-mcp-server/   the Azure Functions remote MCP server and how to deploy it
   workshop_utils/         shared helpers: HTTP log (secrets redacted), record and replay of HTTP calls, .env loading
 docs/findings.md          issues found with cause and fix, model comparisons

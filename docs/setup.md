@@ -37,6 +37,7 @@ Search tier it costs nothing).
 | Evaluation | [`2-evaluation.py`](../src/3-quality/2-evaluation.py) | [2-evaluation.ipynb](https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/3-quality_attributes/2-evaluation.ipynb) | [output](../sample-output/2-evaluation.py-output-20261101-204453.txt) | `azure-ai-evaluation`: F1, plus relevance and groundedness judged by a model; results in the Foundry portal | `uv run python src/3-quality/2-evaluation.py --output-dir evaluation-results` |
 | GenAI Ops | [`3-e2e-genai-ops.py`](../src/3-quality/3-e2e-genai-ops.py) | [3-e2e-GenAI-Ops.ipynb](https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/3-quality_attributes/3-e2e-GenAI-Ops.ipynb) | [output](../sample-output/3-e2e-genai-ops.py-output-20261101-204457.txt) (replay of 2026-10-26 answers) | safety evaluators (harm categories, copyrighted text), a direct attack simulator against a test agent, indirect attack (XPIA) generation against a fixed-reply target as in the notebook (no model sees those attacks), quality evaluation in the Foundry portal, RAG scored by a judge model, all traced to Application Insights | `uv run python src/3-quality/3-e2e-genai-ops.py --output-dir runs/genai-ops` |
 | Semantic Kernel agent | [`1-rag-sk-agents-aisearch.py`](../src/4-frameworks/1-rag-sk-agents-aisearch.py) | [1-rag-sk-agents-aisearch.ipynb](https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/4-frameworks/1-rag-sk-agents-aisearch.ipynb) | [output](../sample-output/1-rag-sk-agents-aisearch.py-output-20261115-143041.txt) | `AzureAIAgent` with a `@kernel_function` price plugin | `.venv-semantic-kernel/bin/python src/4-frameworks/1-rag-sk-agents-aisearch.py` |
+| Agent Framework agent | [`1-rag-agent-framework-aisearch.py`](../src/4-frameworks/1-rag-agent-framework-aisearch.py) | new (the Semantic Kernel lab on its successor) | [output](../sample-output/1-rag-agent-framework-aisearch.py-output-20261122-013300.txt) | `Agent` on `FoundryChatClient`, a plain function tool, a chat middleware | `.venv-agent-framework/bin/python src/4-frameworks/1-rag-agent-framework-aisearch.py` |
 | AutoGen multi-agent RAG | [`2-autogen-multi-agent-rag.py`](../src/4-frameworks/2-autogen-multi-agent-rag.py) | [2-autogen-multi-agent-rag.ipynb](https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/4-frameworks/2-autogen-multi-agent-rag.ipynb) | [output](../sample-output/2-autogen-multi-agent-rag.py-output-20261101-215641.txt) | retriever and responder agents, embedding search over tips | `uv run python src/4-frameworks/2-autogen-multi-agent-rag.py` |
 | AutoGen wellness agents | [`3-autogen-personalized-heart-rate.py`](../src/4-frameworks/3-autogen-personalized-heart-rate.py) | [3-autogen-personalized-heart-rate.ipynb](https://github.com/Azure/ai-foundry-workshop/blob/273c24c/2-notebooks/4-frameworks/3-autogen-personalized-heart-rate.ipynb) | [output](../sample-output/3-autogen-personalized-heart-rate.py-output-20261115-145925.txt) | hourly heart-rate summary from sample wearable data (pandas, matplotlib), then two agents plan workouts and breaks; a wellness demo with no health scoring, not medical advice | `uv run python src/4-frameworks/3-autogen-personalized-heart-rate.py --output-dir charts` |
 
@@ -58,7 +59,7 @@ SDKs in its own repo: [azure-ai-foundry-clinical-agents](https://github.com/khal
 
 ## What the other labs need
 
-**Two more environments.** One environment holds only one version of each package, and some labs need versions
+**Three more environments.** One environment holds only one version of each package, and some labs need versions
 that conflict:
 
 | Environment | Key packages | Labs | Why separate |
@@ -66,12 +67,15 @@ that conflict:
 | `.venv` | `azure-ai-projects` 1.0.0, `azure-ai-agents` 1.1.0, AutoGen 0.7.5 | all others | the classic agents API (threads, messages, runs) the workshop notebooks use; `azure-ai-projects` 2.x removed it |
 | `.venv-agents-v2` | `azure-ai-projects` 2.8.0, `mcp`, `azure-search-documents` | Bing, Web Search, Functions MCP, Azure AI Search (v2) | these tools need the new agents API, which exists only in 2.x |
 | `.venv-semantic-kernel` | `semantic-kernel` 1.45.0, `azure-ai-agents` 1.2.0b6 | Semantic Kernel | Semantic Kernel needs a beta `azure-ai-agents` |
+| `.venv-agent-framework` | `agent-framework-foundry` 1.16.2, `azure-ai-projects` 2.11.0 | Agent Framework | Agent Framework needs `azure-ai-projects` 2.x, which the Semantic Kernel lab can't use |
 
 ```bash
 uv venv .venv-agents-v2 --python 3.13
 uv pip install --python .venv-agents-v2/bin/python -r requirements-agents-v2.txt
 uv venv .venv-semantic-kernel --python 3.13
 uv pip install --python .venv-semantic-kernel/bin/python -r requirements-semantic-kernel.txt
+uv venv .venv-agent-framework --python 3.13
+uv pip install --python .venv-agent-framework/bin/python -r requirements-agent-framework.txt
 ```
 
 **More model deployments.** The two image scripts of the embeddings lab need an `embed-v-4-0` and a `gpt-image-2`
