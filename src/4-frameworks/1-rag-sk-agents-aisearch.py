@@ -104,6 +104,26 @@ SAMPLE_DOCUMENTS = [
     },
 ]
 
+# The fitness index's fields; the documents in SAMPLE_DOCUMENTS use these names.
+FITNESS_INDEX_FIELDS = [
+    SimpleField(name="FitnessItemID", type=SearchFieldDataType.String, key=True),
+    SearchableField(name="Name", type=SearchFieldDataType.String, filterable=True),
+    # The lowercase normalizer makes the Category filter ignore case ("cardio"
+    # finds "Cardio"), whatever spelling the model sends. SearchField, not
+    # SearchableField: the shortcut drops normalizer_name.
+    SearchField(
+        name="Category",
+        type=SearchFieldDataType.String,
+        searchable=True,
+        filterable=True,
+        facetable=True,
+        sortable=False,
+        normalizer_name="lowercase",
+    ),
+    SimpleField(name="Price", type=SearchFieldDataType.Double, filterable=True, sortable=True, facetable=True),
+    SearchableField(name="Description", type=SearchFieldDataType.String),
+]
+
 AGENT_INSTRUCTIONS = """
 You are a Fitness Shopping Assistant. You help users find fitness equipment in the store's catalog.
 Always look products up with the Azure AI Search tool before answering.
@@ -255,26 +275,7 @@ async def get_search_connection(project_client):
     return connection, AzureKeyCredential(api_key)
 
 
-async def create_fitness_index(index_client):
-    fields = [
-        SimpleField(name="FitnessItemID", type=SearchFieldDataType.String, key=True),
-        SearchableField(name="Name", type=SearchFieldDataType.String, filterable=True),
-        # The lowercase normalizer makes the Category filter ignore case ("cardio"
-        # finds "Cardio"), whatever spelling the model sends. SearchField, not
-        # SearchableField: the shortcut drops normalizer_name.
-        SearchField(
-            name="Category",
-            type=SearchFieldDataType.String,
-            searchable=True,
-            filterable=True,
-            facetable=True,
-            sortable=False,
-            normalizer_name="lowercase",
-        ),
-        SimpleField(name="Price", type=SearchFieldDataType.Double, filterable=True, sortable=True, facetable=True),
-        SearchableField(name="Description", type=SearchFieldDataType.String),
-    ]
-
+async def delete_fitness_index_if_exists(index_client):
     print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index already exists.")
     existing = [name async for name in index_client.list_index_names()]
 
@@ -283,14 +284,21 @@ async def create_fitness_index(index_client):
         await index_client.delete_index(INDEX_NAME)
         print(f"Deleted existing index: {INDEX_NAME}")
 
+
+async def recreate_fitness_index(index_client):
+    """Delete the fitness index if it exists, then create it again."""
+    await delete_fitness_index_if_exists(index_client)
+
     print("\n>>> Create the fitness index in Azure AI Search.")
-    created = await index_client.create_index(SearchIndex(name=INDEX_NAME, fields=fields))
+    created = await index_client.create_index(SearchIndex(name=INDEX_NAME, fields=FITNESS_INDEX_FIELDS))
     print(f"Created index: {created.name}")
 
 
 async def upload_documents(search_client):
+    documents_with_price_text = [with_price_text(d) for d in SAMPLE_DOCUMENTS]
+
     print("\n>>> Upload the fitness product documents to the fitness index in Azure AI Search.")
-    results = await search_client.upload_documents(documents=[with_price_text(d) for d in SAMPLE_DOCUMENTS])
+    results = await search_client.upload_documents(documents=documents_with_price_text)
     failed = [r for r in results if not r.succeeded]
     if failed:
         failures = [f"{result.key}: {result.error_message}" for result in failed]
@@ -383,16 +391,16 @@ async def create_agent(project_client, model, connection):
     )
 
     print("\n>>> Create the fitness shopping agent, with the Azure AI Search tool, in Foundry Agent Service.")
-    definition = await project_client.agents.create_agent(
+    agent_definition = await project_client.agents.create_agent(
         model=model,
         name=AGENT_NAME,
         instructions=AGENT_INSTRUCTIONS,
         tools=search_tool.definitions,
         tool_resources=search_tool.resources,
     )
-    print(f"Created agent: {definition.id}")
+    print(f"Created agent: {agent_definition.id}")
 
-    return definition
+    return agent_definition
 
 
 async def ask(project_client, agent, thread, question):
@@ -416,7 +424,7 @@ async def ask(project_client, agent, thread, question):
     return thread
 
 
-async def cleanup(project_client, index_client, search_client, thread, definition, index_created):
+async def cleanup(project_client, index_client, search_client, thread, agent_definition, index_created):
     """Step 4: delete what the run created (thread, agent, index) and close the search
     clients."""
     if thread is not None and thread.id is not None:
@@ -427,11 +435,11 @@ async def cleanup(project_client, index_client, search_client, thread, definitio
         except Exception as exc:
             print(f"Could not delete thread: {exc}")
 
-    if definition is not None:
+    if agent_definition is not None:
         try:
             print("\n>>> Delete the fitness shopping agent from Foundry Agent Service.")
-            await project_client.agents.delete_agent(definition.id)
-            print(f"Deleted agent: {definition.id}")
+            await project_client.agents.delete_agent(agent_definition.id)
+            print(f"Deleted agent: {agent_definition.id}")
         except Exception as exc:
             print(f"Could not delete agent: {exc}")
 
@@ -460,12 +468,12 @@ async def main():
         index_client, search_client = create_search_clients(connection, search_key)
 
         index_created = False
-        definition = None
+        agent_definition = None
         thread = None
 
         try:
             print("\n=== Step 1: create and fill the search index ===")
-            await create_fitness_index(index_client)
+            await recreate_fitness_index(index_client)
             index_created = True
             await upload_documents(search_client)
             await wait_for_documents(search_client, len(SAMPLE_DOCUMENTS))
@@ -473,11 +481,13 @@ async def main():
             await print_direct_search(search_client, "Strength")
 
             print("\n=== Step 2: create the agent (Azure AI Search tool + local price plugin) ===")
-            definition = await create_agent(project_client, model, connection)
+            agent_definition = await create_agent(project_client, model, connection)
 
             # Semantic Kernel wraps the Foundry agent and adds the local price plugin.
             agent = AzureAIAgent(
-                client=project_client, definition=definition, plugins=[FitnessCatalogPlugin(search_client)]
+                client=project_client,
+                definition=agent_definition,
+                plugins=[FitnessCatalogPlugin(search_client)],
             )
 
             print("\n=== Step 3: ask the agent ===")
@@ -487,7 +497,7 @@ async def main():
                 thread = await ask(project_client, agent, thread, question)
         finally:
             print("\n=== Cleanup ===")
-            await cleanup(project_client, index_client, search_client, thread, definition, index_created)
+            await cleanup(project_client, index_client, search_client, thread, agent_definition, index_created)
 
 
 if __name__ == "__main__":

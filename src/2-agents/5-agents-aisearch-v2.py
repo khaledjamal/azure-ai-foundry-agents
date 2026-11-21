@@ -128,6 +128,26 @@ SAMPLE_DOCUMENTS = [
     },
 ]
 
+# The fitness index's fields; the documents in SAMPLE_DOCUMENTS use these names.
+FITNESS_INDEX_FIELDS = [
+    SimpleField(name="FitnessItemID", type=SearchFieldDataType.String, key=True, filterable=True),
+    SearchableField(name="Name", type=SearchFieldDataType.String, filterable=True),
+    # The lowercase normalizer makes the Category filter ignore case ("cardio"
+    # finds "Cardio"), whatever spelling the model sends. SearchField, not
+    # SearchableField: the shortcut drops normalizer_name.
+    SearchField(
+        name="Category",
+        type=SearchFieldDataType.String,
+        searchable=True,
+        filterable=True,
+        facetable=True,
+        sortable=False,
+        normalizer_name="lowercase",
+    ),
+    SimpleField(name="Price", type=SearchFieldDataType.Double, filterable=True, sortable=True, facetable=True),
+    SearchableField(name="Description", type=SearchFieldDataType.String),
+]
+
 AGENT_INSTRUCTIONS = """
 You are a Fitness Shopping Assistant. You help users find fitness equipment in the store's catalog.
 
@@ -207,26 +227,7 @@ def create_search_clients():
     return index_client, search_client
 
 
-def create_fitness_index(index_client):
-    fields = [
-        SimpleField(name="FitnessItemID", type=SearchFieldDataType.String, key=True, filterable=True),
-        SearchableField(name="Name", type=SearchFieldDataType.String, filterable=True),
-        # The lowercase normalizer makes the Category filter ignore case ("cardio"
-        # finds "Cardio"), whatever spelling the model sends. SearchField, not
-        # SearchableField: the shortcut drops normalizer_name.
-        SearchField(
-            name="Category",
-            type=SearchFieldDataType.String,
-            searchable=True,
-            filterable=True,
-            facetable=True,
-            sortable=False,
-            normalizer_name="lowercase",
-        ),
-        SimpleField(name="Price", type=SearchFieldDataType.Double, filterable=True, sortable=True, facetable=True),
-        SearchableField(name="Description", type=SearchFieldDataType.String),
-    ]
-
+def delete_fitness_index_if_exists(index_client):
     print("\n>>> List the indexes in Azure AI Search, to see whether the fitness index already exists.")
     index_names = {index.name for index in index_client.list_indexes()}
 
@@ -236,8 +237,13 @@ def create_fitness_index(index_client):
         print(f"Deleted existing index: {INDEX_NAME}")
         time.sleep(1)  # seconds
 
+
+def recreate_fitness_index(index_client):
+    """Delete the fitness index if it exists, then create it again."""
+    delete_fitness_index_if_exists(index_client)
+
     print("\n>>> Create the fitness index in Azure AI Search.")
-    index_client.create_index(SearchIndex(name=INDEX_NAME, fields=fields))
+    index_client.create_index(SearchIndex(name=INDEX_NAME, fields=FITNESS_INDEX_FIELDS))
     print(f"Created index: {INDEX_NAME}")
 
 
@@ -249,16 +255,16 @@ def with_price_text(document):
 
 
 def upload_fitness_documents(search_client):
-    documents = [with_price_text(d) for d in SAMPLE_DOCUMENTS]
+    documents_with_price_text = [with_price_text(d) for d in SAMPLE_DOCUMENTS]
 
     print("\n>>> Upload the fitness product documents to the fitness index in Azure AI Search.")
-    results = search_client.upload_documents(documents=documents)
+    results = search_client.upload_documents(documents=documents_with_price_text)
 
     failed = [result.key for result in results if not result.succeeded]
     if failed:
         raise RuntimeError(f"Documents failed to upload: {failed}")
 
-    print(f"Uploaded {len(documents)} products.")
+    print(f"Uploaded {len(documents_with_price_text)} products.")
 
 
 def wait_for_documents(search_client):
@@ -600,7 +606,7 @@ def main():
     all_results = {}
 
     try:
-        create_fitness_index(index_client)
+        recreate_fitness_index(index_client)
         upload_fitness_documents(search_client)
         wait_for_documents(search_client)
 
