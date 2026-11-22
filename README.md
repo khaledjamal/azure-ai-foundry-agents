@@ -144,13 +144,9 @@ Microsoft's original notebook, what each script cleans up and the generated imag
 
 ## Model choice
 
-gpt-4o-mini is the default: on the Semantic Kernel version of the Azure AI Search agent it made the same tool calls and
-gave the same grounded answers as gpt-4o at about 1/17 of the per-token price (one run on two questions, not a
-benchmark). gpt-5.4-mini and gpt-5.4-nano failed on the classic agents API once the Azure AI Search tool was attached;
-Microsoft points models later than gpt-5 to the new agents API, and the classic API itself retires on 2027-03-31. On the
-new agents API all three answered both questions correctly with both tools; gpt-5.4-nano cost about twice as much as
-gpt-4o-mini, gpt-5.4-mini about seven times (one run). Details, and the other comparisons (Phi-4, DeepSeek-V4-Flash,
-Web Search vs Grounding with Bing), are in the [findings](docs/findings.md#model-choice-gpt-4o-vs-gpt-4o-mini).
+gpt-4o-mini is the default: in our run it made the same tool calls and grounded answers as gpt-4o at about 1/17 of the
+price. Newer models need the new agents API; the failures, costs and other comparisons are in the
+[findings](docs/findings.md#model-choice-gpt-4o-vs-gpt-4o-mini).
 
 ## Setup
 
