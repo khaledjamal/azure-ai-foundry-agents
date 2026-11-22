@@ -355,7 +355,10 @@ async def main():
     model_client, embed = create_clients()
 
     try:
-        result = await run_query(create_team(model_client, make_retrieve_personalized_tips(summary, embed)))
+        retrieve_personalized_tips = make_retrieve_personalized_tips(summary, embed)
+        team = create_team(model_client, retrieve_personalized_tips)
+
+        result = await run_query(team)
     finally:
         await model_client.close()
 
