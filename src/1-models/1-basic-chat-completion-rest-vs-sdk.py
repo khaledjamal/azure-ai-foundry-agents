@@ -145,7 +145,9 @@ def sdk_step(endpoint, api_version, model, token_provider):
     """Step 2: the same request through the AzureOpenAI client; return the same fields
     as rest_step()."""
     openai_client = AzureOpenAI(
-        azure_endpoint=endpoint, azure_ad_token_provider=token_provider, api_version=api_version
+        azure_endpoint=endpoint,
+        azure_ad_token_provider=token_provider,
+        api_version=api_version,
     )
 
     status, seconds, completion = call_sdk(openai_client, model, MESSAGES)

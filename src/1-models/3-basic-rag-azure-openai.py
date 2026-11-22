@@ -200,7 +200,7 @@ def rag_chat(openai_client, search_client, embedding_model, chat_model, query, t
 
     print("\n>>> Search the health tips index in Azure AI Search with the question's vector.")
     results = search_client.search(search_text="", vector_queries=[vector_query], select=["content", "source"])
-    top_docs = [f"Source: {r['source']} => {r['content']}" for r in results]
+    top_docs = [f"Source: {doc['source']} => {doc['content']}" for doc in results]
 
     print("Retrieved tips:")
 

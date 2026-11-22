@@ -229,7 +229,11 @@ def create_agent(project_client, model, server_url):
     print("\n>>> Create a version of the workout MCP agent, with the MCP tool, in Foundry Agent Service.")
     agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
-        definition=PromptAgentDefinition(model=model, instructions=INSTRUCTIONS, tools=[tool]),
+        definition=PromptAgentDefinition(
+            model=model,
+            instructions=INSTRUCTIONS,
+            tools=[tool],
+        ),
     )
     print(f"\nAgent created: name={agent.name} version={agent.version}")
 
@@ -292,7 +296,10 @@ def main():
 
     with (
         DefaultAzureCredential() as credential,
-        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        AIProjectClient(
+            endpoint=project_endpoint,
+            credential=credential,
+        ) as project_client,
         project_client.get_openai_client() as openai_client,
     ):
         agent = create_agent(project_client, args.model, server_url)

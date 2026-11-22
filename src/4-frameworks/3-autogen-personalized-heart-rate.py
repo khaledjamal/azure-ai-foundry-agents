@@ -154,7 +154,11 @@ def load_hourly_heart_rate():
 def hourly_summary_text(hourly):
     lowest = hourly["avg_bpm"].nsmallest(3).index
     highest = hourly["avg_bpm"].nlargest(3).index
-    lines = [f"{t:%H}:00  average {row.avg_bpm:.0f} bpm" for t, row in hourly.iterrows()]
+
+    lines = []
+    for hour, row in hourly.iterrows():
+        lines.append(f"{hour:%H}:00  average {row.avg_bpm:.0f} bpm")
+
     calm_hours = ", ".join(f"{hour:%H}:00" for hour in sorted(lowest))
     active_hours = ", ".join(f"{hour:%H}:00" for hour in sorted(highest))
     hourly_lines = "\n".join(lines)
@@ -249,7 +253,9 @@ def create_clients():
         azure_ad_token_provider=token_provider,
     )
     openai_client = AzureOpenAI(
-        azure_endpoint=endpoint, api_version=api_version, azure_ad_token_provider=token_provider
+        azure_endpoint=endpoint,
+        api_version=api_version,
+        azure_ad_token_provider=token_provider,
     )
 
     def embed(texts):
@@ -258,9 +264,8 @@ def create_clients():
             f"the vectors of {len(texts)} text(s), starting with: {texts[0][:60]}"
         )
 
-        return [
-            item.embedding for item in openai_client.embeddings.create(model=embedding_deployment, input=texts).data
-        ]
+        response = openai_client.embeddings.create(model=embedding_deployment, input=texts)
+        return [item.embedding for item in response.data]
 
     return model_client, embed
 

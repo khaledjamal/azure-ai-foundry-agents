@@ -270,7 +270,7 @@ def with_price_text(document):
 
 
 def upload_fitness_documents(search_client):
-    documents_with_price_text = [with_price_text(d) for d in SAMPLE_DOCUMENTS]
+    documents_with_price_text = [with_price_text(doc) for doc in SAMPLE_DOCUMENTS]
 
     print("\n>>> Upload the fitness product documents to the fitness index in Azure AI Search.")
     results = search_client.upload_documents(documents=documents_with_price_text)

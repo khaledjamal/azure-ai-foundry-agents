@@ -154,7 +154,9 @@ def create_clients():
         azure_ad_token_provider=token_provider,
     )
     openai_client = AzureOpenAI(
-        azure_endpoint=endpoint, api_version=api_version, azure_ad_token_provider=token_provider
+        azure_endpoint=endpoint,
+        api_version=api_version,
+        azure_ad_token_provider=token_provider,
     )
 
     def embed(texts):
@@ -163,9 +165,8 @@ def create_clients():
             f"the vectors of {len(texts)} text(s), starting with: {texts[0][:60]}"
         )
 
-        return [
-            item.embedding for item in openai_client.embeddings.create(model=embedding_deployment, input=texts).data
-        ]
+        response = openai_client.embeddings.create(model=embedding_deployment, input=texts)
+        return [item.embedding for item in response.data]
 
     return model_client, embed
 

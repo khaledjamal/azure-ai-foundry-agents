@@ -149,7 +149,10 @@ async def check_server(url, key):
 
     async with (
         create_mcp_http_client(headers=headers) as http_client,
-        streamable_http_client(url, http_client=http_client) as (read_stream, write_stream),
+        streamable_http_client(
+            url,
+            http_client=http_client,
+        ) as (read_stream, write_stream),
         ClientSession(read_stream, write_stream) as session,
     ):
         http_client.event_hooks["request"].append(print_call_description)

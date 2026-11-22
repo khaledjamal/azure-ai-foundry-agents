@@ -295,11 +295,12 @@ async def recreate_fitness_index(index_client):
 
 
 async def upload_documents(search_client):
-    documents_with_price_text = [with_price_text(d) for d in SAMPLE_DOCUMENTS]
+    documents_with_price_text = [with_price_text(doc) for doc in SAMPLE_DOCUMENTS]
 
     print("\n>>> Upload the fitness product documents to the fitness index in Azure AI Search.")
     results = await search_client.upload_documents(documents=documents_with_price_text)
-    failed = [r for r in results if not r.succeeded]
+
+    failed = [result for result in results if not result.succeeded]
     if failed:
         failures = [f"{result.key}: {result.error_message}" for result in failed]
         raise RuntimeError("Upload failed: " + "; ".join(failures))
@@ -337,6 +338,11 @@ async def print_direct_search(search_client, text):
         print(f"  {doc['Name']} | {doc['Category']} | ${doc['Price']:.2f} | {doc['Description']}")
 
 
+def tool_label(tool):
+    """A function tool by its function name, any other tool by its type."""
+    return tool.function.name if tool.type == "function" else tool.type
+
+
 async def print_tool_calls(project_client, thread_id):
     # Shows what each tool returned to the model in the latest run (e.g. which fields
     # the search tool passed on).
@@ -344,7 +350,7 @@ async def print_tool_calls(project_client, thread_id):
 
     print("\n>>> Read the conversation thread's latest agent run from Foundry Agent Service, to show the tools it had.")
     run = await anext(aiter(runs))
-    offered = [t.function.name if t.type == "function" else t.type for t in run.tools or []]
+    offered = [tool_label(tool) for tool in run.tools or []]
     print(f"  Tools offered in run {run.id} ({run.status}): {offered}")
     print("  Tool calls:")
 
@@ -462,7 +468,10 @@ async def main():
 
     async with (
         DefaultAzureCredential() as credential,
-        AzureAIAgent.create_client(credential=credential, endpoint=project_endpoint) as project_client,
+        AzureAIAgent.create_client(
+            credential=credential,
+            endpoint=project_endpoint,
+        ) as project_client,
     ):
         connection, search_key = await get_search_connection(project_client)
         index_client, search_client = create_search_clients(connection, search_key)

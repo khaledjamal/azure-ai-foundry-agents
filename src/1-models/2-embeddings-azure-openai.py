@@ -117,7 +117,7 @@ def main():
     vector = response.data[0].embedding
     print(f"User text: {user_text}")
     print(f"Embedding length={len(vector)}")
-    first_dims = [round(v, 6) for v in vector[:8]]
+    first_dims = [round(value, 6) for value in vector[:8]]
     print(f"First few dims: {first_dims}")
     print(f"(tokens: {response.usage.total_tokens})")
 

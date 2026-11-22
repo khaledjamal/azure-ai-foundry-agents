@@ -653,7 +653,10 @@ def create_safety_index(index_client, dimensions):
                 name="hnsw",
                 kind=VectorSearchAlgorithmKind.HNSW,
                 parameters=HnswParameters(
-                    m=4, ef_construction=400, ef_search=500, metric=VectorSearchAlgorithmMetric.COSINE
+                    m=4,
+                    ef_construction=400,
+                    ef_search=500,
+                    metric=VectorSearchAlgorithmMetric.COSINE,
                 ),
             )
         ],
@@ -838,9 +841,12 @@ def section_indirect_attack(ctx):
         "\n>>> Run the indirect attack simulator, which makes several web service "
         "calls of its own: each is described just before it in this log."
     )
-    outputs = list(
-        asyncio.run(simulator(target=echo_target, max_simulation_results=SIMULATION_RESULTS, concurrent_async_task=1))
+    simulation = simulator(
+        target=echo_target,
+        max_simulation_results=SIMULATION_RESULTS,
+        concurrent_async_task=1,
     )
+    outputs = list(asyncio.run(simulation))
     print(f"\n{len(outputs)} simulated conversation(s)")
 
     for number, conversation in enumerate(outputs, start=1):
@@ -866,7 +872,7 @@ SECTIONS = {
 
 def parse_sections(text):
     sections = sorted({int(part) for part in text.split(",") if part.strip()})
-    unknown = [s for s in sections if s not in SECTIONS]
+    unknown = [section for section in sections if section not in SECTIONS]
     if unknown:
         raise argparse.ArgumentTypeError(f"unknown section(s): {unknown}; choose from {ALL_SECTIONS}")
 
@@ -920,7 +926,7 @@ def build_context(args):
     }
     print(f"Project endpoint: {project_endpoint}")
     print(f"Chat/agent model: {ctx['model']}; judge model: {ctx['judge_config']['azure_deployment']}")
-    sections_text = ", ".join(str(s) for s in args.sections)
+    sections_text = ", ".join(str(section) for section in args.sections)
     print(f"Sections: {sections_text}")
 
     return ctx

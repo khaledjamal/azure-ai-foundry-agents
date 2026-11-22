@@ -312,11 +312,12 @@ async def recreate_fitness_index(index_client):
 
 
 async def upload_documents(search_client):
-    documents_with_price_text = [with_price_text(d) for d in SAMPLE_DOCUMENTS]
+    documents_with_price_text = [with_price_text(doc) for doc in SAMPLE_DOCUMENTS]
 
     print("\n>>> Upload the fitness product documents to the fitness index in Azure AI Search.")
     results = await search_client.upload_documents(documents=documents_with_price_text)
-    failed = [r for r in results if not r.succeeded]
+
+    failed = [result for result in results if not result.succeeded]
     if failed:
         failures = [f"{result.key}: {result.error_message}" for result in failed]
         raise RuntimeError("Upload failed: " + "; ".join(failures))
@@ -402,6 +403,15 @@ async def ask(agent, session, question):
     print(f"# Agent: {response.text}")
 
 
+async def ask_questions(agent):
+    """Step 3: ask each question in one session, so later questions see the earlier
+    answers."""
+    session = agent.create_session()
+
+    for question in QUESTIONS:
+        await ask(agent, session, question)
+
+
 async def cleanup(index_client, search_client, index_created):
     """Step 4: delete the index and close the search clients."""
     if index_created:
@@ -423,7 +433,10 @@ async def main():
 
     async with (
         DefaultAzureCredential() as credential,
-        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        AIProjectClient(
+            endpoint=project_endpoint,
+            credential=credential,
+        ) as project_client,
     ):
         connection, search_key = await get_search_connection(project_client)
         index_client, search_client = create_search_clients(connection, search_key)
@@ -442,10 +455,7 @@ async def main():
             print("\n=== Step 2: build the agent (Azure AI Search tool + local price function) ===")
             async with create_agent(project_client, model, connection, search_client) as agent:
                 print("\n=== Step 3: ask the agent ===")
-                session = agent.create_session()
-
-                for question in QUESTIONS:
-                    await ask(agent, session, question)
+                await ask_questions(agent)
         finally:
             print("\n=== Cleanup ===")
             await cleanup(index_client, search_client, index_created)

@@ -264,7 +264,9 @@ def print_conversation(project_client, thread_id, file_names):
         for text_message in message.text_messages:
             print(f"\n{message.role.upper()}: {text_message.text.value}")
 
-        citations = {c.text: c.file_citation.file_id for c in message.file_citation_annotations}
+        citations = {}
+        for citation in message.file_citation_annotations:
+            citations[citation.text] = citation.file_citation.file_id
 
         for marker, file_id in citations.items():
             print(f"  citation {marker} -> {file_names.get(file_id, file_id)}")

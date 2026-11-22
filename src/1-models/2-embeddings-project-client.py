@@ -99,7 +99,10 @@ def main():
 
     with (
         DefaultAzureCredential() as credential,
-        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        AIProjectClient(
+            endpoint=project_endpoint,
+            credential=credential,
+        ) as project_client,
         project_client.get_openai_client(api_version=api_version) as openai_client,
     ):
         print_connection(project_endpoint, openai_client, api_version)
@@ -124,7 +127,7 @@ def main():
         vector = response.data[0].embedding
         print(f"User text: {user_text}")
         print(f"Embedding length={len(vector)}")
-        first_dims = [round(v, 6) for v in vector[:8]]
+        first_dims = [round(value, 6) for value in vector[:8]]
         print(f"First few dims: {first_dims}")
         print(f"(tokens: {response.usage.total_tokens})")
 

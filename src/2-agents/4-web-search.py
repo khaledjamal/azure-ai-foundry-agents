@@ -165,7 +165,11 @@ def create_agent(project_client, model, today):
     print("\n>>> Create a version of the health web search agent, with the Web Search tool, in Foundry Agent Service.")
     agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
-        definition=PromptAgentDefinition(model=model, instructions=build_instructions(today), tools=[WebSearchTool()]),
+        definition=PromptAgentDefinition(
+            model=model,
+            instructions=build_instructions(today),
+            tools=[WebSearchTool()],
+        ),
     )
     print(f"\nAgent created: name={agent.name} version={agent.version} (tool: web_search, no connection)")
 
@@ -257,7 +261,10 @@ def main():
 
     with (
         DefaultAzureCredential() as credential,
-        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        AIProjectClient(
+            endpoint=project_endpoint,
+            credential=credential,
+        ) as project_client,
         project_client.get_openai_client() as openai_client,
     ):
         agent = create_agent(project_client, args.model, args.today)

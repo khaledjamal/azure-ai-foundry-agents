@@ -53,7 +53,7 @@ def main():
                 f"  {action:6}  {agent.id}  {agent.name:25}  {agent.model:12}  created {agent.created_at.isoformat()}"
             )
 
-        targets = [a for a in agents if a.name == args.name]
+        targets = [agent for agent in agents if agent.name == args.name]
         print(f"\nMatching '{args.name}': {len(targets)}; kept: {len(agents) - len(targets)}")
         if args.dry_run:
             print("Dry run: nothing deleted.")

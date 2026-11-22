@@ -275,9 +275,11 @@ def run_agent(project_client, model, tracer):
                 path.write_text(content, encoding="utf-8")
 
                 print(f"\n>>> Upload the file {name} to the Foundry project through Foundry Agent Service.")
-                uploaded.append(
-                    project_client.agents.files.upload_and_poll(file_path=str(path), purpose=FilePurpose.AGENTS).id
+                uploaded_file = project_client.agents.files.upload_and_poll(
+                    file_path=str(path),
+                    purpose=FilePurpose.AGENTS,
                 )
+                uploaded.append(uploaded_file.id)
 
         print("\n>>> Create the vector store with the uploaded files in Foundry Agent Service.")
         vector_store = project_client.agents.vector_stores.create_and_poll(file_ids=uploaded, name=VECTOR_STORE_NAME)
@@ -365,7 +367,10 @@ def main():
 
     with (
         DefaultAzureCredential() as credential,
-        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        AIProjectClient(
+            endpoint=project_endpoint,
+            credential=credential,
+        ) as project_client,
         project_client.get_openai_client(api_version=api_version) as openai_client,
     ):
         provider, exporter = setup_tracing(args.destination, project_client, args.record_content)

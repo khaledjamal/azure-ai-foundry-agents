@@ -255,7 +255,7 @@ def with_price_text(document):
 
 
 def upload_fitness_documents(search_client):
-    documents_with_price_text = [with_price_text(d) for d in SAMPLE_DOCUMENTS]
+    documents_with_price_text = [with_price_text(doc) for doc in SAMPLE_DOCUMENTS]
 
     print("\n>>> Upload the fitness product documents to the fitness index in Azure AI Search.")
     results = search_client.upload_documents(documents=documents_with_price_text)
@@ -441,7 +441,9 @@ def run_model(project_client, openai_client, model, search_tool, find_items_unde
     agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(
-            model=model, instructions=AGENT_INSTRUCTIONS, tools=[search_tool, FIND_ITEMS_UNDER_TOOL]
+            model=model,
+            instructions=AGENT_INSTRUCTIONS,
+            tools=[search_tool, FIND_ITEMS_UNDER_TOOL],
         ),
     )
     print(f"Agent created: name={agent.name} version={agent.version} model={model}")
@@ -493,7 +495,7 @@ def print_summary(all_results):
     summed_keys = ("searches", "input", "output", "reasoning", "seconds")
     for model, results in all_results.items():
         totals = {key: sum(result[key] for result in results) for key in summed_keys}
-        functions = sum(len(r["functions"]) for r in results)
+        functions = sum(len(result["functions"]) for result in results)
         price = cost(model, totals["input"], totals["output"])
         price_text = f"${price:.4f}" if price is not None else "no price"
 
@@ -614,7 +616,10 @@ def main():
 
         with (
             DefaultAzureCredential() as credential,
-            AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+            AIProjectClient(
+                endpoint=project_endpoint,
+                credential=credential,
+            ) as project_client,
             project_client.get_openai_client() as openai_client,
         ):
             connection = find_search_connection(project_client)

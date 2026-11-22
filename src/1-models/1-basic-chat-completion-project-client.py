@@ -127,7 +127,10 @@ def main():
 
     with (
         DefaultAzureCredential() as credential,
-        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        AIProjectClient(
+            endpoint=project_endpoint,
+            credential=credential,
+        ) as project_client,
         project_client.get_openai_client(api_version=api_version) as openai_client,
     ):
         print_connection(project_endpoint, openai_client, api_version)

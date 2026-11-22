@@ -166,16 +166,18 @@ def create_agent(project_client, model, connection_name, today):
     connection = project_client.connections.get(connection_name)
     print(f"Bing connection: {connection.name} ({connection.type})")
 
-    tool = BingGroundingTool(
-        bing_grounding=BingGroundingSearchToolParameters(
-            search_configurations=[BingGroundingSearchConfiguration(project_connection_id=connection.id)]
-        )
-    )
+    search_configuration = BingGroundingSearchConfiguration(project_connection_id=connection.id)
+    tool_parameters = BingGroundingSearchToolParameters(search_configurations=[search_configuration])
+    tool = BingGroundingTool(bing_grounding=tool_parameters)
 
     print("\n>>> Create a version of the health Bing agent, with the Bing tool, in Foundry Agent Service.")
     agent = project_client.agents.create_version(
         agent_name=AGENT_NAME,
-        definition=PromptAgentDefinition(model=model, instructions=build_instructions(today), tools=[tool]),
+        definition=PromptAgentDefinition(
+            model=model,
+            instructions=build_instructions(today),
+            tools=[tool],
+        ),
     )
     print(f"\nAgent created: name={agent.name} version={agent.version}")
 
@@ -270,7 +272,10 @@ def main():
 
     with (
         DefaultAzureCredential() as credential,
-        AIProjectClient(endpoint=project_endpoint, credential=credential) as project_client,
+        AIProjectClient(
+            endpoint=project_endpoint,
+            credential=credential,
+        ) as project_client,
         project_client.get_openai_client() as openai_client,
     ):
         agent = create_agent(project_client, args.model, connection_name, args.today)
