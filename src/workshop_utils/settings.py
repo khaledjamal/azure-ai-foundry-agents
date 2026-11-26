@@ -17,9 +17,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 ENV_FILE = REPO_ROOT / ".env"
 
 
-def load_env(required=False):
-    """Load ENV_FILE into os.environ and return its path; with required=True a missing
-    file is an error."""
+def load_env(required=True):
+    """Load ENV_FILE into os.environ and return its path; a missing file is an error
+    unless required=False."""
     if required and not ENV_FILE.exists():
         raise FileNotFoundError(f".env file not found: {ENV_FILE} (copy .env.example)")
     load_dotenv(ENV_FILE)
