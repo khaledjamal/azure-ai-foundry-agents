@@ -94,7 +94,7 @@ def print_section(title):
 
 
 def load_environment():
-    env_path = load_env(required=True)
+    env_path = load_env()
     print(f"Loaded .env from: {env_path}")
 
 

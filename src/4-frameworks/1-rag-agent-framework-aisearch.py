@@ -257,7 +257,7 @@ async def print_tool_calls(context, call_next):
 
 
 def load_environment():
-    env_path = load_env(required=True)
+    env_path = load_env()
     print(f"Loaded .env from: {env_path}")
 
 
